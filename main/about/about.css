@@ -1,0 +1,441 @@
+/* About CSS - Matching Main App Design System */
+
+/* About button in nav - matches existing pattern */
+.about-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    
+    position: absolute;
+    right: var(--space-lg);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 101;
+}
+
+.about-btn:hover {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border-color: transparent;
+}
+
+.about-btn i {
+    font-size: 14px;
+}
+
+/* About Modal - exactly matching settings modal */
+.about-modal {
+    width: 90%;
+    max-width: 1000px;
+    max-height: 80vh;
+}
+
+.about-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-xl) var(--space-xl) var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--border-primary);
+    background-color: var(--bg-tertiary);
+}
+
+.about-modal .modal-header h2 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-labels);
+}
+
+.about-modal .close-btn {
+    background: none;
+    border: none;
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    margin: 0;
+    padding: 0;
+}
+
+.about-modal .close-btn:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-hover);
+    transform: none;
+}
+
+.about-modal .modal-body {
+    padding: var(--space-lg) var(--space-xl);
+    overflow-y: auto;
+    max-height: calc(80vh - 100px);
+    display: flex;
+}
+
+/* About Sidebar - matching settings sidebar exactly */
+.about-sidebar {
+    width: 250px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-primary);
+    padding: var(--space-lg);
+    overflow-y: auto;
+    flex-shrink: 0;
+    margin-right: var(--space-lg);
+    border-radius: var(--radius-md);
+}
+
+.about-sidebar h3 {
+    margin: 0 0 var(--space-lg) 0;
+    color: var(--text-labels);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-secondary);
+    padding-bottom: var(--space-sm);
+}
+
+/* Table of Contents - matching existing nav patterns */
+.toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.toc-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.toc-link,
+.toc-sublink {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    text-align: left;
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-sm);
+}
+
+.toc-link {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.toc-sublink {
+    padding-left: var(--space-lg);
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+/* Replace the existing .toc-link:hover, .toc-sublink:hover rule with separate rules: */
+.toc-link:hover {
+    background: var(--bg-tertiary);
+    color: var(--accent-primary);
+}
+
+.toc-sublink:hover {
+    background: rgba(255, 255, 255, 0.03); /* Much more subtle */
+    color: var(--text-secondary); /* Less vibrant than accent */
+}
+
+/* Replace the existing .toc-link.active, .toc-sublink.active rule with separate rules: */
+.toc-link.active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.toc-sublink.active {
+    background: rgba(255, 255, 255, 0.08); /* Very subtle background */
+    color: var(--accent-primary); /* Keep accent color for text but no strong background */
+    font-weight: 500; /* Slightly bolder text instead of strong background */
+}
+
+.toc-subsections {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--space-xs);
+}
+
+/* About Main Content */
+.about-main {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Settings section styling - matching exactly */
+.about-section {
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.about-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.about-section h2 {
+    margin: 0 0 var(--space-lg) 0;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-labels);
+    border-bottom: 1px solid var(--border-secondary);
+    padding-bottom: var(--space-sm);
+}
+
+.about-section h3 {
+    margin: var(--space-lg) 0 var(--space-md) 0;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-labels);
+}
+
+.about-section p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--space-md);
+    font-size: var(--font-size-base);
+}
+
+.about-section p:last-child {
+    margin-bottom: 0;
+}
+
+/* Subsections - like form groups */
+.subsection {
+    margin: var(--space-md) 0;
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+}
+
+.subsection h4 {
+    color: var(--text-labels);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin: 0 0 var(--space-xs) 0;
+}
+
+.subsection p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    font-size: var(--font-size-sm);
+}
+
+/* Tool Cards - simpler grid */
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-md);
+    margin: var(--space-md) 0;
+}
+
+.tool-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+}
+
+.tool-card h4 {
+    color: var(--text-labels);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin: 0 0 var(--space-xs) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.tool-card p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+    font-size: var(--font-size-sm);
+}
+
+/* Tool Icon */
+.tool-icon {
+    width: 20px;
+    height: 20px;
+    background: var(--accent-primary);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+/* Studio Info */
+.studio-info {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--space-xl);
+    margin: var(--space-md) 0;
+    text-align: center;
+}
+
+.studio-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-md);
+}
+
+/* SVG Icon styling */
+.studio-icon svg,
+.studio-icon i {
+    width: 32px;
+    height: 32px;
+    color: var(--accent-primary);
+    font-size: 32px;
+}
+
+.studio-icon svg {
+    fill: var(--accent-primary);
+}
+
+.studio-name {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--text-labels);
+    margin: 0 0 var(--space-sm) 0;
+}
+
+.studio-tagline {
+    font-style: italic;
+    color: var(--accent-primary);
+    font-size: var(--font-size-base);
+    margin: 0 0 var(--space-md) 0;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.studio-contact {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    font-family: "Nunito Sans", sans-serif;
+}
+
+/* In about.css, add this to your existing .studio-icon styling */
+.studio-icon img {
+    width: 32px;
+    height: 32px;
+    filter: invert(50%) sepia(9%) saturate(1085%) hue-rotate(356deg) brightness(97%) contrast(99%);
+    /* This filter applies the accent color to SVG - adjust as needed */
+}
+
+/* Social Links - matching button styling */
+.social-links {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: var(--space-md) 0;
+}
+
+.social-link {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    font-family: "Quicksand", sans-serif;
+    transition: all var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    text-decoration: none;
+}
+
+.social-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+    border-color: var(--accent-primary);
+}
+
+.social-link:active {
+    transform: translateY(0);
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+/* Support Section */
+.support-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    text-align: center;
+    margin: var(--space-md) 0;
+}
+
+.support-section h3 {
+    margin-bottom: var(--space-md);
+    color: var(--text-labels);
+}
+
+.support-section p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-modal {
+        width: 98%;
+        max-height: 90vh;
+    }
+    
+    .about-modal .modal-body {
+        flex-direction: column;
+    }
+    
+    .about-sidebar {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: var(--space-lg);
+        border-right: none;
+        border-bottom: 1px solid var(--border-primary);
+    }
+    
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .social-links {
+        flex-direction: column;
+        align-items: center;
+    }
+}

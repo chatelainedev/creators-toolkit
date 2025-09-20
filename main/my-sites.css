@@ -1,0 +1,394 @@
+/* My Sites CSS - Modular styles for the My Sites functionality */
+
+/* Tab Navigation */
+.main-tabs {
+    display: flex;
+    gap: var(--space-sm);
+    margin-left: auto;
+    margin-right: var(--space-xl);
+}
+
+.main-tab {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    font-family: "Quicksand", sans-serif;
+    padding: var(--space-sm) var(--space-lg);
+    transition: all var(--transition-normal);
+}
+
+.main-tab:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+.main-tab.active {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    width: 100%;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Sites Controls - Align with the tools container (900px max-width) */
+.sites-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto var(--space-2xl) auto;
+    width: 100%;
+    max-width: 900px; /* Match the tools container max-width */
+}
+
+.sort-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.sort-controls label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.sort-controls select {
+    background-color: var(--bg-quaternary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-inputs);
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs) var(--space-sm);
+    margin: 0;
+    min-width: 150px;
+}
+
+.sort-controls select:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(177, 182, 149, 0.1);
+    outline: none;
+}
+
+/* Sites Container - Simple, let main-content handle alignment */
+.sites-container {
+    width: 100%;
+}
+
+/* Loading and Empty States */
+.loading-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl) var(--space-xl);
+    text-align: center;
+    min-height: 300px;
+}
+
+.loading-state i {
+    font-size: 2rem;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-lg);
+}
+
+.loading-state p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+    margin: 0;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-lg);
+}
+
+.empty-state h3 {
+    color: var(--text-primary);
+    font-size: var(--font-size-xl);
+    font-family: "Nunito Sans", sans-serif;
+    margin: 0 0 var(--space-sm) 0;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+    margin: 0 0 var(--space-xl) 0;
+    max-width: 400px;
+}
+
+/* Sites Grid - Match tools container alignment (900px max-width) */
+.sites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 280px)); /* Fixed max width instead of 1fr */
+    gap: var(--space-xl);
+    width: 100%;
+    max-width: 900px; /* Match the tools container max-width */
+    margin: 0 auto;
+}
+
+/* Site Card */
+.site-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-md);
+    position: relative;
+}
+
+.site-card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-secondary);
+}
+
+.site-card:active {
+    border-color: var(--accent-primary);
+}
+
+/* Loading state for site cards */
+.site-card.loading {
+    opacity: 0.8;
+    transform: scale(0.98);
+    pointer-events: none;
+}
+
+/* Loading state animations */
+@keyframes site-loading-pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 0.6; }
+}
+
+.site-card.loading {
+    animation: site-loading-pulse 1.5s ease-in-out infinite;
+}
+
+/* Site Card Preview */
+.site-preview {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-quaternary) 100%);
+}
+
+.site-preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* REMOVED: transform animation on hover - was annoying */
+    /* transition: transform var(--transition-slow); */
+}
+
+/* REMOVED: Hover transform that was annoying */
+/* .site-card:hover .site-preview-image {
+    transform: scale(1.05);
+} */
+
+/* Site Preview Overlay - Dark by default, lightens on hover */
+.site-preview-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+    opacity: 1;
+    transition: all var(--transition-normal);
+}
+
+.site-card:hover .site-preview-overlay {
+    opacity: 0.7;
+}
+
+/* Recently Updated Badge */
+.recently-updated-badge {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    background: var(--accent-success);
+    color: var(--text-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 10;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Site Placeholder */
+.site-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-quaternary) 50%, var(--bg-tertiary) 100%);
+    color: var(--text-secondary);
+    text-align: center;
+    padding: var(--space-lg);
+}
+
+.site-placeholder i {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-md);
+    opacity: 0.6;
+}
+
+.site-placeholder-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    word-break: break-word;
+    line-height: 1.3;
+}
+
+/* Site Card Info */
+.site-info {
+    padding: var(--space-lg);
+    background: var(--bg-secondary);
+}
+
+.site-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-xs) 0;
+    word-break: break-word;
+    line-height: 1.3;
+}
+
+.site-meta {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+/* Error State for Cards */
+.site-card.error {
+    border-color: var(--accent-danger);
+    opacity: 0.7;
+}
+
+.site-card.error .site-preview {
+    background: linear-gradient(135deg, rgba(192, 87, 70, 0.1) 0%, rgba(192, 87, 70, 0.05) 100%);
+}
+
+.site-card.error .site-placeholder {
+    color: var(--accent-danger);
+}
+
+/* Favorites Star Icon */
+.site-info {
+    position: relative; /* Add this to existing .site-info rule */
+}
+
+.favorite-star {
+    position: absolute;
+    bottom: var(--space-md);
+    right: var(--space-md);
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    z-index: 10;
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+}
+
+.favorite-star:hover {
+    color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.1);
+}
+
+.favorite-star.favorited {
+    color: var(--accent-warning);
+    opacity: 0.9;
+}
+
+.favorite-star.favorited:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Favorites Filter Button */
+.favorites-filter-btn {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs) var(--space-lg);
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    min-width: 140px; /* Increased for numbers */
+    justify-content: center;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.favorites-filter-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+    transform: none; /* Override the global button bounce effect */
+}
+
+.favorites-filter-btn.active {
+    background-color: rgba(177, 182, 149, 0.15);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    transform: none; /* No bounce effect when active either */
+}
+
+.favorites-filter-btn i {
+    font-size: var(--font-size-xs);
+}
+
+/* Export icon styling */
+.export-icon {
+    position: absolute;
+    bottom: var(--space-md);
+    right: calc(var(--space-md) + 24px); /* Position to left of favorite star */
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    z-index: 10;
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+}
+
+.export-icon:hover {
+    color: var(--accent-primary);
+    transform: scale(1.1);
+    background: rgba(177, 182, 149, 0.1);
+}
+
+.export-icon.exporting {
+    color: var(--accent-primary);
+    opacity: 0.8;
+}

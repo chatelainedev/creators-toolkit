@@ -1,0 +1,189 @@
+{
+  "google": {
+    "name": "Google Gemini",
+    "description": "Google's Gemini AI models for creative writing and brainstorming",
+    "baseUrl": "https://generativelanguage.googleapis.com",
+    "modelsEndpoint": "/v1/models",
+    "chatEndpoint": "/v1/models/{model}:generateContent",
+    "keyRequired": true,
+    "keyPlaceholder": "Enter your Google AI API key...",
+    "keyHelpUrl": "https://aistudio.google.com/app/apikey",
+    "keyHelpText": "Get your free API key from Google AI Studio",
+    
+    "fallbackModels": [
+      {
+        "value": "gemini-2.0-flash-exp",
+        "label": "Gemini 2.0 Flash (Experimental)",
+        "description": "Latest experimental model with enhanced creative capabilities",
+        "contextLength": 1000000,
+        "recommended": true
+      },
+      {
+        "value": "gemini-1.5-pro",
+        "label": "Gemini 1.5 Pro", 
+        "description": "High-quality model for complex creative tasks",
+        "contextLength": 2000000,
+        "premium": true
+      },
+      {
+        "value": "gemini-1.5-flash",
+        "label": "Gemini 1.5 Flash",
+        "description": "Fast, efficient model for creative writing",
+        "contextLength": 1000000,
+        "recommended": false
+      },
+      {
+        "value": "gemini-1.5-flash-8b",
+        "label": "Gemini 1.5 Flash 8B",
+        "description": "Lightweight model for quick brainstorming",
+        "contextLength": 1000000,
+        "recommended": false
+      }
+    ],
+    
+    "defaultGenerationConfig": {
+      "temperature": 0.7,
+      "maxOutputTokens": 2048,
+      "topP": 0.9,
+      "topK": 40,
+      "candidateCount": 1
+    },
+    
+    "creativeGenerationConfig": {
+      "temperature": 0.9,
+      "maxOutputTokens": 2048,
+      "topP": 0.95,
+      "topK": 50,
+      "candidateCount": 1
+    },
+    
+    "analyticalGenerationConfig": {
+      "temperature": 0.3,
+      "maxOutputTokens": 2048,
+      "topP": 0.8,
+      "topK": 20,
+      "candidateCount": 1
+    }
+  },
+  
+  "openai": {
+    "name": "OpenAI GPT",
+    "description": "OpenAI's GPT models for creative writing (future implementation)",
+    "baseUrl": "https://api.openai.com",
+    "modelsEndpoint": "/v1/models",
+    "chatEndpoint": "/v1/chat/completions",
+    "keyRequired": true,
+    "keyPlaceholder": "Enter your OpenAI API key...",
+    "keyHelpUrl": "https://platform.openai.com/api-keys",
+    "keyHelpText": "Get your API key from OpenAI Platform",
+    "enabled": true,
+    
+    "fallbackModels": [
+      {
+        "value": "gpt-4",
+        "label": "GPT-4",
+        "description": "Advanced model for complex creative tasks",
+        "contextLength": 8192,
+        "premium": true
+      },
+      {
+        "value": "gpt-4-turbo",
+        "label": "GPT-4 Turbo", 
+        "description": "Faster GPT-4 with larger context window",
+        "contextLength": 128000,
+        "recommended": true
+      },
+      {
+        "value": "gpt-3.5-turbo",
+        "label": "GPT-3.5 Turbo",
+        "description": "Fast and efficient for creative writing",
+        "contextLength": 16385,
+        "recommended": false
+      }
+    ]
+  },
+  
+  "anthropic": {
+    "name": "Anthropic Claude",
+    "description": "Anthropic's Claude models for creative writing",
+    "baseUrl": "https://api.anthropic.com", 
+    "modelsEndpoint": null,
+    "chatEndpoint": "/v1/messages",
+    "keyRequired": true,
+    "keyPlaceholder": "Enter your Anthropic API key...",
+    "keyHelpUrl": "https://console.anthropic.com/",
+    "keyHelpText": "Get your API key from Anthropic Console",
+    "enabled": true,
+    
+    "fallbackModels": [
+      {
+        "value": "claude-3-5-sonnet-20241022",
+        "label": "Claude 3.5 Sonnet",
+        "description": "Highly capable model for creative writing",
+        "contextLength": 200000,
+        "recommended": true
+      },
+      {
+        "value": "claude-3-5-haiku-20241022", 
+        "label": "Claude 3.5 Haiku",
+        "description": "Fast model for quick creative tasks",
+        "contextLength": 200000,
+        "recommended": false
+      }
+    ]
+  },
+  
+  "mistral": {
+    "name": "Mistral AI",
+    "description": "Mistral's models for creative writing (future implementation)",
+    "baseUrl": "https://api.mistral.ai",
+    "modelsEndpoint": "/v1/models", 
+    "chatEndpoint": "/v1/chat/completions",
+    "keyRequired": true,
+    "keyPlaceholder": "Enter your Mistral API key...",
+    "keyHelpUrl": "https://console.mistral.ai/",
+    "keyHelpText": "Get your API key from Mistral Console",
+    "enabled": false,
+    
+    "fallbackModels": [
+      {
+        "value": "mistral-large-latest",
+        "label": "Mistral Large",
+        "description": "Most capable model for complex creative tasks",
+        "contextLength": 128000,
+        "recommended": true
+      },
+      {
+        "value": "mistral-medium-latest",
+        "label": "Mistral Medium", 
+        "description": "Balanced model for creative writing",
+        "contextLength": 32000,
+        "recommended": false
+      }
+    ]
+  },
+  
+  "meta": {
+    "providerSettings": {
+      "defaultProvider": "google",
+      "defaultModel": "gemini-2.0-flash-exp",
+      "maxRetries": 3,
+      "timeout": 30000,
+      "maxPromptLength": 50000,
+      "maxChatHistory": 20
+    },
+    
+    "uiSettings": {
+      "showProviderDescriptions": true,
+      "showModelContextLengths": true,
+      "showPremiumIndicators": true,
+      "groupModelsByCapability": false
+    },
+    
+    "rateLimiting": {
+      "enabled": false,
+      "requestsPerMinute": 60,
+      "requestsPerHour": 1000
+    }
+  }
+}

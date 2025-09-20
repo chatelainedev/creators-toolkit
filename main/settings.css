@@ -1,0 +1,537 @@
+/* Settings CSS - Settings Modal Styles */
+
+.settings-modal {
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-xl) var(--space-xl) var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--border-primary);
+    background-color: var(--bg-tertiary);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-labels);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    margin: 0;
+    padding: 0;
+}
+
+.close-btn:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-hover);
+    transform: none;
+}
+
+.modal-body {
+    padding: var(--space-lg) var(--space-xl);
+    overflow-y: auto;
+    max-height: calc(80vh - 100px);
+}
+
+.settings-section {
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.settings-section h3 {
+    margin: 0 0 var(--space-lg) 0;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-labels);
+    border-bottom: 1px solid var(--border-secondary);
+    padding-bottom: var(--space-sm);
+}
+
+.settings-section .form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.settings-section .form-group:last-of-type {
+    margin-bottom: -15px;
+}
+
+.settings-section input {
+    margin-bottom: 0;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+}
+
+.settings-section input:focus {
+    background-color: var(--bg-quaternary);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(177, 182, 149, 0.1);
+}
+
+.settings-section .form-actions {
+    margin-top: var(--space-xl);
+    justify-content: flex-start;
+}
+
+/* Avatar Section Specific Styles */
+/* Replace the existing .avatar-section styles */
+.avatar-section {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2xl);
+    margin-top: var(--space-lg);
+}
+
+.current-avatar {
+    flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+}
+
+.current-avatar img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid var(--border-secondary);
+    object-fit: cover;
+    transition: all var(--transition-normal);
+}
+
+.current-avatar:hover img {
+    border-color: var(--accent-primary);
+    transform: scale(1.05);
+}
+
+.current-avatar::after {
+    content: '\f055'; /* Plus icon */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.current-avatar:hover::after {
+    opacity: 1;
+}
+
+/* New account fields container */
+.account-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+/* Premium button styling */
+.btn-premium {
+    background: linear-gradient(135deg, #B1B695 0%, #8A8B6F 100%);
+    border: none;
+    color: var(--bg-primary);
+    font-weight: 600;
+    padding: var(--space-sm) var(--space-lg);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-normal);
+}
+
+.btn-premium.btn-compact {
+    padding: var(--space-xs) var(--space-md);
+    font-size: var(--font-size-xs);
+    min-width: auto;
+}
+
+.btn-premium:hover {
+    background: linear-gradient(135deg, #9CA085 0%, #7A7B5F 100%);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-premium:active {
+    background: linear-gradient(135deg, #8A8B6F 0%, #6A6B4F 100%);
+    transform: translateY(0);
+}
+
+/* Premium badge for user display */
+.premium-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #B1B695 0%, #8A8B6F 100%);
+    color: var(--bg-primary);
+    font-size: 8px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 8px;
+    margin-right: var(--space-xs);
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Loading states for settings forms */
+.settings-section.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.settings-section.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--accent-primary);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.section-header h3 {
+    margin: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Success/Error states for settings */
+.settings-section .form-group.error input {
+    border-color: var(--accent-danger);
+    background-color: rgba(192, 87, 70, 0.05);
+}
+
+.settings-section .form-group.success input {
+    border-color: var(--accent-success);
+    background-color: rgba(48, 113, 97, 0.05);
+}
+
+.settings-section .error-message {
+    color: var(--accent-danger);
+    font-size: var(--font-size-xs);
+    margin-top: var(--space-xs);
+    margin-bottom: 0;
+    display: none;
+}
+
+.settings-section .success-message {
+    color: var(--accent-success);
+    font-size: var(--font-size-xs);
+    margin-top: var(--space-xs);
+    margin-bottom: 0;
+    display: none;
+}
+
+.settings-section .form-group.error .error-message,
+.settings-section .form-group.success .success-message {
+    display: block;
+}
+
+/* Avatar upload preview */
+.avatar-upload-preview {
+    display: none;
+    margin-top: var(--space-md);
+    padding: var(--space-md);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-quaternary);
+}
+
+.avatar-upload-preview.show {
+    display: block;
+}
+
+.avatar-preview-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-secondary);
+    margin-bottom: var(--space-sm);
+}
+
+.avatar-preview-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.avatar-preview-actions button {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+    min-width: auto;
+}
+
+/* Theme Section Styles */
+.theme-preview {
+    margin-top: var(--space-md);
+    padding: var(--space-md);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-quaternary);
+}
+
+.theme-preview-colors {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+}
+
+.preview-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border-secondary);
+    transition: transform var(--transition-normal);
+}
+
+.preview-color:hover {
+    transform: scale(1.1);
+}
+
+.theme-section.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Account Actions - Side by side buttons */
+.account-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center !important;
+    align-items: center;
+    margin-top: var(--space-lg);
+    padding: var(--space-lg);
+    background-color: var(--bg-primary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-secondary);
+    text-align: center; /* ADD THIS LINE */
+}
+
+.account-actions button {
+    flex: none !important;
+    min-width: 140px;
+}
+
+.account-actions .btn-primary,
+.account-actions .btn-secondary {
+    text-align: center !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* Make update and logout buttons look the same */
+.account-actions .btn-primary,
+.account-actions .btn-secondary {
+    background-color: rgba(177, 182, 149, 0.1) !important;
+    border: 2px solid var(--accent-primary) !important;
+    color: var(--accent-primary) !important;
+    font-weight: 600 !important;
+    font-family: "Quicksand", sans-serif !important;
+    padding: var(--space-md) var(--space-xl) !important;
+    text-align: center !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.account-actions .btn-primary:hover,
+.account-actions .btn-secondary:hover {
+    background-color: rgba(177, 182, 149, 0.2) !important;
+    transform: translateY(0px) !important;
+    border-color: var(--accent-primary) !important;
+}
+
+.account-actions .btn-primary:active,
+.account-actions .btn-secondary:active {
+    background-color: var(--accent-primary) !important;
+    color: var(--bg-primary) !important;
+    transform: translateY(0) !important;
+}
+
+/* Delete Account Section */
+.delete-account-section {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-secondary);
+    text-align: center;
+}
+
+.btn-small {
+    padding: var(--space-xs) var(--space-md);
+    font-size: var(--font-size-xs);
+    min-width: 120px;
+    margin-bottom: var(--space-sm);
+}
+
+.delete-warning {
+    color: var(--accent-danger);
+    font-size: var(--font-size-xs);
+    max-width: 300px;
+    margin: 0 auto;
+    opacity: 0.8;
+}
+
+/* Delete confirmation modal specific styles */
+.delete-confirm-modal {
+    width: 90%;
+    max-width: 500px;
+}
+
+.delete-confirm-modal .modal-body {
+    text-align: center;
+    padding: var(--space-2xl);
+}
+
+.delete-confirm-modal .warning-icon {
+    font-size: 48px;
+    color: var(--accent-danger);
+    margin-bottom: var(--space-lg);
+}
+
+.delete-confirm-modal .confirm-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    margin-top: var(--space-xl);
+}
+
+.delete-confirm-modal .confirm-actions button {
+    min-width: 120px;
+}
+
+.account-actions .btn-primary {
+    border: 1px solid var(--accent-primary); 
+    padding: var(--space-sm) var(--space-md);
+}
+
+/* Custom Theme Dropdown */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.dropdown-selected {
+    background-color: var(--bg-quaternary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all var(--transition-normal);
+    color: var(--text-inputs);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    margin-bottom: var(--space-lg);
+    min-height: 44px; /* Same as input fields */
+}
+
+.dropdown-selected:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+}
+
+.dropdown-selected.open {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(177, 182, 149, 0.1);
+    background-color: var(--bg-tertiary);
+}
+
+.dropdown-arrow {
+    color: var(--text-secondary);
+    transition: transform var(--transition-normal);
+    font-size: var(--font-size-sm);
+}
+
+.dropdown-selected.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-quaternary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    margin-top: -var(--space-lg); /* Offset the margin-bottom from dropdown-selected */
+}
+
+.dropdown-options.show {
+    display: block;
+}
+
+.dropdown-option {
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--text-inputs);
+    border-bottom: 1px solid var(--border-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-option:last-child {
+    border-bottom: none;
+}
+
+.dropdown-option:hover {
+    background-color: var(--bg-hover);
+}
+
+.dropdown-option.selected {
+    background-color: rgba(177, 182, 149, 0.1);
+    color: var(--accent-primary);
+}

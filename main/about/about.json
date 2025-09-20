@@ -1,0 +1,105 @@
+{
+  "title": "About Creator's Toolkit",
+  "studio": "Chatelaine Studios",
+  "sections": [
+    {
+      "id": "introduction",
+      "title": "Introduction",
+      "content": "Creator's Toolkit is a comprehensive suite of tools designed specifically for writers, worldbuilders, and storytellers. Born from a writer's frustration with scattered, inadequate tools, it provides everything you need to organize, create, and preserve your creative work in one unified platform.",
+      "subsections": []
+    },
+    {
+      "id": "tools",
+      "title": "Tools & Features",
+      "content": "Creator's Toolkit includes four powerful applications, each designed to handle different aspects of your creative workflow:",
+      "subsections": [
+        {
+          "id": "lore-codex",
+          "title": "Lore Codex",
+          "content": "Transform your worldbuilding notes into professional, navigable websites. Organize characters, locations, storylines, and lore into beautiful HTML sites that you can browse, share, or use as reference. Perfect for complex fantasy worlds, sci-fi universes, or any creative project with deep worldbuilding."
+        },
+        {
+          "id": "rp-archiver", 
+          "title": "RP Archiver",
+          "content": "Convert raw roleplay text into clean, styled documents. Whether you're preserving collaborative stories, organizing character interactions, or creating readable archives of your creative writing sessions, RP Archiver transforms messy chat logs into professional-looking stories."
+        },
+        {
+          "id": "cowriter",
+          "title": "CoWriter",
+          "content": "Your AI-powered writing companion for brainstorming, development, and creative exploration. Chat with advanced language models to develop characters, explore plot ideas, solve story problems, or simply bounce ideas around. Supports custom world contexts, writing styles, and saved conversation templates."
+        },
+        {
+          "id": "my-sites",
+          "title": "My Sites",
+          "content": "A centralized dashboard to manage all your Lore Codex projects. View, organize, and launch your created sites from one convenient location. Tag and categorize your projects, mark favorites, and quickly access your creative work whenever inspiration strikes."
+        }
+      ]
+    },
+    {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "content": "Creator's Toolkit is designed to be intuitive, but here's how to make the most of each tool:",
+      "subsections": [
+        {
+          "id": "first-steps",
+          "title": "Your First Project",
+          "content": "Start with Lore Codex to create your first worldbuilding site. Add characters, locations, and storylines, then generate your HTML site. All your projects will automatically appear in My Sites for easy management."
+        },
+        {
+          "id": "workflow-tips",
+          "title": "Workflow Tips", 
+          "content": "Use CoWriter to brainstorm and develop ideas, then organize that content in Lore Codex. If you have collaborative writing or roleplay sessions, use RP Archiver to clean them up and preserve them. My Sites keeps everything organized and accessible."
+        },
+        {
+          "id": "data-organization",
+          "title": "Staying Organized",
+          "content": "Create accounts to sync your work across sessions. Use consistent project naming, tag your sites by genre or status, and take advantage of the favorites system to keep your most active projects at your fingertips."
+        }
+      ]
+    },
+    {
+      "id": "about-studio",
+      "title": "About Chatelaine Studios", 
+      "content": "Chatelaine Studios was founded by a writer who got tired of juggling multiple inadequate tools for creative projects. Instead of settling for software that 'almost' worked, we built exactly what writers actually need.",
+      "subsections": [
+        {
+          "id": "our-mission",
+          "title": "Our Mission",
+          "content": "To create intuitive, powerful tools that enhance creativity rather than hindering it. Every feature in Creator's Toolkit exists because we've felt the pain of not having it."
+        },
+        {
+          "id": "our-approach",
+          "title": "Our Approach", 
+          "content": "We build for writers, by writers. That means clean interfaces, reliable functionality, and features that solve real creative problems. No bloat, no confusion—just tools that work the way your creative mind does."
+        }
+      ]
+    },
+    {
+      "id": "support",
+      "title": "Support & Community",
+      "content": "Creator's Toolkit is completely free to use. We're committed to keeping the core functionality accessible to all creators.",
+      "subsections": [
+        {
+          "id": "get-help",
+          "title": "Getting Help",
+          "content": "Need assistance? Each tool includes comprehensive guides and tooltips. For additional support, feel free to contact us directly."
+        },
+        {
+          "id": "contribute",
+          "title": "Supporting the Project",
+          "content": "If Creator's Toolkit has helped your creative work, consider supporting its development. Your contributions help us add new features and improve existing tools."
+        }
+      ]
+    }
+  ],
+  "developer": {
+    "name": "Chatelaine Studios",
+    "tagline": "Unlock the Secrets of Your World",
+    "contact": "chatelainedev@gmail.com"
+  },
+  "links": {
+    "GitHub": "https://github.com/chatelainedev",
+    "Discord": "",
+    "Support": "https://ko-fi.com/chatelainestudios"
+  }
+}

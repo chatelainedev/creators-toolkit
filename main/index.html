@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator's Toolkit</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="my-sites.css">
+    <link rel="stylesheet" href="user/auth.css">
+    <link rel="stylesheet" href="cards.css">
+    <link rel="stylesheet" href="settings.css">
+    <link rel="stylesheet" href="about/about.css">
+    <link rel="stylesheet" href="notebook/notebook.css">
+    <link rel="stylesheet" href="notebook/markdown-themes.css">
+    <link rel="stylesheet" href="cowriter/cowriter.css">
+    <link rel="stylesheet" href="cowriter/cowriter-about.css">
+    <link rel="stylesheet" href="cowriter/prompts.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Lora:wght@400;700&family=Montserrat:wght@600&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Markdown parser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="nav-content">
+            <h1 class="nav-title"></h1>
+            
+            <!-- Tab Navigation (now with CoWriter) -->
+            <div class="main-tabs">
+                <button class="main-tab active" data-tab="tools">Tools</button>
+                <button class="main-tab" data-tab="my-sites">My Sites</button>
+                <button class="main-tab" data-tab="notebook">Notebook</button>
+                <button class="main-tab" data-tab="cowriter">CoWriter</button>
+            </div>
+            
+            <!-- User info (stays on right) -->
+            <div class="user-info" id="user-info" style="display: none;">
+                <span class="user-details">
+                    <span id="user-display"></span>
+                </span>
+                <img src="images/default-avatar.png" alt="Avatar" class="user-avatar" id="user-avatar" title="Click for options">
+            </div>
+
+            <!-- User Context Menu -->
+            <div class="user-context-menu" id="user-context-menu" style="display: none;">
+                <div class="context-menu-item" id="context-settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="context-menu-item" id="context-about">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About</span>
+                </div>
+            </div>
+            
+            <!-- About button - positioned to the very far right -->
+            <button class="about-btn" id="about-btn" title="About">
+                <i class="fas fa-info-circle"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content" style="display: none;">
+        
+        <!-- Tools Tab (existing content) -->
+        <div id="tools-content" class="tab-content active">
+            <!-- NEW: Header Banner -->
+            <div class="tools-header">
+                <div class="header-background">
+                    <img src="images/header.jpg" alt="Creator's Toolkit Header" class="header-bg-image">
+                    <div class="header-overlay"></div>
+                </div>
+                <div class="header-content">
+                    <h1 class="header-title">Creator's Toolkit</h1>
+                </div>
+            </div>
+
+            <div class="tools-container">
+                <!-- Lore Codex Card -->
+                <div class="tool-card" data-tool="info-converter">
+                    <div class="card-background">
+                        <img src="images/card-bg.jpg" alt="Lore Codex Background" class="card-bg-image">
+                        <div class="card-overlay"></div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <img src="images/lore-codex-icon.png" alt="Lore Codex Icon" class="card-icon-image">
+                        </div>
+                        <h2 class="card-title metal-text bronze">Lore Codex</h2>
+                        <div class="card-footer">
+                            <p class="card-description">Create beautiful info pages for your writing projects and worlds</p>
+                            <button class="card-launch-btn" data-url="http://localhost:3000">
+                                Launch <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RP Archiver Card -->
+                <div class="tool-card" data-tool="roleplay-converter">
+                    <div class="card-background">
+                        <img src="images/card-bg.jpg" alt="RP Archiver Background" class="card-bg-image">
+                        <div class="card-overlay"></div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <img src="images/rp-archiver-icon.png" alt="RP Archiver Icon" class="card-icon-image">
+                        </div>
+                        <h2 class="card-title metal-text bronze">RP Archiver</h2>
+                        <div class="card-footer">
+                            <p class="card-description">Transform roleplay text into styled HTML documents</p>
+                            <button class="card-launch-btn" data-url="http://localhost:3000/roleplay-converter">
+                                Launch <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Sites Tab -->
+        <div id="my-sites-content" class="tab-content">
+            <!-- Sort Controls -->
+            <div class="sites-controls">
+                <div class="sort-controls">
+                    <label for="sites-sort"></label>
+                    <select id="sites-sort">
+                        <option value="lastModified">Last Updated</option>
+                        <option value="created">Date Created</option>
+                        <option value="title">Title (A-Z)</option>
+                    </select>
+                    <button class="favorites-filter-btn" id="favorites-filter-btn">
+                        <i class="fas fa-star"></i>
+                        <span>Favorites</span>
+                    </button>
+                </div>
+                
+                <!-- NEW: Tags Filtering -->
+                <div class="tags-controls">
+                    <span class="tags-label" id="tags-label">Tags:</span>
+                    <div class="tags-chips-container">
+                        <div class="tags-chips" id="tags-chips">
+                            <!-- Tag chips will be populated by JS -->
+                        </div>
+                        <button class="tags-expand-btn" id="tags-expand-btn" style="display: none;">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    <div class="tags-dropdown" id="tags-dropdown" style="display: none;">
+                        <!-- Full tag list dropdown -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sites Grid -->
+            <div class="sites-container" id="sites-container">
+                <div class="loading-state" id="sites-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading your sites...</p>
+                </div>
+                <div class="empty-state" id="sites-empty" style="display: none;">
+                    <i class="fas fa-folder-open"></i>
+                    <h3 id="empty-state-title">No Sites Yet</h3>
+                    <p id="empty-state-message">Create your first project using the Lore Codex!</p>
+                    <button class="btn-primary" onclick="switchToTab('tools')">
+                        <i class="fas fa-tools"></i> Go to Tools
+                    </button>
+                </div>
+                <div class="sites-grid" id="sites-grid">
+                    <!-- Site cards will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Notebook tab -->
+        <div id="notebook-content" class="tab-content">
+            <div class="notebook-container">
+                <!-- Collections & Notes Sidebar -->
+                <div class="notebook-sidebar">
+                    <!-- Sidebar Header -->
+                    <div class="sidebar-header">
+                        <div class="sidebar-title">
+                            <i class="fas fa-book"></i>
+                            <span>Notes</span>
+                        </div>
+                        <div class="sidebar-actions">
+                            <button class="sidebar-action-btn" id="new-note-btn" title="New Note">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="sidebar-action-btn" id="new-collection-btn" title="New Collection">
+                                <i class="fas fa-folder-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="sidebar-search">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="notes-search" placeholder="Search notes...">
+                            <button class="search-clear-btn" id="search-clear" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Collections Tree -->
+                    <div class="collections-tree" id="collections-tree">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Sidebar Footer -->
+                    <div class="sidebar-footer">
+                        <div class="stats-summary">
+                            <span id="notes-count">0 notes</span>
+                            <span class="stats-separator">•</span>
+                            <span id="words-count">0 words</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resize Handle -->
+                <div class="sidebar-resize-handle"></div>
+
+                <!-- Main Editor Area -->
+                <div class="editor-main">
+                    <!-- Editor Header -->
+                    <div class="editor-header">
+                        <div class="current-note-info">
+                            <input type="text" class="note-title-input" id="note-title-input" placeholder="Untitled Note">
+                            <div class="note-breadcrumb" id="note-breadcrumb">
+                                <i class="fas fa-folder"></i>
+                                <span>Uncategorized</span>
+                            </div>
+                        </div>
+                        <div class="editor-actions">
+                            <button class="editor-action-btn" id="save-note-btn" title="Save Note">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button class="editor-action-btn" id="snippets-btn" title="Snippets">
+                                <i class="fas fa-puzzle-piece"></i>
+                            </button>
+                            <button class="editor-action-btn" id="link-notes-btn" title="Link Notes">
+                                <i class="fas fa-link"></i>
+                            </button>
+                            <button class="editor-action-btn" id="markdown-theme-btn" title="Markdown Theme Settings">
+                                <i class="fas fa-palette"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Formatting Toolbar -->
+                    <div class="formatting-toolbar">
+                        <div class="toolbar-group">
+                            <button class="format-btn" data-format="bold" title="Bold (Ctrl+B)">
+                                <i class="fas fa-bold"></i>
+                            </button>
+                            <button class="format-btn" data-format="italic" title="Italic (Ctrl+I)">
+                                <i class="fas fa-italic"></i>
+                            </button>
+                            <button class="format-btn" data-format="code" title="Inline Code">
+                                <i class="fas fa-code"></i>
+                            </button>
+                        </div>
+                        <div class="toolbar-separator"></div>
+                        <div class="toolbar-group">
+                            <button class="format-btn" data-format="h1" title="Heading 1">H1</button>
+                            <button class="format-btn" data-format="h2" title="Heading 2">H2</button>
+                            <button class="format-btn" data-format="h3" title="Heading 3">H3</button>
+                        </div>
+                        <div class="toolbar-separator"></div>
+                        <div class="toolbar-group">
+                            <button class="format-btn" data-format="quote" title="Quote">
+                                <i class="fas fa-quote-right"></i>
+                            </button>
+                        </div>
+                        <div class="toolbar-spacer"></div>
+                        <div class="toolbar-group">
+                            <button class="format-btn" id="toggle-preview" title="Toggle Preview">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Editor Container -->
+                    <div class="editor-container">
+                        <!-- FIXED: Use reliable textarea instead of problematic contentEditable -->
+                        <div class="editor-wrapper">
+                            <textarea 
+                                class="editor-content" 
+                                id="markdown-editor" 
+                                placeholder="Start writing your note here...
+
+        # Headers
+        **Bold** and *italic* text
+        `Inline code`
+        ==Highlighted text==
+        !~Underlined text~!
+        ~~Strikethrough~~
+        [External link](http://www.url.com)
+        - Regular lists
+        > Blockquotes
+        ```code blocks```
+
+        | Tables | Work |
+        |--------|------|
+        | Cell   | Cell |
+
+        [[note links]] to other notes
+
+        Right-click text in CoWriter to create snippets!"
+                            ></textarea>
+                        </div>
+
+                        <!-- Preview Overlay (for toggle preview) -->
+                        <div class="preview-overlay" id="preview-overlay" style="display: none;">
+                            <div class="preview-content" id="preview-content">
+                                <!-- Rendered markdown appears here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Bar -->
+                    <div class="editor-status">
+                        <div class="status-left">
+                            <span class="status-item">
+                                <i class="fas fa-file-alt"></i>
+                                <span id="word-count">0 words</span>
+                            </span>
+                            <span class="status-item">
+                                <i class="fas fa-keyboard"></i>
+                                <span id="char-count">0 characters</span>
+                            </span>
+                        </div>
+                        <div class="status-right">
+                            <span class="status-item" id="save-status">
+                                <i class="fas fa-clock"></i>
+                                <span>Not saved</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Snippets Panel (slides in from right) -->
+        <div class="snippets-panel" id="snippets-panel">
+            <div class="snippets-header">
+                <h3>
+                    <i class="fas fa-puzzle-piece"></i>
+                    Snippets
+                </h3>
+                <div class="snippets-actions">
+                    <button class="snippets-action-btn" id="close-snippets-btn" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="snippets-search">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="snippets-search" placeholder="Search snippets...">
+                </div>
+            </div>
+
+            <div class="snippets-tags-filter" id="snippets-tags-filter" style="display: none;">
+                <div class="tags-filter-header" style="padding: var(--space-xs) var(--space-lg); border-bottom: 1px solid var(--border-primary); background: var(--bg-quaternary);">
+                    <span style="font-size: var(--font-size-xs); color: var(--text-secondary); font-weight: 500;">Filter by tag:</span>
+                    <button class="clear-tag-filter" id="clear-tag-filter" style="background: none; border: none; color: var(--text-tertiary); cursor: pointer; font-size: 10px; margin-left: var(--space-sm);">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+                <div class="tags-filter-chips" id="tags-filter-chips" style="padding: var(--space-sm) var(--space-lg); max-height: 80px; overflow-y: auto;">
+                    <!-- Tag chips will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="snippets-list" id="snippets-list">
+                <!-- Snippet items will be populated here -->
+            </div>
+        </div>
+
+        <!-- Quick Modals (smaller, less intrusive) -->
+
+        <!-- Note Link Modal -->
+        <div class="quick-modal-overlay" id="note-link-modal" style="display: none;">
+            <div class="quick-modal">
+                <div class="quick-modal-header">
+                    <h4>Insert Note Link</h4>
+                    <button class="quick-modal-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="quick-modal-body">
+                    <div class="form-group">
+                        <input type="text" id="note-link-search" placeholder="Search for note to link..." autocomplete="off">
+                        <div class="note-suggestions" id="note-suggestions">
+                            <!-- Note suggestions will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Link Modal -->
+        <div class="quick-modal-overlay" id="quick-link-modal" style="display: none;">
+            <div class="quick-modal">
+                <div class="quick-modal-header">
+                    <h4>Insert Link</h4>
+                    <button class="quick-modal-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="quick-modal-body">
+                    <div class="form-group">
+                        <label>Link Text:</label>
+                        <input type="text" id="link-text-input" placeholder="Link text">
+                    </div>
+                    <div class="form-group">
+                        <label>URL:</label>
+                        <input type="url" id="link-url-input" placeholder="https://example.com">
+                    </div>
+                    <div class="quick-modal-actions">
+                        <button class="btn-primary" id="insert-link-btn">Insert Link</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Context Menu -->
+        <div class="context-menu" id="notebook-context-menu" style="display: none;">
+            <!-- Will be populated dynamically based on what's right-clicked -->
+        </div>      
+
+        <!-- NEW: CoWriter Tab -->
+        <div id="cowriter-content" class="tab-content">
+            <div class="cowriter-container">
+                <!-- CoWriter Header -->
+                <div class="cowriter-header">
+                    <h2 class="cowriter-title">
+                        <i class="fas fa-feather-alt"></i>
+                        CoWriter
+                    </h2>
+                    <div class="cowriter-controls">
+                        <div class="template-selector">
+                            <select id="template-select" title="Choose a session template">
+                                <option value="">None</option>
+                            </select>
+                        </div>
+                        <button class="cowriter-btn" id="save-chat-btn" title="Save Chat">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button class="cowriter-btn" id="load-chat-btn" title="Load Chat">
+                            <i class="fas fa-folder-open"></i>
+                        </button>
+                        <button class="cowriter-btn" id="clear-chat-btn" title="Clear Chat">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button class="cowriter-btn" id="cowriter-settings-btn" title="CoWriter Settings">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button class="cowriter-about-btn" id="cowriter-about-btn" title="About CoWriter">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat Messages Area -->
+                <div class="chat-container" id="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- Welcome message -->
+                        <div class="message ai-message">
+                            <div class="message-content">
+                                <div class="message-text">
+                                    Welcome to CoWriter! I'm here to help you brainstorm, develop your worlds, and explore your creative ideas. What would you like to work on today?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <div class="textarea-container chat-input-container-inner">
+                            <textarea id="chat-input" placeholder="Type your message here..." rows="1"></textarea>
+                            <button type="button" class="expand-text-btn" data-field="chat-input" title="Expand text editor">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button class="quick-prompts-btn" id="quick-prompts-btn" title="Quick prompts">
+                                <i class="fas fa-bolt"></i>
+                            </button>
+                            <!-- ADD THIS: -->
+                            <div class="quick-prompts-dropdown" id="quick-prompts-dropdown">
+                                <!-- Quick prompt items will be populated here -->
+                            </div>
+                        </div>
+                        <button class="send-btn" id="send-btn" title="Send message">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="input-hint">
+                        Press <kbd>Enter</kbd> to send, <kbd>Shift+Enter</kbd> for new line
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- CoWriter Text Expand Modal -->
+    <div id="cowriter-text-expand-modal" class="cowriter-modal" style="display: none;">
+        <div class="cowriter-modal-content" style="width: 90%; max-width: 900px; height: 90vh;">
+            <div class="cowriter-modal-header">
+                <h3 id="cowriter-expand-title">Expand Text</h3>
+                <span class="cowriter-modal-close" id="close-cowriter-expand">&times;</span>
+            </div>
+            <div class="cowriter-modal-body" style="flex: 1; padding: var(--space-lg); display: flex; flex-direction: column;">
+                <textarea id="cowriter-expanded-textarea" 
+                        style="flex: 1; width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-inputs); font-family: 'Nunito Sans', sans-serif; font-size: var(--font-size-base); line-height: 1.6; padding: var(--space-md); resize: none;"
+                        placeholder="Enter your text here..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- CoWriter Settings Modal -->
+    <div class="modal-overlay" id="cowriter-settings-modal" style="display: none;">
+        <div class="modal-content cowriter-settings-modal">
+            <!-- Fixed Header -->
+            <div class="modal-header">
+                <h2>CoWriter Settings</h2>
+                <button class="close-btn" id="close-cowriter-settings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Fixed Settings Tabs (moved outside modal-body) -->
+            <div class="cowriter-settings-tabs">
+                <button class="cowriter-settings-tab active" data-tab="personalize">Personalize</button>
+                <button class="cowriter-settings-tab" data-tab="prompts">Prompts</button>
+                <button class="cowriter-settings-tab" data-tab="configuration">Configuration</button>
+            </div>
+            
+            <!-- Scrollable Content Area -->
+            <div class="modal-body cowriter-scrollable-content">
+                <!-- Personalize Tab -->
+                <div class="cowriter-settings-content active" id="personalize-content">
+                    <div class="settings-section">
+                        <h3>Writing Tone & Style</h3>
+                        <div class="form-group">
+                            <label for="tone-select">Conversational Tone:</label>
+                            <select id="tone-select">
+                                <option value="">None</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="style-select">Writing Style:</label>
+                            <select id="style-select">
+                                <option value="">None</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>World Context</h3>
+                        <div class="form-group">
+                            <label for="world-context-select">Saved World Contexts:</label>
+                            <div class="world-context-controls">
+                                <select id="world-context-select">
+                                    <option value="">None Selected</option>
+                                </select>
+                                <button type="button" class="btn-secondary" id="edit-world-context-btn">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button type="button" class="btn-secondary" id="new-world-context-btn">
+                                    <i class="fas fa-plus"></i> New
+                                </button>
+                            </div>
+                        </div>
+                        <div class="current-context-preview" id="current-context-preview">
+                            <label>Current Context:</label>
+                            <div class="context-preview-text" id="context-preview-text">
+                                No world context selected
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prompts tab -->
+                <div id="prompts-content" class="cowriter-settings-content">
+                    <!-- Prompt Sub-Tabs -->
+                    <div class="prompt-tabs">
+                        <button class="prompt-tab active" data-tab="main-prompts">
+                            <i class="fas fa-cog"></i>
+                            Main Prompt
+                        </button>
+                        <button class="prompt-tab" data-tab="tones">
+                            <i class="fas fa-palette"></i>
+                            Tones
+                        </button>
+                        <button class="prompt-tab" data-tab="styles">
+                            <i class="fas fa-pen-fancy"></i>
+                            Styles
+                        </button>
+                        <button class="prompt-tab" data-tab="templates">
+                            <i class="fas fa-file-alt"></i>
+                            Templates
+                        </button>
+                        <button class="prompt-tab" data-tab="quick-prompts">
+                            <i class="fas fa-bolt"></i>
+                            Q. Prompts
+                        </button>
+                    </div>
+
+                    <!-- Main Prompt Tab Content -->
+                    <div id="main-prompts" class="prompt-tab-content active">
+                        <div class="prompt-content-header">
+                            <h4>Main System Prompt</h4>
+                            <button class="btn-add-prompt" id="add-main-prompt">
+                                <i class="fas fa-plus"></i>
+                                New
+                            </button>
+                        </div>
+                        
+                        <div class="main-prompt-controls">
+                            <select id="main-prompt-dropdown" class="prompt-select">
+                                <option value="default">Default Main Prompt</option>
+                            </select>
+                            <div class="prompt-actions">
+                                <button class="btn-prompt-action" id="edit-main-prompt" disabled>
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </button>
+                                <button class="btn-prompt-action delete" id="delete-main-prompt" disabled>
+                                    <i class="fas fa-trash"></i>
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <textarea id="main-prompt-text" class="main-prompt-textarea" rows="10" readonly 
+                                placeholder="Main system prompt will appear here..."></textarea>
+                    </div>
+
+                    <!-- Tones Tab Content -->
+                    <div id="tones" class="prompt-tab-content">
+                        <div class="prompt-content-header">
+                            <h4>Custom Tones</h4>
+                            <button class="btn-add-prompt" id="add-tone">
+                                <i class="fas fa-plus"></i>
+                                Add Tone
+                            </button>
+                        </div>
+                        
+                        <div class="custom-prompts-grid" id="tones-list">
+                            <!-- Dynamic content populated by JS -->
+                        </div>
+                        
+                        <div class="empty-state" id="tones-empty" style="display: none;">
+                            <i class="fas fa-palette"></i>
+                            <p>No custom tones yet</p>
+                            <small>Create custom tones to personalize your AI's conversational style</small>
+                        </div>
+                    </div>
+
+                    <!-- Styles Tab Content -->
+                    <div id="styles" class="prompt-tab-content">
+                        <div class="prompt-content-header">
+                            <h4>Custom Styles</h4>
+                            <button class="btn-add-prompt" id="add-style">
+                                <i class="fas fa-plus"></i>
+                                Add Style
+                            </button>
+                        </div>
+                        
+                        <div class="custom-prompts-grid" id="styles-list">
+                            <!-- Dynamic content populated by JS -->
+                        </div>
+                        
+                        <div class="empty-state" id="styles-empty" style="display: none;">
+                            <i class="fas fa-pen-fancy"></i>
+                            <p>No custom styles yet</p>
+                            <small>Create custom writing styles to guide your AI's output</small>
+                        </div>
+                    </div>
+
+                    <!-- Templates Tab Content -->
+                    <div id="templates" class="prompt-tab-content">
+                        <div class="prompt-content-header">
+                            <h4>Custom Templates</h4>
+                            <button class="btn-add-prompt" id="add-template">
+                                <i class="fas fa-plus"></i>
+                                Add Template
+                            </button>
+                        </div>
+                        
+                        <div class="custom-prompts-grid" id="templates-list">
+                            <!-- Dynamic content populated by JS -->
+                        </div>
+                        
+                        <div class="empty-state" id="templates-empty" style="display: none;">
+                            <i class="fas fa-file-alt"></i>
+                            <p>No custom templates yet</p>
+                            <small>Create templates for common creative writing scenarios</small>
+                        </div>
+                    </div>
+
+                    <!-- Quick Prompts Tab Content -->
+                    <div id="quick-prompts" class="prompt-tab-content">
+                        <div class="prompt-content-header">
+                            <h4>Custom Quick Prompts</h4>
+                            <button class="btn-add-prompt" id="add-quick-prompt">
+                                <i class="fas fa-plus"></i>
+                                Add Quick Prompt
+                            </button>
+                        </div>
+                        
+                        <div class="custom-prompts-grid" id="quick-prompts-list">
+                            <!-- Dynamic content populated by JS -->
+                        </div>
+                        
+                        <div class="empty-state" id="quick-prompts-empty" style="display: none;">
+                            <i class="fas fa-bolt"></i>
+                            <p>No custom quick prompts yet</p>
+                            <small>Create quick prompts for instant insertion during conversations</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration Tab -->
+                <div class="cowriter-settings-content" id="configuration-content">
+                    <div class="settings-section">
+                        <h3>LLM Provider</h3>
+                        <div class="form-group">
+                            <label for="provider-select">Provider:</label>
+                            <select id="provider-select">
+                                <option value="google">Google Gemini</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="model-select">Model:</label>
+                            <select id="model-select">
+                                <option value="">Loading models...</option>
+                            </select>
+                            <button type="button" class="btn-secondary refresh-btn" id="refresh-models-btn" title="Refresh Models">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label for="api-key-input">API Key:</label>
+                            <div class="api-key-wrapper">
+                                <input type="password" id="api-key-input" placeholder="Enter your API key...">
+                                <button type="button" class="toggle-visibility-btn" id="toggle-api-key-btn" title="Show/Hide Key">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="helper-text">
+                                Your API key is stored securely and only used for making requests to the LLM provider.
+                            </div>
+                        </div>
+                        <div class="api-status" id="api-status">
+                            <span class="status-indicator" id="status-indicator"></span>
+                            <span class="status-text" id="status-text">Not configured</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Fixed Settings Actions (moved outside modal-body) -->
+            <div class="settings-actions">
+                <button type="button" class="btn-primary" id="save-cowriter-settings">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+                <button type="button" class="btn-secondary" id="test-connection-btn">
+                    <i class="fas fa-plug"></i> Test Connection
+                </button>
+            </div>
+        </div>
+    </div>
+
+        <!-- Modal for editing custom prompts -->
+    <div id="custom-prompt-edit-modal" class="modal-overlay cowriter-modal" style="display: none;">
+        <div class="modal-content cowriter-modal-content">
+            <div class="modal-header cowriter-modal-header">
+                <h3 id="custom-prompt-modal-title">Edit Custom Prompt</h3>
+                <span class="modal-close cowriter-modal-close" id="close-custom-prompt-edit">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="custom-prompt-form">
+                    <div class="form-group">
+                        <label for="custom-prompt-name">Name:</label>
+                        <input type="text" id="custom-prompt-name" class="form-control" 
+                            placeholder="Enter a name for this prompt..." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="custom-prompt-content">Content:</label>
+                        <textarea id="custom-prompt-content" class="form-control" rows="12" 
+                                placeholder="Enter your custom prompt content..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group" id="template-description-group" style="display: none;">
+                        <label for="template-description">Template Description:</label>
+                        <input type="text" id="template-description" class="form-control" 
+                            placeholder="Brief description of what this template does...">
+                        <small class="form-text">This helps you remember what the template is for.</small>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-primary" id="save-custom-prompt">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button type="button" class="btn-secondary" id="cancel-custom-prompt">
+                            Cancel
+                        </button>
+                    </div>
+                </form>             
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Name Modal -->
+    <div class="modal-overlay" id="add-name-modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 id="add-name-modal-title">Add New Prompt</h3>
+                <button class="close-btn" id="close-add-name-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="new-prompt-name">Name:</label>
+                    <input type="text" id="new-prompt-name" placeholder="Enter name..." autofocus>
+                </div>
+                <div class="form-group" id="new-template-description-group" style="display: none;">
+                    <label for="new-template-description">Description (optional):</label>
+                    <input type="text" id="new-template-description" placeholder="Brief description...">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-primary" id="confirm-add-name">Create</button>
+                    <button type="button" class="btn-secondary" id="cancel-add-name">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- World Context Modal -->
+    <div class="modal-overlay" id="world-context-modal" style="display: none;">
+        <div class="modal-content world-context-modal">
+            <div class="modal-header">
+                <h2 id="world-context-modal-title">Edit World Context</h2>
+                <button class="close-btn" id="close-world-context">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="context-name">Context Name:</label>
+                    <input type="text" id="context-name" placeholder="e.g., My Fantasy World">
+                </div>
+                <div class="form-group">
+                    <label for="context-content">World Context:</label>
+                    <textarea 
+                        id="context-content" 
+                        rows="12" 
+                        placeholder="Describe your world, characters, setting, lore, or anything else you want the AI to know about..."
+                    ></textarea>
+                    <div class="helper-text">
+                        This context will be included in every conversation to help the AI understand your world.
+                    </div>
+                </div>
+                <div class="world-context-actions">
+                    <button type="button" class="btn-primary" id="save-world-context">
+                        <i class="fas fa-save"></i> Save Context
+                    </button>
+                    <button type="button" class="btn-secondary" id="cancel-world-context">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-danger" id="delete-world-context" style="display: none;">
+                        <i class="fas fa-trash"></i> Delete Context
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Chat Modal -->
+    <div class="modal-overlay" id="save-chat-modal" style="display: none;">
+        <div class="modal-content save-chat-modal">
+            <div class="modal-header">
+                <h2>Save Chat</h2>
+                <button class="close-btn" id="close-save-chat">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="chat-save-name">Chat Name:</label>
+                    <input type="text" id="chat-save-name" placeholder="e.g., Character Development Session">
+                </div>
+                <div class="form-group">
+                    <label for="chat-save-folder">Folder:</label>
+                    <div class="custom-dropdown folder-dropdown" id="folder-dropdown">
+                        <input type="text" id="chat-save-folder" placeholder="Uncategorized" autocomplete="off">
+                        <button type="button" class="dropdown-toggle" id="folder-dropdown-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-options folder-options" id="folder-options" style="display: none;">
+                            <!-- Folder options will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-primary" id="save-current-chat">
+                        <i class="fas fa-save"></i> Save Chat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Chat Modal -->
+    <div class="modal-overlay" id="load-chat-modal" style="display: none;">
+        <div class="modal-content load-chat-modal">
+            <div class="modal-header">
+                <h2>Load Chat</h2>
+                <button class="close-btn" id="close-load-chat">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="chats-by-folder" id="chats-by-folder">
+                    <div class="loading-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading saved chats...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overwrite Confirmation Modal -->
+    <div class="modal-overlay" id="overwrite-confirm-modal" style="display: none;">
+        <div class="modal-content confirm-modal">
+            <div class="modal-header">
+                <h3>Chat Already Exists</h3>
+            </div>
+            <div class="modal-body">
+                <p id="overwrite-message">A chat with this name already exists. Do you want to overwrite it?</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-danger" id="confirm-overwrite">
+                        <i class="fas fa-save"></i> Overwrite
+                    </button>
+                    <button type="button" class="btn-secondary" id="cancel-overwrite">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tags Management Modal -->
+    <div class="modal-overlay" id="tags-modal" style="display: none;">
+        <div class="modal-content tags-modal">
+            <div class="modal-header">
+                <h2 id="tags-modal-title">Manage Tags</h2>
+                <button class="close-btn" id="close-tags-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="tags-input">Tags (comma-separated):</label>
+                    <textarea 
+                        id="tags-input" 
+                        rows="3" 
+                        placeholder="fantasy, worldbuilding, draft, characters..."
+                    ></textarea>
+                    <div class="helper-text">
+                        Separate tags with commas. Click existing tags below to add them quickly.
+                    </div>
+                </div>
+                
+                <div class="existing-tags-section">
+                    <h4>Existing Tags:</h4>
+                    <div class="existing-tags-chips" id="existing-tags-chips">
+                        <!-- Chips will be populated by JS -->
+                    </div>
+                </div>
+                
+                <div class="tags-actions">
+                    <button type="button" class="btn-primary" id="save-tags">
+                        <i class="fas fa-save"></i> Save Tags
+                    </button>
+                    <button type="button" class="btn-secondary" id="cancel-tags">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All existing modals stay the same -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-content auth-modal">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Login</button>
+                <button class="auth-tab" data-tab="register">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <div class="auth-form active" id="login-form">
+                <h2>Welcome Back</h2>
+                <form id="login-form-element">
+                    <div class="form-group">
+                        <label for="login-username">Username or Email:</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password:</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Login</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div class="auth-form" id="register-form">
+                <h2>Create Account</h2>
+                <form id="register-form-element">
+                    <div class="form-group">
+                        <label for="register-username">Username:</label>
+                        <input type="text" id="register-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email (optional):</label>
+                        <input type="email" id="register-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password:</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">Confirm Password:</label>
+                        <input type="password" id="register-confirm" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Create Account</button>
+                    </div>
+                </form>
+                <div class="auth-guest-option">
+                    <span class="guest-link" id="continue-as-guest">Continue as Guest</span>
+                </div>
+            </div>
+            <!-- VERSION FOOTER -->
+            <div class="auth-version" id="auth-version">
+                Creator's Toolkit v<span id="version-number">...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal (existing) -->
+    <div class="modal-overlay" id="settings-modal" style="display: none;">
+        <div class="modal-content settings-modal">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-btn" id="close-settings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Combined Avatar & Account Section -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3>Profile</h3>
+                    </div>
+                    <div class="avatar-section">
+                        <div class="current-avatar" title="Click to change avatar">
+                            <img src="images/default-avatar.png" alt="Current Avatar" id="settings-avatar-preview">
+                            <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="account-fields">
+                            <form id="account-form">
+                                <div class="form-group">
+                                    <label for="settings-username">Username:</label>
+                                    <input type="text" id="settings-username">
+                                    <div class="helper-text">Your display name. Must be unique and at least 3 characters.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-email">Email:</label>
+                                    <input type="email" id="settings-email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-new-password">New Password (optional):</label>
+                                    <input type="password" id="settings-new-password">
+                                    <div class="helper-text">Leave blank to keep current password</div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Theme Section -->
+                <div class="settings-section">
+                    <h3>Theme</h3>
+                    <div class="form-group">
+                        <label for="theme-select">Color Theme:</label>
+                        <div class="custom-dropdown" id="theme-dropdown">
+                            <div class="dropdown-selected" id="theme-selected">
+                                <span class="selected-text">Loading themes...</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                            <div class="dropdown-options" id="theme-options">
+                                <!-- Options will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Actions -->
+                <div class="settings-section">
+                    <div class="form-actions account-actions">
+                        <button type="submit" class="btn-primary" form="account-form">Update Account</button>
+                        <button type="button" class="btn-secondary" id="logout-btn">Logout</button>
+                    </div>
+
+                <!-- Delete Account Section -->
+                    <div class="delete-account-section">
+                        <button type="button" class="btn-danger btn-small" id="delete-account-btn">
+                            <i class="fas fa-trash-alt"></i> Delete Account
+                        </button>
+                        <div class="helper-text delete-warning">
+                            Permanently delete your account and all associated data. This action cannot be undone.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal-overlay" id="about-modal" style="display: none;">
+        <div class="modal-content about-modal">
+            <div class="modal-header">
+                <h2 id="about-title">About Creator's Toolkit</h2>
+                <button class="close-btn" id="close-about">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- About Sidebar Navigation -->
+                <div class="about-sidebar" id="about-sidebar">
+                    <div id="about-toc">
+                        <h3>Contents</h3>
+                        <div class="toc-list">
+                            <!-- Table of contents will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- About Main Content -->
+                <div class="about-main">
+                    <div id="about-section-content">
+                        <!-- Content sections will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CoWriter About Modal -->
+    <div class="modal-overlay cowriter-about-overlay" id="cowriter-about-modal" style="display: none;">
+        <div class="modal-content cowriter-about-content" tabindex="-1">
+            <div class="modal-header">
+                <h2>CoWriter Guide</h2>
+                <button class="close-btn" id="cowriter-about-close" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="about-body">
+                <div class="about-sidebar">
+                    <h3>Contents</h3>
+                    <div id="cowriter-toc-container">
+                        <!-- Table of contents will be inserted here -->
+                    </div>
+                </div>
+                
+                <div class="about-main">
+                    <div id="cowriter-section-content">
+                        <!-- Section content will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error/Success Messages -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="user/auth.js"></script>
+    <script src="settings.js"></script>
+    <script src="my-sites.js"></script>
+    <script src="notebook/notebook.js"></script>
+    <script src="notebook/notebook-themes.js"></script>
+    <script src="notebook/note-linking.js"></script>
+    <script src="notebook/collections.js"></script>
+    <script src="notebook/notebook-workspace-manager.js"></script>
+    <script src="notebook/notebook-export.js"></script>
+    <script src="cowriter/cowriter.js"></script>
+    <script src="cowriter/cowriter-about.js"></script>
+    <script src="cowriter/prompt-management.js"></script>
+    <script src="main.js"></script>
+    <script src="about/about.js"></script>
+</body>
+</html>

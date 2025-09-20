@@ -1,0 +1,31 @@
+{
+  "name": "creators-toolkit-server",
+  "version": "1.0.0 Alpha",
+  "description": "Server for Writing Tools - Lore Codex and RP Archiver",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "bundle": "node ../utils/bundle-templates.js bundle",
+    "bundle:dev": "node ../utils/bundle-templates.js dev",
+    "bundle:status": "node ../utils/bundle-templates.js status",
+    "bundle:debug": "node ../utils/bundle-templates.js debug"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "fs-extra": "^11.3.2",
+    "multer": "^2.0.2"
+  },
+  "keywords": [
+    "writing",
+    "tools",
+    "roleplay",
+    "info",
+    "converter"
+  ],
+  "author": "Chatelaine Studios",
+  "license": "MIT"
+}

@@ -1,0 +1,2720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <title>Lore Codex</title>
+    <link rel="stylesheet" href="info-converter.css">
+    <link rel="stylesheet" href="modules/import/character-import.css">
+    <link rel="stylesheet" href="modules/import/lorebook-import.css">
+    <link rel="stylesheet" href="about/lore-codex-about.css">
+    <link rel="stylesheet" href="modules/custom-pages/custom-pages.css">
+    <link rel="stylesheet" href="user/auth-ui.css">
+        <!-- Add FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+    /* Prevent flash of unstyled content */
+    body {
+        opacity: 0;
+        transition: opacity 0.1s ease-in;
+    }
+
+    body.theme-loaded {
+        opacity: 1;
+    }
+    </style>
+
+    <script>
+    // Show page after theme loads
+    document.addEventListener('DOMContentLoaded', () => {
+        // Small delay to let theme manager initialize
+        setTimeout(() => {
+            document.body.classList.add('theme-loaded');
+        }, 100);
+    });
+    </script>
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="main-tabs">
+        <div class="nav-container">
+            <!-- Add Home Icon Button -->
+            <a href="http://localhost:3000/" class="nav-home-btn" title="Home">
+                <i class="fas fa-home"></i>
+            </a>
+
+            <div class="main-tab active" data-tab="project">Project & Info</div>
+            <div class="main-tab" data-tab="content">Content</div>
+            <div class="main-tab" data-tab="appearance">Appearance</div>
+            <div class="main-tab" data-tab="pages">Custom Pages</div>
+            <div class="main-tab" data-tab="generate">Generate</div>
+            
+            <!-- UPDATED: Project management controls (only show in local mode) -->
+            <div class="nav-project-controls" style="display: none;">
+                <div id="current-project-name" class="current-project-name" style="display: none;"></div>
+                <select id="nav-project-list" class="nav-project-dropdown">
+                    <option value="">Select project...</option>
+                </select>
+                <button id="nav-load-project-btn" class="nav-load-btn" title="Load selected project" disabled>
+                    <i class="fas fa-upload"></i>
+                </button>
+            </div>
+
+            <!-- NEW: Simple user avatar display -->
+            <div class="nav-user-avatar" id="nav-user-avatar" style="display: none;">
+                <img src="../images/default-avatar.png" alt="User Avatar" class="user-avatar" id="nav-avatar-img">
+            </div>
+            <!-- Lore Codex About Button -->
+            <button class="nav-about-btn" id="lore-codex-about-btn" title="How to use Lore Codex">
+                <i class="fas fa-question-circle"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- Tab 1: Project Management & Basic Information -->
+        <div id="project-content" class="main-tab-content active">
+            <!-- Banner at the top -->
+            <div class="info-banner short-banner">
+                <img src="images/banner.jpg" alt="Info Banner" class="banner-image">
+                <div class="banner-overlay metal-text bronze">
+                    <h1>Project & Info</h1>
+                </div>
+            </div>
+
+            <!-- Two-column layout - SWAPPED columns and moved World Name/Subtitle -->
+            <div class="tab-section two-column">
+                <div class="column">
+                    <!-- Left Column: Site Configuration -->
+                    <div class="section">
+                        <h3 class="section-header">Site Configuration</h3>
+                        <div class="section-content">
+                            <!-- MOVED: World/Verse Name and Subtitle from Overview Settings -->
+                            <label for="world-title">World/Verse Name:</label>
+                            <input type="text" id="world-title" placeholder="Enter your world or universe name">
+                            
+                            <label for="world-subtitle">World Subtitle:</label>
+                            <input type="text" id="world-subtitle" placeholder="Optional subtitle or tagline">
+                            
+                            <label for="world-title-font">Font:</label>
+                            <select id="world-title-font">
+                                <option value="theme">Use Theme Default</option>
+                                <option value="serif">Serif</option>
+                                <option value="sans">Sans Serif</option>
+                                <option value="mixed">Mixed</option>
+                                <option value="classic">Classic</option>
+                                <option value="clean">Clean</option>
+                                <option value="artistic">Artistic</option>
+                                <option value="professional">Professional</option>
+                                <option value="wuxia">Wuxia</option>
+                                <option value="fantasy">Fantasy</option>
+                            </select>
+
+                            <div class="control-group">
+                                <label for="world-title-color">Color:</label>
+                                <div class="color-input-row">
+                                    <input type="text" id="world-title-color" placeholder="Use theme default">
+                                    <input type="color" id="world-title-color-picker" title="Pick title color">
+                                </div>
+                            </div>
+
+                            <div class="world-title-controls">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="world-title-visibility" checked>
+                                    <label for="world-title-visibility">Show Title</label>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label for="world-title-alignment">Alignment:</label>
+                                    <select id="world-title-alignment">
+                                        <option value="left">Left</option>
+                                        <option value="center">Center</option>
+                                        <option value="right">Right</option>
+                                    </select>
+                                </div>
+                                <div class="control-group">
+                                    <label for="world-title-position">Position:</label>
+                                    <select id="world-title-position">
+                                        <option value="top">Top</option>
+                                        <option value="center">Center</option>
+                                        <option value="bottom">Bottom</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label for="banner-image">Banner Image Path:</label>
+                            <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                                <input type="text" id="banner-image" placeholder="assets/ui/banners/banner.jpg" style="flex: 1;">
+                                <button class="nav-load-btn image-import-trigger" 
+                                        title="Import image from computer" 
+                                        data-target-field="banner-image" 
+                                        data-context="banner">
+                                    <i class="fas fa-upload"></i>
+                                </button>
+                            </div>                            
+                            <div class="helper-text">Path relative to the generated info.html file</div>
+
+                            <label for="appearance-banner-style">Banner Style:</label>
+                            <select id="appearance-banner-style">
+                            </select>
+                            <div class="helper-text" id="banner-style-description">
+                                Apply visual effects to the banner image area
+                            </div>
+                            
+                            <label>Pages to Include:</label>
+                            <div class="page-selection-container">
+                                <div class="page-checkboxes">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="include-world" checked>
+                                        <label for="include-world">World</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="include-characters" checked>
+                                        <label for="include-characters">Characters</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="include-storylines" checked>
+                                        <label for="include-storylines">Storylines</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="include-plans" checked>
+                                        <label for="include-plans">Plans</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="include-playlists" checked>
+                                        <label for="include-playlists">Playlists</label>
+                                    </div>
+                                </div>
+                                <div class="helper-text">Overview is always included</div>
+                            </div>                           
+                        </div>
+
+                        <!-- Custom Navigation Subsection -->
+                        <div class="collapsible-section">
+                            <div class="collapsible-header">
+                                <span>Custom Navigation</span>
+                                <span class="toggle-icon collapsed">▼</span>
+                            </div>
+                            <div class="collapsible-content collapsed">
+                                <div class="helper-text">Add persistent navigation buttons that appear on all pages.
+                        Links can be internal (#characters, #world, etc.) or external URLs.</div>
+                                
+                                <div id="custom-nav-links-container">
+                                    <!-- Links will be added dynamically here -->
+                                </div>
+                                
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <button type="button" id="add-custom-nav-link" class="btn-add overview-link-add-btn">
+                                        <i class="fas fa-plus"></i> Add Link
+                                    </button>
+                                    <div class="checkbox-item" id="custom-nav-sticky-container">
+                                        <input type="checkbox" id="custom-nav-sticky">
+                                        <label for="custom-nav-sticky">Make sticky</label>
+                                    </div>
+                                </div>
+
+                                <!-- Location Selection -->
+                                <div class="custom-nav-controls">
+                                    <label class="section-divider">Location</label>
+                                    <div class="custom-nav-location-checkboxes">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="custom-nav-banner">
+                                            <label for="custom-nav-banner">Banner</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="custom-nav-site-right">
+                                            <label for="custom-nav-site-right">Site Right</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="custom-nav-site-left">
+                                            <label for="custom-nav-site-left">Site Left</label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Position Controls (populated based on location selection) -->
+                                    <div class="custom-nav-position-controls" style="display: none;">
+                                        <div class="control-group">
+                                            <label for="custom-nav-alignment">Alignment:</label>
+                                            <select id="custom-nav-alignment">
+                                                <!-- Options populated by JavaScript -->
+                                            </select>
+                                        </div>
+                                        <div class="control-group">
+                                            <label for="custom-nav-spacing">Spacing:</label>
+                                            <select id="custom-nav-spacing">
+                                                <!-- Options populated by JavaScript -->
+                                            </select>
+                                        </div>
+                                        <div class="control-group">
+                                            <label for="custom-nav-position">Position:</label>
+                                            <select id="custom-nav-position">
+                                                <!-- Options populated by JavaScript -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="column">
+                    <!-- Right Column: Overview Settings -->
+                    <div class="section">
+                        <h3 class="section-header">Overview Settings</h3>
+                        <div class="section-content">
+                            <!-- REMOVED: World Name and Subtitle (moved to Site Configuration) -->
+                            <label for="overview-title">Overview Title:</label>
+                            <input type="text" id="overview-title" placeholder="Optional custom title for overview section">
+                            
+                            <label for="overview-text">Overview Description:</label>
+                            <textarea id="overview-text" rows="6" placeholder="Main description or summary of your world/story"></textarea>
+                            
+                            <label for="overview-image">Overview Image Path:</label>
+                            <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                                <input type="text" id="overview-image" placeholder="assets/ui/overview/image.jpg" style="flex: 1;">
+                                <button class="nav-load-btn image-import-trigger" 
+                                        title="Import image from computer" 
+                                        data-target-field="overview-image" 
+                                        data-context="overview">
+                                    <i class="fas fa-upload"></i>
+                                </button>
+                            </div>
+                            <div class="helper-text">Optional image for the overview section. Best if square or near-square aspect ratio.</div>
+                        </div>
+
+                        <!-- Overview Content Background Subsection -->
+                        <div class="subsection">
+                            <h4 class="subsection-header">Overview Content Background</h4>
+                            <div class="subsection-content">
+                                <div class="helper-text">Customize the background of the overview content border area. Choose either an image or color (image takes priority if both are set).</div>
+                                
+                                <!-- Background Image -->
+                                <label for="overview-content-bg-image">Background Image Path:</label>
+                                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                                    <input type="text" id="overview-content-bg-image" placeholder="assets/ui/backgrounds/parchment.jpg" style="flex: 1;">
+                                    <button class="nav-load-btn image-import-trigger" 
+                                            title="Import image from computer" 
+                                            data-target-field="overview-content-bg-image" 
+                                            data-context="background">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>                                
+                                <div class="helper-text">Image will be used as background for the overview content area</div>
+                                
+                                <!-- Background Color with Color Picker -->
+                                <label for="overview-content-bg-color">Background Color:</label>
+                                <div class="color-input-group">
+                                    <input type="text" id="overview-content-bg-color" placeholder="#f5f5f5 or rgba(245,245,245,0.8)">
+                                    <input type="color" id="overview-content-bg-color-picker" class="color-picker">
+                                </div>
+                                <div class="helper-text">Fallback color if no image is provided. Color picker syncs with text input.</div>
+                                
+                                <!-- Opacity Control -->
+                                <label for="overview-content-opacity">Opacity:</label>
+                                <div class="slider-input-group">
+                                    <input type="range" id="overview-content-opacity-slider" min="0" max="100" value="100" class="opacity-slider">
+                                    <input type="number" id="overview-content-opacity" min="0" max="100" value="100" class="opacity-number">
+                                    <span class="slider-unit">%</span>
+                                </div>
+                                <div class="helper-text">Controls transparency of the background (100% = fully opaque, 0% = fully transparent)</div>
+                                
+                                <!-- Blur Effect Control -->
+                                <label for="overview-content-blur">Blur Effect:</label>
+                                <div class="slider-input-group">
+                                    <input type="range" id="overview-content-blur-slider" min="0" max="20" value="0" class="blur-slider">
+                                    <input type="number" id="overview-content-blur" min="0" max="20" value="0" class="blur-number">
+                                    <span class="slider-unit">px</span>
+                                </div>
+                                <div class="helper-text">Adds blur effect to the background (0px = no blur, higher values = more blur)</div>
+                            </div>
+                        </div>
+
+                        <!-- Overview Links Subsection -->
+                        <div class="collapsible-section">
+                            <div class="collapsible-header">
+                                <span>Overview Links</span>
+                                <span class="toggle-icon collapsed">▼</span>
+                            </div>
+                            <div class="collapsible-content collapsed">
+                                <div class="helper-text">Add navigation buttons that appear at the top of the Overview section. Links can be internal (#characters, #world, etc.) or external URLs.</div>
+                                
+                                <div id="overview-links-container">
+                                    <!-- Links will be added dynamically here -->
+                                </div>
+                                
+                                <button type="button" id="add-overview-link" class="btn-add overview-link-add-btn">
+                                    <i class="fas fa-plus"></i> Add Link
+                                </button>
+
+                                <!-- Overview Links Layout Controls -->
+                                <div class="overview-links-controls">
+                                    <div class="control-group">
+                                        <label for="overview-links-alignment">Alignment:</label>
+                                        <select id="overview-links-alignment">
+                                            <option value="left">Left</option>
+                                            <option value="center">Center</option>
+                                            <option value="right">Right</option>
+                                        </select>
+                                    </div>
+                                    <div class="control-group">
+                                        <label for="overview-links-spacing">Spacing:</label>
+                                        <select id="overview-links-spacing">
+                                            <option value="centered">Centered</option>
+                                            <option value="flex">Fill Space</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Characters, Storylines, World Information, Plans - UPDATED STRUCTURE -->
+        <div id="content-content" class="main-tab-content">
+        <!-- NEW: Short banner for content page -->
+            <div class="info-banner short-banner">
+                <img src="images/banner.jpg" alt="Content Banner" class="banner-image">
+                <div class="banner-overlay metal-text bronze">
+                    <h1>Content</h1>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <!-- Left Sidebar Navigation -->
+                <div class="content-sidebar">
+                    <!-- KEEP: Header at top (toggle + search) -->
+                    <div class="sidebar-header">
+                        <button id="sidebar-collapse-btn" class="btn-icon" title="Collapse sidebar">‹</button>
+                        <input type="text" id="content-search" placeholder="Search items...">
+                    </div>
+                    
+                    <!-- NEW: Scrollable container for all sections -->
+                    <div class="sidebar-sections-container">
+                        <div class="sidebar-section">
+                            <div class="section-title">Core Content</div>
+                            <div class="sidebar-item" data-category="characters">
+                                <i class="fas fa-users"></i>
+                                <span class="category-name">Characters</span>
+                                <span class="item-count" id="characters-count">0</span>
+                                <i class="fas fa-file-import character-import-btn" 
+                                title="Import Character Card" 
+                                style="font-size: 0.8em; margin-left: 8px; cursor: pointer; opacity: 0.7;"
+                                onclick="openCharacterImport()"></i>
+                            </div>
+                            <div class="sidebar-item" data-category="storylines">
+                                <i class="fas fa-book-open"></i>
+                                <span class="category-name">Storylines</span>
+                                <span class="item-count" id="storylines-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="plans">
+                                <i class="fas fa-route"></i>
+                                <span class="category-name">Plans</span>
+                                <span class="item-count" id="plans-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="playlists">
+                                <i class="fas fa-music"></i>
+                                <span class="category-name">Playlists</span>
+                                <span class="item-count" id="playlists-count">0</span>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <div class="section-title">World Building 
+                                <i class="fas fa-file-import lorebook-import-btn" 
+                                title="Import Lorebook" 
+                                style="font-size: 1em; margin-left: 80px; cursor: pointer; opacity: 0.7;"
+                                onclick="openLorebookImport()"></i>
+                            </div>
+                            <div class="sidebar-item" data-category="general">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="category-name">General</span>
+                                <span class="item-count" id="general-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="locations">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span class="category-name">Locations</span>
+                                <span class="item-count" id="locations-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="factions">
+                                <i class="fas fa-flag"></i>
+                                <span class="category-name">Factions</span>
+                                <span class="item-count" id="factions-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="culture">
+                                <i class="fas fa-theater-masks"></i>
+                                <span class="category-name">Culture</span>
+                                <span class="item-count" id="culture-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="cultivation">
+                                <i class="fas fa-leaf"></i>
+                                <span class="category-name">Cultivation</span>
+                                <span class="item-count" id="cultivation-count">0</span>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <div class="section-title">Lore & Details</div>
+                            <div class="sidebar-item" data-category="concepts">
+                                <i class="fas fa-lightbulb"></i>
+                                <span class="category-name">Concepts</span>
+                                <span class="item-count" id="concepts-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="events">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span class="category-name">Events</span>
+                                <span class="item-count" id="events-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="creatures">
+                                <i class="fas fa-dragon"></i>
+                                <span class="category-name">Creatures</span>
+                                <span class="item-count" id="creatures-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="plants">
+                                <i class="fas fa-seedling"></i>
+                                <span class="category-name">Plants</span>
+                                <span class="item-count" id="plants-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="items">
+                                <i class="fas fa-gem"></i>
+                                <span class="category-name">Items</span>
+                                <span class="item-count" id="items-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="content-main">
+                    <!-- Characters Section -->
+                    <div id="characters-section" class="content-section active">
+                        <div class="section-header">
+                            <h3><i class="fas fa-users"></i> Characters</h3>
+                            <button id="add-character" class="btn-add">+ Add Character</button>
+                        </div>
+                        <div id="characters-list" class="content-list compact">
+                            <div class="empty-state">No characters added yet</div>
+                        </div>
+                        <div class="helper-text">
+                            Characters will appear in a grid layout with their main image. Click on any character to open their full profile modal.
+                        </div>
+                    </div>
+
+                    <!-- Storylines Section -->
+                    <div id="storylines-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-book-open"></i> Storylines</h3>
+                            <button id="add-storyline" class="btn-add">+ Add Storyline</button>
+                        </div>
+                        <div id="storylines-list" class="content-list compact">
+                            <div class="empty-state">No storylines added yet</div>
+                        </div>
+                        <div class="helper-text">
+                            Storylines will appear as cards with their title, pairing, description, and links to read them.
+                        </div>
+                    </div>
+
+                    <!-- Plans Section -->
+                    <div id="plans-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-route"></i> Plans</h3>
+                            <button id="add-plan" class="btn-add">+ Add Story Arc</button>
+                        </div>
+                        <div id="plans-list" class="content-list compact">
+                            <div class="empty-state">No story arcs added yet</div>
+                        </div>
+                        <div class="helper-text">
+                            Story arcs will appear as cards showing the title, overview, character tags, event count, and sub-arc count. Use this to plan out major story developments with hierarchical organization.
+                        </div>
+                    </div>
+
+                    <!-- Playlists Section -->
+                    <div id="playlists-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-music"></i> Playlists</h3>
+                            <button id="add-playlist" class="btn-add">+ Add Playlist</button>
+                        </div>
+                        <div id="playlists-list" class="content-list compact">
+                            <div class="empty-state">No playlists added yet</div>
+                        </div>
+                        <div class="helper-text">
+                            Playlists will appear as embedded Spotify players with their descriptions and tags.
+                        </div>
+                    </div>
+
+                    <!-- General Content Section -->
+                    <div id="general-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-map-circle"></i> General </h3>
+                            <button id="add-general" class="btn-add">+ Add General</button>
+                        </div>
+                        <div id="general-list" class="content-list compact">
+                            <div class="empty-state">No general items added yet</div>
+                        </div>
+                    </div>
+
+                    <!-- Locations Section -->
+                    <div id="locations-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-map-marker-alt"></i> Locations</h3>
+                            <button id="add-location" class="btn-add">+ Add Location</button>
+                        </div>
+                        <div id="locations-list" class="content-list compact">
+                            <div class="empty-state">No locations added yet</div>
+                        </div>
+                    </div>
+
+                    <!-- Factions Section -->
+                    <div id="factions-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-flag"></i> Factions</h3>
+                            <button id="add-faction" class="btn-add">+ Add Faction</button>
+                        </div>
+                        <div id="factions-list" class="content-list compact">
+                            <div class="empty-state">No factions added yet</div>
+                        </div>
+                    </div>
+
+                    <!-- Culture Section -->
+                    <div id="culture-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-theater-masks"></i> Culture</h3>
+                            <button id="add-culture" class="btn-add">+ Add Culture</button>
+                        </div>
+                        <div id="culture-list" class="content-list compact">
+                            <div class="empty-state">No culture entries added yet</div>
+                        </div>
+                    </div>
+
+                    <!-- Cultivation Section -->
+                    <div id="cultivation-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-leaf"></i> Cultivation</h3>
+                            <button id="add-cultivation" class="btn-add">+ Add Cultivation</button>
+                        </div>
+                        <div id="cultivation-list" class="content-list compact">
+                            <div class="empty-state">No cultivation entries added yet</div>
+                        </div>
+                    </div>
+
+                    <!-- Concepts Section -->
+                    <div id="concepts-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-lightbulb"></i> Concepts</h3>
+                            <button id="add-concept" class="btn-add">+ Add Concept</button>
+                        </div>
+                        <div id="concepts-list" class="content-list compact">
+                            <div class="empty-state">No concepts added yet</div>
+                        </div>
+                    </div>
+
+                    <!-- Events Section -->
+                    <div id="events-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-calendar-alt"></i> Events</h3>
+                            <button id="add-event" class="btn-add">+ Add Event</button>
+                        </div>
+                        <div id="events-list" class="content-list compact">
+                            <div class="empty-state">No events added yet</div>
+                        </div>
+                    </div>
+
+                    <!-- Creatures Section -->
+                    <div id="creatures-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-dragon"></i> Creatures</h3>
+                            <button id="add-creature" class="btn-add">+ Add Creature</button>
+                        </div>
+                        <div id="creatures-list" class="content-list compact">
+                            <div class="empty-state">No creatures added yet</div>
+                        </div>
+                    </div>
+
+                    <!-- Plants Section -->
+                    <div id="plants-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-seedling"></i> Plants</h3>
+                            <button id="add-plant" class="btn-add">+ Add Plant</button>
+                        </div>
+                        <div id="plants-list" class="content-list compact">
+                            <div class="empty-state">No plants added yet</div>
+                        </div>
+                    </div>
+
+                    <!-- Items Section -->
+                    <div id="items-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-gem"></i> Items</h3>
+                            <button id="add-item" class="btn-add">+ Add Item</button>
+                        </div>
+                        <div id="items-list" class="content-list compact">
+                            <div class="empty-state">No items added yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Appearance Customization - REDESIGNED with subsections -->
+        <div id="appearance-content" class="main-tab-content">
+            <!-- Short banner for appearance page -->
+            <div class="info-banner short-banner">
+                <img src="images/banner.jpg" alt="Appearance Banner" class="banner-image">
+                <div class="banner-overlay metal-text bronze">
+                    <h1>Appearance</h1>
+                </div>
+            </div>
+            
+            <div class="tab-section two-column">
+                <div class="column">
+                    <!-- Design Category with Subsections -->
+                    <div class="section">
+                        <h3 class="section-header">Design</h3>
+                        <div class="section-content">
+                            <!-- Template Selection -->
+                            <!-- Overview Style Selection -->
+                            <label for="appearance-overview-style">Overview Style:</label>
+                            <select id="appearance-overview-style">
+                            </select>
+                            <div class="helper-text" id="overview-style-description">
+                                Notebook aesthetic with lined paper and red margin line
+                            </div>
+
+                            <!-- Navigation Style Selection -->
+                            <label for="appearance-navigation-style">Navigation Style:</label>
+                            <select id="appearance-navigation-style">
+                            </select>
+                            <div class="helper-text" id="navigation-style-description">
+                                Icon-based navigation with hover effects
+                            </div>
+                            
+                            <!-- Banner Size -->
+                            <label for="appearance-banner-size">Banner Size:</label>
+                            <select id="appearance-banner-size">
+                                <option value="extra-small">Extra Small</option>
+                                <option value="small">Small</option>
+                                <option value="medium">Medium</option>
+                                <option value="large">Large</option>
+                                <option value="hidden">Hidden</option>
+                            </select>
+                            <div class="helper-text" id="banner-size-description">
+                                Controls the height of the banner image area
+                            </div>
+
+                            <!-- NEW: Site Width Option -->
+                            <label for="appearance-site-width">Site Width:</label>
+                            <select id="appearance-site-width">
+                                <option value="narrow">Narrow (800px)</option>
+                                <option value="standard">Standard (900px)</option>
+                                <option value="wide">Wide (1000px)</option>
+                            </select>
+                            <div class="helper-text" id="site-width-description">
+                                Controls the maximum width of the generated info page
+                            </div>
+                        </div>
+
+                        <!-- Headers Subsection -->
+                        <div class="subsection">
+                            <h4 class="subsection-header">Headers</h4>
+                            <div class="subsection-content">
+
+                                <label for="appearance-world-categories-header">World Categories Header:</label>
+                                <select id="appearance-world-categories-header">
+                                </select>
+                                <div class="helper-text" id="world-categories-header-description">
+                                    Controls how world category headers are displayed
+                                </div>
+
+                                <label for="appearance-page-header">Page Header Style:</label>
+                                <select id="appearance-page-header">
+                                </select>
+                                <div class="helper-text" id="page-header-description">
+                                    Controls the style of page headers throughout the site
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Container Styles Subsection -->
+                        <div class="subsection">
+                            <h4 class="subsection-header">Container Styles</h4>
+                            <div class="subsection-content">
+
+                                <label for="appearance-card-style">Card Style:</label>
+                                <select id="appearance-card-style">
+                                </select>
+                                <div class="helper-text" id="card-style-description">
+                                    Current card styling for characters, storylines, plans, and playlists
+                                </div>
+
+                                <label for="appearance-container-style">Main Container Style:</label>
+                                <select id="appearance-container-style">
+                                </select>
+                                <div class="helper-text" id="container-style-description">
+                                    Colored border on the left side
+                                </div>
+                                
+                                <label for="appearance-subcontainer-style">Info Section Style:</label>
+                                <select id="appearance-subcontainer-style">
+                                </select>
+                                <div class="helper-text" id="subcontainer-style-description">
+                                    Light background with subtle borders
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Button Style Subsection (NEW) -->
+                        <div class="subsection">
+                            <h4 class="subsection-header">Buttons</h4>
+                            <div class="subsection-content">
+                                <label for="appearance-button-style">Overview Button Style:</label>
+                                <select id="appearance-button-style">
+                                </select>
+                                <div class="helper-text" id="button-style-description">
+                                    Controls how button elements are displayed (not yet implemented)
+                                </div>
+                                <!-- In the Buttons subsection, after the existing button-style dropdown -->
+                                <label for="appearance-custom-nav-button-style">Custom Navigation Button Style:</label>
+                                <select id="appearance-custom-nav-button-style">
+                                </select>
+                                <div class="helper-text" id="custom-nav-button-style-description">
+                                    Controls the style of custom navigation buttons
+                                </div>
+                                <label for="appearance-back-to-top-style">Back to Top Button Style:</label>
+                                <select id="appearance-back-to-top-style">
+                                    <option value="circular">Circular</option>
+                                    <option value="square">Square</option>
+                                    <option value="pill">Pill</option>
+                                    <option value="minimal">Minimal</option>
+                                </select>
+                                <div class="helper-text" id="back-to-top-style-description">
+                                    Controls the style of the back to top button
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="column">
+                    <!-- Typography Section -->
+                    <div class="section">
+                        <h3 class="section-header">Typography</h3>
+                        <div class="section-content">
+                            <label for="appearance-font-set">Font Set:</label>
+                            <select id="appearance-font-set">
+                            </select>
+                            <div class="helper-text" id="font-set-description">
+                                Traditional serif fonts
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Colors Section (renamed from Color Scheme) -->
+                    <div class="section">
+                        <h3 class="section-header">Colors/Backgrounds</h3>
+                        <div class="section-content">
+                            <div class="form-group">
+                                <label for="appearance-color-scheme">Color Scheme:</label>
+                                <div class="color-scheme-controls">
+                                    <select id="appearance-color-scheme" class="form-control"></select>
+                                    <button type="button" id="customize-colors-btn" class="btn btn-secondary btn-sm" title="Customize Colors">
+                                        <i class="fas fa-palette"></i>
+                                    </button>
+                                </div>
+                                <div class="helper-text" id="color-scheme-description">
+                                Current site colors
+                                </div>
+                            </div>
+
+
+                            <!-- Site Background Section - ADD THIS to your appearance tab -->
+                            <label class="section-divider">Site Background</label>
+                            <div class="subsection-content">
+                                <div class="helper-text">Customize the background of the entire site (behind all containers). Choose either an image or color (image takes priority if both are set).</div>
+                                
+                                <!-- Background Image -->
+                                <label for="background-image">Background Image Path:</label>
+                                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                                    <input type="text" id="background-image" placeholder="assets/ui/backgrounds/bg.jpg" style="flex: 1;">
+                                    <button class="nav-load-btn image-import-trigger" 
+                                            title="Import image from computer" 
+                                            data-target-field="background-image" 
+                                            data-context="background">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>                                
+                                <div class="helper-text">Image will be used as background for the entire site</div>
+                                
+                                <!-- Background Color with Color Picker -->
+                                <label for="background-color">Background Color:</label>
+                                <div class="color-input-group">
+                                    <input type="text" id="background-color" placeholder="#f5f5f5 or rgba(245,245,245,1.0)">
+                                    <input type="color" id="background-color-picker" class="color-picker">
+                                </div>
+                                <div class="helper-text">Fallback color if no image is provided. Color picker syncs with text input.</div>
+                            </div>
+                            
+                        <!-- NEW: Main Container Background Subsection -->
+                        
+                            <label class="section-divider">Main Container Background</label>
+                            <div class="subsection-content">
+                                <div class="helper-text">Customize the background of the main container area. Choose either an image or color (image takes priority if both are set).</div>
+                                
+                                <!-- Background Image -->
+                                <label for="main-container-bg-image">Background Image Path:</label>
+                                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                                    <input type="text" id="main-container-bg-image" placeholder="assets/ui/backgrounds/paper.jpg" style="flex: 1;">
+                                    <button class="nav-load-btn image-import-trigger" 
+                                            title="Import image from computer" 
+                                            data-target-field="main-container-bg-image" 
+                                            data-context="background">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>
+                                <div class="helper-text">Image will be used as background for the main container area</div>
+                                
+                                <!-- Background Color with Color Picker -->
+                                <label for="main-container-bg-color">Background Color:</label>
+                                <div class="color-input-group">
+                                    <input type="text" id="main-container-bg-color" placeholder="#ffffff or rgba(255,255,255,0.9)">
+                                    <input type="color" id="main-container-bg-color-picker" class="color-picker">
+                                </div>
+                                <div class="helper-text">Fallback color if no image is provided.
+Color picker syncs with text input.</div>
+                            </div>
+                            
+                            <!-- Modal Background Subsection -->
+                            <label class="section-divider">Modal Background</label>
+                            <div class="subsection-content">
+                                <div class="helper-text">Customize the background of modal windows (character details, etc.). Choose either an image or color (image takes priority if both are set).</div>
+                                
+                                <!-- Background Image -->
+                                <label for="modal-bg-image">Background Image Path:</label>
+                                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                                    <input type="text" id="modal-bg-image" placeholder="assets/ui/backgrounds/paper.jpg" style="flex: 1;">
+                                    <button class="nav-load-btn image-import-trigger" 
+                                            title="Import image from computer" 
+                                            data-target-field="modal-bg-image" 
+                                            data-context="modal-bg">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>
+                                <div class="helper-text">Image will be used as background for modal windows</div>
+                                
+                                <!-- Background Color with Color Picker -->
+                                <label for="modal-bg-color">Background Color:</label>
+                                <div class="color-input-group">
+                                    <input type="text" id="modal-bg-color" placeholder="#ffffff or rgba(255,255,255,0.9)">
+                                    <input type="color" id="modal-bg-color-picker" class="color-picker">
+                                </div>
+                                <div class="helper-text">Fallback color if no image is provided. Color picker syncs with text input.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Custom Pages -->
+        <div id="pages-content" class="main-tab-content">
+            <div class="info-banner short-banner">
+                <img src="images/banner.jpg" alt="Custom Pages Banner" class="banner-image">
+                <div class="banner-overlay metal-text bronze">
+                    <h1>Custom Pages</h1>
+                </div>
+            </div>
+            
+            <div class="tab-section">
+                <div class="section">
+                    <div class="section-header">
+                        <h3>Custom Pages</h3>
+                        <button id="create-page-btn" class="btn-add">+ Create Page</button>
+                    </div>
+                    <div class="section-content">
+                        <div id="pages-list" class="pages-browser">
+                            <div class="empty-state">No custom pages created yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: Generate & Preview -->
+        <div id="generate-content" class="main-tab-content">
+            <div class="output-section">
+                <div class="tabs">
+                    <div class="tab active" data-tab="generate">HTML Code</div>
+                    <div class="tab" data-tab="preview">Preview</div>
+                </div>
+
+                <div id="generate-content-inner" class="tab-content active">
+                    <div class="generate-controls">
+                        <button id="generate-btn" class="btn-main-action">Generate HTML</button>
+                        <button id="save-to-sites-btn" class="btn-main-action" style="display: none;">Save to Folder</button>
+                        <button id="download-btn" class="btn-main-action">Download HTML</button>
+                    </div>
+                    
+                    <textarea id="html-output" readonly placeholder="Generated HTML will appear here..."></textarea>
+                    
+                    <div id="save-status" class="save-status"></div>
+                </div>
+
+                <div id="preview-content-inner" class="tab-content">
+                    <div class="generate-controls">
+                        <button id="open-project-btn" class="btn-main-action" style="display: none;">Open Current Project</button>
+                    </div>
+                    
+                    <div class="preview-container">
+                        <iframe id="preview-frame"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Modals!! -->
+<!-- Character Modal -->
+    <div id="characterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="character-modal-title">Add Character</h3>
+                <span class="close" data-modal="characterModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="char-name">Character Name:</label>
+                <input type="text" id="char-name" placeholder="Character name">
+                
+                <label for="char-image">Main Image Path:</label>
+                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                    <input type="text" id="char-image" placeholder="assets/characters/character-name/avatar.jpg" style="flex: 1;">
+                    <button class="nav-load-btn image-import-trigger" 
+                            title="Import image from computer" 
+                            data-target-field="char-image" 
+                            data-context="character">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                </div>
+                <div class="helper-text">Main image for character grid and profile</div>
+                
+                <label for="char-tags">Tags:</label>
+                <input type="text" id="char-tags" placeholder="protagonist, hero, magic-user, etc.">
+                <div class="helper-text">Character tags separated by commas. These will be used for filtering and organization on the characters page.</div>
+                
+                <!-- NEW: Character Color Field -->
+                <label for="char-color">Timeline Color:</label>
+                <div class="color-input-row">
+                    <input type="text" id="char-color" placeholder="#6c757d" value="#6c757d">
+                    <input type="color" id="char-color-picker" title="Pick character color">
+                </div>
+                <div class="helper-text">Color for this character in timeline views</div>
+
+                <label for="char-basic">Basic Information:</label>
+                <div class="textarea-container">
+                    <textarea id="char-basic" rows="3" placeholder="Age, species, occupation, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-basic" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>  
+
+                <label for="char-physical">Physical Description:</label>
+                <div class="textarea-container">
+                    <textarea id="char-physical" rows="3" placeholder="Appearance, height, build, distinguishing features, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-physical" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="char-personality">Personality:</label>
+                <div class="textarea-container">
+                    <textarea id="char-personality" rows="3" placeholder="Traits, quirks, fears, motivations, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-personality" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="char-sexuality">Sexuality:</label>
+                <div class="textarea-container">
+                    <textarea id="char-sexuality" rows="2" placeholder="Sexual orientation, romantic preferences, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-sexuality" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="char-fighting-style">Fighting Style:</label>
+                <div class="textarea-container">
+                    <textarea id="char-fighting-style" rows="3" placeholder="Combat preferences, fighting techniques, martial arts, weapon specializations, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-fighting-style" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="char-background">Background:</label>
+                <div class="textarea-container">
+                    <textarea id="char-background" rows="4" placeholder="History, relationships, important events, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-background" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="char-equipment">Weapons/Armor/Equipment:</label>
+                <div class="textarea-container">
+                    <textarea id="char-equipment" rows="3" placeholder="Weapons, armor, special items, tools, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-equipment" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="char-hobbies">Hobbies/Pastimes:</label>
+                <div class="textarea-container">
+                    <textarea id="char-hobbies" rows="3" placeholder="Interests, hobbies, activities, skills, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-hobbies" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="char-quirks">Quirks:</label>
+                <div class="textarea-container">
+                    <textarea id="char-quirks" rows="3" placeholder="Unusual habits, mannerisms, speech patterns, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-quirksd" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="char-relationships">Relationships:</label>
+                <div class="textarea-container">
+                    <textarea id="char-relationships" rows="3" placeholder="Family, friends, enemies, romantic interests, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-relationships" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="char-notes">Notes (Development Only):</label>
+                <div class="textarea-container">
+                    <textarea id="char-notes" rows="4" placeholder="Development notes, todo items, reminders, etc. These will not appear in the generated HTML."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="char-notes" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+                <div class="helper-text">These notes are for development purposes only and will not appear in the generated info page</div>
+                
+                <label for="char-gallery">Gallery Images (one per line):</label>
+                <textarea id="char-gallery" rows="3" placeholder="assets/characters/charactername/portrait.jpg
+assets/characters/charactername/action.jpg"></textarea>
+                <div class="helper-text">Additional images for the character's gallery</div>
+                
+                <div class="modal-actions">
+                    <button id="save-character" class="btn-main-action">Save Character</button>
+                    <button class="btn-cancel" data-modal="characterModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Updated Storyline Modal - Add this to your index.html -->
+    <div id="storylineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="storyline-modal-title">Add Storyline</h3>
+                <span class="close" data-modal="storylineModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="story-title">Storyline Title:</label>
+                <input type="text" id="story-title" placeholder="Story title">
+                
+                <label for="story-pairing">Pairing:</label>
+                <input type="text" id="story-pairing" placeholder="Character A/Character B, Gen, etc.">
+
+                <label for="story-type">Type:</label>
+                <select id="story-type">
+                    <option value="roleplay">Roleplay</option>
+                    <option value="solo">Solo</option>
+                </select>
+                <div class="helper-text">Whether this is a roleplay or solo storyline</div>
+
+                <label for="story-section">Section:</label>
+                <input type="text" id="story-section" placeholder="Part 1, Arc 2, etc. (optional)">
+                <div class="helper-text">Optional section/part name for organizing storylines</div>
+
+                <label for="story-tags">Tags:</label>
+                <input type="text" id="story-tags" placeholder="Tags separated by commas (e.g., angst, fluff, AU)">
+                <div class="helper-text">Tags to categorize this storyline for filtering</div>
+                
+                <label for="story-wordcount">Word Count:</label>
+                <input type="number" id="story-wordcount" placeholder="0" min="0" step="1">
+                <div class="helper-text">Total word count for this storyline</div>
+                
+                <label for="story-last-updated">Last Updated:</label>
+                <input type="text" id="story-last-updated" placeholder="MM/DD/YYYY or any format">
+                <div class="helper-text">When this storyline was last updated</div>
+                
+                <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-xs);">
+                    <label for="story-link">Link:</label>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="story-is-project-link" title="Check this if linking to an HTML file in your project's roleplays/ folder">
+                        <label for="story-is-project-link">Project file</label>
+                        <span id="storyline-import-status" style="margin-left: 10px; font-size: 0.9em; font-style: italic;"></span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                    <input type="text" id="story-link" placeholder="https://archiveofourown.org/works/123456" style="flex: 1;">
+                    <select id="story-roleplay-dropdown" class="nav-project-dropdown" style="width: 200px;" disabled>
+                        <option value="">None</option>
+                    </select>
+                    <button id="story-import-btn" class="nav-load-btn" title="Import selected roleplay files" disabled>
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                <div class="helper-text" id="story-link-helper">External URL (unchecked) or project filename (checked).</div>
+                
+                <label for="story-description">Description:</label>
+                <textarea id="story-description" rows="4" placeholder="Brief description or summary of the storyline..."></textarea>
+                
+                <div class="modal-actions">
+                    <button id="save-storyline" class="btn-main-action">Save Storyline</button>
+                    <button class="btn-cancel" data-modal="storylineModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plan/Arc Modal -->
+    <div id="planModal" class="modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h3 id="plan-modal-title">Add Story Arc</h3>
+                <span class="close" data-modal="planModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="plan-basic-info">
+                    <label for="plan-title">Arc Title:</label>
+                    <input type="text" id="plan-title" placeholder="Story arc title">
+                    
+                    <label for="plan-overview">Overview:</label>
+                    <textarea id="plan-overview" rows="3" placeholder="Brief overview of this story arc..."></textarea>
+                    
+                    <label for="plan-character-tags">Character Tags:</label>
+                    <input type="text" id="plan-character-tags" placeholder="Character names, separated by commas">
+                    <div class="helper-text">Characters involved in this arc. Start typing for autocomplete suggestions.</div>
+                
+                    <label for="plan-filter-tags">Filter Tags:</label>
+                    <input type="text" id="plan-filter-tags" placeholder="action, romance, mystery, etc.">
+                    <div class="helper-text">Tags for filtering and organization on the plans page (separate from character tags)</div>                
+                </div>
+
+                <!-- Add this right after the plan-character-tags section -->
+                <div class="color-controls-row">
+                    <div class="color-control-group">
+                        <label for="plan-color">Arc Color:</label>
+                        <div class="color-input-row">
+                            <input type="text" id="plan-color" placeholder="#3498db">
+                            <input type="color" id="plan-color-picker" title="Pick arc color">
+                        </div>
+                    </div>
+                    <div class="color-control-group">
+                        <label for="plan-type">Arc Type:</label>
+                        <select id="plan-type">
+                            <option value="main-plot">Main Plot</option>
+                            <option value="romance">Romance</option>
+                            <option value="side-quest">Side Quest</option>
+                            <option value="backstory">Backstory</option>
+                            <option value="worldbuilding">Worldbuilding</option>
+                            <option value="character-dev">Character Development</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="helper-text">Arc color will be used in timeline views. Sub-arcs will use variations of this color.</div>
+
+                <div class="plan-events-section">
+                    <div class="events-header">
+                        <h4>Main Events</h4>
+                        <button type="button" id="add-event-btn" class="btn-add">+ Add Event</button>
+                    </div>
+                    
+                    <div id="events-list-container" class="events-list">
+                        <div class="empty-state">No main events added yet</div>
+                    </div>
+                </div>
+
+                <!-- NEW: Sub-Arcs Section -->
+                <div class="plan-subarcs-section">
+                    <div class="subarcs-header">
+                        <h4>Sub-Arcs</h4>
+                        <button type="button" id="add-subarc-btn" class="btn-add">+ Add Sub-Arc</button>
+                    </div>
+                    
+                    <div id="subarcs-list-container" class="subarcs-list">
+                        <div class="empty-state">No sub-arcs added yet</div>
+                    </div>
+                    <div class="helper-text">Sub-arcs allow you to organize related events within your main story arc. Each sub-arc can have its own character tags and events.</div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="save-plan" class="btn-main-action">Save Arc</button>
+                    <button class="btn-cancel" data-modal="planModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Updated Event Modal with Character Tags -->
+    <!-- This replaces the existing eventModal section in your index.html -->
+
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="event-modal-title">Add Event</h3>
+                <span class="close" data-modal="eventModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="event-title">Event Title/Description:</label>
+                <textarea id="event-title" rows="2" placeholder="Brief description of what happens in this event"></textarea>
+                
+                <label for="event-image">Event Image Path:</label>
+                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                    <input type="text" id="event-image" placeholder="assets/events/event-name.jpg" style="flex: 1;">
+                    <button class="nav-load-btn image-import-trigger" 
+                            title="Import image from computer" 
+                            data-target-field="event-image" 
+                            data-context="event">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                </div>
+                <div class="helper-text">Optional image for this event marker</div>
+
+                <label for="event-type">Event Type:</label>
+                <select id="event-type">
+                    <option value="rising">Rising Action</option>
+                    <option value="setback">Setback</option>
+                    <option value="climax">Climax</option>
+                </select>
+                <div class="helper-text">Type of story event - affects color coding in display</div>
+                
+                <!-- NEW: Character Tags for Events -->
+                <label for="event-character-tags">Character Tags:</label>
+                <input type="text" id="event-character-tags" placeholder="Character names, separated by commas">
+                <div class="helper-text">Characters involved in this specific event. These will automatically be added to the arc's character tags.</div>
+                
+                <label for="event-storyline-links">Linked Storylines:</label>
+                <div id="event-storyline-container" class="storyline-select-container">
+                    <div id="event-storyline-selected" class="storyline-selected" onclick="toggleStorylineDropdown()">
+                        <span id="storyline-selected-text">Click to select storylines...</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div id="event-storyline-options" class="storyline-options" style="display: none;">
+                        <!-- Options will be populated dynamically -->
+                    </div>
+                </div>
+                <div class="helper-text">Click to open dropdown, then click storylines to toggle selection</div>
+
+                <label for="event-timing">Timing:</label>
+                <input type="text" id="event-timing" placeholder="Month 3, Year 1 / Early Spring / etc.">
+                <div class="helper-text">When this event occurs in your timeline (optional)</div>
+
+                <!-- Add this section in your event modal after timing but before notes -->
+                <div class="event-subevents-section">
+                    <div class="subevents-header" onclick="toggleSubeventsSection()">
+                        <h4>Character Moments <span id="subevents-count">(0)</span></h4>
+                        <span class="collapse-arrow" id="subevents-arrow">▼</span>
+                    </div>
+                    
+                    <div id="subevents-container" class="subevents-container collapsed">
+                        <div id="subevents-list" class="subevents-list">
+                            <div class="empty-state">No character moments added yet</div>
+                        </div>
+                        <button type="button" id="add-subevent-btn" class="btn-add">+ Add Character Moment</button>
+                    </div>
+                </div>
+
+                <!-- Subevent Edit Modal (mini modal) -->
+                <div id="subeventModal" class="modal">
+                    <div class="modal-content small-modal">
+                        <div class="modal-header">
+                            <h3 id="subevent-modal-title">Add Character Moment</h3>
+                            <span class="close" data-modal="subeventModal">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <label for="subevent-description">Description:</label>
+                            <input type="text" id="subevent-description" placeholder="What happens in this character moment?">
+                            
+                            <label for="subevent-character-tags">Character Tags:</label>
+                            <input type="text" id="subevent-character-tags" placeholder="Character names, separated by commas">
+                            <div class="helper-text">Characters involved in this specific moment</div>
+                            
+                            <div class="modal-actions">
+                                <button id="save-subevent" class="btn-main-action">Save</button>
+                                <button class="btn-cancel" data-modal="subeventModal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <label for="event-notes">Notes:</label>
+                <div class="textarea-container">
+                    <textarea id="event-notes" rows="3" placeholder="Additional notes, ideas, or reminders about this event"></textarea>
+                    <button type="button" class="expand-text-btn" data-field="event-notes" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+                <div class="helper-text">Notes will be collapsible in the generated HTML to keep the display clean</div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="event-visible" checked>
+                    <label for="event-visible" class="checkbox-label">Visible in generated page</label>
+                </div>
+                <div class="helper-text">Uncheck to hide this event from the generated HTML (useful for spoilers or uncertain plot points)</div>
+                
+                <div class="modal-actions">
+                    <button id="save-event" class="btn-main-action">Save Event</button>
+                    <button class="btn-cancel" data-modal="eventModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Sub-Arc Modal -->
+    <div id="subArcModal" class="modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h3 id="subarc-modal-title">Add Sub-Arc</h3>
+                <span class="close" data-modal="subArcModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="subarc-basic-info">
+                    <label for="subarc-title">Sub-Arc Title:</label>
+                    <input type="text" id="subarc-title" placeholder="Sub-arc title">
+                    
+                    <label for="subarc-description">Description:</label>
+                    <textarea id="subarc-description" rows="3" placeholder="Brief description of this sub-arc..."></textarea>
+                    
+                    <label for="subarc-character-tags">Character Tags:</label>
+                    <input type="text" id="subarc-character-tags" placeholder="Character names, separated by commas">
+                    <div class="helper-text">Characters involved in this specific sub-arc. Can be different from main arc characters.</div>
+
+                    <!-- ADD THIS NEW SECTION - Same as main arc color controls -->
+                    <div class="color-controls-row">
+                        <div class="color-control-group">
+                            <label for="subarc-color">Sub-Arc Color:</label>
+                            <div class="color-input-row">
+                                <input type="text" id="subarc-color" placeholder="#e74c3c">
+                                <input type="color" id="subarc-color-picker" title="Pick sub-arc color">
+                            </div>
+                        </div>
+                        <div class="color-control-group">
+                            <label for="subarc-type">Sub-Arc Type:</label>
+                            <select id="subarc-type">
+                                <option value="">No specific type</option>
+                                <option value="romance">Romance</option>
+                                <option value="side-quest">Side Quest</option>
+                                <option value="backstory">Backstory</option>
+                                <option value="worldbuilding">Worldbuilding</option>
+                                <option value="character-dev">Character Development</option>
+                                <option value="comedy">Comedy</option>
+                                <option value="conflict">Conflict</option>
+                                <option value="mystery">Mystery</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="helper-text">Sub-arc color and type will be used in timeline views. Color defaults to lighter parent arc if not set.</div>
+                    
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="subarc-visible" checked>
+                        <label for="subarc-visible" class="checkbox-label">Visible in generated page</label>
+                    </div>
+                    <div class="helper-text">Uncheck to hide this entire sub-arc from the generated HTML</div>
+                </div>
+
+                <div class="subarc-events-section">
+                    <div class="events-header">
+                        <h4>Sub-Arc Events</h4>
+                        <button type="button" id="add-subarc-event-btn" class="btn-add">+ Add Event</button>
+                    </div>
+                    
+                    <div id="subarc-events-list-container" class="events-list">
+                        <div class="empty-state">No events added yet</div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="save-subarc" class="btn-main-action">Save Sub-Arc</button>
+                    <button class="btn-cancel" data-modal="subArcModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Playlist Modal -->
+    <div id="playlistModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="playlist-modal-title">Add Playlist</h3>
+                <span class="close" data-modal="playlistModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="playlist-title">Title:</label>
+                <input type="text" id="playlist-title" placeholder="Playlist name/purpose">
+                
+                <label for="playlist-spotify-url">Spotify URL:</label>
+                <input type="text" id="playlist-spotify-url" placeholder="https://open.spotify.com/playlist/...">
+                <div class="helper-text">Paste any Spotify playlist link here</div>
+                
+                <label for="playlist-tags">Tags:</label>
+                <input type="text" id="playlist-tags" placeholder="character names, moods, story arcs, etc.">
+                <div class="helper-text">Tags separated by commas for organization and filtering</div>
+                
+                <label for="playlist-description">Description:</label>
+                <textarea id="playlist-description" rows="3" placeholder="What role does this playlist play in your story/world?"></textarea>
+                
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="savePlaylist()">Save</button>
+                    <button class="btn-secondary" onclick="closeModal('playlistModal')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Location Modal -->
+    <div id="locationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="location-modal-title">Add Location</h3>
+                <span class="close" data-modal="locationModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="loc-name">Location Name:</label>
+                <input type="text" id="loc-name" placeholder="Location name">
+                
+                <label for="loc-type">Type:</label>
+                <input type="text" id="loc-type" placeholder="City, building, region, etc.">
+
+                <label for="loc-tags">Tags:</label>
+                <input type="text" id="loc-tags" placeholder="Separate multiple tags with commas">
+                <div class="helper-text">Tags help organize and filter locations (e.g., dangerous, magical, urban)</div>
+                
+                <label for="loc-status">Status:</label>
+                <select id="loc-status">
+                    <option value="">No Status</option>
+                    <option value="idea">Idea</option>
+                    <option value="tentative">Tentative</option>
+                    <option value="brainstorm">Brainstorm</option>
+                    <option value="draft">Draft</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="developing">Developing</option>
+                    <option value="canon">Canon</option>
+                    <option value="established">Established</option>
+                    <option value="final">Final</option>
+                    <option value="placeholder">Placeholder</option>
+                    <option value="needs-work">Needs Work</option>
+                    <option value="deprecated">Deprecated</option>
+                    <option value="unused">Unused</option>
+                    <option value="archived">Archived</option>
+                </select>
+                <div class="helper-text">Development status of this location</div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="loc-hidden">
+                    <label for="loc-hidden" class="checkbox-label">Hidden (won't appear in generated page)</label>
+                </div>
+                <div class="helper-text">Check this to hide from the generated HTML page</div>
+                
+                <label for="loc-image">Image Path:</label>
+                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                    <input type="text" id="loc-image" placeholder="assets/world/locations/location.jpg" style="flex: 1;">
+                    <button class="nav-load-btn image-import-trigger" 
+                            title="Import image from computer" 
+                            data-target-field="loc-image" 
+                            data-context="location">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                </div>
+                <div class="helper-text">Optional image for this location</div>
+                
+                <label for="loc-description">Description:</label>
+                <div class="textarea-container">
+                    <textarea id="loc-description" rows="4" placeholder="General description of the location"></textarea>
+                    <button type="button" class="expand-text-btn" data-field="loc-description" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="loc-features">Notable Features:</label>
+                <div class="textarea-container">
+                    <textarea id="loc-features" rows="3" placeholder="Important landmarks, characteristics, points of interest, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="loc-features" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="loc-connections">Inhabitants/Connections:</label>
+                <div class="textarea-container">
+                    <textarea id="loc-connections" rows="3" placeholder="Who lives here, what happens here, related locations, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="loc-connections" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="save-location" class="btn-main-action">Save Location</button>
+                    <button class="btn-cancel" data-modal="locationModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic World Item Modal -->
+    <div id="worldItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="world-item-modal-title">Add Item</h3>
+                <span class="close" data-modal="worldItemModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="item-name">Name:</label>
+                <input type="text" id="item-name" placeholder="Item name">
+                
+                <label for="item-category">Category/Type:</label>
+                <input type="text" id="item-category" placeholder="Type or category">
+
+                <label for="item-tags">Tags:</label>
+                <input type="text" id="item-tags" placeholder="Separate multiple tags with commas">
+                <div class="helper-text">Tags help organize and filter world items (e.g., magical, dangerous, ancient)</div>
+                
+                <label for="item-status">Status:</label>
+                <select id="item-status">
+                    <option value="">No Status</option>
+                    <option value="idea">Idea</option>
+                    <option value="tentative">Tentative</option>
+                    <option value="brainstorm">Brainstorm</option>
+                    <option value="draft">Draft</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="developing">Developing</option>
+                    <option value="canon">Canon</option>
+                    <option value="established">Established</option>
+                    <option value="final">Final</option>
+                    <option value="placeholder">Placeholder</option>
+                    <option value="needs-work">Needs Work</option>
+                    <option value="deprecated">Deprecated</option>
+                    <option value="unused">Unused</option>
+                    <option value="archived">Archived</option>
+                </select>
+                <div class="helper-text">Development status of this entry</div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="item-hidden">
+                    <label for="item-hidden" class="checkbox-label">Hidden (won't appear in generated page)</label>
+                </div>
+                <div class="helper-text">Check this to hide from the generated HTML page</div>
+                
+                <label for="item-image">Image Path:</label>
+                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                    <input type="text" id="item-image" placeholder="assets/world/category/item.jpg" style="flex: 1;">
+                    <button class="nav-load-btn image-import-trigger" 
+                            title="Import image from computer" 
+                            data-target-field="item-image" 
+                            data-context="world-item">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                </div>
+                <div class="helper-text">Optional image for this item</div>
+                
+                <label for="item-description">Description:</label>
+                <div class="textarea-container">
+                    <textarea id="item-description" rows="4" placeholder="Detailed description"></textarea>
+                    <button type="button" class="expand-text-btn" data-field="item-description" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="item-properties">Properties/Characteristics:</label>
+                <div class="textarea-container">
+                    <textarea id="item-properties" rows="3" placeholder="Special properties, abilities, characteristics, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="item-properties" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <label for="item-connections">Related Information:</label>
+                <div class="textarea-container">
+                    <textarea id="item-connections" rows="3" placeholder="Related characters, locations, events, etc."></textarea>
+                    <button type="button" class="expand-text-btn" data-field="item-connections" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="save-world-item" class="btn-main-action">Save Item</button>
+                    <button class="btn-cancel" data-modal="worldItemModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Selection Modal - Small and Simple -->
+    <div id="lorebookSelectModal" class="modal">
+        <div class="modal-content lorebook-select-modal">
+            <div class="modal-header">
+                <h3>Select Lorebook File</h3>
+                <span class="close" data-modal="lorebookSelectModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="file-selection-area">
+                    <div class="file-drop-zone" onclick="document.getElementById('lorebook-file').click()">
+                        <i class="fas fa-file-upload"></i>
+                        <p>Click to select lorebook file</p>
+                        <span class="file-types">JSON files from SillyTavern, CharacterHub, etc.</span>
+                    </div>
+                    <input type="file" id="lorebook-file" accept=".json" style="display: none;" onchange="parseLorebookFile(this)">
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn-cancel" data-modal="lorebookSelectModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Preview Modal - Larger -->
+    <div id="lorebookPreviewModal" class="modal">
+        <div class="modal-content lorebook-preview-modal">
+            <div class="modal-header">
+                <h3>Import Preview</h3>
+                <span class="close" data-modal="lorebookPreviewModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="import-preview-header">
+                    <p>Review and edit entries before importing. Uncheck entries you don't want to include.</p>
+                    
+                    <div class="preview-controls">
+                        <label class="select-all-control">
+                            <input type="checkbox" id="select-all-entries" checked onchange="toggleAllEntries(this.checked)">
+                            <span>Select All</span>
+                        </label>
+                        <div class="entry-counts">
+                            <span id="selected-count">0</span> of <span id="total-count">0</span> entries selected
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="lorebook-entries-container" class="entries-container">
+                    <!-- Entries will be populated here -->
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="import-selected-entries" class="btn-main-action" onclick="importSelectedEntries()">Import Selected</button>
+                    <button class="btn-secondary" onclick="backToFileSelection()">Back</button>
+                    <button class="btn-cancel" data-modal="lorebookPreviewModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character File Selection Modal -->
+    <div id="characterSelectModal" class="modal">
+        <div class="modal-content character-select-modal">
+            <div class="modal-header">
+                <h3>Import Character Card</h3>
+                <span class="close" data-modal="characterSelectModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="file-selection-area">
+                    <div class="file-drop-zone" onclick="document.getElementById('character-file').click()">
+                        <i class="fas fa-image"></i>
+                        <p>Click to select character card image</p>
+                        <span class="file-types">PNG files with character card data</span>
+                    </div>
+                    <input type="file" id="character-file" accept=".png,image/png,.json,application/json" style="display: none;" onchange="parseCharacterFile(this)">
+                </div>
+                
+                <div class="import-options">
+                    <h4>Import Options</h4>
+                    <div class="import-checkboxes">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="import-character-book">
+                            <label for="import-character-book">Import character book</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="import-character-note">
+                            <label for="import-character-note">Import character note</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn-cancel" data-modal="characterSelectModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character Book Preview Modal -->
+    <div id="characterBookPreviewModal" class="modal">
+        <div class="modal-content character-book-preview-modal">
+            <div class="modal-header">
+                <h3>Select Character Book Entries</h3>
+                <span class="close" data-modal="characterBookPreviewModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="import-preview-header">
+                    <p>Select which character book entries to include in the character's background information.</p>
+                    <div class="import-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-list"></i>
+                            <span>Total: <span id="character-book-total-count" class="stat-number">0</span></span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Selected: <span id="character-book-selected-count" class="stat-number">0</span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="preview-controls">
+                    <button class="btn-select-all" onclick="selectAllCharacterBookEntries()">
+                        <i class="fas fa-check-double"></i> Select All
+                    </button>
+                    <button class="btn-select-none" onclick="selectNoneCharacterBookEntries()">
+                        <i class="fas fa-times"></i> Select None
+                    </button>
+                </div>
+                
+                <div id="character-book-entries-container" class="character-book-entries-container">
+                    <!-- Character book entries will be populated here -->
+                </div>
+                
+                <div class="import-actions">
+                    <button class="btn-import-character" onclick="proceedToCharacterCreation()">
+                        <i class="fas fa-check"></i> Import Selected
+                    </button>
+                    <button class="btn-cancel" data-modal="characterBookPreviewModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Pages Modals -->
+    <!-- Create Page Modal -->
+    <div id="create-page-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create Custom Page</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="page-name">Page Name:</label>
+                <input type="text" id="page-name" placeholder="my-custom-page">
+                <div class="helper-text">This will be used in the URL (letters, numbers, hyphens only)</div>
+                
+                <label for="page-display-name">Display Name:</label>
+                <input type="text" id="page-display-name" placeholder="My Custom Page">
+                <div class="helper-text">This is shown to users</div>
+                
+                <label for="page-template">Template:</label>
+                <select id="page-template">
+                    <option value="">Select a template...</option>
+                </select>
+                <div id="template-preview" class="template-preview"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-create-page" class="btn-secondary">Cancel</button>
+                <button id="confirm-create-page" class="btn-primary">Create Page</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Page Modal -->
+    <div id="edit-page-modal" class="modal large-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="edit-page-title">Edit Page</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="page-settings">
+                    <label for="edit-page-display-name">Display Name:</label>
+                    <input type="text" id="edit-page-display-name">
+
+                    <!-- ADD THIS: -->
+                    <label for="edit-page-description">Description:</label>
+                    <textarea id="edit-page-description" rows="2" placeholder="Brief description of this page (optional)"></textarea>
+                </div>
+                
+                <div class="add-element-controls">
+                    <select id="element-type-select">
+                        <option value="">Choose element to add...</option>
+                    </select>
+                    <button id="add-element-btn" class="add-element-btn" disabled>+ Add</button>
+                    <span id="element-count" class="element-count"></span>
+                </div>
+                
+                <div id="page-elements-list" class="page-elements-list">
+                    <div class="empty-state">No elements added yet</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-edit-page" class="btn-secondary">Cancel</button>
+                <button id="save-edit-page" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Element Editor Modal -->
+    <div id="edit-element-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="edit-element-title">Edit Element</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body" id="edit-element-body">
+                <!-- Content will be dynamically populated based on element type -->
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-edit-element" class="btn-secondary">Cancel</button>
+                <button id="save-edit-element" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Element Type Templates (hidden, used for dynamic population) -->
+    <div id="element-templates" style="display: none;">
+        
+        <!-- Title Element Template -->
+        <div id="template-title-element">
+            <label for="element-title-content">Page Title:</label>
+            <input type="text" id="element-title-content" placeholder="Enter page title">
+            <div class="helper-text">This will be displayed as the main heading of your custom page</div>
+        </div>
+        
+        <!-- Paragraph Element Template -->
+        <div id="template-paragraph-element">
+            <label for="element-paragraph-content">Paragraph Content:</label>
+            <div class="text-input-group">
+                <textarea id="element-paragraph-content" rows="6" placeholder="Enter paragraph content (supports markdown)"></textarea>
+                <button type="button" class="expand-text-btn" data-field="element-paragraph-content" title="Expand text editor">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            <div class="helper-text">Supports markdown: **bold**, *italic*, ~~strikethrough~~, # headers, bullets, etc.</div>
+            <!-- Add this after the existing content in template-paragraph-element -->
+            <label for="element-paragraph-bg-color">Background Color (optional):</label>
+            <div class="color-input-group">
+                <input type="text" id="element-paragraph-bg-color" placeholder="transparent or #ffffff">
+                <input type="color" id="element-paragraph-bg-color-picker" class="color-picker">
+            </div>
+            <div class="helper-text">Optional background color for this text block</div>
+        </div>
+
+        <!-- Two-Column Paragraph Element Template -->
+        <div id="template-two-column-paragraph-element">
+            <label for="element-twocolumn-left-content">Left Column Content:</label>
+            <div class="text-input-group">
+                <textarea id="element-twocolumn-left-content" rows="6" placeholder="Enter left column content (supports markdown)"></textarea>
+                <button type="button" class="expand-text-btn" data-field="element-twocolumn-left-content" title="Expand text editor">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            
+            <label for="element-twocolumn-right-content">Right Column Content:</label>
+            <div class="text-input-group">
+                <textarea id="element-twocolumn-right-content" rows="6" placeholder="Enter right column content (supports markdown)"></textarea>
+                <button type="button" class="expand-text-btn" data-field="element-twocolumn-right-content" title="Expand text editor">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            <div class="helper-text">Both columns support markdown formatting. Columns are optional - you can leave one empty for asymmetrical layouts. On mobile, columns will stack vertically.</div>
+
+            <!-- Add this at the end of template-two-column-paragraph-element -->
+            <label for="element-twocolumn-bg-color">Background Color (optional):</label>
+            <div class="color-input-group">
+                <input type="text" id="element-twocolumn-bg-color" placeholder="transparent or #ffffff">
+                <input type="color" id="element-twocolumn-bg-color-picker" class="color-picker">
+            </div>
+            <div class="helper-text">Optional background color for the entire two-column block</div>
+        </div>
+
+        <!-- NEW: Horizontal Link Container -->
+        <template id="template-horizontal-links-element">
+            <div class="element-form-group">
+                <div class="links-header">
+                    <label>Links:</label>
+                    <button type="button" id="add-modal-horizontal-link" class="btn-add">Add Link</button>
+                </div>
+                <div id="modal-horizontal-links-container"></div>
+            </div>
+            <div class="horizontal-controls-row">
+                <div class="horizontal-control-group style-control">
+                    <label for="element-horizontal-style">Button Style:</label>
+                    <select id="element-horizontal-style">
+                        <option value="modern">Modern</option>
+                        <option value="classic">Classic</option>
+                        <option value="pills">Pills</option>
+                        <option value="underline">Underline</option>
+                        <option value="kawaii">Kawaii</option>
+                        <option value="hearts">Hearts</option>
+                        <option value="industrial">Industrial</option>
+                        <option value="playersHandbook">Player's Handbook</option>
+                        <option value="horrific">Horrific</option>
+                        <option value="parchment">Parchment & Quill</option>
+                        <option value="floating">Floating</option>
+                        <option value="neon">Neon</option>
+                        <option value="vintage">Vintage</option>
+                        <option value="glass">Glassmorphism</option>
+                        <option value="steampunk">Steampunk</option>
+                        <option value="line">Minimalist Line</option>
+                        <option value="brutalist">Brutalist</option>
+                </select>
+            </div>
+            <div class="horizontal-control-group">
+                <label for="element-horizontal-alignment">Alignment:</label>
+                <select id="element-horizontal-alignment">
+                    <option value="left">Left</option>
+                    <option value="center">Center</option>
+                    <option value="right">Right</option>
+                </select>
+            </div>
+            <div class="horizontal-control-group">
+                <label for="element-horizontal-spacing">Spacing:</label>
+                <select id="element-horizontal-spacing">
+                    <option value="centered">Centered</option>
+                    <option value="flex">Fill Space</option>
+                </select>
+            </div>
+        </div>
+        </template>
+        
+        <!-- Subcontainer Element Template -->
+        <div id="template-subcontainer-element">
+            <label for="element-subcontainer-content">Subcontainer Content:</label>
+            <div class="text-input-group">
+                <textarea id="element-subcontainer-content" rows="6" placeholder="Enter subcontainer content (supports markdown)"></textarea>
+                <button type="button" class="expand-text-btn" data-field="element-subcontainer-content" title="Expand text editor">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            <div class="helper-text">Will be styled as a subcontainer block. Supports markdown formatting.</div>
+        </div>
+        
+        <!-- Single Image Element Template -->
+        <div id="template-single-image-element">
+            <label for="element-single-image-url">Image:</label>
+            <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                <input type="text" id="element-single-image-url" placeholder="Path to image" style="flex: 1;">
+                <button class="nav-load-btn image-import-trigger" 
+                        title="Import image from computer" 
+                        data-target-field="element-single-image-url" 
+                        data-context="custom-page">
+                    <i class="fas fa-upload"></i>
+                </button>
+            </div>
+            
+            <label for="element-single-image-alignment">Alignment:</label>
+            <select id="element-single-image-alignment">
+                <option value="center">Center</option>
+                <option value="left">Left</option>
+                <option value="right">Right</option>
+            </select>
+            
+            <div class="helper-text">Single image with alignment options. Image will scale to fit container while maintaining aspect ratio.</div>
+        </div>
+
+        <!-- Update the existing Images Element Template name -->
+        <div id="template-image-set-element">
+            <label>Image Set (up to 3 images):</label>
+            <div class="helper-text">Images will be displayed horizontally. Leave fields empty for images you don't want to use.</div>
+            
+            <div class="image-inputs-container">
+                <div class="image-input-row">
+                    <label>Image 1:</label>
+                    <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                        <input type="text" id="element-image-1" placeholder="Path to image 1" style="flex: 1;">
+                        <button class="nav-load-btn image-import-trigger" 
+                                title="Import image from computer" 
+                                data-target-field="element-image-1" 
+                                data-context="custom-page">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="image-input-row">
+                    <label>Image 2:</label>
+                    <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                        <input type="text" id="element-image-2" placeholder="Path to image 2" style="flex: 1;">
+                        <button class="nav-load-btn image-import-trigger" 
+                                title="Import image from computer" 
+                                data-target-field="element-image-2" 
+                                data-context="custom-page">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="image-input-row">
+                    <label>Image 3:</label>
+                    <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                        <input type="text" id="element-image-3" placeholder="Path to image 3" style="flex: 1;">
+                        <button class="nav-load-btn image-import-trigger" 
+                                title="Import image from computer" 
+                                data-target-field="element-image-3" 
+                                data-context="custom-page">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Image-Text Right Element Template -->
+        <div id="template-image-text-right-element">
+            <label for="element-imagetext-right-content">Text Content:</label>
+            <div class="text-input-group">
+                <textarea id="element-imagetext-right-content" rows="6" placeholder="Enter text content (supports markdown)"></textarea>
+                <button type="button" class="expand-text-btn" data-field="element-imagetext-right-content" title="Expand text editor">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            
+            <label for="element-imagetext-right-image">Image (right side):</label>
+            <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                <input type="text" id="element-imagetext-right-image" placeholder="Path to image" style="flex: 1;">
+                <button class="nav-load-btn image-import-trigger" 
+                        title="Import image from computer" 
+                        data-target-field="element-imagetext-right-image" 
+                        data-context="custom-page">
+                    <i class="fas fa-upload"></i>
+                </button>
+            </div>                        
+            <div class="helper-text">Text will appear on the left, image on the right. Both text and image are optional.</div>
+
+            <!-- Add to both template-image-text-right-element and template-image-text-left-element -->
+            <label for="element-imagetext-right-bg-color">Text Background Color (optional):</label>
+            <div class="color-input-group">
+                <input type="text" id="element-imagetext-right-bg-color" placeholder="transparent or #ffffff">
+                <input type="color" id="element-imagetext-right-bg-color-picker" class="color-picker">
+            </div>
+            <div class="helper-text">Optional background color for the text portion</div>
+        </div>
+        
+        <!-- Image-Text Left Element Template -->
+        <div id="template-image-text-left-element">
+            <label for="element-imagetext-left-image">Image (left side):</label>
+            <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                <input type="text" id="element-imagetext-left-image" placeholder="Path to image" style="flex: 1;">
+                <button class="nav-load-btn image-import-trigger" 
+                        title="Import image from computer" 
+                        data-target-field="element-imagetext-left-image" 
+                        data-context="custom-page">
+                    <i class="fas fa-upload"></i>
+                </button>
+            </div>
+            
+            <label for="element-imagetext-left-content">Text Content:</label>
+            <div class="text-input-group">
+                <textarea id="element-imagetext-left-content" rows="6" placeholder="Enter text content (supports markdown)"></textarea>
+                <button type="button" class="expand-text-btn" data-field="element-imagetext-left-content" title="Expand text editor">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>    
+            <div class="helper-text">Image will appear on the left, text on the right. Both text and image are optional.</div>         
+            <!-- Add to both template-image-text-right-element and template-image-text-left-element -->
+            <label for="element-imagetext-left-bg-color">Text Background Color (optional):</label>
+            <div class="color-input-group">
+                <input type="text" id="element-imagetext-left-bg-color" placeholder="transparent or #ffffff">
+                <input type="color" id="element-imagetext-left-bg-color-picker" class="color-picker">
+            </div>
+            <div class="helper-text">Optional background color for the text portion</div>           
+        </div>
+
+        <!-- Gallery Element Template -->
+        <div id="template-gallery-element">
+            <div class="form-group">
+                <label for="element-gallery-images">Gallery Images (one URL per line):</label>
+                <textarea id="element-gallery-images" rows="8" placeholder="https://example.com/image1.jpg
+        https://example.com/image2.jpg
+        https://example.com/image3.jpg"></textarea>
+                <div class="helper-text">Add one image URL per line. You can add as many images as you want.</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="element-gallery-columns">Columns:</label>
+                <select id="element-gallery-columns">
+                    <option value="3">3 Columns</option>
+                    <option value="4">4 Columns</option>
+                    <option value="5" selected>5 Columns (Default)</option>
+                    <option value="6">6 Columns</option>
+                </select>
+                <div class="helper-text">Choose how many columns to display images in</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="element-gallery-alignment">Alignment:</label>
+                <select id="element-gallery-alignment">
+                    <option value="center" selected>Center</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                </select>
+                <div class="helper-text">How to align the gallery on the page</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Color Customization Modal - Add this near your other modals -->
+    <div id="colorCustomizeModal" class="modal" style="display: none;">
+        <div class="modal-content color-customize-modal">
+            <div class="modal-header">
+                <h3>Customize Colors</h3>
+                <div class="modal-header-controls">
+                    <button type="button" id="reset-all-colors" class="btn btn-sm btn-outline-secondary">Reset All</button>
+                    <span class="close" onclick="closeModal('colorCustomizeModal')">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="color-groups-container">
+                    
+                    <!-- Background & Base Colors -->
+                    <div class="color-group">
+                        <h4>Background & Base</h4>
+                        <div class="color-items">
+                            <div class="color-item">
+                                <label>Body Background</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-bodyBg-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-bodyBg" placeholder="#f5f5f5">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Container Background</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-containerBg-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-containerBg" placeholder="#ffffff">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Header Background</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-headerBg-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-headerBg" placeholder="#e8e8e8">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Banner Border</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-bannerBorder-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-bannerBorder" placeholder="rgba(235,233,233,0.8)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Colors -->
+                    <div class="color-group">
+                        <h4>Navigation</h4>
+                        <div class="color-items">
+                            <div class="color-item">
+                                <label>Nav Background</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-navBg-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-navBg" placeholder="#444444">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Nav Text</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-navText-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-navText" placeholder="#cccccc">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Nav Active</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-navActive-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-navActive" placeholder="#ffffff">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Nav Active Text</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-navActiveText-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-navActiveText" placeholder="#333333">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Nav Hover</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-navHover-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-navHover" placeholder="#807F7F">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content/Text Colors -->
+                    <div class="color-group">
+                        <h4>Text Colors</h4>
+                        <div class="color-items">
+                            <div class="color-item">
+                                <label>Primary Text</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-textPrimary-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-textPrimary" placeholder="#333333">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Secondary Text</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-textSecondary-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-textSecondary" placeholder="#696969">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Muted Text</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-textMuted-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-textMuted" placeholder="#999999">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Title Text</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-textTitle-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-textTitle" placeholder="#2c3e50">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Content Text</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-textContent-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-textContent" placeholder="#555555">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- World Categories - Spans multiple columns -->
+                    <div class="color-group world-categories">
+                        <h4>World Categories</h4>
+                        <div class="color-items multi-column">
+                            <div class="color-item">
+                                <label>General</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-general-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-general">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Locations</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-locations-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-locations">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Factions</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-factions-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-factions">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Concepts</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-concepts-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-concepts">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Events</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-events-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-events">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Creatures</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-creatures-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-creatures">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Plants</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-plants-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-plants">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Items</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-items-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-items">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Culture</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-culture-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-culture">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Cultivation</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-cultivation-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-cultivation">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Character Profile Colors -->
+                    <div class="color-group">
+                        <h4>Character Profile</h4>
+                        <div class="color-items">
+                            <div class="color-item">
+                                <label>Physical</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-physical-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-physical" placeholder="#007bff">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Personality</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-personality-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-personality" placeholder="#6f42c1">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Sexuality</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-sexuality-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-sexuality" placeholder="#dc3545">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Fighting</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-fighting-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-fighting" placeholder="#28a745">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Background</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-background-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-background" placeholder="#e83e8c">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Weapons</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-weapons-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-weapons" placeholder="#20c997">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Hobbies</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-hobbies-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-hobbies" placeholder="#17a2b8">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Quirks</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-quirks-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-quirks" placeholder="#fd7e14">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Relationships</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-relationships-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-relationships" placeholder="#28a745">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Item Name</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-itemName-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-itemName" placeholder="#282626">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                                        <!-- Special Theme Colors -->
+                    <div class="color-group">
+                        <h4>Special Theme Colors</h4>
+                        <div class="color-items">
+                            <div class="color-item">
+                                <label>Soft Background</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-softBg-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-softBg" placeholder="#f8f9fa">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Kawaii Pink</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-kawaiiPink-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-kawaiiPink" placeholder="#ff69b4">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Kawaii Purple</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-kawaiiPurple-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-kawaiiPurple" placeholder="#9370db">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Kawaii Blue</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-kawaiiBlue-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-kawaiiBlue" placeholder="#00bfff">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Kawaii Gold</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-kawaiiGold-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-kawaiiGold" placeholder="#ffd700">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Kawaii Green</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-kawaiiGreen-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-kawaiiGreen" placeholder="#32cd32">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Kawaii Orange</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-kawaiiOrange-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-kawaiiOrange" placeholder="#ff6347">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Wuxia Accent</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-wuxiaAccent-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-wuxiaAccent" placeholder="#85AB97">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Wuxia Accent Light</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-wuxiaAccentLight-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-wuxiaAccentLight" placeholder="#A3C2AB">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Wuxia Glow</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-wuxiaGlow-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-wuxiaGlow" placeholder="rgba(133,171,151,0.6)">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Journal Accent</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-journalAccent-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-journalAccent" placeholder="#DC3D35">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Link Colors -->
+                    <div class="color-group">
+                        <h4>Link Colors</h4>
+                        <div class="color-items">
+                            <div class="color-item">
+                                <label>Link Color</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-linkColor-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-linkColor" placeholder="#85AB97">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Link Hover</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-linkHover-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-linkHover" placeholder="#4A5D70">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Link Secondary</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-linkColorSecondary-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-linkColorSecondary" placeholder="#6c9bd1">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Link Hover Secondary</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-linkHoverSecondary-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-linkHoverSecondary" placeholder="#5a7ba8">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Badge Colors -->
+                    <div class="color-group">
+                        <h4>Status Badges</h4>
+                        <div class="color-items">
+                            <div class="color-item">
+                                <label>Idea</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-statusIdea-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-statusIdea" placeholder="#dc3545">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Draft</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-statusDraft-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-statusDraft" placeholder="#ffc107">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Canon</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-statusCanon-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-statusCanon" placeholder="#28a745">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Archived</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-statusArchived-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-statusArchived" placeholder="#6c757d">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seasonal Colors -->
+                    <div class="color-group">
+                        <h4>Seasonal Colors</h4>
+                        <div class="color-items">
+                            <div class="color-item">
+                                <label>Winter</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-seasonal-winter-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-seasonal-winter" placeholder="#E8F4F8">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Spring</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-seasonal-spring-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-seasonal-spring" placeholder="#F0F8E8">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Summer</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-seasonal-summer-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-seasonal-summer" placeholder="#FFF8E8">
+                                </div>
+                            </div>
+                            <div class="color-item">
+                                <label>Autumn</label>
+                                <div class="color-controls">
+                                    <input type="color" class="mini-color-picker" id="custom-seasonal-autumn-picker">
+                                    <input type="text" class="mini-hex-input" id="custom-seasonal-autumn" placeholder="#F8F0E8">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('colorCustomizeModal')">Cancel</button>
+                <button type="button" id="apply-color-changes" class="btn btn-primary">Apply Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Import Modal -->
+    <div id="imageImportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Import Image</h3>
+                <span class="close" data-modal="imageImportModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="import-image-file">Choose Image File:</label>
+                <input type="file" id="import-image-file" accept="image/*">
+                <div class="helper-text">Select an image file from your computer</div>
+                
+                <label for="import-image-name">Save As:</label>
+                <input type="text" id="import-image-name" placeholder="image.jpg">
+                <div class="helper-text">Filename for the imported image</div>
+                
+                <label for="import-image-path">Location:</label>
+                <input type="text" id="import-image-path" placeholder="assets/characters/">
+                <div class="helper-text">Folder path where the image will be saved</div>
+                
+                <div class="helper-text" style="margin-top: 10px; font-weight: bold;">
+                    Final path: <span id="import-final-path">assets/characters/image.jpg</span>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="import-image-btn" class="btn-main-action">Import Image</button>
+                    <button class="btn-cancel" data-modal="imageImportModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Universal Text Editor Modal -->
+    <div id="universalTextEditorModal" class="text-editor-modal">
+        <div class="text-editor-modal-content">
+            <div class="text-editor-header">
+                <h3 id="universal-editor-title">Edit Text</h3>
+                <button class="text-editor-close" id="closeUniversalTextEditor">&times;</button>
+            </div>
+            <textarea id="universal-expanded-text" placeholder="Enter your text here..."></textarea>
+            <div class="text-editor-footer">
+                <div class="word-count-info">
+                    <span id="universal-word-count">Words: 0</span>
+                    <span id="universal-page-count">Pages: 0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu for Color Pickers -->
+    <div id="color-picker-context-menu" class="context-menu" style="display: none;">
+        <div class="context-menu-item">
+            <input type="text" id="color-hex-input" placeholder="#ffffff" maxlength="7" style="width: 80px; padding: 4px; border: 1px solid var(--border-primary); border-radius: 3px; background: var(--bg-primary); color: var(--text-primary);">
+        </div>
+        <div class="context-menu-item" id="apply-hex-color">
+            <i class="fas fa-check"></i> Apply
+        </div>
+    </div>
+
+    <!-- Context Menu for Generate Tab -->
+    <div id="generate-context-menu" class="context-menu" style="display: none;">
+        <div class="context-menu-item" id="quick-gen-option">
+            <i class="fas fa-bolt"></i> Quick Gen
+        </div>
+        <div class="context-menu-item" id="quick-open-option">
+            <i class="fas fa-external-link-alt"></i> Quick Open
+        </div>
+    </div>
+
+    <!-- Context Menu for Nav Project Dropdown -->
+    <div id="nav-project-context-menu" class="context-menu" style="display: none;">
+        <div class="context-menu-item" id="quick-load-option">
+            <i class="fas fa-bolt"></i> Quick Load
+        </div>
+    </div>
+
+    <!-- ADD: Toast notification container at end of body -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Include JavaScript files -->
+    <script src="user/user-session.js"></script>
+    <script src="user/auth-ui.js"></script>
+    <script src="about/lore-codex-about.js"></script>
+
+    <script src="modules/custom-colors.js"></script>
+    <script type="module" src="css-generator.js"></script>         
+    <script type="module" src="appearance.js"></script> 
+    <script src="modules/custom-navigation.js"></script> 
+    <script src="modules/custom-pages/custom-page-utils.js"></script> 
+    <script type="module" src="templates/custom-pages/universal-template.js"></script>
+    <script type="module" src="templates/custom-pages/template-registry.js"></script>
+    <script src="modules/custom-pages/custom-pages.js"></script>
+    <script src="modules/custom-pages/custom-navigation.js"></script>        
+    <script src="modules/storylines-html.js"></script>  
+    <script src="modules/plans-html.js"></script> 
+    <script src="modules/filter-management.js"></script>    
+    <script src="modules/timeline-html.js"></script>        <!-- 4th - now can use getColorScheme -->
+    <script src="modules/playlist-html.js"></script>
+    <script src="modules/import/lorebook-import.js"></script>
+    <script src="modules/import/character-import.js"></script>
+    <script src="modules/world-html.js"></script>    
+    <script src="modules/characters-html.js"></script>
+    <script type="module" src="info-converter.js"></script>
+    <script src="form-handlers.js"></script>
+    <script type="module" src="html-generator.js"></script>
+    <script src="import-export.js"></script>
+    <script src="image-import.js"></script> 
+    <script src="themes/theme-manager.js"></script>
+</body>
+</html>

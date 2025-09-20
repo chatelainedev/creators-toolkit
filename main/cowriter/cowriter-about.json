@@ -1,0 +1,117 @@
+{
+  "title": "CoWriter Guide",
+  "sections": [
+    {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "content": "CoWriter is your AI-powered creative writing assistant. It helps you brainstorm ideas, develop characters, build worlds, and work through writing challenges collaboratively."
+    },
+    {
+      "id": "basic-usage",
+      "title": "Basic Usage",
+      "content": "Simply type your message or question in the input field at the bottom and press **Enter** to send. CoWriter will respond with helpful suggestions, questions, or creative input based on your needs.",
+      "subsections": [
+        {
+          "id": "sending-messages",
+          "title": "Sending Messages",
+          "content": "Press **Enter** to send your message, or **Shift+Enter** to add a new line without sending. You can also click the send button or use the expand button for longer text."
+        },
+        {
+          "id": "editing-messages",
+          "title": "Editing Messages", 
+          "content": "Hover over any message to see action buttons. You can edit your messages or regenerate AI responses. Deleted messages cannot be recovered."
+        }
+      ]
+    },
+    {
+      "id": "personalization",
+      "title": "Personalization",
+      "content": "Customize CoWriter's personality and responses through the Settings panel to match your writing style and preferences.",
+      "subsections": [
+        {
+          "id": "tones-styles",
+          "title": "Tones & Styles",
+          "content": "Choose from different conversational tones (like encouraging or analytical) and writing styles (like detailed or concise) to personalize how CoWriter responds to you."
+        },
+        {
+          "id": "world-context",
+          "title": "World Context",
+          "content": "Save information about your fictional world, characters, or project that CoWriter should remember throughout your conversations. This context is included in every chat."
+        }
+      ]
+    },
+    {
+      "id": "custom-prompts",
+      "title": "Custom Prompts",
+      "content": "Create your own prompts to tailor CoWriter exactly to your needs. Access the Prompts tab in Settings to manage all your custom content.",
+      "subsections": [
+        {
+          "id": "main-prompts",
+          "title": "Main Prompts", 
+          "content": "The main system prompt defines CoWriter's core behavior. You can create custom main prompts for different types of writing projects or moods."
+        },
+        {
+          "id": "quick-prompts",
+          "title": "Quick Prompts",
+          "content": "Create reusable prompt snippets that you can quickly insert into conversations. Access them via the lightning bolt button next to the message input."
+        },
+        {
+          "id": "templates",
+          "title": "Templates",
+          "content": "Templates are specialized prompts for specific writing scenarios like character development, plot assistance, or world building. Select them from the dropdown in the header."
+        }
+      ]
+    },
+    {
+      "id": "chat-management", 
+      "title": "Chat Management",
+      "content": "Save important conversations and organize them into folders for easy reference later.",
+      "subsections": [
+        {
+          "id": "saving-chats",
+          "title": "Saving Chats",
+          "content": "Click the save button to preserve your conversation. Give it a descriptive name and organize it into a folder. You can overwrite existing chats with the same name."
+        },
+        {
+          "id": "loading-chats",
+          "title": "Loading Chats", 
+          "content": "Click the folder button to browse and load your saved conversations. Chats are organized by folder and show the number of messages and last modified date."
+        }
+      ]
+    },
+    {
+      "id": "configuration",
+      "title": "Configuration", 
+      "content": "Set up your AI provider and API key to enable CoWriter's functionality.",
+      "subsections": [
+        {
+          "id": "api-setup",
+          "title": "API Setup",
+          "content": "You'll need an API key from a supported provider (Google Gemini, Anthropic Claude, or OpenAI). Enter your key in the Configuration tab and test the connection."
+        },
+        {
+          "id": "models",
+          "title": "Models",
+          "content": "Different AI models have different strengths. Experiment with various models to find what works best for your writing style and needs."
+        }
+      ]
+    },
+    {
+      "id": "tips-tricks",
+      "title": "Tips & Tricks",
+      "content": "Get the most out of CoWriter with these helpful tips and techniques.",
+      "subsections": [
+        {
+          "id": "effective-prompting",
+          "title": "Effective Prompting",
+          "content": "Be specific about what you need help with. Instead of 'help with my character,' try 'help me develop my character's backstory and motivation for betraying their best friend.'"
+        },
+        {
+          "id": "iterative-development", 
+          "title": "Iterative Development",
+          "content": "Use CoWriter for back-and-forth development. Start with a basic idea, then build on CoWriter's responses to refine and expand your concepts."
+        }
+      ]
+    }
+  ]
+}

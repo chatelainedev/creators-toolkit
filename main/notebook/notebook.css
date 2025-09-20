@@ -1,0 +1,1122 @@
+/* NOTEBOOK CSS - FIXED VERSION 
+   Add this to your notebook.css file or replace the editor styles */
+
+/* =============================================================================
+   NOTEBOOK CONTAINER & LAYOUT
+   ============================================================================= */
+
+.notebook-container {
+    display: flex;
+    height: calc(100vh - 50px - var(--space-2xl) * 2);
+    max-height: 800px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-primary);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    position: relative;
+}
+
+/* =============================================================================
+   SIDEBAR STYLES
+   ============================================================================= */
+
+.notebook-sidebar {
+    width: 300px;
+    min-width: 250px;
+    max-width: 500px;
+    background: var(--bg-tertiary);
+    border-right: 1px solid var(--border-primary);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.sidebar-header {
+    padding: var(--space-sm) var(--space-sm) var(--space-sm);
+    border-bottom: 1px solid var(--border-primary);
+    background: var(--bg-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.sidebar-title i {
+    color: var(--accent-primary);
+}
+
+.sidebar-actions {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.sidebar-action-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-primary);
+    color: var(--text-secondary);
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 11px;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    transform: translateY(-1px);
+}
+
+/* Search */
+.sidebar-search {
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input-wrapper i {
+    position: absolute;
+    left: var(--space-sm);
+    color: var(--text-tertiary);
+    font-size: 11px;
+    z-index: 2;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+    padding: var(--space-xs) var(--space-sm) var(--space-xs) calc(var(--space-sm) + 16px);
+    background: var(--bg-quaternary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-inputs);
+    font-size: var(--font-size-xs);
+    margin: 0;
+    transition: all var(--transition-normal);
+}
+
+.search-input-wrapper input:focus {
+    border-color: var(--accent-primary);
+    background: var(--bg-primary);
+    box-shadow: 0 0 0 2px rgba(177, 182, 149, 0.1);
+}
+
+.search-clear-btn {
+    position: absolute;
+    right: var(--space-xs);
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 10px;
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.search-clear-btn:hover {
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Collections Tree */
+.collections-tree {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-sm);
+}
+
+.collection-group {
+    margin-bottom: var(--space-sm);
+}
+
+.collection-header {
+    display: flex;
+    align-items: center;
+    padding: var(--space-xs) var(--space-sm);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    transition: all var(--transition-normal);
+    user-select: none;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+}
+
+.collection-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-secondary);
+}
+
+.collection-toggle {
+    width: 14px;
+    margin-right: var(--space-xs);
+    text-align: center;
+    font-size: 9px;
+    color: var(--text-tertiary);
+    transition: transform var(--transition-fast);
+}
+
+.collection-toggle.expanded {
+    transform: rotate(90deg);
+}
+
+.collection-icon {
+    margin-right: var(--space-sm);
+    color: var(--accent-primary);
+    font-size: 11px;
+    width: 12px;
+    text-align: center;
+}
+
+.collection-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.collection-count {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    margin-left: var(--space-sm);
+    background: var(--bg-quaternary);
+    padding: 1px 4px;
+    border-radius: var(--radius-sm);
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Notes List */
+.notes-list {
+    margin-left: var(--space-md);
+    margin-top: var(--space-xs);
+    border-left: 1px solid var(--border-primary);
+    padding-left: var(--space-sm);
+}
+
+.note-item {
+    display: flex;
+    align-items: center;
+    padding: var(--space-xs) var(--space-sm);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    margin-bottom: 1px;
+    transition: all var(--transition-normal);
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+}
+
+.note-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-secondary);
+}
+
+.note-item.active {
+    background: rgba(177, 182, 149, 0.1);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.note-icon {
+    margin-right: var(--space-sm);
+    color: var(--text-tertiary);
+    font-size: 10px;
+    width: 12px;
+    text-align: center;
+}
+
+.note-item.active .note-icon {
+    color: var(--accent-primary);
+}
+
+.note-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.note-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.note-item:hover .note-actions {
+    opacity: 1;
+}
+
+.note-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 1px 3px;
+    border-radius: var(--radius-sm);
+    font-size: 8px;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.note-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+    padding: var(--space-sm) var(--space-lg);
+    border-top: 1px solid var(--border-primary);
+    background: var(--bg-secondary);
+}
+
+.stats-summary {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    text-align: center;
+}
+
+/* Resize Handle */
+.sidebar-resize-handle {
+    width: 4px;
+    background: var(--border-primary);
+    cursor: ew-resize;
+    transition: background var(--transition-normal);
+    position: relative;
+}
+
+.sidebar-resize-handle:hover {
+    background: var(--accent-primary);
+}
+
+/* =============================================================================
+   MAIN EDITOR AREA - FIXED TO WORK WITH TEXTAREA
+   ============================================================================= */
+
+.editor-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    min-height: 0;
+}
+
+/* Editor Header */
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.current-note-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.note-title-input {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    padding: var(--space-xs) 0;
+    margin: 0 var(--space-xs) 0;
+    width: 100%;
+    outline: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--transition-normal);
+}
+
+.note-title-input:focus {
+    border-bottom-color: var(--accent-primary);
+}
+
+.note-title-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.note-breadcrumb {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.editor-actions {
+    display: flex;
+    gap: var(--space-xs);
+    margin-left: var(--space-lg);
+}
+
+.editor-action-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-primary);
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+.editor-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    transform: translateY(-1px);
+}
+
+.editor-action-btn.active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border-color: var(--accent-primary);
+}
+
+/* Formatting Toolbar */
+.formatting-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-primary);
+    overflow-x: auto;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: center;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 20px;
+    background: var(--border-primary);
+    margin: 0 var(--space-xs);
+}
+
+.toolbar-spacer {
+    flex: 1;
+}
+
+.format-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-primary);
+    color: var(--text-secondary);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    font-family: "Quicksand", sans-serif;
+}
+
+.format-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.format-btn.active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border-color: var(--accent-primary);
+}
+
+/* FIXED EDITOR - TEXTAREA VERSION */
+.editor-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* CRITICAL: Textarea Editor Styles */
+.editor-content {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    background: var(--bg-primary);
+    color: var(--text-inputs);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    padding: var(--space-xl);
+    outline: none;
+    border: none;
+    resize: none;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    box-sizing: border-box;
+    margin: 0; /* Add this */
+    /* vertical-align: top; */
+    display: block; /* Add this */
+}
+
+.editor-content::placeholder {
+    color: var(--text-tertiary);
+    white-space: pre-line;
+}
+
+/* Preview Overlay */
+.preview-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    z-index: 10;
+    overflow-y: auto;
+    display: none;
+}
+
+.preview-content {
+    padding: var(--space-xl);
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+    line-height: 1.6;
+}
+
+/* Status Bar */
+.editor-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-primary);
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+.status-left, .status-right {
+    display: flex;
+    gap: var(--space-lg);
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.status-item i {
+    font-size: 10px;
+}
+
+/* =============================================================================
+   SNIPPETS PANEL
+   ============================================================================= */
+
+.snippets-panel {
+    position: absolute;
+    top: 0;
+    right: -400px;
+    width: 380px;
+    height: 100%;
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-primary);
+    z-index: 100;
+    transition: right var(--transition-slow);
+    display: flex;
+    flex-direction: column;
+}
+
+.snippets-panel.open {
+    right: 0;
+}
+
+.snippets-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.snippets-header h3 {
+    margin: 0;
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.snippets-header h3 i {
+    color: var(--accent-primary);
+}
+
+.snippets-actions {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.snippets-action-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-primary);
+    color: var(--text-secondary);
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 11px;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+.snippets-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.snippets-search {
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.snippets-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-sm);
+}
+
+.snippets-empty {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--text-tertiary);
+}
+
+.snippets-empty i {
+    font-size: 2rem;
+    margin-bottom: var(--space-md);
+    color: var(--accent-primary);
+}
+
+/* Context Menu */
+.context-menu {
+    position: fixed;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    padding: var(--space-xs) 0;
+    box-shadow: var(--shadow-lg);
+    z-index: 10001;
+    min-width: 150px;
+    backdrop-filter: blur(10px);
+}
+
+.context-menu-item {
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    transition: all var(--transition-fast);
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.context-menu-item:hover {
+    background: rgba(177, 182, 149, 0.1);
+    color: var(--accent-primary);
+}
+
+.context-menu-item.primary {
+    color: var(--accent-primary);
+    font-weight: 500;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .notebook-sidebar {
+        width: 250px;
+        min-width: 200px;
+    }
+    
+    .formatting-toolbar {
+        overflow-x: scroll;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .snippets-panel {
+        width: 100%;
+        right: -100%;
+    }
+
+    .editor-content {
+        padding: var(--space-md);
+    }
+}
+
+/* =============================================================================
+   SCROLLBAR STYLING
+   ============================================================================= */
+
+.collections-tree::-webkit-scrollbar,
+.snippets-list::-webkit-scrollbar,
+.editor-content::-webkit-scrollbar,
+.preview-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.collections-tree::-webkit-scrollbar-track,
+.snippets-list::-webkit-scrollbar-track,
+.editor-content::-webkit-scrollbar-track,
+.preview-content::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+.collections-tree::-webkit-scrollbar-thumb,
+.snippets-list::-webkit-scrollbar-thumb,
+.editor-content::-webkit-scrollbar-thumb,
+.preview-content::-webkit-scrollbar-thumb {
+    background: var(--bg-quaternary);
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-normal);
+}
+
+.collections-tree::-webkit-scrollbar-thumb:hover,
+.snippets-list::-webkit-scrollbar-thumb:hover,
+.editor-content::-webkit-scrollbar-thumb:hover,
+.preview-content::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
+}
+
+/* =============================================================================
+   LIVE EDITOR FORMATTING HINTS (subtle)
+   ============================================================================= */
+
+.editor-content {
+    /* Base styles already defined, just add some hints */
+    tab-size: 4;
+}
+
+/* Very subtle formatting hints in the editor - don't interfere with typing */
+.editor-content:focus {
+    box-shadow: inset 0 0 0 1px rgba(177, 182, 149, 0.2);
+    min-height: 0; /* Add this */
+    height: auto; /* Add this */
+    flex: 1; /* Ensure it maintains flex behavior when focused */
+}
+
+/* ADD THESE STYLES TO notebook.css for collections */
+
+/* =============================================================================
+   COLLECTIONS ENHANCEMENTS
+   ============================================================================= */
+
+/* Collection header with color indicator */
+.collection-header {
+    border-left: 3px solid transparent;
+    transition: all var(--transition-normal);
+}
+
+.collection-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-secondary);
+}
+
+/* Collection actions */
+.collection-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    margin-left: var(--space-xs);
+}
+
+.collection-header:hover .collection-actions {
+    opacity: 1;
+}
+
+.collection-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: var(--radius-sm);
+    font-size: 9px;
+    transition: all var(--transition-fast);
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.collection-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.collection-action-btn[data-action="delete"]:hover {
+    color: var(--accent-danger);
+    background: rgba(220, 53, 69, 0.1);
+}
+
+/* Color picker in modal */
+.color-options {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.color-option:focus {
+    outline: none;
+    border-color: var(--text-primary);
+}
+
+/* Collection-specific note styling */
+.note-item[data-collection] {
+    position: relative;
+}
+
+.note-item[data-collection]::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 60%;
+    background: var(--accent-primary);
+    border-radius: 1px;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.note-item.active::before {
+    opacity: 1;
+}
+
+/* Collection count badges */
+.collection-count {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    margin-left: var(--space-sm);
+    background: var(--bg-quaternary);
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+    border: 1px solid var(--border-primary);
+}
+
+/* Empty collection state */
+.collection-empty {
+    text-align: center;
+    padding: var(--space-lg);
+    color: var(--text-tertiary);
+    font-style: italic;
+    font-size: var(--font-size-xs);
+}
+
+/* Collection management modal enhancements */
+.collection-modal .modal-content {
+    max-width: 500px;
+}
+
+.collection-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.collection-preview {
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--accent-primary);
+    margin-top: var(--space-md);
+}
+
+.collection-preview-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+/* ADD THESE STYLES TO notebook.css - Collection Toggle Animation */
+
+/* =============================================================================
+   COLLECTION TOGGLE FUNCTIONALITY
+   ============================================================================= */
+
+.collection-toggle {
+    width: 14px;
+    margin-right: var(--space-xs);
+    text-align: center;
+    font-size: 9px;
+    color: var(--text-tertiary);
+    transition: transform var(--transition-fast);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    border-radius: var(--radius-sm);
+}
+
+.collection-toggle:hover {
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.collection-toggle.expanded {
+    transform: rotate(90deg);
+}
+
+.collection-toggle i {
+    transition: transform var(--transition-fast);
+}
+
+/* Collection header improvements */
+.collection-header {
+    display: flex;
+    align-items: center;
+    padding: var(--space-xs) var(--space-sm);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    transition: all var(--transition-normal);
+    user-select: none;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+}
+
+.collection-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-secondary);
+}
+
+/* Collection icon changes based on state */
+.collection-icon {
+    margin-right: var(--space-sm);
+    color: var(--accent-primary);
+    font-size: 11px;
+    width: 12px;
+    text-align: center;
+    transition: all var(--transition-fast);
+}
+
+/* Notes list animation */
+.notes-list {
+    margin-left: var(--space-md);
+    margin-top: var(--space-xs);
+    border-left: 1px solid var(--border-primary);
+    padding-left: var(--space-sm);
+    transition: all var(--transition-normal);
+    overflow: hidden;
+}
+
+/* When collapsed, hide completely */
+.notes-list[style*="display: none"] {
+    margin-top: 0;
+    opacity: 0;
+}
+
+/* Collection group styling */
+.collection-group {
+    margin-bottom: var(--space-sm);
+}
+
+/* .collection-group[data-collection-key] {
+
+} */
+
+/* Better visual feedback for interactive elements */
+.collection-toggle,
+.collection-header {
+    position: relative;
+}
+
+.collection-toggle::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: var(--radius-sm);
+    opacity: 0;
+    background: rgba(177, 182, 149, 0.1);
+    transition: opacity var(--transition-fast);
+    z-index: -1;
+}
+
+.collection-toggle:hover::before {
+    opacity: 1;
+}
+
+/* Accessibility improvements */
+.collection-toggle:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* Smooth transitions for all collection elements */
+.collection-group * {
+    transition: all var(--transition-normal);
+}
+
+/* Prevent text selection on interactive elements */
+.collection-header,
+.collection-toggle,
+.collection-actions {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.collection-header {
+    /* existing styles... */
+    cursor: pointer; /* Make it clear the header is clickable */
+}
+
+.collection-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-secondary);
+    /* Add a subtle transform to show it's interactive */
+}
+
+/* Notebook Dropdown Styles */
+.notebook-selector-container {
+    position: relative;
+}
+
+.notebook-dropdown {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    padding-right: 50px; /* Space for dropdown arrow and action buttons */
+}
+
+.notebook-dropdown:hover {
+    border-color: var(--accent-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.notebook-dropdown:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(177, 182, 149, 0.2);
+}
+
+.notebook-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--accent-primary) !important;
+}
+
+/* Add this to the existing notebook dropdown styles */
+.notebook-selector-container {
+    position: relative;
+    padding-top: 14px; /* ADD THIS - creates space for the buttons above */
+}
+
+.notebook-dropdown-actions {
+    z-index: 10; /* ADD THIS - ensures buttons stay above other elements */
+}
+
+.notebook-action-btn {
+    width: 14px !important;
+    height: 14px !important;
+    padding: 2px !important;
+}

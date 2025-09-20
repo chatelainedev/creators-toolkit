@@ -1,0 +1,584 @@
+/* =============================================================================
+   COWRITER PROMPT MANAGEMENT STYLES - REFINED
+   ============================================================================= */
+
+/* Prompt Tabs Navigation */
+.prompt-tabs {
+    display: flex;
+    background: var(--bg-tertiary);
+    /* border-bottom line removed */
+    margin: calc(var(--space-xl) * -1) calc(var(--space-xl) * -1) var(--space-xl);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow: hidden;
+}
+
+.prompt-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: var(--space-md) var(--space-lg);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    font-family: "Nunito Sans", sans-serif;
+    cursor: pointer;
+    transition: color var(--transition-normal), background-color var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin: 0;
+}
+
+.prompt-tab:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    transform: none;
+}
+
+.prompt-tab.active {
+    color: var(--accent-primary);
+    background: var(--bg-secondary);
+    border-radius: 0;
+}
+
+.prompt-tab.focus {
+    transform: none;
+}
+
+.prompt-tab i {
+    font-size: var(--font-size-sm);
+    opacity: 0.7;
+}
+
+/* Tab Content Areas */
+.prompt-tab-content {
+    display: none;
+    padding: var(--space-xl);
+    min-height: 400px;
+}
+
+.prompt-tab-content.active {
+    display: block;
+}
+
+/* Ensure only active tab shows */
+.prompt-tab-content:not(.active) {
+    display: none !important;
+}
+
+/* Content Headers */
+.prompt-content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.prompt-content-header h4 {
+    margin: 0;
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+}
+
+/* Add Prompt Button */
+.btn-add-prompt {
+    background: rgba(177, 182, 149, 0.1);
+    color: var(--accent-primary);
+    border: 2px solid var(--accent-primary);
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    font-family: "Quicksand", sans-serif;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.btn-add-prompt:hover {
+    background: rgba(177, 182, 149, 0.2);
+    border-color: var(--accent-primary);
+}
+
+.btn-add-prompt:active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+/* Main Prompt Specific Styles */
+.main-prompt-controls {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+    align-items: center;
+}
+
+.prompt-select {
+    flex: 1;
+    background: var(--bg-quaternary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-inputs);
+    font-size: var(--font-size-base);
+    font-family: "Nunito Sans", sans-serif;
+    padding: var(--space-sm) var(--space-md);
+    margin: 0;
+    transition: all var(--transition-normal);
+}
+
+.prompt-select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(177, 182, 149, 0.1);
+    background: var(--bg-tertiary);
+}
+
+.prompt-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.btn-prompt-action {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-primary);
+    color: var(--text-secondary);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    font-family: "Quicksand", sans-serif;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    white-space: nowrap;
+}
+
+.btn-prompt-action:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.btn-prompt-action.delete:hover:not(:disabled) {
+    background: rgba(192, 87, 70, 0.1);
+    border-color: var(--accent-danger);
+    color: var(--accent-danger);
+}
+
+.btn-prompt-action.delete:active:not(:disabled) {
+    background: var(--accent-danger);
+    color: var(--bg-primary);
+}
+
+.btn-prompt-action:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.main-prompt-textarea {
+    width: 100%;
+    background: var(--bg-quaternary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-inputs);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    padding: var(--space-md);
+    resize: vertical;
+    transition: all var(--transition-normal);
+    margin: 0;
+    min-height: 200px;
+}
+
+.main-prompt-textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(177, 182, 149, 0.1);
+    background: var(--bg-tertiary);
+}
+
+.main-prompt-textarea:read-only {
+    background: var(--bg-primary);
+    color: var(--text-tertiary);
+    cursor: default;
+    border-color: var(--border-secondary);
+}
+
+/* Custom Prompts Grid */
+.custom-prompts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+/* Individual Prompt Cards */
+.prompt-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    transition: all var(--transition-normal);
+    position: relative;
+}
+
+.prompt-card:hover {
+    border-color: var(--border-secondary);
+    box-shadow: var(--shadow-sm);
+}
+
+.prompt-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-md);
+    gap: var(--space-md);
+}
+
+.prompt-card-title {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    flex: 1;
+    line-height: 1.4;
+}
+
+.prompt-card-actions {
+    display: flex;
+    gap: var(--space-xs);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.prompt-card:hover .prompt-card-actions {
+    opacity: 1;
+}
+
+.btn-card-action {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-primary);
+    color: var(--text-secondary);
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-xs);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-normal);
+}
+
+.btn-card-action:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.btn-card-action.delete:hover {
+    background: rgba(192, 87, 70, 0.1);
+    border-color: var(--accent-danger);
+    color: var(--accent-danger);
+}
+
+.btn-card-action.delete:active {
+    background: var(--accent-danger);
+    color: var(--bg-primary);
+}
+
+.prompt-card-preview {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    margin-bottom: var(--space-md);
+    font-family: "Nunito Sans", sans-serif;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+}
+
+.prompt-card-preview::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: linear-gradient(transparent, var(--bg-primary));
+    pointer-events: none;
+}
+
+.prompt-card-meta {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-xs);
+    text-align: right;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+/* Empty States */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-2xl);
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    margin: var(--space-lg) 0;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-lg);
+    opacity: 0.4;
+    color: var(--text-tertiary);
+}
+
+.empty-state p {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.empty-state small {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    opacity: 0.7;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+/* Loading States */
+.prompt-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    color: var(--text-secondary);
+    font-style: italic;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.prompt-loading i {
+    margin-right: var(--space-sm);
+    animation: spin 0.8s linear infinite;
+}
+
+/* Custom Prompt Edit Modal - Made Wider and Better Styled */
+#custom-prompt-edit-modal .cowriter-modal-content {
+    width: 90%;
+    max-width: 700px;
+    max-height:85vh;
+}
+
+#custom-prompt-edit-modal .modal-body {
+    padding: var(--space-sm);
+}
+
+#custom-prompt-edit-modal .form-group {
+    margin-bottom: var(--space-lg);
+}
+
+#custom-prompt-edit-modal .form-group:last-child {
+    margin-bottom: 0;
+}
+
+#custom-prompt-edit-modal label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-weight: 500;
+    font-size: var(--font-size-sm);
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-labels);
+}
+
+#custom-prompt-edit-modal input,
+#custom-prompt-edit-modal textarea {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-family: "Nunito Sans", sans-serif;
+    background-color: var(--bg-quaternary);
+    color: var(--text-inputs);
+    transition: all var(--transition-normal);
+    margin: 0;
+}
+
+#custom-prompt-edit-modal input:focus,
+#custom-prompt-edit-modal textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(177, 182, 149, 0.1);
+    background-color: var(--bg-tertiary);
+}
+
+#custom-prompt-edit-modal textarea {
+    resize: vertical;
+    min-height: 200px;
+    line-height: 1.6;
+}
+
+#custom-prompt-edit-modal .textarea-container {
+    position: relative;
+}
+
+#custom-prompt-edit-modal .expand-text-btn {
+    position: absolute;
+    right: var(--space-sm);
+    top: var(--space-sm);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-secondary);
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    font-size: var(--font-size-xs);
+}
+
+#custom-prompt-edit-modal .expand-text-btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+#custom-prompt-edit-modal .form-text {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    margin-top: var(--space-xs);
+    font-family: "Nunito Sans", sans-serif;
+}
+
+#custom-prompt-edit-modal .modal-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-primary);
+}
+
+/* Template Description Group */
+#template-description-group {
+    margin-bottom: var(--space-lg);
+}
+
+/* Scrollbar Styling */
+.main-prompt-textarea::-webkit-scrollbar,
+.prompt-card-preview::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main-prompt-textarea::-webkit-scrollbar-track,
+.prompt-card-preview::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+}
+
+.main-prompt-textarea::-webkit-scrollbar-thumb,
+.prompt-card-preview::-webkit-scrollbar-thumb {
+    background: var(--bg-quaternary);
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-normal);
+}
+
+.main-prompt-textarea::-webkit-scrollbar-thumb:hover,
+.prompt-card-preview::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
+}
+
+/* Add Name Modal Styling */
+#add-name-modal .modal-content {
+    width: 90%;
+    max-width: 450px;
+}
+
+#add-name-modal .modal-header {
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-primary);
+    padding: var(--space-lg) var(--space-xl);
+}
+
+#add-name-modal .modal-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-lg);
+}
+
+#add-name-modal .modal-body {
+    padding: var(--space-xl);
+}
+
+#add-name-modal .form-group {
+    margin-bottom: var(--space-lg);
+}
+
+#add-name-modal .form-group:last-of-type {
+    margin-bottom: 0;
+}
+
+#add-name-modal label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-weight: 500;
+    font-size: var(--font-size-sm);
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-labels);
+}
+
+#add-name-modal input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-family: "Nunito Sans", sans-serif;
+    background-color: var(--bg-quaternary);
+    color: var(--text-inputs);
+    transition: all var(--transition-normal);
+    margin: 0;
+}
+
+#add-name-modal input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(177, 182, 149, 0.1);
+    background-color: var(--bg-tertiary);
+}
+
+#add-name-modal .modal-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-primary);
+}

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ye Mingzhu - Impact Visualization</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    #scene-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      height: 500px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+    }
+    
+    #background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #2c3e50, #121212);
+    }
+    
+    #landscape {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 70%;
+      background: linear-gradient(to bottom, rgba(73, 67, 67, 0.8), rgb(36, 36, 36));
+      clip-path: polygon(0% 100%, 15% 70%, 25% 80%, 35% 60%, 50% 75%, 65% 65%, 75% 85%, 85% 60%, 100% 90%, 100% 100%);
+    }
+    
+    .rock {
+      position: absolute;
+      background: linear-gradient(145deg, #464646, #272727);
+      border-radius: 5px;
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 2px rgba(255, 255, 255, 0.05);
+      transform-origin: center bottom;
+    }
+    
+    #general {
+      position: absolute;
+      bottom: 65%;
+      left: 20%;
+      width: 80px;
+      height: 180px;
+      background: radial-gradient(circle at 40% 30%, #666, #333);
+      clip-path: polygon(40% 0%, 60% 0%, 80% 20%, 100% 40%, 100% 70%, 80% 100%, 20% 100%, 0% 70%, 0% 40%, 20% 20%);
+      z-index: 5;
+      transform: rotate(-5deg);
+    }
+    
+    #general:after {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ff6b00, #ff3300);
+      border-radius: 50%;
+      box-shadow: 0 0 15px 5px rgba(255, 99, 71, 0.7);
+      animation: pulse 2s infinite;
+    }
+    
+    #arm {
+      position: absolute;
+      top: 30%;
+      right: -40px;
+      width: 70px;
+      height: 20px;
+      background: #333;
+      transform-origin: left center;
+      transform: rotate(20deg);
+      animation: swing 4s infinite alternate;
+      z-index: 4;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.6; box-shadow: 0 0 15px 5px rgba(255, 99, 71, 0.7); }
+      50% { opacity: 1; box-shadow: 0 0 20px 10px rgba(255, 99, 71, 0.9); }
+      100% { opacity: 0.6; box-shadow: 0 0 15px 5px rgba(255, 99, 71, 0.7); }
+    }
+    
+    @keyframes swing {
+      0% { transform: rotate(20deg); }
+      100% { transform: rotate(60deg); }
+    }
+    
+    #ye-mingzhu {
+      position: absolute;
+      width: 14px;
+      height: 35px;
+      background: #000;
+      bottom: 65%;
+      left: 50%;
+      z-index: 10;
+      transition: all 1.5s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    }
+    
+    #impact-area {
+      position: absolute;
+      bottom: 30%;
+      right: 15%;
+      width: 300px;
+      height: 120px;
+      transform: rotate(-10deg);
+      z-index: 3;
+    }
+    
+    .dust {
+      position: absolute;
+      background: rgba(150, 150, 150, 0.4);
+      border-radius: 50%;
+      opacity: 0;
+      z-index: 2;
+    }
+    
+    #impact-trail {
+      position: absolute;
+      width: 5px;
+      height: 180px;
+      background: linear-gradient(to top, rgba(150, 150, 150, 0), rgba(150, 150, 150, 0.5));
+      bottom: 30%;
+      right: 40%;
+      transform-origin: bottom center;
+      transform: rotate(45deg);
+      opacity: 0;
+      z-index: 1;
+    }
+    
+    .control-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      z-index: 20;
+    }
+    
+    button {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 5px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    
+    button:hover {
+      background: #555;
+    }
+    
+    #impact-description {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: white;
+      font-size: 18px;
+      padding: 10px;
+      z-index: 20;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+  </style>
+</head>
+<body>
+  <div id="scene-container">
+    <div id="background"></div>
+    <div id="impact-description">
+      The general's massive arm connects, sending Ye Mingzhu flying backward...
+    </div>
+    <div id="landscape"></div>
+    
+    <div id="general">
+      <div id="arm"></div>
+    </div>
+    
+    <div id="ye-mingzhu"></div>
+    <div id="impact-trail"></div>
+    
+    <div id="impact-area"></div>
+    
+    <div class="control-panel">
+      <button id="play-button">Play Impact</button>
+      <button id="reset-button">Reset</button>
+    </div>
+  </div>
+  
+  <script>
+    const yeMingzhu = document.getElementById('ye-mingzhu');
+    const impactTrail = document.getElementById('impact-trail');
+    const impactArea = document.getElementById('impact-area');
+    const description = document.getElementById('impact-description');
+    const playButton = document.getElementById('play-button');
+    const resetButton = document.getElementById('reset-button');
+    
+    // Create rocks
+    function createRocks() {
+      impactArea.innerHTML = '';
+      const rockCount = 35;
+      
+      for (let i = 0; i < rockCount; i++) {
+        const rock = document.createElement('div');
+        rock.className = 'rock';
+        
+        const size = Math.random() * 20 + 5;
+        const left = Math.random() * 270;
+        const top = Math.random() * 90;
+        
+        rock.style.width = `${size}px`;
+        rock.style.height = `${size * (Math.random() * 0.5 + 0.5)}px`;
+        rock.style.left = `${left}px`;
+        rock.style.top = `${top}px`;
+        rock.style.transform = `rotate(${Math.random() * 360}deg)`;
+        
+        impactArea.appendChild(rock);
+      }
+    }
+    
+    // Create dust particles
+    function createDust() {
+      for (let i = 0; i < 20; i++) {
+        const dust = document.createElement('div');
+        dust.className = 'dust';
+        
+        const size = Math.random() * 15 + 5;
+        const left = Math.random() * 100 - 50 + 150;
+        const bottom = Math.random() * 20 + 30;
+        
+        dust.style.width = `${size}px`;
+        dust.style.height = `${size}px`;
+        dust.style.right = `${left}px`;
+        dust.style.bottom = `${bottom}%`;
+        
+        document.getElementById('scene-container').appendChild(dust);
+        
+        // Animate dust
+        setTimeout(() => {
+          dust.style.transition = `all ${Math.random() * 2 + 1}s ease-out`;
+          dust.style.opacity = '0.7';
+          dust.style.transform = `translate(${Math.random() * 100 - 50}px, ${-Math.random() * 50 - 20}px)`;
+          
+          setTimeout(() => {
+            dust.style.opacity = '0';
+            setTimeout(() => {
+              dust.remove();
+            }, 1000);
+          }, 1000);
+        }, Math.random() * 300);
+      }
+    }
+    
+    // Play the impact animation
+    function playImpact() {
+      // Reset first
+      resetScene();
+      
+      // Show description
+      description.style.opacity = '1';
+      
+      // Move Ye Mingzhu to starting position
+      yeMingzhu.style.left = '35%';
+      yeMingzhu.style.bottom = '65%';
+      
+      // Wait a moment then start the impact
+      setTimeout(() => {
+        // Move Ye Mingzhu to impact position
+        yeMingzhu.style.left = '75%';
+        yeMingzhu.style.bottom = '30%';
+        yeMingzhu.style.transform = 'rotate(720deg)';
+        
+        // Show impact trail
+        setTimeout(() => {
+          impactTrail.style.opacity = '0.7';
+          
+          // Create dust effect
+          setTimeout(() => {
+            createDust();
+            
+            // Animate rocks
+            const rocks = document.querySelectorAll('.rock');
+            rocks.forEach(rock => {
+              rock.style.transition = 'transform 0.5s ease-out';
+              rock.style.transform = `translateY(${-Math.random() * 20}px) rotate(${Math.random() * 360}deg)`;
+            });
+            
+            // Update description
+            description.textContent = 'Rocks fly as he skids across the debris, dust billowing in his wake...';
+            
+            setTimeout(() => {
+              // Update description
+              description.textContent = 'His gauntlets grind against stone as he finally halts his momentum...';
+              
+              // Fade out impact trail
+              impactTrail.style.opacity = '0';
+            }, 2000);
+          }, 200);
+        }, 100);
+      }, 1000);
+    }
+    
+    // Reset the scene
+    function resetScene() {
+      // Reset Ye Mingzhu
+      yeMingzhu.style.transition = 'none';
+      yeMingzhu.style.left = '35%';
+      yeMingzhu.style.bottom = '65%';
+      yeMingzhu.style.transform = 'rotate(0)';
+      
+      // Reset impact trail
+      impactTrail.style.opacity = '0';
+      
+      // Reset description
+      description.style.opacity = '0';
+      description.textContent = 'The general\'s massive arm connects, sending Ye Mingzhu flying backward...';
+      
+      // Remove all dust particles
+      document.querySelectorAll('.dust').forEach(dust => dust.remove());
+      
+      // Recreate rocks
+      createRocks();
+      
+      // Re-enable transition
+      setTimeout(() => {
+        yeMingzhu.style.transition = 'all 1.5s cubic-bezier(0.68, -0.6, 0.32, 1.6)';
+      }, 50);
+    }
+    
+    // Initialize
+    createRocks();
+    
+    // Event listeners
+    playButton.addEventListener('click', playImpact);
+    resetButton.addEventListener('click', resetScene);
+  </script>
+</body>
+</html>

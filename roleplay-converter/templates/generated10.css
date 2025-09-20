@@ -1,0 +1,393 @@
+/* CSS Variables for Color Scheme */
+/* Name: Pastel Dreams */ 
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@500;700&display=swap');
+
+:root {
+    /* Main Accent - a soft, dreamy pink */
+    --accent-pink-main: #fec8d8;
+    --accent-pink-dark: #f2a7b8;
+    --accent-pink-light: #fff0f5;
+    
+    /* Secondary Accents - gentle sky blue and lavender */
+    --accent-blue-main: #a7d8f2;
+    --accent-lavender-main: #d7bde2;
+
+    /* Grays & Neutrals - warm and soft */
+    --gray-700: #7b6d8d; /* Darkest for main text */
+    --gray-600: #a499b3; /* Muted text */
+    --gray-400: #dcd6e3; /* Borders */
+    --gray-200: #f4f1f7; /* Light backgrounds */
+    --gray-100: #faf8fc; /* Lightest backgrounds */
+    
+    /* Core Colors */
+    --white: #ffffff;
+    --background-main: var(--gray-100);
+    --border-color: var(--gray-400);
+    
+    /* Text Colors (Semantic) */
+    --text-main: var(--gray-700);
+    --text-muted: var(--gray-600);
+    --text-dialog: #8e80a1;
+    
+    /* Shadow Colors - super soft and subtle */
+    --shadow-color: rgba(123, 109, 141, 0.08);
+    --shadow-modal: rgba(123, 109, 141, 0.2);
+    --overlay-dark: rgba(255, 240, 245, 0.85); /* A pinkish overlay */
+
+    /* Fonts */
+    --font-heading: 'Quicksand', sans-serif;
+    --font-body: 'Nunito', sans-serif;
+}
+
+body {
+    font-family: var(--font-body);
+    line-height: 1.7;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-main);
+    background-image: radial-gradient(var(--gray-400) 0.5px, transparent 0.5px);
+    background-size: 15px 15px;
+    color: var(--text-main);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+}
+
+/* Typography improvements */
+em {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+strong {
+    font-weight: 700;
+    color: var(--accent-pink-dark);
+}
+
+del {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+.dialogue {
+    font-family: inherit;
+    font-style: italic;
+    color: var(--text-dialog);
+}
+
+/* Markdown - A cute divider */
+.section-divider {
+    display: block;
+    margin: 35px auto;
+    width: 250px;
+    height: 1px;
+    background: var(--border-color);
+    border: none;
+    text-align: center;
+}
+
+.section-divider::before {
+    content: '✧.* ♡ *.✧';
+    color: var(--accent-pink-main);
+    font-size: 1.2em;
+    position: relative;
+    top: -16px;
+    background: var(--background-main);
+    padding: 0 15px;
+}
+
+/* Main content wrapper - soft and rounded */
+.content-wrapper {
+    background-color: var(--white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px;
+    padding: 30px;
+    margin: 0 0 20px 0;
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+/* Header - dreamy and welcoming */
+header {
+    background: linear-gradient(135deg, var(--accent-pink-light), var(--accent-blue-main));
+    color: var(--text-main);
+    padding: 40px 30px;
+    text-align: center;
+    margin-bottom: 0;
+    border-bottom: 2px solid var(--accent-pink-main) !important;
+    border-radius: 16px 16px 0 0;
+}
+
+header h1 {
+    font-family: var(--font-heading);
+    margin: 0 0 8px 0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-size: 2.2em;
+    color: var(--white);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+header h2 {
+    margin: 0;
+    font-weight: 600;
+    opacity: 0.8;
+    font-size: 1.1em;
+    color: var(--white);
+}
+
+/* Navigation - clean and bubbly */
+nav {
+    background-color: var(--accent-pink-light) !important; /* MODIFIED: Changed from white to soft pink */
+    border: 1px solid var(--border-color) !important;
+    border-top: none;
+    border-bottom-width: 2px;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+    border-radius: 0 0 16px 16px;
+}
+
+nav a {
+    color: var(--text-muted) !important;
+    text-decoration: none !important;
+    margin-right: 20px;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    padding: 8px 15px;
+    transition: all 0.2s ease-in-out;
+    border-radius: 20px;
+}
+
+nav a:hover {
+    background-color: var(--accent-pink-light) !important;
+    color: var(--accent-pink-dark) !important;
+    transform: translateY(-2px);
+}
+
+/* Story info - soft info box */
+.story-info {
+    background-color: var(--gray-100) !important;
+    border: 1px dashed var(--border-color) !important;
+    padding: 25px;
+    margin-bottom: 20px;
+    position: relative;
+    border-radius: 12px;
+}
+
+.story-info strong {
+    color: var(--gray-700);
+    font-weight: 700;
+}
+
+.story-description {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.story-stats {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;      /* ADDED: Fixes stretched tags */
+    flex-wrap: wrap;    /* ADDED: Allows tags to wrap to next line */
+    gap: 10px;          /* ADDED: Adds space between tags */
+}
+
+.stat-item {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.stat-item::before {
+    content: '☆';
+    margin-right: 8px;
+    color: var(--accent-pink-main);
+}
+
+/* Export button - cute and simple */
+.export-button {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: var(--gray-600);
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+
+.export-button:hover {
+    background-color: var(--gray-100);
+    color: var(--accent-pink-dark);
+}
+
+/* Gallery styles - soft grid */
+.gallery-header { background-color: var(--gray-100); padding: 15px 25px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); margin-bottom: 0; font-weight: 700; color: var(--text-muted); border-radius: 10px; }
+.gallery-header:hover { background-color: var(--gray-200); }
+.story-gallery { display: flex; flex-wrap: wrap; gap: 15px; padding: 25px; background-color: transparent; border: none; margin-top: 0; }
+.story-gallery img { border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 2px 8px var(--shadow-color); cursor: pointer; transition: all 0.2s ease; }
+.story-gallery img:hover { box-shadow: 0 4px 12px var(--shadow-modal); transform: scale(1.03) rotate(1deg); }
+.toggle-icon { font-size: 14px; transition: transform 0.15s ease; color: var(--text-muted); }
+.toggle-icon.collapsed { transform: rotate(-90deg); }
+.gallery-content { transition: max-height 0.2s ease, padding 0.2s ease; max-height: 1000px; overflow: hidden; background-color: var(--white); border: 1px solid var(--border-color); border-top: none; border-radius: 0 0 10px 10px; }
+
+.gallery-content.collapsed {
+    max-height: 0;
+    padding: 0;       /* MODIFIED: Ensures no space is taken up */
+    border: none;     /* MODIFIED: Removes leftover borders */
+}
+
+/* Part headers - soft and inviting */
+.part-header {
+    background: var(--accent-lavender-main);
+    color: var(--white);
+    margin: 20px 0 0 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 16px 16px 0 0;
+}
+
+.part-header h2 {
+    font-family: var(--font-heading);
+    margin: 0;
+    padding: 18px 25px;
+    font-weight: 700;
+    font-size: 1.3em;
+}
+
+.part-toggle { padding-right: 25px; color: rgba(255, 255, 255, 0.9); font-size: 14px; transition: transform 0.15s ease; }
+.part-toggle.collapsed { transform: rotate(-90deg); }
+
+/* Main RP container */
+.rp-container {
+    background-color: var(--white) !important;
+    border: 1px solid var(--border-color) !important;
+    padding: 30px;
+    margin: 0 0 20px 0;
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+.rp-container.collapsed { display: none; }
+
+.rp-container:last-of-type::after {
+    content: "see you next time! ♡";
+    display: block;
+    text-align: center;
+    padding-top: 40px;
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+/* RP entries */
+.rp-entry { margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid var(--gray-200); }
+.rp-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.rp-entry p, .rp-entry .html-content { margin: 0 0 1em 0; line-height: 1.8; }
+.rp-entry p:last-of-type, .rp-entry .html-content:last-of-type { margin-bottom: 0; }
+
+/* Character names - sweet and distinct */
+.character-name {
+    display: block;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-left: 6px solid; /* Uses character color */
+    border-radius: 0 8px 8px 0;
+    background-color: var(--gray-100);
+}
+
+.character-name::before {
+    content: "♡ ";
+    color: var(--accent-pink-main);
+    font-weight: normal;
+}
+
+/* Table of contents */
+.table-of-contents { background-color: var(--gray-100); border: 1px dashed var(--border-color); padding: 25px; margin-bottom: 20px; border-radius: 12px; }
+.table-of-contents h3 { margin: 0 0 15px 0; color: var(--gray-700); font-weight: 700; font-size: 1.1em; font-family: var(--font-heading); }
+.table-of-contents ul { margin: 0; padding-left: 25px; list-style-type: '♡ '; line-height: 1.8; }
+.table-of-contents a { color: var(--text-main); text-decoration: none; transition: color 0.2s ease; }
+.table-of-contents a:hover { color: var(--accent-pink-dark); }
+
+/* Word count display */
+.word-count-display { font-size: 0.9em; color: var(--text-muted); text-align: right; margin-top: 20px; font-style: italic; }
+
+/* Scroll to top button */
+.scroll-top-btn { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: var(--white); color: var(--accent-pink-main); border: 1px solid var(--border-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.3s ease; box-shadow: 0 2px 10px var(--shadow-modal); z-index: 1000; font-size: 20px; }
+.scroll-top-btn.visible { opacity: 1; visibility: visible; }
+.scroll-top-btn:hover { background-color: var(--accent-pink-main); color: var(--white); transform: scale(1.1) rotate(5deg); }
+
+/* Soundtrack & Comments Panels */
+.soundtrack-panel, .comments-panel { position: fixed; left: 30px; width: 320px; background-color: rgba(255,255,255,0.95) !important; backdrop-filter: blur(8px); border: 1px solid var(--border-color) !important; box-shadow: 0 4px 20px var(--shadow-modal); z-index: 1000; transition: transform 0.3s ease; transform: translateX(-350px); border-radius: 12px; }
+.soundtrack-panel { top: 90px; }
+.comments-panel { top: 150px; }
+.soundtrack-panel.open, .comments-panel.open { transform: translateX(0); }
+.soundtrack-toggle, .comments-toggle { position: absolute; top: 0; right: -50px; width: 50px; height: 50px; background-color: var(--white); color: var(--text-muted); border: 1px solid var(--border-color); border-left: none; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; box-shadow: 2px 0 10px var(--shadow-color); transition: all 0.2s ease; border-radius: 0 12px 12px 0; }
+.soundtrack-toggle:hover, .comments-toggle:hover { background-color: var(--gray-100); color: var(--accent-pink-dark); }
+.soundtrack-panel.open ~ .comments-panel .comments-toggle, .comments-panel.open ~ .soundtrack-panel .soundtrack-toggle { opacity: 0; pointer-events: none; }
+.soundtrack-panel.open, .comments-panel.open { z-index: 1001; }
+.soundtrack-panel.open ~ .comments-panel { top: 200px; z-index: 1000; }
+.comments-panel.open ~ .soundtrack-panel { top: 40px; z-index: 1000; }
+.soundtrack-header { background: var(--accent-pink-main); color: white; padding: 20px 25px; font-weight: 700; font-size: 1.1em; border-radius: 10px 10px 0 0; font-family: var(--font-heading); }
+.comments-header { background: var(--accent-blue-main); color: white; padding: 20px 25px; font-weight: 700; font-size: 1.1em; border-radius: 10px 10px 0 0; font-family: var(--font-heading); }
+.soundtrack-content, .comments-content { max-height: 60vh; overflow-y: auto; padding: 25px; scrollbar-width: thin; scrollbar-color: var(--gray-400) var(--gray-200); }
+.soundtrack-content::-webkit-scrollbar, .comments-content::-webkit-scrollbar { width: 6px; }
+.soundtrack-content::-webkit-scrollbar-track, .comments-content::-webkit-scrollbar-track { background: var(--gray-200); }
+.soundtrack-content::-webkit-scrollbar-thumb, .comments-content::-webkit-scrollbar-thumb { background-color: var(--gray-400); border-radius: 3px; }
+.soundtrack-section-title, .comments-section-title { font-weight: 700; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+.soundtrack-track a { display: block; color: var(--text-main); text-decoration: none; padding: 6px 0; transition: color 0.2s ease; }
+.soundtrack-track a:hover { color: var(--accent-pink-dark); }
+.soundtrack-track a::before { content: '♪ '; margin-right: 8px; color: var(--text-muted); }
+.comment-block { margin-bottom: 15px; padding: 15px; background-color: var(--gray-100); border-left: 3px solid var(--accent-blue-main); border-radius: 4px; }
+
+/* Legacy font color override */
+font[color=blue] { color: var(--accent-blue-main) !important; }
+
+/* Image Modal */
+.image-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: var(--overlay-dark); backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease; }
+.image-modal.show { display: flex !important; justify-content: center; align-items: center; padding: 40px; box-sizing: border-box; opacity: 1; }
+.image-modal-content { position: relative; max-width: 90%; max-height: 90%; animation: fadeInScale 0.3s ease; }
+.image-modal img { width: 100%; height: 100%; object-fit: contain; box-shadow: 0 8px 40px var(--shadow-modal); border-radius: 16px; border: 2px solid white; }
+.image-modal-close { position: absolute; top: -15px; right: -15px; background-color: var(--white); color: var(--text-main); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px var(--shadow-modal); transition: all 0.2s ease; z-index: 2001; }
+.image-modal-close:hover { transform: scale(1.1) rotate(90deg); background-color: var(--accent-pink-main); color: white; }
+.image-modal-nav { position: absolute; top: 50%; transform: translateY(-50%); background-color: rgba(255,255,255,0.9); color: var(--text-main); border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px var(--shadow-modal); transition: all 0.2s ease; z-index: 2001; }
+.image-modal-nav:hover { transform: translateY(-50%) scale(1.1); background-color: var(--white); }
+.image-modal-nav.prev { left: -25px; }
+.image-modal-nav.next { right: -25px; }
+
+/* Animations */
+@keyframes fadeInScale { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Responsive design */
+@media (max-width: 768px) {
+    body { padding: 0 10px; }
+    .content-wrapper, .rp-container, .story-info { padding: 20px; }
+    header, nav { border-radius: 0; }
+    .scroll-top-btn { bottom: 20px; right: 20px; }
+    .soundtrack-panel, .comments-panel { width: 100%; left: 0; top: 0; height: 100%; border-radius: 0; transform: translateX(-100%); }
+    .soundtrack-toggle, .comments-toggle { right: -40px; width: 40px; height: 40px; }
+}
+
+/* Panel Position Override - Add to bottom of template files */
+.soundtrack-panel, .comments-panel {
+    transform: translateX(-355px) !important;
+}
+
+.soundtrack-panel.open, .comments-panel.open {
+    transform: translateX(0) !important;
+}

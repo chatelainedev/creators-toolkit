@@ -1,0 +1,1201 @@
+/* =============================================================================
+   MARKDOWN THEME SYSTEM - IMPROVED OBSIDIAN-INSPIRED THEMES
+   Better spacing, color harmony, and visual hierarchy
+   ============================================================================= */
+
+/* Base markdown styles that apply to all themes */
+.preview-content {
+    font-size: var(--md-font-size, 14px);
+    padding: var(--space-xl);
+    max-width: none;
+    line-height: var(--md-line-height, 1.6);
+    font-family: var(--md-font-body);
+}
+
+/* =============================================================================
+   NORD THEME - Clean arctic blues and grays
+   ============================================================================= */
+.markdown-theme-nord {
+    --md-bg-primary: #2e3440;
+    --md-bg-secondary: #3b4252;
+    --md-bg-tertiary: #434c5e;
+    --md-bg-quaternary: #4c566a;
+
+    --md-message-bg-start: #2a303c;
+    --md-message-bg-end: #32364a;
+    
+    --md-text-primary: #eceff4;
+    --md-text-secondary: #e5e9f0;
+    --md-text-tertiary: #d8dee9;
+    --md-text-muted: #81a1c1;
+    
+    --md-accent-primary: #88c0d0;
+    --md-accent-secondary: #81a1c1;
+    --md-accent-h1: #bf616a;
+    --md-accent-h2: #d08770;
+    --md-accent-h3: #ebcb8b;
+    --md-accent-h4: #a3be8c;
+    --md-accent-h5: #b48ead;
+    --md-accent-h6: #5e81ac;
+    
+    --md-border-primary: #4c566a;
+    --md-border-secondary: #5e81ac;
+    
+    --md-font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --md-font-headers: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --md-font-code: 'JetBrains Mono', 'Fira Code', monospace;
+    
+    --md-line-height: 1.6;
+    --md-header-margin-top: 1.5rem;
+    --md-header-margin-bottom: 0.75rem;
+    --md-paragraph-margin: 1rem;
+}
+
+/* =============================================================================
+   CATPPUCCIN MOCHA - Warm pastels on dark
+   ============================================================================= */
+.markdown-theme-catppuccin {
+    --md-bg-primary: #1e1e2e;
+    --md-bg-secondary: #313244;
+    --md-bg-tertiary: #45475a;
+    --md-bg-quaternary: #585b70;
+
+    --md-message-bg-start: #1a1a2a;
+    --md-message-bg-end: #22222e;
+    
+    --md-text-primary: #cdd6f4;
+    --md-text-secondary: #bac2de;
+    --md-text-tertiary: #a6adc8;
+    --md-text-muted: #9399b2;
+    
+    --md-accent-primary: #89b4fa;
+    --md-accent-secondary: #74c7ec;
+    --md-accent-h1: #f38ba8;
+    --md-accent-h2: #fab387;
+    --md-accent-h3: #f9e2af;
+    --md-accent-h4: #a6e3a1;
+    --md-accent-h5: #cba6f7;
+    --md-accent-h6: #89b4fa;
+    
+    --md-border-primary: #45475a;
+    --md-border-secondary: #74c7ec;
+    
+    --md-font-body: 'Nunito Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --md-font-headers: 'Nunito Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --md-font-code: 'JetBrains Mono', 'Fira Code', monospace;
+    
+    --md-line-height: 1.6;
+    --md-header-margin-top: 1.4rem;
+    --md-header-margin-bottom: 0.7rem;
+    --md-paragraph-margin: 1rem;
+}
+
+/* =============================================================================
+   TOKYO NIGHT - Cyberpunk neon vibes
+   ============================================================================= */
+.markdown-theme-tokyo-night {
+    --md-bg-primary: #1a1b26;
+    --md-bg-secondary: #24283b;
+    --md-bg-tertiary: #32344a;
+    --md-bg-quaternary: #3b3f58;
+
+    --md-message-bg-start: #161722;
+    --md-message-bg-end: #1e1f2a;
+    
+    --md-text-primary: #c0caf5;
+    --md-text-secondary: #a9b1d6;
+    --md-text-tertiary: #9aa5ce;
+    --md-text-muted: #565f89;
+    
+    --md-accent-primary: #7aa2f7;
+    --md-accent-secondary: #bb9af7;
+    --md-accent-h1: #f7768e;
+    --md-accent-h2: #ff9e64;
+    --md-accent-h3: #e0af68;
+    --md-accent-h4: #9ece6a;
+    --md-accent-h5: #bb9af7;
+    --md-accent-h6: #7dcfff;
+    
+    --md-border-primary: #32344a;
+    --md-border-secondary: #7aa2f7;
+    
+    --md-font-body: 'Calibri', 'Menlo', monospace;
+    --md-font-headers: 'Candara', 'Menlo', monospace;
+    --md-font-code: 'Source Code Pro', 'Menlo', monospace;
+    
+    --md-line-height: 1.5;
+    --md-header-margin-top: 1.6rem;
+    --md-header-margin-bottom: 0.8rem;
+    --md-paragraph-margin: 1.1rem;
+}
+
+/* =============================================================================
+   ITS (RPG/TABLETOP) - Based on "In The Shadows" theme
+   ============================================================================= */
+.markdown-theme-its {
+    --md-bg-primary: #282833;
+    --md-bg-secondary: #2a2a2a;
+    --md-bg-tertiary: #2b2b2f;
+    --md-bg-quaternary: #1c1d20;
+
+    --md-message-bg-start: #242429;
+    --md-message-bg-end: #2c2c31;
+    
+    --md-text-primary: #d4d4d4;
+    --md-text-secondary: #cccccc;
+    --md-text-tertiary: #b3b3b3;
+    --md-text-muted: #808080;
+    
+    --md-accent-primary: #ff6b6b;
+    --md-accent-secondary: #ee5a52;
+    --md-accent-h1: #9B2B2B;
+    --md-accent-h2: #ee5a52;
+    --md-accent-h3: #ff8a80;
+    --md-accent-h4: #ff7043;
+    --md-accent-h5: #ff5722;
+    --md-accent-h6: #d32f2f;
+    
+    --md-border-primary: #404040;
+    --md-border-secondary: #ff6b6b;
+    
+    --md-font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --md-font-headers: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --md-font-code: 'JetBrains Mono', monospace;
+    
+    --md-line-height: 1.6;
+    --md-header-margin-top: 1.6rem;
+    --md-header-margin-bottom: 0.8rem;
+    --md-paragraph-margin: 1.1rem;
+}
+
+/* =============================================================================
+   EMBER - Warm gaming colors (renamed from old ITS)
+   ============================================================================= */
+.markdown-theme-ember {
+    --md-bg-primary: #0f0f23;
+    --md-bg-secondary: #1a1a2e;
+    --md-bg-tertiary: #16213e;
+    --md-bg-quaternary: #0f3460;
+
+    --md-message-bg-start: #0d0d1f;
+    --md-message-bg-end: #13132a;
+    
+    --md-text-primary: #e94560;
+    --md-text-secondary: #f5f5f5;
+    --md-text-tertiary: #cccccc;
+    --md-text-muted: #999999;
+    
+    --md-accent-primary: #f39c12;
+    --md-accent-secondary: #e74c3c;
+    --md-accent-h1: #e74c3c;
+    --md-accent-h2: #f39c12;
+    --md-accent-h3: #e67e22;
+    --md-accent-h4: #d35400;
+    --md-accent-h5: #c0392b;
+    --md-accent-h6: #a93226;
+    
+    --md-border-primary: #16213e;
+    --md-border-secondary: #f39c12;
+    
+    --md-font-body: 'Georgia', 'Times New Roman', serif;
+    --md-font-headers: 'Rockwell', 'Cinzel', serif;
+    --md-font-code: 'Courier New', monospace;
+    
+    --md-line-height: 1.7;
+    --md-header-margin-top: 2rem;
+    --md-header-margin-bottom: 1rem;
+    --md-paragraph-margin: 1.2rem;
+}
+
+/* =============================================================================
+   BORDER - Clean lines and structure
+   ============================================================================= */
+.markdown-theme-border {
+    --md-bg-primary: #1e1e1e;
+    --md-bg-secondary: #252526;
+    --md-bg-tertiary: #2d2d30;
+    --md-bg-quaternary: #3e3e42;
+
+    --md-message-bg-start: #1a1a1a;
+    --md-message-bg-end: #222222;
+    
+    --md-text-primary: #d4d4d4;
+    --md-text-secondary: #cccccc;
+    --md-text-tertiary: #b3b3b3;
+    --md-text-muted: #808080;
+    
+    --md-accent-primary: #4ec9b0;
+    --md-accent-secondary: #569cd6;
+    --md-accent-h1: #ce9178;
+    --md-accent-h2: #dcdcaa;
+    --md-accent-h3: #4fc1ff;
+    --md-accent-h4: #c586c0;
+    --md-accent-h5: #9cdcfe;
+    --md-accent-h6: #b5cea8;
+    
+    --md-border-primary: #3e3e42;
+    --md-border-secondary: #4ec9b0;
+    
+    --md-font-body: 'Consolas', 'Monaco', monospace;
+    --md-font-headers: 'Consolas', 'Monaco', monospace;
+    --md-font-code: 'Consolas', 'Monaco', monospace;
+    
+    --md-line-height: 1.5;
+    --md-header-margin-top: 1.5rem;
+    --md-header-margin-bottom: 0.75rem;
+    --md-paragraph-margin: 1.4rem;
+}
+
+/* =============================================================================
+   GRUVBOX DARK - Retro warm colors
+   ============================================================================= */
+.markdown-theme-gruvbox {
+    --md-bg-primary: #282828;
+    --md-bg-secondary: #3c3836;
+    --md-bg-tertiary: #504945;
+    --md-bg-quaternary: #665c54;
+
+    --md-message-bg-start: #242424;
+    --md-message-bg-end: #2c2c2c;
+    
+    --md-text-primary: #ebdbb2;
+    --md-text-secondary: #d5c4a1;
+    --md-text-tertiary: #bdae93;
+    --md-text-muted: #a89984;
+    
+    --md-accent-primary: #83a598;
+    --md-accent-secondary: #8ec07c;
+    --md-accent-h1: #fb4934;
+    --md-accent-h2: #fe8019;
+    --md-accent-h3: #fabd2f;
+    --md-accent-h4: #b8bb26;
+    --md-accent-h5: #d3869b;
+    --md-accent-h6: #83a598;
+    
+    --md-border-primary: #504945;
+    --md-border-secondary: #fe8019;
+    
+    --md-font-body: 'Roboto Mono', 'Consolas', monospace;
+    --md-font-headers: 'Roboto Mono', 'Consolas', monospace;
+    --md-font-code: 'Roboto Mono', 'Consolas', monospace;
+    
+    --md-line-height: 1.6;
+    --md-header-margin-top: 1.4rem;
+    --md-header-margin-bottom: 0.7rem;
+    --md-paragraph-margin: 1rem;
+}
+
+/* =============================================================================
+   OBSIDIAN DEFAULT - Classic obsidian feel
+   ============================================================================= */
+.markdown-theme-obsidian {
+    --md-bg-primary: #202020;
+    --md-bg-secondary: #2a2a2a;
+    --md-bg-tertiary: #363636;
+    --md-bg-quaternary: #404040;
+
+    --md-message-bg-start: #1c1c1c;
+    --md-message-bg-end: #242424;
+    
+    --md-text-primary: #dcddde;
+    --md-text-secondary: #b9bbbe;
+    --md-text-tertiary: #8e9297;
+    --md-text-muted: #72767d;
+    
+    --md-accent-primary: #7f6df2;
+    --md-accent-secondary: #a8a8a8;
+    --md-accent-h1: #7f6df2;
+    --md-accent-h2: #7f6df2;
+    --md-accent-h3: #7f6df2;
+    --md-accent-h4: #a8a8a8;
+    --md-accent-h5: #a8a8a8;
+    --md-accent-h6: #8e9297;
+    
+    --md-border-primary: #404040;
+    --md-border-secondary: #7f6df2;
+    
+    --md-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --md-font-headers: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --md-font-code: 'Source Code Pro', monospace;
+    
+    --md-line-height: 1.6;
+    --md-header-margin-top: 1.6rem;
+    --md-header-margin-bottom: 0.4rem;
+    --md-paragraph-margin: 1rem;
+}
+
+/* =============================================================================
+   THEMED MARKDOWN CONTENT STYLES
+   ============================================================================= */
+
+/* Apply theme variables to all elements */
+.preview-content,
+.message-text {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+/* Headers with better spacing and hierarchy */
+.preview-content h1,
+.message-text h1 {
+    color: var(--md-accent-h1, var(--md-accent-primary));
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: var(--md-header-margin-top) 0 var(--md-header-margin-bottom) 0;
+    font-family: var(--md-font-headers);
+    line-height: 1.2;
+}
+
+.preview-content h2,
+.message-text h2 {
+    color: var(--md-accent-h2, var(--md-accent-primary));
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: calc(var(--md-header-margin-top) * 0.8) 0 var(--md-header-margin-bottom) 0;
+    font-family: var(--md-font-headers);
+    line-height: 1.3;
+}
+
+.preview-content h3,
+.message-text h3 {
+    color: var(--md-accent-h3, var(--md-accent-primary));
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: calc(var(--md-header-margin-top) * 0.7) 0 var(--md-header-margin-bottom) 0;
+    font-family: var(--md-font-headers);
+    line-height: 1.3;
+}
+
+.preview-content h4,
+.message-text h4 {
+    color: var(--md-accent-h4, var(--md-accent-primary));
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: calc(var(--md-header-margin-top) * 0.6) 0 calc(var(--md-header-margin-bottom) * 0.8) 0;
+    font-family: var(--md-font-headers);
+    line-height: 1.4;
+}
+
+.preview-content h5,
+.message-text h5 {
+    color: var(--md-accent-h5, var(--md-accent-primary));
+    font-size: 1rem;
+    font-weight: 600;
+    margin: calc(var(--md-header-margin-top) * 0.5) 0 calc(var(--md-header-margin-bottom) * 0.8) 0;
+    font-family: var(--md-font-headers);
+    line-height: 1.4;
+}
+
+.preview-content h6,
+.message-text h6 {
+    color: var(--md-accent-h6, var(--md-accent-primary));
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: calc(var(--md-header-margin-top) * 0.4) 0 calc(var(--md-header-margin-bottom) * 0.8) 0;
+    font-family: var(--md-font-headers);
+    line-height: 1.4;
+}
+
+/* Paragraphs with better spacing */
+.preview-content p,
+.message-text p {
+    margin: var(--md-paragraph-margin) 0;
+    line-height: var(--md-line-height);
+}
+
+/* Text formatting */
+.preview-content strong,
+.message-text strong {
+    color: var(--md-accent-primary);
+    font-weight: 600;
+}
+
+.preview-content em,
+.message-text em {
+    color: var(--md-accent-secondary);
+    font-style: italic;
+}
+
+.preview-content code,
+.message-text code {
+    background: var(--md-bg-quaternary);
+    color: var(--md-accent-primary);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: var(--md-font-code);
+    font-size: 0.9em;
+    border: 1px solid var(--md-border-primary);
+}
+
+.preview-content pre,
+.message-text pre {
+    background: var(--md-bg-quaternary);
+    border: 1px solid var(--md-border-primary);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: var(--md-paragraph-margin) 0;
+    border-left: 3px solid var(--md-accent-primary);
+}
+
+.preview-content pre code,
+.message-text pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--md-text-primary);
+}
+
+/* Lists with better spacing */
+.preview-content ul,
+.preview-content ol,
+.message-text ul,
+.message-text ol {
+    margin: var(--md-paragraph-margin) 0;
+    padding-left: 1.5rem;
+}
+
+.preview-content li,
+.message-text li {
+    margin: 0.3rem 0;
+    line-height: var(--md-line-height);
+}
+
+.preview-content ul li,
+.message-text ul li { 
+    list-style-type: disc; 
+}
+
+.preview-content ol li,
+.message-text ol li { 
+    list-style-type: decimal; 
+}
+
+/* Mark and underline support */
+.preview-content mark,
+.message-text mark {
+    background: var(--md-accent-secondary);
+    color: var(--md-bg-primary);
+    padding: 0.1em 0.2em;
+    border-radius: 2px;
+}
+
+.preview-content u,
+.message-text u {
+    text-decoration: underline;
+    text-decoration-color: var(--md-accent-primary);
+    text-decoration-thickness: 1px;
+}
+
+/* Blockquotes with better styling */
+.preview-content blockquote,
+.message-text blockquote {
+    border-left: 4px solid var(--md-accent-primary);
+    margin: var(--md-paragraph-margin) 0;
+    padding: 0.8rem 1rem;
+    background: var(--md-bg-secondary);
+    font-style: italic;
+    color: var(--md-text-secondary);
+    border-radius: 0 4px 4px 0;
+    position: relative;
+}
+
+/* Links */
+.preview-content a,
+.message-text a {
+    color: var(--md-accent-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.preview-content a:hover,
+.message-text a:hover {
+    border-bottom-color: var(--md-accent-primary);
+}
+
+/* Note links with better styling */
+.preview-content .note-link,
+.message-text .note-link {
+    color: var(--md-accent-primary);
+    background: var(--md-bg-secondary);
+    padding: 0.2em 0.5em;
+    border-radius: 4px;
+    text-decoration: none;
+    border: 1px solid var(--md-accent-primary);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.preview-content .note-link:hover,
+.message-text .note-link:hover {
+    background: var(--md-accent-primary);
+    color: var(--md-bg-primary);
+}
+
+.preview-content .note-link.broken,
+.message-text .note-link.broken {
+    color: var(--md-text-muted);
+    border-color: var(--md-text-muted);
+    background: var(--md-bg-tertiary);
+    opacity: 0.7;
+}
+
+.preview-content .note-link.broken:hover,
+.message-text .note-link.broken:hover {
+    background: var(--md-text-muted);
+    color: var(--md-bg-primary);
+}
+
+/* Tables */
+.preview-content table,
+.message-text table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: var(--md-paragraph-margin) 0;
+    border: 1px solid var(--md-border-primary);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.preview-content th,
+.preview-content td,
+.message-text th,
+.message-text td {
+    border: 1px solid var(--md-border-primary);
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+}
+
+.preview-content th,
+.message-text th {
+    background: var(--md-bg-tertiary);
+    font-weight: 600;
+    color: var(--md-text-primary);
+}
+
+.preview-content tr:nth-child(even),
+.message-text tr:nth-child(even) {
+    background: var(--md-bg-quaternary);
+}
+
+/* Horizontal rules */
+.preview-content hr,
+.message-text hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--md-border-primary), transparent);
+    margin: calc(var(--md-paragraph-margin) * 2) 0;
+}
+
+/* Snippet highlights */
+.preview-content .snippet-highlight,
+.message-text .snippet-highlight {
+    background: var(--md-bg-tertiary);
+    border-left: 4px solid var(--md-accent-secondary);
+    padding: 1rem;
+    margin: var(--md-paragraph-margin) 0;
+    border-radius: 0 6px 6px 0;
+    position: relative;
+    border: 1px solid var(--md-border-primary);
+}
+
+.preview-content .snippet-highlight .snippet-tag,
+.message-text .snippet-highlight .snippet-tag {
+    position: absolute;
+    top: -8px;
+    right: 8px;
+    background: var(--md-accent-secondary);
+    color: var(--md-bg-primary);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* =============================================================================
+   THEME-SPECIFIC HEADER STYLING
+   ============================================================================= */
+
+/* NORD THEME - Clean minimal lines */
+.preview-content.markdown-theme-nord h1 {
+    border-bottom: 2px solid var(--md-accent-h1) !important;
+    padding-bottom: 0.3rem;
+}
+
+.preview-content.markdown-theme-nord h2 {
+    border-bottom: 1px solid var(--md-accent-h2);
+    padding-bottom: 0.2rem;
+}
+
+/* NORD THEME - Clean highlights */
+.preview-content.markdown-theme-nord mark {
+    background: var(--md-accent-primary);
+    color: var(--md-bg-primary);
+    box-shadow: 0 1px 3px rgba(136, 192, 208, 0.3);
+}
+
+/* NORD THEME - Clean minimal tables */
+.preview-content.markdown-theme-nord table {
+    border: 2px solid var(--md-border-secondary);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.preview-content.markdown-theme-nord th {
+    background: linear-gradient(135deg, var(--md-bg-secondary), var(--md-bg-tertiary));
+    border-bottom: 2px solid var(--md-accent-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+}
+
+/* CATPPUCCIN - Soft rounded containers */
+.preview-content.markdown-theme-catppuccin h1 {
+    background: linear-gradient(135deg, var(--md-bg-secondary), transparent) !important;
+    padding: 0.8rem 1rem;
+    border-radius: 0 6px 6px 0;
+    border-left: 4px solid var(--md-accent-h1) !important;
+}
+
+/* CATPPUCCIN - Soft pastel highlights */
+.preview-content.markdown-theme-catppuccin mark {
+    background: linear-gradient(135deg, var(--md-accent-primary), var(--md-accent-secondary));
+    color: var(--md-bg-primary);
+    border-radius: 4px;
+}
+
+/* CATPPUCCIN - Soft rounded tables */
+.preview-content.markdown-theme-catppuccin table {
+    border-radius: 12px;
+    border: none;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.preview-content.markdown-theme-catppuccin th {
+    background: linear-gradient(135deg, var(--md-accent-primary), var(--md-accent-secondary));
+    color: var(--md-bg-primary);
+    border: none;
+    font-weight: 600;
+    padding: 1rem 0.8rem;
+}
+
+.preview-content.markdown-theme-catppuccin td {
+    border: none;
+    border-bottom: 1px solid var(--md-border-primary);
+}
+
+/* TOKYO NIGHT - Neon glow effects */
+.preview-content.markdown-theme-tokyo-night h1 {
+    text-shadow: 0 0 10px var(--md-accent-h1) !important;
+    border: 1px solid var(--md-accent-h1) !important;
+    padding: 0.8rem;
+    border-radius: 4px;
+    background: rgba(247, 118, 142, 0.1);
+}
+
+.preview-content.markdown-theme-tokyo-night h2 {
+    text-shadow: 0 0 5px var(--md-accent-h2) !important;
+    padding-left: 1rem;
+    border-left: 4px solid var(--md-accent-h2) !important;
+}
+
+.preview-content.markdown-theme-tokyo-night h3 {
+    text-shadow: 0 0 3px var(--md-accent-h3) !important;
+}
+
+/* TOKYO NIGHT - Neon cyber tables */
+.preview-content.markdown-theme-tokyo-night table {
+    border: 2px solid var(--md-accent-primary);
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(122, 162, 247, 0.3);
+    background: var(--md-bg-secondary);
+}
+
+.preview-content.markdown-theme-tokyo-night th {
+    background: var(--md-accent-primary);
+    color: var(--md-bg-primary);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--md-accent-secondary);
+    font-weight: 700;
+}
+
+.preview-content.markdown-theme-tokyo-night td {
+    border: 1px solid var(--md-accent-primary);
+    background: rgba(122, 162, 247, 0.05);
+}
+
+/* TOKYO NIGHT - Neon glow highlights */
+.preview-content.markdown-theme-tokyo-night mark {
+    background: var(--md-accent-primary);
+    color: var(--md-bg-primary);
+    box-shadow: 0 0 5px rgba(122, 162, 247, 0.5);
+    text-shadow: none;
+}
+
+.preview-content.markdown-theme-tokyo-night u {
+    text-decoration-color: var(--md-accent-h2);
+    text-shadow: 0 0 3px var(--md-accent-h2);
+}
+
+/* ITS THEME - RPG styling with underlines like the image */
+.preview-content.markdown-theme-its h1 {
+    border-bottom: 2px solid var(--md-bg-quaternary);
+    text-align: center;
+    padding: 1rem;
+    border-radius: 0;
+    background: var(--md-accent-h1);
+    letter-spacing: 0.1em;
+    position: relative;
+    color: black !important;
+}
+
+.preview-content.markdown-theme-its h2 {
+    border-bottom: 2px solid var(--md-accent-h2);
+    padding-bottom: 0.3rem;
+}
+
+.preview-content.markdown-theme-its blockquote {
+    background: #1a1a1a !important;
+    border-left: 4px solid var(--md-accent-primary) !important;
+}
+
+/* ITS THEME - RPG-style highlights */
+.preview-content.markdown-theme-its mark {
+    background: var(--md-accent-h1);
+    color: var(--md-bg-primary);
+    border: 1px solid var(--md-accent-primary);
+    font-weight: 600;
+}
+
+.preview-content.markdown-theme-its u {
+    text-decoration-style: double;
+    text-decoration-thickness: 1px;
+}
+
+/* ITS THEME - RPG character sheet style */
+.preview-content.markdown-theme-its table {
+    border: 2px solid var(--md-accent-primary);
+    border-radius: 0;
+    background: var(--md-bg-secondary);
+}
+
+.preview-content.markdown-theme-its th {
+    background: var(--md-accent-h1);
+    color: var(--md-bg-primary);
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 3px solid var(--md-accent-primary);
+}
+
+.preview-content.markdown-theme-its td {
+    border: 1px solid var(--md-accent-primary);
+    text-align: center;
+}
+
+.preview-content.markdown-theme-its tr:nth-child(even) {
+    background: rgba(155, 43, 43, 0.1);
+}
+
+/* EMBER THEME - Ornate RPG styling (old ITS) */
+.preview-content.markdown-theme-ember h1 {
+    text-align: center;
+    padding: 1rem;
+    border: 2px solid var(--md-accent-h1) !important;
+    border-radius: 0;
+    background: linear-gradient(135deg, var(--md-bg-secondary), var(--md-bg-tertiary)) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    position: relative;
+}
+
+.preview-content.markdown-theme-ember h1::before,
+.preview-content.markdown-theme-ember h1::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--md-accent-h1);
+    font-size: 1.2em;
+}
+
+.preview-content.markdown-theme-ember h1::before { left: 1rem; }
+.preview-content.markdown-theme-ember h1::after { right: 1rem; }
+
+.preview-content.markdown-theme-ember h2::before {
+    content: "➺ ";
+    color: var(--md-accent-h2);
+    font-weight: bold;
+}
+
+/* EMBER THEME - Warm fantasy highlights */
+.preview-content.markdown-theme-ember mark {
+    background: linear-gradient(45deg, var(--md-accent-h1), var(--md-accent-h2));
+    color: var(--md-bg-primary);
+    border-radius: 2px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    letter-spacing: 0.5px;
+}
+
+.preview-content.markdown-theme-ember u {
+    text-decoration-style: wavy;
+    text-decoration-color: var(--md-accent-h1);
+}
+
+/* EMBER THEME - Ornate fantasy tables */
+.preview-content.markdown-theme-ember table {
+    border: 3px double var(--md-accent-h1);
+    border-radius: 0;
+    background: linear-gradient(135deg, var(--md-bg-secondary), var(--md-bg-tertiary));
+}
+
+.preview-content.markdown-theme-ember th {
+    background: linear-gradient(135deg, var(--md-accent-h1), var(--md-accent-h2));
+    color: var(--md-bg-primary);
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 2px solid var(--md-accent-h1);
+    position: relative;
+}
+
+.preview-content.markdown-theme-ember th::before {
+    content: "◆";
+    position: absolute;
+    left: 8px;
+    color: var(--md-bg-primary);
+}
+
+.preview-content.markdown-theme-ember th::after {
+    content: "◆";
+    position: absolute;
+    right: 8px;
+    color: var(--md-bg-primary);
+}
+
+.preview-content.markdown-theme-ember td {
+    border: 1px solid var(--md-accent-h2);
+}
+
+/* BORDER THEME - Clean lines and structure */
+.preview-content.markdown-theme-border h1 {
+    border: 2px solid var(--md-border-secondary);
+    padding: 0.8rem;
+    border-radius: 0;
+    background: var(--md-bg-secondary);
+}
+
+.preview-content.markdown-theme-border h2 {
+    border-left: 6px solid var(--md-accent-h2);
+    border-top: 1px solid var(--md-border-primary);
+    border-bottom: 1px solid var(--md-border-primary);
+    padding: 0.5rem 1rem;
+    background: var(--md-bg-secondary);
+}
+
+.preview-content.markdown-theme-border h3 {
+    border-left: 4px solid var(--md-accent-h3);
+    padding-left: 1rem;
+}
+
+/* BORDER THEME - Clean structured highlights */
+.preview-content.markdown-theme-border mark {
+    background: var(--md-accent-primary);
+    color: var(--md-bg-primary);
+    border: 1px solid var(--md-accent-secondary);
+    border-radius: 0;
+}
+
+.preview-content.markdown-theme-border u {
+    text-decoration-style: solid;
+    border-bottom: 2px solid var(--md-accent-primary);
+    text-decoration: none;
+}
+
+/* BORDER THEME - Clean structured tables */
+.preview-content.markdown-theme-border table {
+    border: 2px solid var(--md-border-secondary);
+    border-radius: 0;
+}
+
+.preview-content.markdown-theme-border th {
+    background: var(--md-bg-tertiary);
+    border: 2px solid var(--md-border-secondary);
+    border-bottom: 4px solid var(--md-accent-primary);
+    font-family: var(--md-font-code);
+    font-weight: 600;
+}
+
+.preview-content.markdown-theme-border td {
+    border: 1px solid var(--md-border-primary);
+    font-family: var(--md-font-code);
+}
+
+.preview-content.markdown-theme-border tr:nth-child(even) {
+    background: var(--md-bg-secondary);
+}
+
+/* GRUVBOX - Retro terminal feel */
+.preview-content.markdown-theme-gruvbox h1 {
+    background: var(--md-bg-secondary);
+    padding: 0.8rem;
+    border-left: 8px solid var(--md-accent-h1);
+    border-radius: 0 4px 4px 0;
+}
+
+.preview-content.markdown-theme-gruvbox h2 {
+    border-bottom: 2px dotted var(--md-accent-h2);
+    padding-bottom: 0.3rem;
+}
+
+/* GRUVBOX - Retro terminal highlights */
+.preview-content.markdown-theme-gruvbox mark {
+    background: var(--md-accent-h3);
+    color: var(--md-bg-primary);
+    font-family: var(--md-font-code);
+    font-weight: 700;
+}
+
+.preview-content.markdown-theme-gruvbox u {
+    text-decoration-style: dashed;
+    text-decoration-thickness: 1px;
+}
+
+/* GRUVBOX - Retro terminal tables */
+.preview-content.markdown-theme-gruvbox table {
+    border: 2px solid var(--md-accent-h2);
+    border-radius: 0;
+    font-family: var(--md-font-code);
+}
+
+.preview-content.markdown-theme-gruvbox th {
+    background: var(--md-bg-quaternary);
+    color: var(--md-bg-primary);
+    border: 1px solid var(--md-accent-h2);
+    font-family: var(--md-font-code);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.preview-content.markdown-theme-gruvbox td {
+    border: 1px dashed var(--md-border-primary);
+    font-family: var(--md-font-code);
+}
+
+.preview-content.markdown-theme-gruvbox tr:nth-child(even) {
+    background: rgba(251, 73, 52, 0.1);
+}
+
+/* OBSIDIAN - Classic clean style with H1 underline */
+.preview-content.markdown-theme-obsidian h1 {
+    border-bottom: 2px solid var(--md-border-primary);
+    padding-bottom: 0.4rem;
+}
+
+.preview-content.markdown-theme-obsidian h2 {
+    color: var(--md-accent-primary);
+}
+
+.preview-content.markdown-theme-obsidian h3 {
+    color: var(--md-accent-primary);
+}
+
+/* OBSIDIAN - Classic highlights */
+.preview-content.markdown-theme-obsidian mark {
+    background: var(--md-accent-primary);
+    color: var(--md-bg-primary);
+    opacity: 0.9;
+}
+
+/* OBSIDIAN - Classic clean tables */
+.preview-content.markdown-theme-obsidian table {
+    border: 1px solid var(--md-border-primary);
+    border-radius: 6px;
+}
+
+.preview-content.markdown-theme-obsidian th {
+    background: var(--md-bg-tertiary);
+    border-bottom: 2px solid var(--md-border-primary);
+    color: var(--md-accent-primary);
+    font-weight: 600;
+}
+
+/* =============================================================================
+   COWRITER MESSAGE THEMES
+   ============================================================================= */
+
+/* NORD THEME - CoWriter Messages */
+.markdown-theme-nord .chat-messages {
+    background: var(--md-bg-primary);
+}
+
+.markdown-theme-nord .user-message .message-content,
+.markdown-theme-nord .ai-message .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* CATPPUCCIN THEME - CoWriter Messages */
+.markdown-theme-catppuccin .chat-messages {
+    background: var(--md-bg-primary);
+}
+
+.markdown-theme-catppuccin .user-message .message-content,
+.markdown-theme-catppuccin .ai-message .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* TOKYO NIGHT - CoWriter Messages */
+.markdown-theme-tokyo-night .chat-messages {
+    background: var(--md-bg-primary);
+}
+
+.markdown-theme-tokyo-night .user-message .message-content,
+.markdown-theme-tokyo-night .ai-message .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* ITS (RPG/TABLETOP) THEME - CoWriter Messages */
+.markdown-theme-its .chat-messages {
+    background: var(--md-bg-primary);
+}
+
+.markdown-theme-its .user-message .message-content,
+.markdown-theme-its .ai-message .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* EMBER THEME - CoWriter Messages */
+.markdown-theme-ember .chat-messages {
+    background: var(--md-bg-primary);
+}
+
+.markdown-theme-ember .user-message .message-content,
+.markdown-theme-ember .ai-message .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+.markdown-theme-ember .user-message .message-content::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--md-accent-h1), var(--md-accent-h2));
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0.7;
+}
+
+/* BORDER THEME - CoWriter Messages */
+.markdown-theme-border .chat-messages {
+    background: var(--md-bg-primary);
+}
+
+.markdown-theme-border .user-message .message-content,
+.markdown-theme-border .ai-message .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* GRUVBOX THEME - CoWriter Messages */
+.markdown-theme-gruvbox .chat-messages {
+    background: var(--md-bg-primary);
+}
+
+.markdown-theme-gruvbox .user-message .message-content,
+.markdown-theme-gruvbox .ai-message .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* OBSIDIAN THEME - CoWriter Messages */
+.markdown-theme-obsidian .chat-messages {
+    background: var(--md-bg-primary);
+}
+
+.markdown-theme-obsidian .user-message .message-content,
+.markdown-theme-obsidian .ai-message .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* NORD THEME - Welcome Message */
+.markdown-theme-nord .ai-message.welcome .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* CATPPUCCIN THEME - Welcome Message */
+.markdown-theme-catppuccin .ai-message.welcome .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* TOKYO NIGHT THEME - Welcome Message */
+.markdown-theme-tokyo-night .ai-message.welcome .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* ITS THEME - Welcome Message */
+.markdown-theme-its .ai-message.welcome .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* EMBER THEME - Welcome Message */
+.markdown-theme-ember .ai-message.welcome .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* BORDER THEME - Welcome Message */
+.markdown-theme-border .ai-message.welcome .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* GRUVBOX THEME - Welcome Message */
+.markdown-theme-gruvbox .ai-message.welcome .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}
+
+/* OBSIDIAN THEME - Welcome Message */
+.markdown-theme-obsidian .ai-message.welcome .message-content {
+    background: linear-gradient(135deg, var(--md-message-bg-start), var(--md-message-bg-end));
+    color: var(--md-text-primary);
+    border: 1px solid var(--md-border-primary);
+}

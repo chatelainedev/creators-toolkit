@@ -1,0 +1,332 @@
+/* Character Import Styles - Matches lorebook import design patterns */
+
+/* Character Select Modal (File Selection) */
+.character-select-modal {
+    max-width: 500px;
+    margin: 10vh auto;
+}
+
+.file-selection-area {
+    margin-bottom: var(--space-lg);
+}
+
+.file-drop-zone {
+    border: 2px dashed var(--border-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--space-xl);
+    text-align: center;
+    cursor: pointer;
+    background-color: var(--bg-secondary);
+    transition: all 0.2s ease;
+    margin-bottom: var(--space-lg);
+}
+
+.file-drop-zone:hover {
+    border-color: var(--accent-primary);
+    background-color: var(--bg-tertiary);
+}
+
+.file-drop-zone i {
+    font-size: 2em;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-md);
+}
+
+.file-drop-zone p {
+    margin: 0 0 var(--space-sm) 0;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.file-types {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Import Options */
+.import-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md) var(--space-lg);
+    margin-bottom: var(--space-sm);
+}
+
+.import-options .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-size-sm);
+}
+
+.import-options .checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--checkbox-color);
+}
+
+.import-options .checkbox-item label {
+    margin: 0;
+    font-weight: 400;
+    font-size: var(--font-size-sm);
+    color: var(--text-labels);
+    cursor: pointer;
+    user-select: none;
+}
+
+.import-options .checkbox-item label:hover {
+    color: var(--accent-primary);
+}
+
+/* Character Book Preview Modal */
+.character-book-preview-modal {
+    max-width: 900px;
+    max-height: 80vh;
+    margin: 10vh auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.character-book-preview-modal .modal-body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.import-preview-header {
+    background-color: var(--bg-tertiary);
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--border-primary);
+}
+
+.import-preview-header p {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.import-stats {
+    display: flex;
+    gap: var(--space-lg);
+    align-items: center;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+}
+
+.stat-number {
+    font-weight: 600;
+    color: var(--accent-primary);
+}
+
+.preview-controls {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.btn-select-all, .btn-select-none {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--border-primary);
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-select-all:hover, .btn-select-none:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+/* Character Book Entries Container */
+.character-book-entries-container {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-primary);
+}
+
+.character-book-entry {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border-bottom: 1px solid var(--border-primary);
+    min-height: 80px;
+}
+
+.character-book-entry:last-child {
+    border-bottom: none;
+}
+
+.character-book-entry:hover {
+    background-color: var(--bg-secondary);
+}
+
+.entry-checkbox {
+    padding: var(--space-md);
+    border-right: 1px solid var(--border-primary);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    background-color: var(--bg-secondary);
+}
+
+.entry-checkbox input[type="checkbox"] {
+    margin-top: 2px;
+    transform: scale(1.1);
+}
+
+.entry-checkbox label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.entry-preview {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.entry-content {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: 1.4;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+/* Import Actions */
+.import-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-primary);
+}
+
+.btn-import-character {
+    background-color: var(--accent-primary);
+    color: white;
+    border: none;
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-import-character:hover {
+    background-color: var(--accent-primary-dark);
+}
+
+.btn-import-character:disabled {
+    background-color: var(--bg-tertiary);
+    color: var(--text-disabled);
+    cursor: not-allowed;
+}
+
+/* Character Import Icon in Sidebar */
+.content-category-header .import-icon {
+    opacity: 0.6;
+    font-size: var(--font-size-sm);
+    margin-left: var(--space-xs);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+}
+
+.content-category-header .import-icon:hover {
+    opacity: 1;
+    color: var(--accent-primary);
+    transform: scale(1.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .character-book-preview-modal {
+        max-width: 95vw;
+        margin: 5vh auto;
+    }
+    
+    .character-book-entry {
+        grid-template-columns: 1fr;
+        min-height: auto;
+    }
+    
+    .entry-checkbox {
+        border-right: none;
+        border-bottom: 1px solid var(--border-primary);
+    }
+    
+    .import-stats {
+        flex-direction: column;
+        gap: var(--space-sm);
+        align-items: flex-start;
+    }
+    
+    .preview-controls {
+        flex-direction: column;
+    }
+    
+    .import-actions {
+        flex-direction: column;
+    }
+}
+
+/* Loading States */
+.character-import-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    color: var(--text-secondary);
+}
+
+.character-import-loading i {
+    margin-right: var(--space-sm);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success States */
+.character-import-success {
+    background-color: var(--success-bg, #d4edda);
+    color: var(--success-text, #155724);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--success-border, #c3e6cb);
+}
+
+/* Error States */
+.character-import-error {
+    background-color: var(--error-bg, #f8d7da);
+    color: var(--error-text, #721c24);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--error-border, #f5c6cb);
+}

@@ -1,0 +1,110 @@
+{
+  "title": "RP Archiver Guide",
+  "sections": [
+    {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "content": "RP Archiver transforms your roleplay text into beautiful, organized HTML files. Use the sidebar categories to fill out information about your story, then paste your roleplay text to generate a complete story file.",
+      "subsections": [
+        {
+          "id": "story-information",
+          "title": "Story Information",
+          "content": "Fill out the Story Title and Subtitle for display in the banner. Description, Pairing, Date, and Status appear in the info section and are optional. The Universe Name creates the folder structure - if you want to import into **Lore Codex**, use the same name as your Lore Codex project folder.\n\nMultiple stories can share the same Universe, which means they'll use the same CSS styling."
+        },
+        {
+          "id": "characters",
+          "title": "Characters",
+          "content": "Add characters and assign colors to style their names in multi-person roleplays. If your story isn't a roleplay or doesn't use character names, check \"No character names\" to disable this feature.\n\n**Important formatting**: Your text must follow this pattern:\n\"Character Name 1: Some dialogue and narration.\"\n\"Character Name 2: Response and more text.\""
+        },
+        {
+          "id": "story-structure",
+          "title": "Story Structure", 
+          "content": "Split long stories into parts with collapsible headers and a table of contents. Enable \"Use manual parts\" and add **&&&PART&&&** tags in your text to mark divisions.\n\nFor single-part stories with a custom name, add the part but don't check the manual parts box. For no parts at all, check \"Single story\"."
+        }
+      ]
+    },
+    {
+      "id": "media-design",
+      "title": "Media & Design",
+      "content": "Customize the visual appearance of your story with banners, images, and themes.",
+      "subsections": [
+        {
+          "id": "banner",
+          "title": "Banner",
+          "content": "Design your story's header area. Import banner images to save them in \"roleplays/universename/images\". Choose banner size, toggle title/subtitle display, and customize colors and font sizes for optimal appearance."
+        },
+        {
+          "id": "images-background",
+          "title": "Images & Background",
+          "content": "Add story-related images for a gallery beneath the info section. Set a background image with adjustable opacity and blur. All images save to \"roleplays/universename/images\".\n\nChoose a CSS theme to determine your HTML appearance - all stories in the same Universe share one CSS file."
+        },
+        {
+          "id": "soundtrack",
+          "title": "Soundtrack",
+          "content": "Create playlists by linking to music (YouTube, etc.). Songs appear in a collapsible modal in the generated HTML in the order you add them. Use section headers to organize related tracks."
+        },
+        {
+          "id": "navigation",
+          "title": "Navigation Links",
+          "content": "Customize the top navigation bar of your HTML. For Lore Codex integration, use \"../info.html\" as the homepage link when your story is in \"sites/projectName/roleplays\" folder. Regular URLs also work."
+        }
+      ]
+    },
+    {
+      "id": "formatting-text",
+      "title": "Formatting Text",
+      "content": "Learn how to properly format your content for best results.",
+      "subsections": [
+        {
+          "id": "roleplay-text",
+          "title": "Roleplay Text",
+          "content": "Paste your raw roleplay text here. Supports markdown: **bold**, *italic*, and dividers (---). \n\n**Required format for character names and parts**:\n\"Character 1: Dialogue and narration.\"\n\"Character 2: Response text.\"\n\"&&&PART&&&\"\n\"Character 2: Continue story here...\"\n\nUse the same character names in both the Characters section and your text."
+        },
+        {
+          "id": "comments",
+          "title": "Comments",
+          "content": "Add author or reader comments for reference. Use section headings to organize comment groups.\n\n**Format comments like this**:\n\"comment: A comment goes here\"\n\"comment: Multiple comments can be in one block\""
+        }
+      ]
+    },
+    {
+      "id": "saving-loading",
+      "title": "Saving & Loading",
+      "content": "Generate your story file and manage existing projects.",
+      "subsections": [
+        {
+          "id": "generate",
+          "title": "Generate Your Story",
+          "content": "Click **Generate HTML** to create your story file. Preview the HTML, then copy or save it. Save creates folders: \"userID/roleplays/universeName/\" with an images folder for your assets.\n\nThe generated HTML includes all your content, styling, and interactive features."
+        },
+        {
+          "id": "loading",
+          "title": "Loading Stories",
+          "content": "Edit existing stories using the dropdowns in the top navigation. Select your Universe and Story, then click import to populate RP Archiver's fields with existing information.\n\nIf image files aren't found, you can safely delete placeholders and re-import them manually from your computer or the \"roleplays/universeName/images\" folder."
+        }
+      ]
+    },
+    {
+      "id": "tips-tricks", 
+      "title": "Tips & Best Practices",
+      "content": "Maximize your RP Archiver experience with these helpful suggestions.",
+      "subsections": [
+        {
+          "id": "organization",
+          "title": "Organization Tips",
+          "content": "Keep your Universe names consistent across projects. Use descriptive story titles and update dates/status regularly for ongoing stories. Group related stories under the same Universe to maintain consistent styling."
+        },
+        {
+          "id": "formatting-best-practices",
+          "title": "Formatting Best Practices", 
+          "content": "Be consistent with character name spelling and capitalization. Use meaningful part names for long stories. Test your formatting by generating and previewing before final save.\n\nRemember that **&&&PART&&&** must be on its own line to work properly."
+        },
+        {
+          "id": "integration",
+          "title": "Lore Codex Integration",
+          "content": "To link with Lore Codex projects, use identical Universe and Project names. Save your story files, then use the Lore Codex Storylines import feature to automatically detect and import your RP Archiver files.\n\nThis creates seamless integration between your worldbuilding and storytelling tools."
+        }
+      ]
+    }
+  ]
+}

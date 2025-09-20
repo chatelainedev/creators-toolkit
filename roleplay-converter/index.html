@@ -1,0 +1,1008 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <title>RP Archiver</title>
+    <link rel="stylesheet" href="converter.css">
+    <link rel="stylesheet" href="rp-project-styles.css">
+    <link rel="stylesheet" href="user/auth-ui.css">
+    <link rel="stylesheet" href="about/rp-archiver-about.css">
+    <!-- Add FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <style>
+    /* Prevent flash of unstyled content */
+    body {
+        opacity: 0;
+        transition: opacity 0.1s ease-in;
+    }
+
+    body.theme-loaded {
+        opacity: 1;
+    }
+    </style>
+
+    <script>
+    // Show page after theme loads
+    document.addEventListener('DOMContentLoaded', () => {
+        // Small delay to let theme manager initialize
+        setTimeout(() => {
+            document.body.classList.add('theme-loaded');
+        }, 100);
+    });
+    </script>  
+    <style>
+        /* Force hide the template container completely */
+        #template-container {
+            display: none !important;
+            visibility: hidden !important;
+            position: absolute !important;
+            left: -9999px !important;
+            top: -9999px !important;
+            width: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        #template-container * {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="main-tabs">
+        <div class="nav-container">
+            <!-- Home Icon Button -->
+            <a href="http://localhost:3000/" class="nav-home-btn" title="Home">
+                <i class="fas fa-home"></i>
+            </a>
+
+            <!-- Import Controls -->
+            <div class="nav-import-controls">
+                <input type="file" id="import-file" accept=".html, .htm" style="display: none;">
+                <button id="import-btn" class="btn-secondary">
+                    <i class="fas fa-upload"></i> Import HTML
+                </button>
+            </div>
+            <!-- RP Archiver Guide Button -->
+            <button class="nav-about-btn" id="rp-archiver-about-btn" title="How to use RP Archiver">
+                <i class="fas fa-question-circle"></i>
+            </button>
+            <!-- ADD: User avatar display (same as info converter) -->
+            <div class="nav-user-avatar" id="nav-user-avatar" style="display: none;">
+                <img src="../main/images/default-avatar.png" alt="User Avatar" class="user-avatar" id="nav-avatar-img">
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Banner Section -->
+        <div class="info-banner">
+            <img src="images/banner.png" alt="Roleplay Banner" class="banner-image">
+            <div class="banner-overlay">
+                <h1 class="banner-title metal-text bronze">RP Archiver</h1>
+            </div>
+        </div>
+
+        <!-- Main Content Layout -->
+        <div class="content-layout">
+            <!-- Left Sidebar Navigation -->
+            <div class="content-sidebar">                
+                <div class="sidebar-sections-container">
+                    <div class="sidebar-section">
+                        <div class="section-title">Story Setup</div>
+                        <div class="sidebar-item active" data-category="story-info">
+                            <span class="category-name">Story Information</span>
+                        </div>
+                        <div class="sidebar-item" data-category="characters">
+                            <span class="category-name">Characters</span>
+                        </div>
+                        <div class="sidebar-item" data-category="structure">
+                            <span class="category-name">Story Structure</span>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="section-title">Media & Design</div>
+                        <div class="sidebar-item" data-category="banner">
+                            <span class="category-name">Banner</span>
+                        </div>
+                        <div class="sidebar-item" data-category="media">
+                            <span class="category-name">Images & Background</span>
+                        </div>
+                        <div class="sidebar-item" data-category="soundtrack">
+                            <span class="category-name">Soundtrack</span>
+                        </div>
+                        <div class="sidebar-item" data-category="navigation">
+                            <span class="category-name">Navigation Links</span>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="section-title">Content</div>
+                        <div class="sidebar-item" data-category="text-input">
+                            <span class="category-name">Roleplay Text</span>
+                        </div>
+                        <div class="sidebar-item" data-category="comments">
+                            <span class="category-name">Comments</span>
+                        </div>
+                        <div class="sidebar-item" data-category="generate">
+                            <span class="category-name">Generate</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Collapse button at bottom -->
+                <div class="sidebar-footer">
+                    <button id="sidebar-collapse-btn" class="btn-icon" title="Collapse sidebar">‹</button>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="content-main">
+                <!-- Story Information Section -->
+                <div id="story-info-section" class="content-section active">
+                    <div class="section-header">
+                        <h3>Story Information</h3>
+                    </div>
+                    <div class="section-content">
+                        <label for="title">Story Title:</label>
+                        <input type="text" id="title" placeholder="Enter story title">
+
+                        <label for="subtitle">Subtitle:</label>
+                        <input type="text" id="subtitle" placeholder="A Universe Story" value="A Universe Story">
+                        
+                        <label for="description">Description:</label>
+                        <textarea id="description" rows="4" placeholder="Enter a brief description of your story"></textarea>
+                        
+                        <label for="universe">Universe:</label>
+                        <input type="text" id="universe" placeholder="Enter universe name">
+                        
+                        <div class="helper-text" style="margin-top: -8px;">
+                            If Universe is the same as a Lore Codex Project name, you can access this roleplay after saving in the Lore Codex Storylines modal.
+                        </div>
+
+                        <label for="pairing">Pairing:</label>
+                        <input type="text" id="pairing" placeholder="Character1/Character2">
+                        
+                        <label for="date">Last Updated:</label>
+                        <input type="text" id="date" placeholder="Month Day, Year">
+                        
+                        <label for="status">Status:</label>
+                        <select id="status">
+                            <option value="Ongoing">Ongoing</option>
+                            <option value="Complete">Complete</option>
+                            <option value="Hiatus">Hiatus</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Characters Section -->
+                <div id="characters-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Characters</h3>
+                        <button id="add-character" class="btn-add">+ Add Character</button>
+                    </div>
+                    <div class="section-content">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="no-characters">
+                            <label for="no-characters" class="checkbox-label">No character names (for oneshots/narratives)</label>
+                        </div>
+
+                        <div class="section-header-with-import">
+                            <h4>Characters:</h4>
+                        </div>
+                        
+                        <div id="characters-container">
+                            <!-- Characters will be added here dynamically -->
+                        </div>
+                        
+                        <div class="helper-text">
+                            Character names can be multiple words (e.g., "John Smith", "Mary Jane Watson")
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story Structure Section -->
+                <div id="structure-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Story Structure</h3>
+                        <button id="add-part" class="btn-add">+ Add Part</button>
+                    </div>
+                    <div class="section-content">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="single-story">
+                            <label for="single-story" class="checkbox-label">Single story (no parts/table of contents)</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="use-part-markers" checked>
+                            <label for="use-part-markers" class="checkbox-label">Use manual part markers (&&&PART&&&) in roleplay text</label>
+                        </div>
+                        
+                        <div class="section-header-with-import">
+                            <h4>Story Parts:</h4>
+                        </div>
+                        <div id="parts-container">
+                            <!-- Parts will be added here dynamically -->
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- Banner Section -->
+                <div id="banner-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Banner</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="section-header-with-import">
+                            <h4>Banner Image</h4>
+                            <button type="button" id="banner-image-browse" class="btn-secondary" title="Browse for Banner Image">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </div>
+                        <div class="helper-text">
+                            Optional banner image for the story header. Will replace the solid color background in the title area.
+                        </div>
+
+                        <input type="file" id="banner-image-file" accept="image/*" style="display: none;">
+                        <div id="banner-image-display" class="file-display"></div>
+                        
+                        <label for="banner-size">Banner Size:</label>
+                        <select id="banner-size" style="width: 100%; margin-bottom: var(--space-lg);">
+                            <option value="small">Small (80px height)</option>
+                            <option value="medium" selected>Medium (120px height)</option>
+                            <option value="large">Large (160px height)</option>
+                        </select>
+
+                        <h4 style="margin-top: var(--space-2xl);">Title & Subtitle</h4>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="show-title" checked>
+                            <label for="show-title" class="checkbox-label">Show story title</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="show-subtitle" checked>
+                            <label for="show-subtitle" class="checkbox-label">Show subtitle ("A [Universe] Story")</label>
+                        </div>
+                        
+                        <label for="title-font-size-banner">Title Font Size:</label>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: var(--space-lg);">
+                            <input type="range" id="title-font-size-banner" min="24" max="48" value="32" style="flex: 1; margin-bottom: 0;">
+                            <span id="title-font-size-banner-value" style="font-size: var(--font-size-sm); color: var(--text-tertiary); min-width: 40px;">32px</span>
+                        </div>
+                        
+                        <div class="color-controls-row">
+                            <div class="color-control-group">
+                                <label for="title-font-color">Title Font Color:</label>
+                                <div class="color-input-row">
+                                    <input type="text" id="title-font-color" value="#ffffff">
+                                    <input type="color" id="title-font-color-picker" value="#ffffff">
+                                </div>
+                            </div>
+                            <div class="color-control-group">
+                                <label for="subtitle-font-color">Subtitle Font Color:</label>
+                                <div class="color-input-row">
+                                    <input type="text" id="subtitle-font-color" value="#cccccc">
+                                    <input type="color" id="subtitle-font-color-picker" value="#cccccc">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="helper-text">
+                            <p>• Banner image will be displayed at full width with the selected height</p>
+                            <p>• Title and subtitle will be overlaid on the banner (or color background if no image)</p>
+                            <p>• Choose colors that contrast well with your banner image</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media Section -->
+                <div id="media-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Images & Background</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="section-header-with-import">
+                            <h4>Story Images</h4>
+                            <button type="button" id="story-images-browse" class="btn-secondary" title="Browse for Story Images">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </div>
+                        <div class="helper-text">
+                            Images will be resized to 300x200 and displayed in order in the output file. Select images from your computer - they'll be automatically saved with your roleplay.
+                        </div>
+
+                        <input type="file" id="story-images-file" accept="image/*" multiple style="display: none;">
+
+                        <input type="file" id="story-images-file" accept="image/*" multiple style="display: none;">
+                        <div id="story-images-display" class="file-display">
+                            <div id="images-container">
+                                <!-- Image entries will be added here dynamically -->
+                            </div>
+                        </div>
+                        
+                        <div class="section-header-with-import" style="margin-top: var(--space-2xl);">
+                            <h4>Background Image</h4>
+                            <button type="button" id="background-image-browse" class="btn-secondary" title="Browse for Background Image">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </div>
+                        <div class="helper-text">
+                            Optional background image for the entire page. Will be blurred and dimmed to not interfere with text readability.
+                        </div>
+
+                        <input type="file" id="background-image-file" accept="image/*" style="display: none;">
+                        <div id="background-image-display" class="file-display"></div>
+                        
+                        <div style="display: flex; gap: var(--space-lg); margin-top: var(--space-md);">
+                            <div style="flex: 1;">
+                                <label for="background-opacity">Opacity (0-100%):</label>
+                                <div style="display: flex; gap: var(--space-sm); align-items: center;">
+                                    <input type="range" id="background-opacity" min="0" max="100" value="20" style="flex: 1; margin-bottom: 0;">
+                                    <span id="opacity-value" style="font-size: var(--font-size-sm); color: var(--text-tertiary); min-width: 40px;">20%</span>
+                                </div>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="background-blur">Blur Amount (0-20px):</label>
+                                <div style="display: flex; gap: var(--space-sm); align-items: center;">
+                                    <input type="range" id="background-blur" min="0" max="20" value="5" style="flex: 1; margin-bottom: 0;">
+                                    <span id="blur-value" style="font-size: var(--font-size-sm); color: var(--text-tertiary); min-width: 40px;">5px</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: var(--space-lg);">
+                            <label for="css-template">CSS Template:</label>
+                            <select id="css-template" style="width: 100%; padding: 8px; margin-top: 4px;">
+                                <option value="generated.css">Default</option>
+                                <!-- Template options will be populated by JavaScript -->
+                            </select>
+                            <div class="helper-text">
+                                Choose a CSS template for styling your roleplay. Templates are loaded from the templates folder.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Soundtrack Section -->
+                <div id="soundtrack-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Soundtrack</h3>
+                        <div class="header-buttons">
+                            <button id="add-track-heading" class="btn-add">+ Add Section Heading</button>
+                            <button id="add-track" class="btn-add">+ Add Track</button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="helper-text">
+                            Add music tracks that complement your story. These will appear in a soundtrack panel in the final HTML.
+                        </div>
+                        
+                        <div id="soundtrack-container">
+                            <!-- Track entries will be added here dynamically -->
+                        </div>
+                        
+                        <div style="display: flex; gap: var(--space-sm); margin-top: var(--space-md);">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Section -->
+                <div id="navigation-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Navigation Links</h3>
+                        <button id="add-navigation" class="btn-add">+ Add Navigation Link</button>
+                    </div>
+                    <div class="section-content">
+                        <div class="helper-text">
+                            Customize the navigation links at the top of your HTML file. Common examples: Home (../index.html), Archive (../archive.html), About (../about.html)
+                        </div>
+                        
+                        <div id="navigation-container">
+                            <!-- Navigation entries will be added here dynamically -->
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- Text Input Section -->
+                <div id="text-input-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Roleplay Text</h3>
+                    </div>
+                    <div class="section-content">
+                        <!-- Replace the existing textarea section with this: -->
+                        <div class="textarea-container">
+                            <textarea id="rp-text" rows="20" placeholder="Paste your roleplay text here...
+                        Format should be:
+
+                        Character Name: Text goes here...
+
+                        Another paragraph for the same character.
+
+                        Other Character: Response goes here..."></textarea>
+                            <button type="button" id="expand-text-btn" class="expand-text-button" title="Expand editor">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="helper-text">
+                            <p>• Text should start with "Character Name:" to identify speakers (multi-word names are supported)</p>
+                            <p>• To mark a new part, add a line with just <strong>&&&PART&&&</strong> between sections</p>
+                            <p>• Add as many part titles on the left as you have &&&PART&&& markers in your text</p>
+                            <p>• If you don't want multiple parts, check the "Single story" box</p>
+                            <p>• You can use markdown formatting: **bold**, *italic*, ~~strikethrough~~</p>
+                        </div>
+                        
+                        <div class="word-count-info">
+                            <span id="word-count">Words: 0</span>
+                            <span id="page-count">Pages: 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div id="comments-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Comments</h3>
+                        <div class="header-buttons">
+                            <button id="add-comment-heading" class="btn-add">+ Add Section Heading</button>
+                            <button id="add-comment" class="btn-add">+ Add Comment</button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="helper-text">
+                            Add author comments or notes about your story. These will appear in a comments panel in the final HTML. Format: Start each comment with "comment:" followed by your text. Comments can be multiple lines.
+                        </div>
+                        
+                        <div id="comments-container">
+                            <!-- Comment entries will be added here dynamically -->
+                        </div>
+                        
+                        <div style="display: flex; gap: var(--space-sm); margin-top: var(--space-md);">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generate Section -->
+                <div id="generate-section" class="content-section">
+                    
+                    <div class="section-content">
+                        <div class="generate-controls">
+                            <button id="convert-btn" class="btn-main-action">Generate HTML</button>
+                            <button id="download-btn" class="btn-main-action" disabled>Save to Folder</button>
+                            <button id="copy-btn" class="btn-main-action">Copy HTML</button>
+                        </div>
+
+                        <div class="tabs">
+                            <div class="tab active" data-tab="html">HTML Code</div>
+                            <div class="tab" data-tab="preview">Preview</div>
+                        </div>
+                        
+                        <div class="tab-content active" id="html-content">
+                            <textarea id="html-output" readonly rows="15"></textarea>
+                        </div>
+                        
+                        <div class="tab-content" id="preview-content">
+                            <div class="preview-container">
+                                <iframe id="preview-frame"></iframe>
+                            </div>
+                        </div>
+
+                        <!-- ADD THIS STATUS CONTAINER -->
+                        <div id="status-container" class="status-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Editor Modal -->
+    <div id="textEditorModal" class="text-editor-modal">
+        <div class="text-editor-modal-content">
+            <div class="text-editor-header">
+                <h3>Roleplay Text Editor</h3>
+                <button class="text-editor-close" id="closeTextEditor" title="Close editor">&times;</button>
+            </div>
+            <textarea id="expanded-rp-text" placeholder="Paste your roleplay text here..."></textarea>
+            <div class="text-editor-footer">
+                <div class="word-count-info">
+                    <span id="modal-word-count">Words: 0</span>
+                    <span id="modal-page-count">Pages: 0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HTML Template Container (hidden) -->
+    <div id="template-container" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
+        <template id="html-template"><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITLE}} - {{UNIVERSE}}</title>
+<link rel="stylesheet" href="generated.css">
+<style>
+    {{CHARACTER_STYLES}}
+    {{BACKGROUND_STYLES}}
+    {{BANNER_STYLES}}
+    {{FALLBACK_TITLE_STYLES}}
+</style>
+</head>
+<body>
+    <header>
+        <h1>{{TITLE}}</h1>
+        <h2>{{SUBTITLE}}</h2>  
+    </header>
+
+    <nav>
+        {{NAVIGATION}}
+    </nav>
+    
+    <div class="content-wrapper">
+        <div class="story-info">
+            <button class="export-button" onclick="exportText()">
+                <span style="margin-right: 5px;">📄</span> Export as Text
+            </button>
+            {{#if FALLBACK_TITLE}}
+            <div class="fallback-title">{{TITLE}}</div>
+            {{/if}}
+            <p><strong>Pairing:</strong> {{PAIRING}}</p>
+            <p><strong>Last Updated:</strong> {{DATE}}</p>
+            <p><strong>Status:</strong> {{STATUS}}</p>
+            {{#if DESCRIPTION}}
+            <div class="story-description">
+                <p><strong>Description:</strong> {{DESCRIPTION}}</p>
+            </div>
+            {{/if}}
+            
+            <div class="story-stats">
+                <div class="stat-item">{{WORD_COUNT}} words</div>
+                <div class="stat-item">~{{PAGE_COUNT}} pages</div>
+            </div>
+        </div>
+        
+        {{#if IMAGES}}
+        <div class="gallery-section">
+            <div class="gallery-header" onclick="toggleGallery()">
+                <span>Story Images</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="story-gallery gallery-content">
+                {{IMAGES}}
+            </div>
+        </div>
+        {{/if}}
+        
+        {{TABLE_OF_CONTENTS}}
+    </div>
+    
+    <main>
+        {{CONTENT}}
+    </main>
+    
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal">
+        <div class="image-modal-content">
+            <button class="image-modal-close" onclick="closeImageModal()">&times;</button>
+            <button class="image-modal-nav prev" onclick="previousImage()" id="prevBtn">‹</button>
+            <img id="modalImage" src="" alt="Story Image">
+            <button class="image-modal-nav next" onclick="nextImage()" id="nextBtn">›</button>
+        </div>
+    </div>
+    
+    <button id="scrollTopBtn" class="scroll-top-btn" title="Scroll to top">↑</button>
+    
+    {{#if SOUNDTRACK}}
+    <div class="soundtrack-panel" id="soundtrackPanel">
+        <button class="soundtrack-toggle" id="soundtrackToggle" title="Toggle Soundtrack">♫</button>
+        <div class="soundtrack-header">Story Soundtrack</div>
+        <div class="soundtrack-content">
+            {{SOUNDTRACK}}
+        </div>
+    </div>
+    {{/if}}
+    
+    {{#if COMMENTS}}
+    <div class="comments-panel" id="commentsPanel">
+        <button class="comments-toggle" id="commentsToggle" title="Toggle Comments">💬</button>
+        <div class="comments-header">Author Comments</div>
+        <div class="comments-content">
+            {{COMMENTS}}
+        </div>
+    </div>
+    {{/if}}
+    
+    <script>
+        // Image modal variables
+        let currentImageIndex = 0;
+        let galleryImages = [];
+        
+        // Initialize image modal functionality
+        function initImageModal() {
+            // Get all images in the gallery
+            galleryImages = Array.from(document.querySelectorAll('.story-gallery img'));
+            
+            // Add click event listeners to all gallery images
+            galleryImages.forEach((img, index) => {
+                img.addEventListener('click', function() {
+                    currentImageIndex = index;
+                    openImageModal(this.src);
+                });
+                
+                // Add keyboard navigation
+                img.setAttribute('tabindex', '0');
+                img.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        currentImageIndex = index;
+                        openImageModal(this.src);
+                    }
+                });
+            });
+        }
+        
+        // Open image modal
+        function openImageModal(imageSrc) {
+            console.log('Opening modal with image:', imageSrc); // Debug log
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (!modal || !modalImage) {
+                console.error('Modal elements not found');
+                return;
+            }
+            
+            modalImage.src = imageSrc;
+            modal.style.display = 'flex';
+            
+            // Force reflow and then add show class
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+            
+            // Update navigation buttons
+            if (prevBtn && nextBtn) {
+                prevBtn.disabled = currentImageIndex === 0;
+                nextBtn.disabled = currentImageIndex === galleryImages.length - 1;
+                
+                // Hide navigation buttons if there's only one image
+                if (galleryImages.length <= 1) {
+                    prevBtn.style.display = 'none';
+                    nextBtn.style.display = 'none';
+                } else {
+                    prevBtn.style.display = 'flex';
+                    nextBtn.style.display = 'flex';
+                }
+            }
+            
+            // Prevent body scrolling when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Close image modal
+        function closeImageModal() {
+            console.log('Closing modal'); // Debug log
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.classList.remove('show');
+                
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+            
+            // Re-enable body scrolling
+            document.body.style.overflow = '';
+        }
+        
+        // Navigate to previous image
+        function previousImage() {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                const prevImageSrc = galleryImages[currentImageIndex].src;
+                openImageModal(prevImageSrc);
+            }
+        }
+        
+        // Navigate to next image
+        function nextImage() {
+            if (currentImageIndex < galleryImages.length - 1) {
+                currentImageIndex++;
+                const nextImageSrc = galleryImages[currentImageIndex].src;
+                openImageModal(nextImageSrc);
+            }
+        }
+        
+        // Function to toggle the gallery
+        function toggleGallery() {
+            const galleryHeader = document.querySelector('.gallery-header');
+            const galleryContent = document.querySelector('.gallery-content');
+            const icon = galleryHeader.querySelector('.toggle-icon');
+            
+            if (galleryContent.classList.contains('collapsed')) {
+                galleryContent.classList.remove('collapsed');
+                icon.classList.remove('collapsed');
+                icon.textContent = '▼';
+            } else {
+                galleryContent.classList.add('collapsed');
+                icon.classList.add('collapsed');
+                icon.textContent = '▶';
+            }
+        }
+        
+        // Function to toggle a part
+        function togglePart(partId) {
+            const partHeader = document.getElementById('header-' + partId);
+            const partContent = document.getElementById(partId + '-content');
+            const icon = partHeader.querySelector('.part-toggle');
+            
+            if (partContent.classList.contains('collapsed')) {
+                partContent.classList.remove('collapsed');
+                icon.classList.remove('collapsed');
+                icon.textContent = '▼';
+            } else {
+                partContent.classList.add('collapsed');
+                icon.classList.add('collapsed');
+                icon.textContent = '▶';
+            }
+        }
+        
+        // Initialize table of contents links to toggle parts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize image modal
+            initImageModal();
+            
+            const tocLinks = document.querySelectorAll('.table-of-contents a');
+            tocLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent default anchor behavior
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetHeader = document.getElementById(targetId);
+                    const targetContent = document.getElementById(targetId + '-content');
+                    
+                    // If the target is collapsed, expand it
+                    if (targetContent && targetContent.classList.contains('collapsed')) {
+                        togglePart(targetId);
+                    }
+                    
+                    // Scroll to the part header
+                    if (targetHeader) {
+                        targetHeader.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // Scroll to top button functionality
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            
+            // Show/hide the button based on scroll position
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            });
+            
+            // Scroll to top when button is clicked
+            scrollTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Soundtrack and Comments panel functionality
+            const soundtrackToggle = document.getElementById('soundtrackToggle');
+            const soundtrackPanel = document.getElementById('soundtrackPanel');
+            const commentsToggle = document.getElementById('commentsToggle');
+            const commentsPanel = document.getElementById('commentsPanel');
+            
+            // Function to close all panels
+            function closeAllPanels() {
+                if (soundtrackPanel) {
+                    soundtrackPanel.classList.remove('open');
+                    if (soundtrackToggle) {
+                        soundtrackToggle.innerHTML = '♫';
+                        soundtrackToggle.title = 'Open Soundtrack';
+                        soundtrackToggle.style.opacity = '1';
+                        soundtrackToggle.style.pointerEvents = 'auto';
+                    }
+                }
+                if (commentsPanel) {
+                    commentsPanel.classList.remove('open');
+                    if (commentsToggle) {
+                        commentsToggle.innerHTML = '💬';
+                        commentsToggle.title = 'Open Comments';
+                        commentsToggle.style.opacity = '1';
+                        commentsToggle.style.pointerEvents = 'auto';
+                    }
+                }
+            }
+            
+            // Soundtrack toggle functionality
+            if (soundtrackToggle && soundtrackPanel) {
+                soundtrackToggle.addEventListener('click', function() {
+                    const isOpen = soundtrackPanel.classList.contains('open');
+                    
+                    // Close all panels first
+                    closeAllPanels();
+                    
+                    // If it wasn't open, open it
+                    if (!isOpen) {
+                        soundtrackPanel.classList.add('open');
+                        soundtrackToggle.innerHTML = '×';
+                        soundtrackToggle.title = 'Close Soundtrack';
+                        
+                        // Hide the comments toggle
+                        if (commentsToggle) {
+                            commentsToggle.style.opacity = '0';
+                            commentsToggle.style.pointerEvents = 'none';
+                        }
+                    }
+                });
+            }
+            
+            // Comments toggle functionality
+            if (commentsToggle && commentsPanel) {
+                commentsToggle.addEventListener('click', function() {
+                    const isOpen = commentsPanel.classList.contains('open');
+                    
+                    // Close all panels first
+                    closeAllPanels();
+                    
+                    // If it wasn't open, open it
+                    if (!isOpen) {
+                        commentsPanel.classList.add('open');
+                        commentsToggle.innerHTML = '×';
+                        commentsToggle.title = 'Close Comments';
+                        
+                        // Hide the soundtrack toggle
+                        if (soundtrackToggle) {
+                            soundtrackToggle.style.opacity = '0';
+                            soundtrackToggle.style.pointerEvents = 'none';
+                        }
+                    }
+                });
+            }
+            
+            // Close panels when clicking outside them
+            document.addEventListener('click', function(e) {
+                const isClickInSoundtrack = soundtrackPanel && (soundtrackPanel.contains(e.target) || e.target === soundtrackToggle);
+                const isClickInComments = commentsPanel && (commentsPanel.contains(e.target) || e.target === commentsToggle);
+                
+                if (!isClickInSoundtrack && !isClickInComments) {
+                    closeAllPanels();
+                }
+            });
+            
+            // Modal keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                const modal = document.getElementById('imageModal');
+                if (modal.classList.contains('show')) {
+                    switch(e.key) {
+                        case 'Escape':
+                            closeImageModal();
+                            break;
+                        case 'ArrowLeft':
+                            e.preventDefault();
+                            previousImage();
+                            break;
+                        case 'ArrowRight':
+                            e.preventDefault();
+                            nextImage();
+                            break;
+                    }
+                }
+            });
+            
+            // Close modal when clicking outside the image
+            document.getElementById('imageModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeImageModal();
+                }
+            });
+        });
+        
+        // Function to export all text as a text file
+        function exportText() {
+            // Collect all text from all parts
+            let allText = document.title + "\n\n";
+            
+            // Add story info
+            const storyInfo = document.querySelector('.story-info');
+            if (storyInfo) {
+                const infoParagraphs = storyInfo.querySelectorAll('p');
+                infoParagraphs.forEach(p => {
+                    allText += p.textContent.trim() + "\n";
+                });
+                
+                // Add description if exists
+                const description = storyInfo.querySelector('.story-description p');
+                if (description) {
+                    allText += "\n" + description.textContent.trim() + "\n";
+                }
+                
+                allText += "\n----------------------------\n\n";
+            }
+            
+            // Process each part
+            const parts = document.querySelectorAll('.part-header');
+            parts.forEach((partHeader, index) => {
+                // Get part title
+                const partTitle = partHeader.querySelector('h2').textContent;
+                allText += partTitle + "\n\n";
+                
+                // Get the part content container
+                const partId = partHeader.id.replace('header-', '');
+                const partContent = document.getElementById(partId + '-content');
+                
+                if (partContent) {
+                    // Get all entries in this part
+                    const entries = partContent.querySelectorAll('.rp-entry');
+                    entries.forEach(entry => {
+                        const charName = entry.querySelector('.character-name').textContent;
+                        allText += charName + "\n";
+                        
+                        // Get paragraphs
+                        const paragraphs = entry.querySelectorAll('p, .html-content');
+                        paragraphs.forEach(p => {
+                            // Use original markdown text if available
+                            const originalText = p.getAttribute('data-original') || p.textContent;
+                            allText += originalText + "\n\n";
+                        });
+                        
+                        allText += "\n";
+                    });
+                }
+                
+                // Add separator between parts
+                if (index < parts.length - 1) {
+                    allText += "----------------------------\n\n";
+                }
+            });
+            
+            // Create and download text file
+            const filename = document.title.split(' - ')[0] + '.txt';
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(allText));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+</html></template>
+    </div>
+
+    <!-- Include all JavaScript files -->
+    <script src="user/auth-ui.js"></script>
+    <script src="user/user-session.js"></script>
+    <script src="about/rp-archiver-about.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="converter.js"></script>
+    <script src="parser.js"></script>
+    <script src="form-handlers.js"></script>
+    <script src="html-generator.js"></script>
+    <script src="import-export.js"></script>
+    <script src="main.js"></script>
+    <script src="rp-project-loader.js"></script>
+    <script src="themes/theme-manager.js"></script>
+</body>
+</html>

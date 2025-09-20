@@ -1,0 +1,235 @@
+/* CoWriter About Button */
+/* CoWriter About Button - subtle styling like Lore Codex */
+.cowriter-about-btn {
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: color var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    margin-left: var(--space-xs);
+}
+
+.cowriter-about-btn:hover {
+    color: var(--text-secondary);
+}
+
+.cowriter-about-btn i {
+    font-size: 13px;
+}
+
+/* CoWriter About Modal - inherit from Lore Codex styling */
+.cowriter-about-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.cowriter-about-overlay.show {
+    opacity: 1;
+}
+
+.cowriter-about-content {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-primary);
+    width: 90%;
+    max-width: 1000px;
+    height: 80%;
+    max-height: 600px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform var(--transition-normal);
+}
+
+.cowriter-about-overlay.show .cowriter-about-content {
+    transform: scale(1);
+}
+
+.cowriter-about-content .modal-header {
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-primary);
+    padding: var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.cowriter-about-content .modal-header h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+}
+
+.cowriter-about-content .close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-normal);
+}
+
+.cowriter-about-content .close-btn:hover {
+    background: var(--bg-quaternary);
+    color: var(--text-primary);
+}
+
+/* About Modal Body - same structure as Lore Codex */
+.about-body {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+}
+
+.about-sidebar {
+    width: 250px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-primary);
+    padding: var(--space-lg);
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.about-sidebar h3 {
+    margin: 0 0 var(--space-lg) 0;
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-secondary);
+    padding-bottom: var(--space-sm);
+}
+
+.about-main {
+    flex: 1;
+    padding: var(--space-lg);
+    overflow-y: auto;
+    background: var(--bg-primary);
+}
+
+/* Table of Contents styling - same as Lore Codex */
+.cowriter-toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.cowriter-toc-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.cowriter-toc-link,
+.cowriter-toc-sublink {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    text-align: left;
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-sm);
+}
+
+.cowriter-toc-link {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.cowriter-toc-sublink {
+    padding-left: var(--space-lg);
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+.cowriter-toc-link:hover,
+.cowriter-toc-sublink:hover {
+    background: var(--bg-tertiary);
+    color: var(--accent-primary);
+}
+
+.cowriter-toc-link.active,
+.cowriter-toc-sublink.active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.cowriter-toc-subsections {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--space-xs);
+}
+
+/* Section Content styling */
+#cowriter-section-content h2 {
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    margin: 0 0 var(--space-lg) 0;
+    border-bottom: 2px solid var(--accent-primary);
+    padding-bottom: var(--space-sm);
+}
+
+#cowriter-section-content h3 {
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin: var(--space-xl) 0 var(--space-md) 0;
+}
+
+.cowriter-section-content p,
+.cowriter-subsection-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-md);
+}
+
+.cowriter-section-content p:last-child,
+.cowriter-subsection-content p:last-child {
+    margin-bottom: 0;
+}
+
+.cowriter-subsection {
+    margin: var(--space-xl) 0;
+    padding-left: var(--space-lg);
+    border-left: 3px solid var(--accent-primary);
+}
+
+.cowriter-section-content code,
+.cowriter-subsection-content code {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    padding: 2px 6px;
+    font-family: monospace;
+    font-size: var(--font-size-xs);
+    color: var(--accent-primary);
+}

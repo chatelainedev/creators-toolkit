@@ -1,0 +1,89 @@
+{
+  "title": "Lore Codex Guide",
+  "sections": [
+    {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "content": "When you first open Lore Codex, you’ll see a blank project. From here, you can either begin fresh or load an existing project to continue editing.",
+      "subsections": [
+        {
+          "id": "projects-info",
+          "title": "Projects & Info",
+          "content": "Here you can set up the key details of your project. The World Title becomes your site’s name in the generated HTML, and you may also choose to display it on the banner. Both the title and subtitle can be customized for font, color, and placement. You can upload a banner image, select which premade pages to include, and create custom navigation buttons.\n\nThe Overview settings define the first tab shown in your generated site. You can style the Overview container with either a background color or an image (images override colors). You can also add links to the top of the Overview page for quick access."
+        },
+        {
+          "id": "custom-link-buttons",
+          "title": "Custom Link Buttons",
+          "content": "Custom Navigation Links and Overview Links support both external URLs and internal project references. For example, \"#characters\" directs to the Characters page, and custom pages follow the same format (e.g., \"#pagename\"). You can also use Global Tags with the syntax \"#filter:tagname\".\n\n**Pre-built Page Tags**:\n\"#characters\"\n\"#world\"\n\"#storylines\"\n\"#plans\"\n\"#playlists\""
+        },
+        {
+          "id": "image-upload",
+          "title": "Image Upload",
+          "content": "Images can be added by entering a URL, manually typing the file path within your project folder, or using the import button to copy an image from your system and automatically insert the correct path. The input field is fully editable at any time, but if you manually change a path, you’ll need to place the image file in the corresponding folder yourself. Imported images are not deleted automatically if their paths are removed."
+        },
+        {
+          "id": "loading-projects",
+          "title": "Loading Projects",
+          "content": "After saving a project to your \"sites\" folder, you can reload it from the dropdown menu at the top of the screen. Clicking the load button will restore all settings. Changes won’t be saved unless you save again to the \"sites\" folder. When loading, Lore Codex parses the HTML file and imports your data so you can continue editing and regenerating."
+        }
+      ]
+    },
+    {
+      "id": "content",
+      "title": "Content",
+      "content": "This is where you add and organize information about your project. Content is grouped into categories, which appear as separate pages in the generated HTML.",
+      "subsections": [
+        {
+          "id": "characters",
+          "title": "Characters",
+          "content": "These function as character profiles on the Characters page. You can upload an avatar, fill out details, and include images in their Gallery."
+        },
+        {
+          "id": "storylines",
+          "title": "Storylines",
+          "content": "This section is designed for documenting stories. You can use it for short stories, long-form works, roleplays, or anything else, since it supports both external URLs and internal file paths. Selecting the **Project File** option lets you pull in existing documents from your \"RP Archiver\" folder that match the current project name, automatically importing the text and related images.\n\nIf you enter a word count, a total word count will be displayed on the Storylines page. Storylines can be categorized as Roleplays or Solos, and organized into Sections, which act as headers grouping related Storylines. In the generated site, Storylines are first sorted by section, then by the order they appear in Lore Codex."
+        },
+        {
+          "id": "plans",
+          "title": "Plans",
+          "content": "Plans allow you to outline events, whether current or future. Information is organized into Arcs and Sub-Arcs, each with assigned events. In the generated site, Plans are displayed in both Card view and Timeline view.\n\nAny images attached to events will appear in the Timeline view."
+        },
+        {
+          "id": "playlists",
+          "title": "Playlists",
+          "content": "This section displays your Spotify playlists on the Playlists page of the generated site."
+        },
+        {
+          "id": "worldbuilding",
+          "title": "Worldbuilding",
+          "content": "All other categories are considered “items” and populate the World page of the generated site. Items appear under the category they were created in, displayed in the same order you arranged them within Lore Codex."
+        }
+      ]
+    },
+    {
+      "id": "tags",
+      "title": "Tags",
+      "content": "Lore Codex supports several types of tags. Filter tags are standard and allow for basic filtering. Adding an exclamation point (e.g., \"!tagname\") makes the tag a **global tag**. Global tags are hidden from the generated site’s filter list but can be used with custom link buttons to pre-filter specific pages, e.g. \"#filter:tagname\". Character tags added in Plans modals indicate which characters are involved in certain events or arcs."
+    },
+    {
+      "id": "appearance",
+      "title": "Appearance",
+      "content": "You can fully customize the look of your generated site. Color schemes determine where and how colors are applied, while font sets control typography. These options are mix-and-match and can be changed at any time—simply regenerate your site to preview the new design."
+    },
+    {
+      "id": "custom-pages",
+      "title": "Custom Pages",
+      "content": "(Coming soon)"
+    },
+    {
+      "id": "generate",
+      "title": "Generate",
+      "content": "When your project is ready, the Generate tab creates the HTML for your site. It provides both an HTML preview and a visual preview (without images). You can either download the HTML directly or save it to your \"sites\" folder. Files are saved in \"sites/projectname\", which is created automatically if it doesn’t already exist. Each generation produces a fresh version of your site."
+    },
+    {
+      "id": "quick-access",
+      "title": "Quick Access",
+      "content": "Quick Access buttons streamline loading and generating.\n\nIf you’ve previously loaded a project, right-clicking the project dropdown lets you **Quick Load** your last project. Once a project is open, right-clicking the Generate tab allows you to **Quick Generate and Save** without visiting the Generate tab directly. After using Quick Gen, you can also **Quick Open**, which launches your project in a new tab for immediate viewing.\n\n**Color pickers** also have a form of quick access: by double-clicking them, you can copy the current color's HEX code to the clipboard; right click shows an input field where you can directly paste or type a HEX code."
+    }
+  ]
+}

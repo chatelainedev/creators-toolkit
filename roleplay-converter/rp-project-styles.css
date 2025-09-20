@@ -1,0 +1,154 @@
+/* RP Archiver Project Selection Styles */
+/* Add this to your converter.css or create a new CSS file */
+
+.project-selection-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px;
+}
+
+.universe-select,
+.story-select {
+    min-width: 200px;
+    max-width: 220px;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 15px;
+}
+
+.universe-select:hover,
+.story-select:hover {
+    border-color: #999;
+    background: #f9f9f9;
+}
+
+.universe-select:focus,
+.story-select:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.universe-select:disabled,
+.story-select:disabled {
+    background: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+    border-color: #e0e0e0;
+}
+
+.universe-select option,
+.story-select option {
+    padding: 4px 8px;
+}
+
+/* Load button styling */
+#load-project-btn {
+    min-width: 34px;
+    width: 34px;
+    height: 32px;
+    padding: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+#load-project-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#load-project-btn:not(:disabled):hover {
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+    border-color: var(--accent-primary);
+}
+
+#load-project-btn:not(:disabled):active {
+    background-color: var(--accent-secondary);
+    border-color: var(--accent-secondary);
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .project-selection-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        margin-left: 0;
+        margin-top: 8px;
+    }
+    
+    .universe-select,
+    .story-select {
+        min-width: 100%;
+        max-width: none;
+    }
+    
+    #load-project-btn {
+        align-self: flex-end;
+        width: 36px;
+        min-width: 36px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .universe-select,
+    .story-select {
+        font-size: 12px;
+        padding: 8px;
+    }
+    
+    #load-project-btn {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+}
+
+/* Dark mode support (if your app has dark mode) */
+@media (prefers-color-scheme: dark) {
+    .universe-select,
+    .story-select {
+        background: #2d2d2d;
+        border-color: #555;
+        color: #e0e0e0;
+    }
+    
+    .universe-select:hover,
+    .story-select:hover {
+        background: #3d3d3d;
+        border-color: #777;
+    }
+    
+    .universe-select:disabled,
+    .story-select:disabled {
+        background: #1a1a1a;
+        color: #666;
+        border-color: #333;
+    }
+}
+
+/* Loading state indicators */
+.universe-select.loading,
+.story-select.loading {
+    background: #f9f9f9 url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjYiIHN0cm9rZT0iIzk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSIzIDMiIGZpbGw9Im5vbmUiPgogIDxhbmltYXRlVHJhbnNmb3JtIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIgdHlwZT0icm90YXRlIiB2YWx1ZXM9IjAgOCA4OzM2MCA4IDgiIGR1cj0iMXMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIi8+CjwvY2lyY2xlPgo8L3N2Zz4K') no-repeat right 8px center;
+    background-size: 16px 16px;
+}
+
+/* Empty state styling */
+.project-selection-controls .empty-state {
+    font-style: italic;
+    color: #666;
+    font-size: 12px;
+}

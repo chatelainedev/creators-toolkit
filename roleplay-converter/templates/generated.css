@@ -1,0 +1,730 @@
+/* CSS Variables for Color Scheme */
+/* Name: Clarity */ 
+:root {
+    /* Primary Accent - a clear, professional blue */
+    --accent-blue-main: #6C8AB7;
+    --accent-blue-dark: #3E5F91;
+    --accent-blue-light: #e7f1ff;
+    --accent-blue-border: #b6d4fe;
+    
+    /* Grays for UI and Text - a standard, neutral palette */
+    --gray-900: #212529; /* Darkest gray for main text */
+    --gray-800: #343a40; /* Dark gray for headers */
+    --gray-700: #495057;
+    --gray-600: #6c757d; /* Muted text */
+    --gray-500: #adb5bd;
+    --gray-400: #ced4da; /* Borders */
+    --gray-300: #dee2e6; /* Lighter borders */
+    --gray-200: #e9ecef; /* Light backgrounds */
+    --gray-100: #f8f9fa; /* Lightest backgrounds */
+    
+    /* Core Colors */
+    --white: #ffffff;
+    --background-main: var(--gray-100);
+    --border-color: var(--gray-300);
+    
+    /* Text Colors (Semantic) */
+    --text-main: var(--gray-900);
+    --text-muted: var(--gray-600);
+    --text-dialog: var(--gray-800);
+    
+    /* Shadow Colors - soft and subtle */
+    --shadow-light: rgba(0, 0, 0, 0.05);
+    --shadow-medium: rgba(0, 0, 0, 0.1);
+    --shadow-dark: rgba(0, 0, 0, 0.15);
+    --shadow-modal: rgba(0, 0, 0, 0.2);
+    --overlay-dark: rgba(33, 37, 41, 0.75);
+    
+    /* Transparency Variations */
+    --white-95: rgba(255, 255, 255, 0.95);
+    --white-98: rgba(255, 255, 255, 0.98);
+    --gray-lightest-95: rgba(248, 249, 250, 0.95);
+    --accent-blue-10: rgba(13, 110, 253, 0.1);
+    
+    /* Renamed for Clarity Theme */
+    --primary-dark: var(--gray-800);
+    --primary-10: var(--accent-blue-10);
+    --accent-blue: var(--accent-blue-main);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-main);
+    color: var(--text-main);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+}
+
+/* Typography improvements */
+em {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+strong {
+    font-weight: 600;
+    color: inherit;
+}
+
+del {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.dialogue {
+    font-family: inherit; /* Use main font for consistency */
+    color: var(--text-dialog);
+}
+
+/* Markdown */
+.section-divider {
+    display: block;
+    margin: 35px auto;
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(to right, var(--accent-blue-light), var(--accent-blue-main), var(--accent-blue-light));
+    border-radius: 1px;
+    opacity: 0.6;
+}
+
+.section-divider::before {
+    content: '';
+}
+
+/* Main content wrapper - clean and defined */
+.content-wrapper {
+    background-color: var(--white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px;
+    padding: 30px;
+    margin: 0 0 20px 0;
+    box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+/* Header - bold and simple */
+header {
+    background: var(--gray-800);
+    color: var(--white);
+    padding: 40px 30px;
+    text-align: center;
+    margin-bottom: 0;
+    border-bottom: 4px solid var(--accent-blue-main)!important;
+    border-radius: 8px 8px 0 0;
+}
+
+header h1 {
+    margin: 0 0 8px 0;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+header h2 {
+    margin: 0;
+    font-weight: 300;
+    opacity: 0.9;
+    font-size: 1.1em;
+}
+
+/* Navigation - clean and functional */
+nav {
+    background-color: var(--white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-top: none;
+    border-bottom-width: 2px;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+    border-radius: 0 0 8px 8px;
+}
+
+nav a {
+    color: var(--text-main) !important;
+    text-decoration: none !important;
+    margin-right: 20px;
+    font-weight: 500;
+    padding: 8px 12px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-radius: 6px;
+}
+
+nav a:hover {
+    background-color: var(--accent-blue-10) !important;
+    color: var(--accent-blue-main) !important;
+}
+
+/* Story info - clear and organized */
+.story-info {
+    background-color: var(--gray-100) !important;
+    border: 1px solid var(--border-color) !important;
+    padding: 25px;
+    margin-bottom: 20px;
+    position: relative;
+    border-radius: 8px;
+}
+
+.story-info p {
+    margin: 8px 0;
+    font-size: 0.95em;
+}
+
+.story-info strong {
+    color: var(--gray-800);
+    font-weight: 600;
+}
+
+.story-description {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    line-height: 1.6;
+}
+
+.story-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.stat-item {
+    background-color: var(--accent-blue-light);
+    border: 1px solid var(--accent-blue-border);
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.85em;
+    color: var(--accent-blue-dark);
+    font-weight: 500;
+}
+
+.stat-item::before {
+    display: none; /* Removed for a cleaner look */
+}
+
+/* Export button - subtle and modern */
+.export-button {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: var(--gray-700);
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.export-button:hover {
+    background-color: var(--gray-100);
+    border-color: var(--gray-500);
+    color: var(--gray-800);
+}
+
+/* Gallery styles - clean grid */
+.story-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 25px;
+    background-color: transparent;
+    border: none;
+    margin-top: 0;
+}
+
+.story-gallery img {
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px var(--shadow-light);
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.story-gallery img:hover {
+    box-shadow: 0 4px 12px var(--shadow-dark);
+    transform: scale(1.03);
+}
+
+.gallery-header {
+    background-color: var(--gray-100);
+    padding: 15px 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    margin-bottom: 0;
+    font-weight: 600;
+    color: var(--gray-700);
+    border-radius: 6px;
+}
+
+.gallery-header:hover {
+    background-color: var(--gray-200);
+}
+
+.toggle-icon {
+    font-size: 14px;
+    transition: transform 0.15s ease;
+    color: var(--text-muted);
+}
+
+.toggle-icon.collapsed {
+    transform: rotate(-90deg);
+}
+
+.gallery-content {
+    transition: max-height 0.2s ease, padding 0.2s ease;
+    max-height: 1000px;
+    overflow: hidden;
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+}
+
+.gallery-content.collapsed {
+    max-height: 0;
+    padding: 0 25px;
+    border-width: 0 1px;
+}
+
+/* Part headers - clear and clickable */
+.part-header {
+    background: var(--accent-blue-main);
+    color: white;
+    margin: 20px 0 0 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.part-header h2 {
+    margin: 0;
+    padding: 18px 25px;
+    font-weight: 500;
+    font-size: 1.3em;
+}
+
+.part-toggle {
+    padding-right: 25px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    transition: transform 0.15s ease;
+}
+
+.part-toggle.collapsed {
+    transform: rotate(-90deg);
+}
+
+/* Main RP container - clean and readable */
+.rp-container {
+    background-color: var(--white) !important;
+    border: 1px solid var(--border-color) !important;
+    padding: 30px;
+    margin: 0 0 20px 0;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.rp-container.collapsed {
+    display: none;
+}
+
+.rp-container:last-of-type::after {
+    content: "To be continued...";
+    display: block;
+    text-align: center;
+    padding-top: 40px;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 1em;
+    letter-spacing: 0.5px;
+}
+
+/* RP entries - simple and effective */
+.rp-entry {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.rp-entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Character names - clear visual indicator */
+.character-name {
+    display: block;
+    font-weight: 700;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    padding: 8px 12px;
+    border-left: 4px solid; /* Uses character color */
+    background-color: var(--gray-100);
+}
+
+.character-name::before {
+    display: none; /* remove old style */
+}
+
+/* Paragraphs */
+.rp-entry p,
+.rp-entry .html-content {
+    margin: 0 0 1em 0;
+    line-height: 1.7;
+}
+
+.rp-entry p:last-of-type,
+.rp-entry .html-content:last-of-type {
+    margin-bottom: 0;
+}
+
+/* Table of contents - organized and clean */
+.table-of-contents {
+    background-color: var(--gray-100);
+    border: 1px solid var(--border-color);
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.table-of-contents h3 {
+    margin: 0 0 15px 0;
+    color: var(--gray-800);
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.table-of-contents ul {
+    margin: 0;
+    padding-left: 25px;
+    line-height: 1.8;
+}
+
+.table-of-contents a {
+    color: var(--text-main);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.table-of-contents a:hover {
+    color: var(--accent-blue-main);
+}
+
+/* Word count display */
+.word-count-display {
+    font-size: 0.9em;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+/* Scroll to top button - standard and functional */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background-color: var(--white);
+    color: var(--gray-700);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px var(--shadow-dark);
+    z-index: 1000;
+    font-size: 20px;
+}
+
+.scroll-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.scroll-top-btn:hover {
+    background-color: var(--accent-blue-main);
+    color: var(--white);
+    border-color: var(--accent-blue-main);
+}
+
+/* Soundtrack & Comments Panels - clean slide-out panels */
+.soundtrack-panel, .comments-panel {
+    position: fixed;
+    left: 30px;
+    width: 320px;
+    background-color: var(--white-98) !important;
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 4px 20px var(--shadow-medium);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    transform: translateX(-350px);
+    border-radius: 8px;
+}
+
+/* Position soundtrack panel at the top */
+.soundtrack-panel {
+    top: 90px;
+}
+
+/* Position comments panel lower so both toggles are visible */
+.comments-panel {
+    top: 150px;
+}
+
+.soundtrack-panel.open, .comments-panel.open {
+    transform: translateX(0);
+}
+
+.soundtrack-toggle, .comments-toggle {
+    position: absolute;
+    top: 0;
+    right: -50px;
+    width: 50px;
+    height: 50px;
+    background-color: var(--white);
+    color: var(--gray-700);
+    border: 1px solid var(--border-color);
+    border-left: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+    box-shadow: 2px 0 10px var(--shadow-light);
+    transition: all 0.2s ease;
+    border-radius: 0 8px 8px 0;
+}
+
+.soundtrack-toggle:hover, .comments-toggle:hover {
+    background-color: var(--gray-100);
+    color: var(--accent-blue-main);
+}
+
+/* Hide the other toggle when one panel is open */
+.soundtrack-panel.open ~ .comments-panel .comments-toggle,
+.comments-panel.open ~ .soundtrack-panel .soundtrack-toggle {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Adjust z-index when panels are open */
+.soundtrack-panel.open, .comments-panel.open { 
+    z-index: 1001; 
+}
+
+/* When one panel is open, move the other one down further to avoid overlap */
+.soundtrack-panel.open ~ .comments-panel { 
+    top: 200px; 
+    z-index: 1000; 
+}
+.comments-panel.open ~ .soundtrack-panel { 
+    top: 40px; 
+    z-index: 1000; 
+}
+
+.soundtrack-header, .comments-header {
+    color: var(--white);
+    padding: 20px 25px;
+    font-weight: 600;
+    font-size: 1.1em;
+    border-radius: 6px 6px 0 0;
+}
+
+.soundtrack-header { background: var(--accent-blue-main); }
+.comments-header { background: var(--gray-700); }
+
+.soundtrack-content, .comments-content {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 25px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-400) var(--gray-200);
+}
+
+.soundtrack-content::-webkit-scrollbar,
+.comments-content::-webkit-scrollbar { width: 6px; }
+
+.soundtrack-content::-webkit-scrollbar-track,
+.comments-content::-webkit-scrollbar-track { background: var(--gray-200); }
+
+.soundtrack-content::-webkit-scrollbar-thumb,
+.comments-content::-webkit-scrollbar-thumb {
+    background-color: var(--gray-400);
+    border-radius: 3px;
+}
+
+.soundtrack-section, .comments-section { margin-bottom: 20px; }
+
+.soundtrack-section-title, .comments-section-title {
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.soundtrack-track a {
+    display: block;
+    color: var(--text-main);
+    text-decoration: none;
+    padding: 6px 0;
+    transition: color 0.2s ease;
+}
+
+.soundtrack-track a:hover { color: var(--accent-blue-main); }
+
+.soundtrack-track a::before {
+    content: '♪';
+    margin-right: 8px;
+    color: var(--text-muted);
+}
+
+.comment-block {
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: var(--gray-100);
+    border-left: 3px solid var(--gray-500);
+    border-radius: 4px;
+    line-height: 1.6;
+    font-size: 0.95em;
+}
+
+.comment-block strong { color: var(--gray-800); }
+
+/* Legacy font color override */
+font[color=blue] {
+    color: var(--accent-blue-main) !important;
+}
+
+/* Image Modal - clean and focused */
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: var(--overlay-dark);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-modal.show {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    box-sizing: border-box;
+    opacity: 1;
+}
+
+.image-modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    animation: fadeInScale 0.3s ease;
+}
+
+.image-modal img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    box-shadow: 0 8px 40px var(--shadow-modal);
+    border-radius: 8px;
+}
+
+.image-modal-close {
+    position: absolute;
+    top: -15px; right: -15px;
+    background-color: var(--white);
+    color: var(--text-main);
+    border: none;
+    border-radius: 50%;
+    width: 40px; height: 40px;
+    font-size: 20px; font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px var(--shadow-modal);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    z-index: 2001;
+}
+
+.image-modal-close:hover {
+    transform: scale(1.1);
+    background-color: var(--gray-100);
+}
+
+.image-modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--white-95);
+    color: var(--text-main);
+    border: none;
+    border-radius: 50%;
+    width: 50px; height: 50px;
+    font-size: 20px; font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px var(--shadow-dark);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    z-index: 2001;
+}
+
+.image-modal-nav:hover {
+    transform: translateY(-50%) scale(1.1);
+    background-color: var(--gray-100);
+}
+
+.image-modal-nav.prev { left: -25px; }
+.image-modal-nav.next { right: -25px; }
+.image-modal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+.image-modal-nav:disabled:hover { transform: translateY(-50%); }
+
+/* Animations */
+@keyframes fadeInScale {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    body { padding: 0 10px; }
+    .content-wrapper, .rp-container, .story-info { padding: 20px; }
+    header, nav { border-radius: 0; }
+    .scroll-top-btn { bottom: 20px; right: 20px; }
+    .soundtrack-panel, .comments-panel { width: 100%; left: 0; top: 0; height: 100%; border-radius: 0; transform: translateX(-100%); }
+    .soundtrack-toggle, .comments-toggle { right: -40px; width: 40px; height: 40px; }
+}
+
+/* Panel Position Override - Add to bottom of template files */
+.soundtrack-panel, .comments-panel {
+    transform: translateX(-355px) !important;
+}
+
+.soundtrack-panel.open, .comments-panel.open {
+    transform: translateX(0) !important;
+}

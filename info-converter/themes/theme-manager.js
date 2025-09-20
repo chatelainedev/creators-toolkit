@@ -1,0 +1,74 @@
+// Theme Manager for Lore Codex
+class LoreCodexThemeManager {
+    constructor() {
+        this.themes = {};
+        this.currentTheme = 'default';
+        this.SHARED_THEME_KEY = 'writingTools_currentTheme';
+        this.init();
+    }
+
+    async init() {
+        await this.loadThemes();
+        this.loadSharedTheme();
+        this.setupStorageListener();
+    }
+
+    // Load themes from JSON
+    async loadThemes() {
+        try {
+            // Adjust path to point to shared themes.json
+            const response = await fetch('../themes/themes.json');
+            // OR if you copied themes.json to Lore Codex folder:
+            // const response = await fetch('themes/themes.json');
+            
+            this.themes = await response.json();
+        } catch (error) {
+            console.error('Failed to load themes in Lore Codex:', error);
+            // Fallback to current theme if themes can't be loaded
+            this.themes = { default: { name: "Default", colors: {} } };
+        }
+    }
+
+    // Load theme from shared localStorage
+    loadSharedTheme() {
+        const savedTheme = localStorage.getItem(this.SHARED_THEME_KEY) || 'default';
+        this.applyTheme(savedTheme);
+    }
+
+    // Apply theme to Lore Codex
+    applyTheme(themeId) {
+        if (!this.themes[themeId]) {
+            console.warn(`Theme ${themeId} not found, using default`);
+            themeId = 'default';
+        }
+
+        const theme = this.themes[themeId];
+        const root = document.documentElement;
+        
+        // Apply theme colors to CSS custom properties
+        Object.entries(theme.colors).forEach(([property, value]) => {
+            root.style.setProperty(`--${property}`, value);
+        });
+        
+        this.currentTheme = themeId;
+        
+        // Show the page now that theme is applied
+        document.body.classList.add('theme-loaded');
+        console.log(`Lore Codex theme applied: ${theme.name}`);
+    }
+
+    // Listen for theme changes from main app
+    setupStorageListener() {
+        window.addEventListener('storage', (e) => {
+            if (e.key === this.SHARED_THEME_KEY && e.newValue !== e.oldValue) {
+                console.log('Theme changed in main app, updating Lore Codex...');
+                this.loadSharedTheme();
+            }
+        });
+    }
+}
+
+// Initialize theme manager when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.loreCodexThemeManager = new LoreCodexThemeManager();
+});

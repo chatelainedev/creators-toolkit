@@ -1,0 +1,795 @@
+/* CSS Variables for Color Scheme */
+/* Name: Sakura */ 
+:root {
+    /* Primary colors - soft, dreamy pinks */
+    --primary-pink: #f8e8f0;
+    --primary-pink-dark: #f0d4e2;
+    --primary-pink-darker: #e8c0d4;
+    
+    /* Accent colors - kawaii palette */
+    --accent-rose: #e09bb3;
+    --accent-rose-dark: #d1899f;
+    --accent-rose-darker: #c2778b;
+    --accent-lavender: #c8a8d8;
+    --accent-lavender-dark: #b896c4;
+    --accent-mint: #a8d8c8;
+    --accent-peach: #f5c3a0;
+    --accent-glow: rgba(224, 155, 179, 0.2);
+    --accent-glow-strong: rgba(224, 155, 179, 0.35);
+    
+    /* Soft neutrals - warm and cozy */
+    --gray-soft: #e8ddd6;
+    --gray-medium: #d4c4ba;
+    --gray-medium-dark: #c0b0a4;
+    --gray-light: #f2ebe6;
+    --gray-lighter: #f6f0eb;
+    --gray-lightest: #faf6f2;
+    
+    /* Dreamy background colors */
+    --cloud-white: #fefcfa;
+    --cloud-pink: #fdf8fb;
+    --cloud-lavender: #faf8fc;
+    
+    /* Border and background colors - very soft */
+    --border-color: #e8ddd6;
+    --border-soft: #f0e4dd;
+    --background-main: #fef8fc; /* Very soft pink-white */
+    
+    /* Text colors - gentle but readable */
+    --text-main: #6b5b58;
+    --text-muted: #9b8b88;
+    --text-dialog: #8b6b78;
+    --text-light: #fefcfa; /* For dark backgrounds */
+    
+    /* Base whites - dreamy tones */
+    --white: #fefcfa;
+    
+    /* Soft, dreamy shadows */
+    --shadow-light: rgba(224,155,179,0.08);
+    --shadow-medium: rgba(224,155,179,0.12);
+    --shadow-dark: rgba(224,155,179,0.18);
+    --shadow-modal: rgba(107,91,88,0.3);
+    --overlay-dark: rgba(107,91,88,0.6);
+    
+    /* Transparency variations */
+    --white-95: rgba(254,252,250,0.95);
+    --white-98: rgba(254,252,250,0.98);
+    --cloud-95: rgba(254,248,252,0.95);
+    --primary-90: rgba(248,232,240,0.90);
+    --primary-95: rgba(248,232,240,0.95);
+    --primary-10: rgba(248,232,240,0.15);
+
+    /* Kawaii fonts - rounded and friendly */
+    --font-heading: 'Nunito', 'Comic Sans MS', 'Arial', sans-serif;
+    --font-body: 'Nunito', 'Segoe UI', 'Arial', sans-serif;
+    --font-mono: 'Courier New', monospace;
+}
+
+/* Import kawaii fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap');
+
+/* Markdown styling */
+/* Markdown styling */
+.section-divider {
+    display: block;
+    margin: 35px auto;
+    width: 150px;
+    height: 4px;
+    background: linear-gradient(
+        90deg, 
+        var(--accent-rose-darker) 0%, 
+        var(--accent-rose) 30%, 
+        var(--accent-lavender) 50%, 
+        var(--accent-rose) 70%, 
+        var(--accent-rose-darker) 100%
+    );
+    border-radius: 10px;
+    box-shadow: 
+        0 0 12px var(--accent-glow),
+        0 2px 6px var(--shadow-light);
+    position: relative;
+}
+
+.section-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
+    border-radius: 50%;
+    border: 2px solid var(--cloud-white);
+    box-shadow: 
+        0 0 8px var(--accent-glow),
+        0 2px 4px var(--shadow-medium);
+}
+
+.section-divider::after {
+    content: '';
+}
+
+body {
+    font-family: var(--font-body);
+    line-height: 1.7;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, var(--cloud-pink) 0%, var(--cloud-lavender) 50%, var(--cloud-white) 100%);
+    /* Subtle sparkle effect */
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(224,155,179,0.04) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(200,168,216,0.03) 0%, transparent 60%),
+        radial-gradient(circle at 90% 20%, rgba(168,216,200,0.02) 0%, transparent 40%);
+    color: var(--text-main);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+}
+
+/* Dreamy floating sparkles overlay with pink tint */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    /* Much more visible pink tint */
+    background: 
+        linear-gradient(135deg, rgba(248,232,240,0.15) 0%, rgba(224,155,179,0.08) 50%, rgba(200,168,216,0.12) 100%),
+        radial-gradient(circle at 20% 30%, rgba(224,155,179,0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(200,168,216,0.10) 0%, transparent 60%),
+        radial-gradient(circle at 50% 20%, rgba(245,195,160,0.08) 0%, transparent 40%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Typography improvements */
+em { color: var(--text-muted); font-style: italic; }
+strong { font-weight: 700; color: var(--accent-rose); }
+del { text-decoration: line-through; opacity: 0.6; color: var(--text-muted); }
+.dialogue { font-family: var(--font-body); color: var(--text-dialog); font-style: italic; font-weight: 500; }
+
+/* Main content wrapper - fluffy cloud */
+.content-wrapper {
+    background: linear-gradient(145deg, var(--white-95) 0%, var(--cloud-95) 100%) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-soft) !important;
+    border-top: none;
+    padding: 35px;
+    margin: 0 0 25px 0;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 
+        0 8px 32px var(--shadow-light),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+}
+
+/* Header - kawaii banner (no emojis) */
+header {
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 50%, var(--accent-mint) 100%);
+    color: var(--text-light);
+    padding: 45px 35px;
+    text-align: center;
+    margin-bottom: 0;
+    border-bottom: none !important;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 
+        0 8px 32px var(--shadow-medium),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+header h1 {
+    font-family: var(--font-heading);
+    margin: 0 0 12px 0;
+    font-weight: 800;
+    font-size: 2.4em;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(255,255,255,0.3);
+}
+
+header h2 {
+    font-family: var(--font-body);
+    margin: 0;
+    font-weight: 500;
+    opacity: 0.9;
+    font-size: 1.2em;
+    font-style: italic;
+}
+
+/* Navigation - cute breadcrumb */
+nav {
+    background: linear-gradient(145deg, var(--cloud-95) 0%, var(--white-95) 100%) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-soft) !important;
+    border-top: none;
+    padding: 18px 30px;
+    margin-bottom: 0;
+    font-family: var(--font-body);
+    border-radius: 0 0 15px 15px;
+}
+
+nav a {
+    color: var(--text-main) !important;
+    text-decoration: none !important;
+    margin-right: 25px;
+    font-weight: 600;
+    padding: 8px 15px;
+    transition: all 0.2s ease;
+    border-radius: 25px;
+    background: rgba(224,155,179,0.05);
+}
+
+nav a:hover {
+    background: var(--accent-glow) !important;
+    color: var(--accent-rose) !important;
+}
+
+/* Story info - kawaii info card (no emoji decoration) */
+.story-info {
+    background: linear-gradient(145deg, var(--primary-pink) 0%, var(--cloud-pink) 100%) !important;
+    backdrop-filter: blur(8px);
+    border: 2px solid var(--accent-rose) !important;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 25px;
+    position: relative;
+    box-shadow: 
+        0 8px 32px var(--shadow-light),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+.story-info p { 
+    margin: 10px 0; 
+    font-size: 1em; 
+    line-height: 1.6;
+    font-weight: 500;
+}
+.story-info strong { 
+    color: var(--accent-rose); 
+    font-weight: 700; 
+}
+.story-description { 
+    margin-top: 20px; 
+    padding-top: 20px; 
+    border-top: 2px solid var(--accent-rose); 
+    line-height: 1.7; 
+}
+.story-stats { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 12px; 
+    margin-top: 20px; 
+    padding-top: 20px; 
+    border-top: 2px solid var(--accent-rose); 
+}
+
+.stat-item {
+    background: linear-gradient(135deg, var(--accent-peach) 0%, var(--accent-rose) 100%);
+    color: var(--text-light);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.9em;
+    font-weight: 600;
+    font-family: var(--font-body);
+    box-shadow: 0 4px 12px var(--shadow-light);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.stat-item::before { 
+    content: '•'; 
+    margin-right: 6px; 
+    color: var(--text-light); 
+}
+
+/* Export button - cute button */
+.export-button {
+    background: linear-gradient(135deg, var(--accent-mint) 0%, var(--accent-lavender) 100%);
+    color: var(--text-light);
+    border: none;
+    padding: 10px 18px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    transition: all 0.2s ease;
+    border-radius: 25px;
+    box-shadow: 0 4px 12px var(--shadow-light);
+}
+
+.export-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px var(--shadow-medium);
+}
+
+/* Gallery styles - kawaii gallery */
+.gallery-header { 
+    background: linear-gradient(135deg, var(--accent-lavender) 0%, var(--accent-rose) 100%);
+    padding: 16px 25px; 
+    cursor: pointer; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border: none; 
+    border-radius: 15px 15px 0 0;
+    margin-bottom: 0; 
+    font-weight: 700; 
+    color: var(--text-light); 
+    font-family: var(--font-heading); 
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px var(--shadow-light);
+}
+.gallery-header:hover { 
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px var(--shadow-medium);
+}
+.story-gallery { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    padding: 25px; 
+    background: linear-gradient(145deg, var(--cloud-white) 0%, var(--primary-pink) 100%);
+    border: none;
+    border-radius: 0 0 15px 15px;
+    margin-top: 0; 
+    box-shadow: 0 4px 12px var(--shadow-light);
+}
+.story-gallery img { 
+    border: 3px solid var(--accent-rose); 
+    border-radius: 15px;
+    box-shadow: 0 6px 20px var(--shadow-medium); 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    filter: saturate(1.1) brightness(1.05);
+}
+.story-gallery img:hover { 
+    border-color: var(--accent-lavender); 
+    transform: translateY(-2px); 
+    box-shadow: 0 8px 25px var(--shadow-dark);
+    filter: saturate(1.2) brightness(1.1);
+}
+.toggle-icon { 
+    font-size: 16px; 
+    transition: transform 0.2s ease; 
+    color: var(--text-light); 
+}
+.toggle-icon.collapsed { transform: rotate(-90deg); }
+.gallery-content { 
+    transition: all 0.2s ease; 
+    max-height: 1000px; 
+    overflow: hidden; 
+}
+.gallery-content.collapsed { 
+    max-height: 0; 
+    padding: 0; 
+    border: none; 
+}
+
+/* Part headers - seamlessly blend with containers */
+.part-header {
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
+    color: var(--text-light);
+    margin: 25px 0 0 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 
+        0 4px 15px var(--shadow-medium),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+    position: relative;
+}
+
+.part-header h2 {
+    font-family: var(--font-heading);
+    margin: 0;
+    padding: 20px 25px;
+    font-weight: 700;
+    font-size: 1.4em;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.part-toggle { 
+    padding-right: 25px; 
+    color: rgba(255,255,255,0.9); 
+    font-size: 18px; 
+    transition: transform 0.2s ease; 
+}
+.part-toggle.collapsed { transform: rotate(-90deg); }
+
+/* Main RP container - seamlessly attached to part headers */
+.rp-container {
+    background: linear-gradient(145deg, var(--white-95) 0%, var(--cloud-95) 100%) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-soft) !important;
+    padding: 35px;
+    margin: 0 0 25px 0;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 
+        0 4px 15px var(--shadow-light),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.rp-container.collapsed { display: none; }
+
+/* Japanese end marker - no emoji */
+.rp-container:last-of-type::after {
+    content: "— つづく —";
+    display: block;
+    text-align: center;
+    padding-top: 40px;
+    font-family: var(--font-heading);
+    color: var(--accent-rose);
+    font-size: 1.1em;
+    font-weight: 600;
+    font-style: italic;
+}
+
+/* RP entries */
+.rp-entry { 
+    margin-bottom: 30px; 
+    padding-bottom: 25px; 
+    border-bottom: 2px solid var(--gray-soft); 
+}
+.rp-entry:last-child { 
+    border-bottom: none; 
+    margin-bottom: 0; 
+    padding-bottom: 0; 
+}
+
+/* Character names - kawaii name tags */
+.character-name {
+    display: inline-block;
+    width: auto;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    padding: 10px 18px 10px 15px;
+    position: relative;
+    background: linear-gradient(135deg, var(--cloud-white) 0%, var(--primary-pink) 100%);
+    border: 2px solid var(--border-color);
+    border-left: 5px solid; /* Uses character color from inline style */
+    border-radius: 25px;
+    box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.character-name::before { display: none; }
+
+.rp-entry p, .rp-entry .html-content { 
+    margin: 0 0 15px 0; 
+    line-height: 1.7; 
+    font-weight: 400;
+}
+.rp-entry p:last-of-type, .rp-entry .html-content:last-of-type { 
+    margin-bottom: 0; 
+}
+
+/* Table of contents - kawaii index */
+.table-of-contents { 
+    background: linear-gradient(145deg, var(--primary-pink) 0%, var(--cloud-lavender) 100%);
+    border: 2px solid var(--accent-rose); 
+    border-radius: 20px;
+    padding: 25px; 
+    margin-bottom: 25px; 
+    box-shadow: 0 8px 25px var(--shadow-light);
+}
+.table-of-contents h3 { 
+    margin: 0 0 18px 0; 
+    color: var(--text-main); 
+    font-weight: 700; 
+    font-size: 1.2em; 
+    font-family: var(--font-heading); 
+    border-bottom: 2px solid var(--accent-rose);
+    padding-bottom: 10px;
+    text-align: center;
+}
+.table-of-contents ul { margin: 0; padding-left: 25px; line-height: 2; }
+.table-of-contents a { 
+    color: var(--text-main); 
+    text-decoration: none; 
+    transition: all 0.2s ease;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 15px;
+}
+.table-of-contents a:hover { 
+    color: var(--accent-rose); 
+    background-color: var(--accent-glow);
+}
+
+/* Word count display */
+.word-count-display { 
+    font-size: 0.9em; 
+    color: var(--text-muted); 
+    text-align: right; 
+    margin-top: 20px; 
+    font-style: italic;
+    font-weight: 500;
+}
+
+/* Scroll to top button - kawaii float button */
+.scroll-top-btn { 
+    position: fixed; 
+    bottom: 30px; 
+    right: 30px; 
+    width: 55px; 
+    height: 55px; 
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
+    color: var(--text-light); 
+    border: none; 
+    border-radius: 50%;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    cursor: pointer; 
+    opacity: 0; 
+    visibility: hidden; 
+    transition: all 0.2s ease; 
+    box-shadow: 0 8px 25px var(--shadow-dark); 
+    z-index: 1000; 
+    font-size: 20px;
+    font-weight: bold;
+}
+.scroll-top-btn.visible { opacity: 1; visibility: visible; }
+.scroll-top-btn:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px var(--shadow-dark); 
+}
+
+/* Soundtrack/Comments panels - kawaii side panels */
+.soundtrack-panel, .comments-panel {
+    position: fixed;
+    left: 30px;
+    width: 320px;
+    background: linear-gradient(145deg, var(--white-98) 0%, var(--cloud-95) 100%) !important;
+    backdrop-filter: blur(12px);
+    border: 2px solid var(--border-soft) !important;
+    border-radius: 20px;
+    box-shadow: 0 12px 40px var(--shadow-dark);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    transform: translateX(-360px);
+}
+
+.soundtrack-panel { top: 30px; }
+.comments-panel { top: 95px; }
+.soundtrack-panel.open, .comments-panel.open { transform: translateX(0); }
+
+.soundtrack-toggle, .comments-toggle {
+    position: absolute;
+    top: 10px;
+    right: -55px;
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, var(--accent-mint) 0%, var(--accent-lavender) 100%);
+    color: var(--text-light);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 25px var(--shadow-medium);
+}
+
+.soundtrack-toggle:hover, .comments-toggle:hover {
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
+    transform: translateY(-1px);
+}
+
+/* Panel interaction logic */
+.soundtrack-panel.open ~ .comments-panel .comments-toggle,
+.comments-panel.open ~ .soundtrack-panel .soundtrack-toggle {
+    opacity: 0;
+    pointer-events: none;
+}
+.soundtrack-panel.open, .comments-panel.open { z-index: 1001; }
+.soundtrack-panel.open ~ .comments-panel { top: 150px; z-index: 1000; }
+.comments-panel.open ~ .soundtrack-panel { top: 40px; z-index: 1000; }
+
+.soundtrack-header { 
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
+    color: var(--text-light); 
+    padding: 18px 25px; 
+    font-weight: 700; 
+    font-size: 1.1em; 
+    font-family: var(--font-heading); 
+    border-radius: 18px 18px 0 0;
+    text-align: center;
+}
+.comments-header { 
+    background: linear-gradient(135deg, var(--accent-mint) 0%, var(--accent-peach) 100%);
+    color: var(--text-light); 
+    padding: 18px 25px; 
+    font-weight: 700; 
+    font-size: 1.1em; 
+    font-family: var(--font-heading); 
+    border-radius: 18px 18px 0 0;
+    text-align: center;
+}
+.soundtrack-content, .comments-content { 
+    max-height: 60vh; 
+    overflow-y: auto; 
+    padding: 25px; 
+    scrollbar-width: thin; 
+    scrollbar-color: var(--accent-rose) var(--cloud-white); 
+}
+.soundtrack-content::-webkit-scrollbar, .comments-content::-webkit-scrollbar { width: 8px; }
+.soundtrack-content::-webkit-scrollbar-track, .comments-content::-webkit-scrollbar-track { 
+    background: var(--cloud-white); 
+    border-radius: 10px; 
+}
+.soundtrack-content::-webkit-scrollbar-thumb, .comments-content::-webkit-scrollbar-thumb { 
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
+    border-radius: 10px; 
+}
+.soundtrack-section-title, .comments-section-title { 
+    font-weight: 700; 
+    margin-bottom: 12px; 
+    padding-bottom: 8px; 
+    border-bottom: 2px solid var(--accent-rose); 
+    color: var(--text-main); 
+    font-family: var(--font-heading);
+    font-size: 1em;
+}
+.soundtrack-track a { 
+    display: block; 
+    color: var(--text-main); 
+    text-decoration: none; 
+    padding: 8px 12px; 
+    margin: 4px 0;
+    transition: all 0.2s ease; 
+    font-size: 0.95em;
+    font-weight: 500;
+    border-radius: 15px;
+}
+.soundtrack-track a:hover { 
+    color: var(--accent-rose); 
+    background-color: var(--accent-glow);
+}
+.soundtrack-track a::before { 
+    content: '♫'; 
+    margin-right: 8px; 
+}
+.comment-block { 
+    margin-bottom: 15px; 
+    padding: 18px; 
+    background: linear-gradient(145deg, var(--primary-pink) 0%, var(--cloud-white) 100%);
+    border-left: 4px solid var(--accent-rose); 
+    border-radius: 15px;
+    line-height: 1.6; 
+    font-size: 0.95em; 
+    box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+/* Legacy font color override */
+font[color=blue] { color: var(--accent-lavender) !important; }
+
+/* Image Modal - dreamy modal */
+.image-modal { 
+    display: none; 
+    position: fixed; 
+    z-index: 2000; 
+    left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background-color: var(--overlay-dark); 
+    backdrop-filter: blur(8px); 
+    opacity: 0; 
+    transition: opacity 0.3s ease; 
+}
+.image-modal.show { 
+    display: flex !important; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 40px; 
+    box-sizing: border-box; 
+    opacity: 1; 
+}
+.image-modal-content { 
+    position: relative; 
+    max-width: 90%; 
+    max-height: 90%; 
+    animation: fadeInScale 0.3s ease; 
+}
+.image-modal img { 
+    width: 100%; height: 100%; 
+    object-fit: contain; 
+    box-shadow: 0 0 50px var(--shadow-modal); 
+    border: 4px solid var(--accent-rose); 
+    border-radius: 15px;
+}
+.image-modal-close { 
+    position: absolute; 
+    top: -15px; right: -15px; 
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
+    color: var(--text-light); 
+    border: none; 
+    border-radius: 50%;
+    width: 45px; height: 45px; 
+    font-size: 20px; font-weight: bold; 
+    cursor: pointer; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    box-shadow: 0 4px 15px var(--shadow-modal); 
+    transition: all 0.2s ease; 
+    z-index: 2001; 
+}
+.image-modal-close:hover { 
+    transform: scale(1.05); 
+    box-shadow: 0 6px 20px var(--shadow-modal); 
+}
+.image-modal-nav { 
+    position: absolute; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    background: linear-gradient(135deg, var(--cloud-white) 0%, var(--primary-pink) 100%);
+    color: var(--text-main); 
+    border: 2px solid var(--accent-rose); 
+    border-radius: 50%;
+    width: 50px; height: 50px; 
+    font-size: 20px; font-weight: bold; 
+    cursor: pointer; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    box-shadow: 0 4px 15px var(--shadow-dark); 
+    transition: all 0.2s ease; 
+    z-index: 2001; 
+}
+.image-modal-nav:hover { 
+    transform: translateY(-50%) scale(1.05); 
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
+    color: var(--text-light); 
+}
+.image-modal-nav.prev { left: -30px; }
+.image-modal-nav.next { right: -30px; }
+.image-modal-nav:disabled { 
+    opacity: 0.3; 
+    cursor: not-allowed; 
+}
+.image-modal-nav:disabled:hover { 
+    transform: translateY(-50%); 
+    background: linear-gradient(135deg, var(--cloud-white) 0%, var(--primary-pink) 100%);
+    color: var(--text-main); 
+}
+
+/* Simple animations */
+@keyframes fadeInScale { 
+    from { transform: scale(0.95); opacity: 0; } 
+    to { transform: scale(1); opacity: 1; } 
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    body { padding: 0 15px; }
+    .content-wrapper, .rp-container { padding: 25px; border-radius: 0 0 15px 15px; }
+    header { padding: 30px 25px; border-radius: 15px 15px 0 0; }
+    nav { padding: 15px 25px; }
+    .image-modal-nav { width: 45px; height: 45px; font-size: 18px; }
+    .image-modal-nav.prev { left: -22px; }
+    .image-modal-nav.next { right: -22px; }
+    .image-modal-close { width: 40px; height: 40px; font-size: 18px; top: -12px; right: -12px; }
+    .soundtrack-panel, .comments-panel { width: 290px; transform: translateX(-320px); border-radius: 15px; }
+    .soundtrack-panel.open, .comments-panel.open { transform: translateX(0); }
+    .scroll-top-btn { bottom: 25px; right: 25px; width: 50px; height: 50px; }
+}
+
+/* Panel Position Override */
+.soundtrack-panel, .comments-panel {
+    transform: translateX(-365px) !important;
+}
+
+.soundtrack-panel.open, .comments-panel.open {
+    transform: translateX(0) !important;
+}

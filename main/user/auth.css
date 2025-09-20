@@ -1,0 +1,388 @@
+/* Auth CSS - Login/Register Modal Styles */
+
+.auth-modal {
+    width: 90%;
+    max-width: 450px;
+    padding: 0;
+}
+
+.auth-tabs {
+    display: flex;
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.auth-tab {
+    flex: 1;
+    padding: var(--space-lg) var(--space-xl);
+    background: none;
+    border: none;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    font-family: "Quicksand", sans-serif;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.auth-tab:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-hover);
+    transform: none;
+}
+
+.auth-tab.active {
+    color: var(--accent-primary);
+    background-color: var(--bg-secondary);
+    z-index: 2;
+    margin-bottom: -1px; /* Pull the tab down to cover the border */
+}
+
+.auth-form {
+    display: none;
+    padding: var(--space-2xl);
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.auth-form h2 {
+    margin: 0 0 var(--space-xl) 0;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-labels);
+    text-align: center;
+}
+
+.auth-form .form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.auth-form .form-group:last-of-type {
+    margin-bottom: var(--space-xl);
+}
+
+.auth-form input {
+    margin-bottom: 0;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+}
+
+.auth-form input:focus {
+    background-color: var(--bg-quaternary);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(177, 182, 149, 0.1);
+}
+
+.auth-form .form-actions {
+    margin-top: var(--space-xl);
+    justify-content: center;
+}
+
+.auth-form .btn-primary {
+    width: 100%;
+    justify-content: center;
+    font-size: var(--font-size-base);
+    padding: var(--space-md) var(--space-2xl);
+}
+
+/* Error styling for auth forms */
+.auth-form .form-group.error input {
+    border-color: var(--accent-danger);
+    background-color: rgba(192, 87, 70, 0.05);
+}
+
+.auth-form .error-message {
+    color: var(--accent-danger);
+    font-size: var(--font-size-xs);
+    margin-top: var(--space-xs);
+    margin-bottom: 0;
+    display: none;
+}
+
+.auth-form .form-group.error .error-message {
+    display: block;
+}
+
+/* Success styling */
+.auth-form .form-group.success input {
+    border-color: var(--accent-success);
+    background-color: rgba(48, 113, 97, 0.05);
+}
+
+/* Add this to your main/settings.css or main/auth.css */
+
+.helper-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #666);
+    margin-top: 0.25rem;
+    line-height: 1.4;
+}
+
+.form-group.error .helper-text {
+    color: var(--color-error, #dc3545);
+}
+
+.form-group.success .helper-text {
+    color: var(--color-success, #28a745);
+}
+
+/* Ensure helper text doesn't interfere with error messages */
+.error-message,
+.success-message {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.error-message {
+    color: var(--color-error, #dc3545);
+}
+
+.success-message {
+    color: var(--color-success, #28a745);
+}
+
+/* Loading state for auth forms */
+.auth-form.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.auth-form.loading .btn-primary {
+    position: relative;
+}
+
+.auth-form.loading .btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid var(--bg-primary);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive auth modal */
+@media (max-width: 768px) {
+    .auth-modal {
+        width: 95%;
+        max-width: 400px;
+    }
+    
+    .auth-form {
+        padding: var(--space-xl);
+    }
+    
+    .auth-tab {
+        padding: var(--space-md) var(--space-lg);
+        font-size: var(--font-size-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-modal {
+        width: 98%;
+    }
+    
+    .auth-form {
+        padding: var(--space-lg);
+    }
+    
+    .auth-form h2 {
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--space-lg);
+    }
+    
+    .auth-tab {
+        padding: var(--space-sm) var(--space-md);
+    }
+}
+
+/* Initially hide auth modal and main content to prevent flash */
+#auth-modal {
+    display: none !important;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+#main-content {
+    display: none !important;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+#user-info {
+    display: none !important;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+/* When shown, animate in smoothly */
+#auth-modal.show {
+    display: flex !important;
+    opacity: 1;
+}
+
+#main-content.show {
+    display: flex !important;
+    opacity: 1;
+}
+
+#user-info.show {
+    display: flex !important;
+    opacity: 1;
+}
+
+/* Spinner animation - smooth and subtle */
+@keyframes auth-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.auth-spinner {
+    animation: auth-spin 0.8s linear infinite;
+}
+
+/* Loading state overlays - professional and smooth */
+#auth-loading, #global-loading {
+    backdrop-filter: blur(1px);
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Global loading should be above auth loading */
+#global-loading {
+    z-index: 10001 !important;
+}
+
+/* Card loading states */
+.tool-card.loading {
+    opacity: 0.7;
+    transform: scale(0.98);
+    transition: all 0.2s ease-in-out;
+}
+
+.tool-card.loading .card-launch-btn {
+    pointer-events: none;
+}
+
+.tool-card.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    z-index: 10;
+}
+
+/* Prevent any jarring movements during page load */
+body {
+    overflow-x: hidden;
+}
+
+/* Smooth page transitions */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Loading spinner style refinements */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Navigation loading specific styles */
+.navigation-loading {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+.navigation-loading .loading-icon {
+    color: var(--primary);
+    font-size: 24px;
+    margin-bottom: 16px;
+    animation: pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Smooth transitions for loading states */
+.loading-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Better button loading states */
+.btn-primary.loading, .btn-secondary.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.btn-primary.loading::after, .btn-secondary.loading::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    border: 1px solid currentColor;
+    border-top: 1px solid transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Add at the end of auth.css */
+.auth-guest-option {
+    text-align: center;
+    padding: var(--space-lg) var(--space-2xl);
+    border-top: 1px solid var(--border-primary);
+    background-color: var(--bg-primary);
+}
+
+.guest-link {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color var(--transition-normal);
+}
+
+.guest-link:hover {
+    color: var(--text-secondary);
+}
+
+/* Version display in auth modal */
+.auth-version {
+    text-align: center;
+    padding: var(--space-sm) var(--space-xl);
+    color: var(--text-tertiary);
+    font-size: var(--font-size-xs);
+    border-top: 1px solid var(--border-primary);
+    background-color: var(--bg-primary);
+    font-family: "Nunito Sans", sans-serif;
+    opacity: 0.7;
+}
