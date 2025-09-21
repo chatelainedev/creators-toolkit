@@ -19,4 +19,4 @@ UPDATING CREATOR'S TOOLKIT (ZIP VERSION)
 5. Start the server:
    - Run server/start-server.bat
 
-Your projects, accounts, and settings will be preserved! Have fun :)
+Your projects, accounts, and settings will be preserved! 
