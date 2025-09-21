@@ -1,0 +1,22 @@
+UPDATING CREATOR'S TOOLKIT (ZIP VERSION)
+=====================================
+
+1. Backup your users folder:
+   - Copy the entire "users" folder to your desktop
+
+2. Download the latest version:
+   - Go to: https://github.com/chatelainedev/creators-toolkit/releases
+   - Download the latest "Source code (zip)"
+
+3. Replace files:
+   - Extract the new ZIP
+   - Copy everything EXCEPT the "users" folder to your installation
+   - If prompted about overwriting files, choose "Yes"
+
+4. Restore your data:
+   - Copy your backed-up "users" folder back
+
+5. Start the server:
+   - Run server/start-server.bat
+
+Your projects, accounts, and settings will be preserved!
