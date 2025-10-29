@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="character-manager.css">
+    <link rel="stylesheet" href="character-modals.css">
+    <link rel="stylesheet" href="user/auth-ui.css">
+    <link rel="stylesheet" href="about/character-manager-about.css">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-home-btn" title="Back to Creator's Toolkit">
+                <i class="fas fa-home"></i>
+            </a>
+            
+            <h1 class="nav-title">Character Manager</h1>
+            
+            <div class="nav-controls">
+                <div class="character-count">
+                    <i class="fas fa-users"></i>
+                    <span id="total-character-count">0</span>
+                </div>
+                
+                <!-- Move import-controls BEFORE project-controls -->
+                <div class="import-controls">
+                    <input type="file" id="import-file" accept=".json,.png" multiple style="display: none;">
+                    <button id="import-btn" class="btn-primary">
+                        <i class="fas fa-upload"></i> Import Characters
+                    </button>
+                </div>
+                
+                <div class="project-controls">
+                    <select id="project-dropdown" class="project-select" disabled>
+                        <option value="">New Project</option>
+                    </select>
+                    <button id="save-project-btn" class="btn-secondary" disabled title="Save Project">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button id="load-project-btn" class="btn-secondary" disabled title="Load Project">
+                        <i class="fas fa-folder-open"></i>
+                    </button>
+                    <button id="settings-btn" class="btn-secondary" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Avatar (positioned absolute) -->
+        <div id="nav-user-avatar" class="nav-user-avatar" style="display: none;">
+            <button class="nav-about-btn" id="character-manager-about-btn" title="How to use Character Manager">
+                <i class="fas fa-question-circle"></i>
+            </button>
+            <img id="nav-avatar-img" class="user-avatar" alt="User Avatar">
+        </div>
+
+        <!-- User Context Menu -->
+        <div id="character-context-menu" class="user-context-menu" style="display: none;">
+            <div class="context-menu-item" id="character-logout-option">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <!-- Control Bar -->
+        <div class="control-bar">
+            <div class="search-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search characters...">
+                    <button id="clear-search" class="clear-btn" title="Clear search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="filter-controls">
+                    <select id="folder-filter" class="filter-select">
+                        <option value="">All Characters</option>
+                        <option value="unfoldered">No Folder</option>
+                    </select>
+                    
+                    <div class="tag-filter">
+                        <input type="text" id="tag-filter-input" placeholder="Filter by tags...">
+                        <div id="tag-suggestions" class="tag-suggestions"></div>
+                    </div>
+                </div>
+                
+                <div class="character-counter">
+                    <span id="character-counter-text">0/0</span>
+                </div>
+            </div>
+            
+            <div class="action-controls">
+                <div class="view-toggle">
+                    <button id="grid-view-btn" class="btn-secondary active" title="Grid View">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button id="folder-view-btn" class="btn-secondary" title="Folder View">
+                        <i class="fas fa-folder"></i>
+                    </button>
+                </div>
+                
+                <button id="add-character-btn" class="btn-secondary" title="Create New Character">
+                    <i class="fas fa-plus"></i>
+                </button>
+                
+                <button id="manage-folders-btn" class="btn-secondary" title="Manage Folders">
+                    <i class="fas fa-folder-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bulk Action Controls (initially hidden) -->
+        <div id="bulk-action-controls" class="bulk-action-controls" style="display: none;">
+            <div class="bulk-info">
+                <i class="fas fa-check-double"></i>
+                <span id="selected-count">0</span> characters selected
+            </div>
+            <div class="bulk-actions">
+                <button onclick="app.clearSelection()" class="btn-secondary-text">
+                    <i class="fas fa-times"></i> Clear Selection
+                </button>
+                <button onclick="app.bulkAddTags()" class="btn-secondary">
+                    <i class="fas fa-tags"></i> Add Tags
+                </button>
+                <button onclick="app.bulkMoveToFolder()" class="btn-secondary">
+                    <i class="fas fa-folder-open"></i> Move to Folder
+                </button>
+                <button onclick="app.bulkDeleteCharacters()" class="btn-danger">
+                    <i class="fas fa-trash"></i> Delete All
+                </button>
+            </div>
+        </div>
+
+        <!-- Character Grid -->
+        <div class="character-container">
+            <div id="character-grid" class="character-grid">
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h3>No characters loaded</h3>
+                    <p>Import character cards or create new ones to get started</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Preview Modal -->
+    <div id="import-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content import-modal">
+            <div class="modal-header">
+                <h3>Import Character Cards</h3>
+                <button id="import-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="import-summary">
+                    <p>Found <span id="total-characters">0</span> characters across <span id="total-files">0</span> files</p>
+                </div>
+                
+                <div class="import-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="select-all-characters" checked>
+                        Select All
+                    </label>
+                </div>
+                
+                <div id="import-character-list" class="import-character-list">
+                    <!-- Import characters will be populated here -->
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="import-cancel" class="btn-secondary-text">Cancel</button>
+                <button id="import-confirm" class="btn-primary">Import Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character Edit Modal -->
+    <div id="edit-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content edit-modal">
+            <div class="modal-header">
+                <h3 id="edit-modal-title">Edit Character</h3>
+                <button id="edit-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>            
+
+            <!-- Character Edit Modal Form Structure - Modern Design -->
+            <div class="modal-body">
+                <!-- Clean Header Section -->
+                <div class="character-header">
+                    <div class="avatar-area">
+                        <div class="avatar-section">
+                            <button id="avatar-prev-btn" class="avatar-nav-btn" type="button" style="display: none;">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            
+                            <div class="avatar-preview-container">
+                                <div id="avatar-preview" class="avatar-preview">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <input type="file" id="edit-avatar" accept="image/*" style="display: none;">
+                                <button id="change-avatar-btn" class="btn-ghost" type="button">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                                <div id="avatar-counter" class="avatar-counter" style="display: none;">1 / 1</div>
+                            </div>
+                            
+                            <button id="avatar-next-btn" class="avatar-nav-btn" type="button" style="display: none;">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="token-summary">
+                            <strong><span id="total-tokens">0</span> tokens</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="character-basic">
+                        <div class="name-row">
+                            <div class="form-group">
+                                <label for="edit-name">Character Name</label>
+                                <input type="text" id="edit-name" class="edit-input primary" required placeholder="Enter character name">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-card-name">Display Name</label>
+                                <input type="text" id="edit-card-name" class="edit-input" placeholder="Optional">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group tags-section">
+                            <div class="tags-header" onclick="toggleTagsInput()">
+                                <label>Tags</label>
+                                <i class="fas fa-chevron-down tags-toggle" id="tags-toggle"></i>
+                            </div>
+                            <div id="tag-chips" class="tag-chips"></div>
+                            <div id="tags-input-area" class="tags-input-area collapsed">
+                                <input type="text" id="edit-tags" class="edit-input" placeholder="Add tags separated by commas">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Sections -->
+                <div class="content-sections">
+                    <!-- Core Details -->
+                    <div class="content-section">
+                        <h4>Core Details</h4>
+                        
+                        <div class="form-group full-width">
+                            <label for="edit-description">
+                                Description
+                                <span class="token-count" id="description-tokens">0</span>
+                                <button type="button" class="alt-btn" data-field="description">ALT</button>
+                                <button type="button" class="expand-btn" data-field="edit-description">
+                                    <i class="fas fa-expand-alt"></i>
+                                </button>
+                            </label>
+                            <textarea id="edit-description" class="edit-textarea" rows="12" placeholder="Describe your character's appearance and key traits"></textarea>
+                        </div>
+                        
+                        <div class="section-grid">
+                            <div class="form-group">
+                                <label for="edit-personality">
+                                    Personality
+                                    <span class="token-count" id="personality-tokens">0</span>
+                                    <button type="button" class="alt-btn" data-field="personality">ALT</button>
+                                    <button type="button" class="expand-btn" data-field="edit-personality">
+                                        <i class="fas fa-expand-alt"></i>
+                                    </button>
+                                </label>
+                                <textarea id="edit-personality" class="edit-textarea" rows="4" placeholder="Character's personality traits and behavior"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="edit-scenario">
+                                    Scenario
+                                    <span class="token-count" id="scenario-tokens">0</span>
+                                    <button type="button" class="alt-btn" data-field="scenario">ALT</button>
+                                    <button type="button" class="expand-btn" data-field="edit-scenario">
+                                        <i class="fas fa-expand-alt"></i>
+                                    </button>
+                                </label>
+                                <textarea id="edit-scenario" class="edit-textarea" rows="4" placeholder="The setting and context for interactions"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dialogue -->
+                    <div class="content-section">
+                        <h4>Dialogue</h4>
+                        <div class="form-group">
+                            <label for="edit-first-message">
+                                First Message
+                                <span class="token-count" id="first-message-tokens">0</span>
+                                <button type="button" class="expand-btn" data-field="edit-first-message">
+                                    <i class="fas fa-expand-alt"></i>
+                                </button>
+                            </label>
+                            <textarea id="edit-first-message" class="edit-textarea" rows="10" placeholder="The character's opening message"></textarea>
+                            <button id="alt-greetings-btn" class="btn-secondary small-btn" type="button">
+                                <i class="fas fa-comments"></i> Alternative Greetings
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit-example-messages">
+                                Example Messages
+                                <span class="token-count" id="example-messages-tokens">0</span>
+                                <button type="button" class="alt-btn" data-field="mes_example">ALT</button>
+                                <button type="button" class="expand-btn" data-field="edit-example-messages">
+                                    <i class="fas fa-expand-alt"></i>
+                                </button>
+                            </label>
+                            <textarea id="edit-example-messages" class="edit-textarea" rows="8" placeholder="Example dialogue to guide the AI's responses"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Advanced -->
+                    <div class="content-section">
+                        <h4>Advanced</h4>
+                        <div class="section-grid">
+                            <div class="form-group full-height">
+                                <label for="edit-creator-notes">
+                                    Creator Notes
+                                    <button type="button" class="expand-btn" data-field="edit-creator-notes">
+                                        <i class="fas fa-expand-alt"></i>
+                                    </button>
+                                </label>
+                                <textarea id="edit-creator-notes" class="edit-textarea" rows="5" placeholder="Private notes for your reference"></textarea>
+                            </div>
+                            
+                            <div class="advanced-right-column">
+                                <div class="form-group">
+                                    <label for="edit-post-history">
+                                        Post-History Instructions
+                                        <span class="token-count" id="post-history-tokens">0</span>
+                                        <button type="button" class="alt-btn" data-field="post_history">ALT</button>
+                                        <button type="button" class="expand-btn" data-field="edit-post-history">
+                                            <i class="fas fa-expand-alt"></i>
+                                        </button>
+                                    </label>
+                                    <textarea id="edit-post-history" class="edit-textarea" rows="5" placeholder="Instructions for handling conversation history"></textarea>
+                                </div>
+                                
+                                <div class="form-group character-note-group">
+                                    <label for="edit-character-note">
+                                        Character Note
+                                        <span class="token-count" id="character-note-tokens">0</span>
+                                        <button type="button" class="alt-btn" data-field="character_note">ALT</button>
+                                        <button type="button" class="expand-btn" data-field="edit-character-note">
+                                            <i class="fas fa-expand-alt"></i>
+                                        </button>
+                                    </label>
+                                    <textarea id="edit-character-note" class="edit-textarea" rows="5" placeholder="Internal character guidance"></textarea>
+                                    <div class="character-note-controls">
+                                        <label for="edit-depth">Depth:</label>
+                                        <input type="number" id="edit-depth" class="depth-input" value="4" min="1" max="10">
+                                        <button id="character-book-btn" class="btn-secondary small-btn" type="button">
+                                            <i class="fas fa-book"></i> Character Book
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="folder-assignment">
+                    <label for="edit-folder">Folder:</label>
+                    <select id="edit-folder" class="edit-select">
+                        <option value="">No Folder</option>
+                    </select>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="edit-cancel" class="btn-secondary-text">Cancel</button>
+                    <button id="edit-save" class="btn-primary">Save Character</button>
+                    <button id="edit-delete" class="btn-danger">Delete Character</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alternates Modal -->
+    <div id="alternates-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content alternates-modal">
+            <div class="modal-header">
+                <h3 id="alternates-modal-title">Alternate Descriptions</h3>
+                <button id="alternates-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="alternates-list" id="alternates-list">
+                    <!-- Alternates will be populated here -->
+                </div>
+                
+                <div class="add-alternate-section">
+                    <button id="add-alternate-btn" class="btn-secondary">
+                        <i class="fas fa-plus"></i> Add Alternate
+                    </button>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="alternates-cancel" class="btn-secondary-text">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Folder Management Modal -->
+    <div id="folder-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content folder-modal">
+            <div class="modal-header">
+                <h3>Manage Folders</h3>
+                <button id="folder-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="new-folder-section">
+                    <div class="form-group">
+                        <label for="new-folder-name">New Folder:</label>
+                        <div class="folder-input-row">
+                            <input type="text" id="new-folder-name" class="edit-input" placeholder="Folder name...">
+                            <button id="create-folder-btn" class="btn-primary">Create</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="folders-list" class="folders-list">
+                    <!-- Existing folders will be populated here -->
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="folder-modal-close-btn" class="btn-primary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Folder Edit Modal -->
+    <div id="folder-edit-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content folder-edit-modal">
+            <div class="modal-header">
+                <h3 id="folder-edit-title">Edit Folder</h3>
+                <button id="folder-edit-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="folder-edit-name">Folder Name:</label>
+                    <input type="text" id="folder-edit-name" class="edit-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="folder-edit-cover">Folder Cover:</label>
+                    <div class="folder-cover-section">
+                        <div id="folder-cover-preview" class="folder-cover-preview">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <div class="folder-cover-actions">
+                            <input type="file" id="folder-edit-cover" accept="image/*" style="display: none;">
+                            <button id="change-folder-cover-btn" class="btn-secondary-text" type="button">
+                                <i class="fas fa-image"></i> Change Cover
+                            </button>
+                            <button id="remove-folder-cover-btn" class="btn-secondary-text" type="button">
+                                <i class="fas fa-times"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="folder-edit-cancel" class="btn-secondary-text">Cancel</button>
+                <button id="folder-edit-save" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Move to Folder Modal -->
+    <div id="bulk-move-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content folder-edit-modal">
+            <div class="modal-header">
+                <h3 id="bulk-move-title">Move Characters to Folder</h3>
+                <button id="bulk-move-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <p id="bulk-move-description">Select a folder to move the selected characters to:</p>
+                
+                <div class="form-group">
+                    <label for="bulk-move-folder">Destination Folder:</label>
+                    <select id="bulk-move-folder" class="edit-select">
+                        <option value="">No Folder</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="bulk-move-cancel" class="btn-secondary-text">Cancel</button>
+                <button id="bulk-move-confirm" class="btn-primary">Move Characters</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Add Tags Modal -->
+    <div id="bulk-tags-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content folder-edit-modal">
+            <div class="modal-header">
+                <h3 id="bulk-tags-title">Add Tags to Characters</h3>
+                <button id="bulk-tags-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <p id="bulk-tags-description">Enter tags to add to the selected characters:</p>
+                
+                <div class="form-group">
+                    <label for="bulk-tags-input">Tags to Add:</label>
+                    <input type="text" id="bulk-tags-input" class="edit-input" placeholder="Enter tags separated by commas">
+                    <small style="color: var(--text-tertiary); margin-top: var(--space-xs); display: block;">
+                        Tags will be added to existing tags (no duplicates will be created)
+                    </small>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="bulk-tags-cancel" class="btn-secondary-text">Cancel</button>
+                <button id="bulk-tags-confirm" class="btn-primary">Add Tags</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content folder-edit-modal">
+            <div class="modal-header">
+                <h3>Character Manager Settings</h3>
+                <button id="settings-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="sillytavern-folder-path">SillyTavern Folder Location:</label>
+                    <input type="text" id="sillytavern-folder-path" class="edit-input" placeholder="e.g., C:\SillyTavern or /home/user/SillyTavern">
+                    <small style="color: var(--text-tertiary); margin-top: var(--space-xs); display: block;">
+                        Enter the full path to your SillyTavern installation folder (contains characters, worlds, etc.)
+                    </small>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="settings-cancel" class="btn-secondary-text">Cancel</button>
+                <button id="settings-save" class="btn-primary">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div id="context-menu" class="context-menu" style="display: none;">
+        <div class="context-menu-item" data-action="edit">
+            <i class="fas fa-edit"></i> Edit
+        </div>
+        <div class="context-menu-item" data-action="duplicate">
+            <i class="fas fa-copy"></i> Duplicate
+        </div>
+        <div class="context-menu-item submenu-parent" data-action="move-to">
+            <i class="fas fa-folder-open"></i> Move to...
+            <i class="fas fa-chevron-right submenu-arrow"></i>
+            <div class="context-submenu" id="move-to-submenu">
+                <!-- Submenu items will be populated dynamically -->
+            </div>
+        </div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item submenu-parent" data-action="export">
+            <i class="fas fa-file-export"></i> Export...
+            <i class="fas fa-chevron-right submenu-arrow"></i>
+            <div class="context-submenu" id="export-submenu">
+                <div class="context-menu-item" data-action="export-json">
+                    <i class="fas fa-file-code"></i> Export as JSON
+                </div>
+                <div class="context-menu-item" data-action="export-png">
+                    <i class="fas fa-file-image"></i> Export as PNG
+                </div>
+                <div class="context-menu-item" data-action="export-txt">
+                    <i class="fas fa-file-alt"></i> Export as TXT
+                </div>
+            </div>
+        </div>
+        <div class="context-menu-item" data-action="send-to-st" style="display: none;">
+            <i class="fas fa-paper-plane"></i> Send to SillyTavern
+        </div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item danger" data-action="delete">
+            <i class="fas fa-trash"></i> Delete
+        </div>
+    </div>
+
+    <!-- Folder Context Menu -->
+    <div id="folder-context-menu" class="context-menu" style="display: none;">
+        <div class="context-menu-item" data-action="edit-folder">
+            <i class="fas fa-edit"></i> Edit Folder
+        </div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item danger" data-action="delete-folder">
+            <i class="fas fa-trash"></i> Delete Folder
+        </div>
+    </div>
+
+    <!-- Context Menu for Project Dropdown -->
+    <div id="project-context-menu" class="context-menu" style="display: none;">
+        <div class="context-menu-item" id="quick-load-option">
+            <i class="fas fa-bolt"></i> Quick Load
+        </div>
+        <div class="context-menu-item" id="rename-project-option" style="display: none;">
+            <i class="fas fa-edit"></i> Rename
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="user/user-session.js"></script>
+    <script src="user/auth-ui.js"></script>
+    <script src="themes/theme-manager.js"></script>
+    <script src="character-import.js"></script>
+    <script src="character-manager.js"></script>
+    <script src="modules/character-alternates.js"></script>
+    <script src="modules/character-greetings.js"></script>
+    <script src="modules/character-book.js"></script>
+    <script src="modules/sillytavern-integration.js"></script>
+    <script src="about/character-manager-about.js"></script> 
+</body>
+</html>

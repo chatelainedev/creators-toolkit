@@ -7,10 +7,15 @@ class SettingsManager {
         this.authManager = null;
         this.apiBase = window.location.origin;
         this.initializeSettings();
-        // Add this in the constructor after other initialization
         this.themes = {};
         this.currentTheme = 'default';
-        this.loadThemes();
+        
+        // Initialize themes asynchronously
+        this.initializeThemes();
+    }
+
+    async initializeThemes() {
+        await this.loadThemes();
     }
 
     // Load available themes
@@ -19,7 +24,7 @@ class SettingsManager {
             const response = await fetch('themes/themes.json');
             this.themes = await response.json();
             this.populateThemeDropdown();
-            this.loadSavedTheme();
+            await this.loadSavedTheme(); // Make this await
         } catch (error) {
             console.error('Failed to load themes:', error);
             this.themes = { default: { name: "Default", colors: {} } };
@@ -151,21 +156,40 @@ class SettingsManager {
         });
     }
 
-    // Update your saveThemePreference method:
-    saveThemePreference() {
+    async saveThemePreference() {
+        // Always save to localStorage for immediate persistence
         localStorage.setItem(SHARED_THEME_KEY, this.currentTheme);
         
-        // Also keep your existing preferences if you want
-        const preferences = this.getUserPreferences();
-        preferences.theme = this.currentTheme;
-        this.saveUserPreferences(preferences);
+        // If user is logged in, also save to server
+        if (this.authManager && this.authManager.getCurrentUser() && !this.authManager.getCurrentUser().isGuest) {
+            try {
+                const preferences = { theme: this.currentTheme };
+                await this.authManager.saveUserPreferences(preferences);
+                console.log('Theme saved to server preferences');
+            } catch (error) {
+                console.error('Failed to save theme to server:', error);
+            }
+        }
     }
 
     // Load saved theme
-    loadSavedTheme() {
-        const savedTheme = localStorage.getItem(SHARED_THEME_KEY) || 
-                        this.getUserPreferences().theme || 
-                        'default';
+    async loadSavedTheme() {
+        let savedTheme = 'default';
+        
+        // If user is logged in, load from server preferences
+        if (this.authManager && this.authManager.getCurrentUser() && !this.authManager.getCurrentUser().isGuest) {
+            try {
+                const serverPreferences = await this.authManager.loadUserPreferences();
+                savedTheme = serverPreferences.theme || 'default';
+            } catch (error) {
+                console.error('Failed to load theme from server:', error);
+                // Fallback to localStorage only if server fails
+                savedTheme = localStorage.getItem(SHARED_THEME_KEY) || 'default';
+            }
+        } else {
+            // For guests, use localStorage as fallback
+            savedTheme = localStorage.getItem(SHARED_THEME_KEY) || 'default';
+        }
         
         // Update custom dropdown selection
         const selectedText = document.querySelector('#theme-selected .selected-text');
@@ -184,13 +208,76 @@ class SettingsManager {
         this.applyTheme(savedTheme);
     }
 
-    // Add these helper methods if they don't exist:
-    getUserPreferences() {
-        return JSON.parse(localStorage.getItem('writingTools_preferences') || '{}');
+    // Method called when user logs in
+    async onUserLoggedIn() {
+        // Existing functionality - refresh settings modal if open
+        const settingsModal = document.getElementById('settings-modal');
+        if (settingsModal && settingsModal.style.display === 'flex') {
+            console.log('🔧 Refreshing settings after login');
+            this.populateSettings();
+        }
+        
+        // NEW: Load user theme preferences
+        console.log('🎨 Loading user theme preferences...');
+        try {
+            const serverPreferences = await this.authManager.loadUserPreferences();
+            if (serverPreferences.theme && serverPreferences.theme !== this.currentTheme) {
+                console.log(`Switching to user's saved theme: ${serverPreferences.theme}`);
+                
+                // Update dropdown
+                const selectedText = document.querySelector('#theme-selected .selected-text');
+                const option = document.querySelector(`[data-value="${serverPreferences.theme}"]`);
+                
+                if (selectedText && option) {
+                    selectedText.innerHTML = option.innerHTML;
+                    
+                    // Update selected state
+                    document.querySelectorAll('.dropdown-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    option.classList.add('selected');
+                }
+                
+                // Apply the theme
+                this.applyTheme(serverPreferences.theme, false);
+            }
+        } catch (error) {
+            console.error('Failed to load user theme preferences:', error);
+        }
     }
 
-    saveUserPreferences(preferences) {
-        localStorage.setItem('writingTools_preferences', JSON.stringify(preferences));
+    // Method called when user logs out  
+    onUserLoggedOut() {
+        // Existing functionality - close settings modal if open
+        const settingsModal = document.getElementById('settings-modal');
+        if (settingsModal && settingsModal.style.display === 'flex') {
+            console.log('🔧 Closing settings after logout');
+            this.closeSettings();
+        }
+        
+        // NEW: Reset theme to default
+        console.log('🎨 User logged out, resetting to default theme');
+        const defaultTheme = 'default';
+        
+        // Update dropdown
+        const selectedText = document.querySelector('#theme-selected .selected-text');
+        const option = document.querySelector(`[data-value="${defaultTheme}"]`);
+        
+        if (selectedText && option) {
+            selectedText.innerHTML = option.innerHTML;
+            
+            // Update selected state
+            document.querySelectorAll('.dropdown-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            option.classList.add('selected');
+        }
+        
+        // Apply default theme
+        this.applyTheme(defaultTheme, false);
+        
+        // Clear localStorage
+        localStorage.removeItem(SHARED_THEME_KEY);
     }
 
     // Initialize settings system
@@ -307,6 +394,16 @@ class SettingsManager {
         // Set avatar preview using the server URL
         const avatarPreview = document.getElementById('settings-avatar-preview');
         avatarPreview.src = user.avatar || 'images/default-avatar.png';
+
+        // ADD THIS: Set user ID badge
+        const userIdBadge = document.getElementById('user-id-badge');
+        if (user.isGuest) {
+            userIdBadge.textContent = 'GUEST';
+            userIdBadge.className = 'user-id-badge guest-badge';
+        } else {
+            userIdBadge.textContent = `ID: ${user.id}`;
+            userIdBadge.className = 'user-id-badge';
+        }
         
         this.loadSavedTheme();
 
@@ -634,26 +731,6 @@ class SettingsManager {
         if (confirm('Are you sure you want to log out?')) {
             this.closeSettings();
             this.authManager.logout();
-        }
-    }
-
-    // Method called when user logs in
-    onUserLoggedIn() {
-        // If settings modal is currently open, refresh it
-        const settingsModal = document.getElementById('settings-modal');
-        if (settingsModal && settingsModal.style.display === 'flex') {
-            console.log('🔧 Refreshing settings after login');
-            this.populateSettings();
-        }
-    }
-
-    // Method called when user logs out  
-    onUserLoggedOut() {
-        // Close settings modal if open
-        const settingsModal = document.getElementById('settings-modal');
-        if (settingsModal && settingsModal.style.display === 'flex') {
-            console.log('🔧 Closing settings after logout');
-            this.closeSettings();
         }
     }
 

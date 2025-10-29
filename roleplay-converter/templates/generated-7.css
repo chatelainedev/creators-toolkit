@@ -128,26 +128,18 @@ body {
 }
 
 /* Subtle texture overlay */
-/* Dark background overlay fix */
+/* Dark background overlay for themes */
 body::after {
     content: '';
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background-image: 
-        radial-gradient(circle at 20% 80%, rgba(139,21,56,0.08) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(139,21,56,0.06) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(0,0,0,0.12) 0%, transparent 70%),
-        repeating-linear-gradient(
-            45deg,
-            rgba(0,0,0,0.02) 0px,
-            rgba(0,0,0,0.02) 1px,
-            transparent 1px,
-            transparent 3px
-        );
+    background: linear-gradient(135deg, 
+        rgba(4,3,6,0.85) 0%, 
+        rgba(10,8,16,0.9) 50%, 
+        rgba(4,3,6,0.85) 100%);
     z-index: -1;
     pointer-events: none;
-    opacity: 0.9;
 }
 
 /* Typography improvements */
@@ -640,6 +632,27 @@ nav a:hover::after {
     box-shadow: 0 0 20px var(--accent-red-glow-strong);
 }
 
+/* When panels are open, move toggles to top-right corner inside the panel */
+.soundtrack-panel.open .soundtrack-toggle,
+.comments-panel.open .comments-toggle {
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--accent-red);
+    border-radius: 50%;
+    font-size: 18px;
+    background: linear-gradient(135deg, var(--primary-medium) 0%, var(--gray-lightest) 100%);
+    box-shadow: 0 0 15px var(--accent-red-glow), 0 3px 12px var(--shadow-dark);
+}
+
+.soundtrack-panel.open .soundtrack-toggle:hover,
+.comments-panel.open .comments-toggle:hover {
+    background: var(--accent-red);
+    color: var(--accent-bone);
+    transform: scale(1.1);
+}
+
 /* Panel interaction logic */
 .soundtrack-panel.open ~ .comments-panel .comments-toggle,
 .comments-panel.open ~ .soundtrack-panel .soundtrack-toggle {
@@ -740,32 +753,33 @@ font[color=blue] { color: var(--accent-red) !important; }
     display: none;
     position: fixed;
     z-index: 2000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     background-color: var(--overlay-dark);
     backdrop-filter: blur(8px);
-    opacity: 0;
-    transition: opacity 0.4s ease;
 }
 
 .image-modal.show {
-    display: flex !important;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-    box-sizing: border-box;
-    opacity: 1;
+    display: block !important;
 }
 
 .image-modal-content {
     position: relative;
-    max-width: 90%;
-    max-height: 90%;
-    animation: fadeInScale 0.4s ease;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
-.image-modal img {
-    width: 100%; height: 100%;
+.image-modal-content img {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
     object-fit: contain;
     box-shadow: 0 0 50px var(--accent-red-glow-strong), 0 8px 40px var(--shadow-modal);
     border: 3px solid var(--accent-red);
@@ -774,13 +788,16 @@ font[color=blue] { color: var(--accent-red) !important; }
 
 .image-modal-close {
     position: absolute;
-    top: -20px; right: -20px;
+    top: 20px;
+    right: 30px;
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--gray-light) 100%);
     color: var(--accent-red);
     border: 2px solid var(--accent-red);
     border-radius: 50%;
-    width: 45px; height: 45px;
-    font-size: 22px; font-weight: bold;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -805,8 +822,10 @@ font[color=blue] { color: var(--accent-red) !important; }
     color: var(--accent-red);
     border: 2px solid var(--accent-red);
     border-radius: 50%;
-    width: 55px; height: 55px;
-    font-size: 22px; font-weight: bold;
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -823,20 +842,62 @@ font[color=blue] { color: var(--accent-red) !important; }
     box-shadow: 0 0 20px var(--accent-red-glow-strong);
 }
 
-.image-modal-nav.prev { left: -35px; }
-.image-modal-nav.next { right: -35px; }
+.image-modal-nav.prev { 
+    left: 20px; 
+}
 
-.image-modal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+.image-modal-nav.next { 
+    right: 20px; 
+}
+
+.image-modal-nav:disabled { 
+    opacity: 0.3; 
+    cursor: not-allowed; 
+}
+
 .image-modal-nav:disabled:hover {
     transform: translateY(-50%);
     background: linear-gradient(135deg, var(--primary-95) 0%, var(--gray-light) 100%);
     color: var(--accent-red);
+    box-shadow: 0 3px 15px var(--shadow-dark);
+}
+
+/* Hide nav buttons when only one image */
+.image-modal-nav[style*="display: none"] {
+    display: none !important;
 }
 
 /* Animations */
 @keyframes fadeInScale {
     from { transform: scale(0.8) rotate(-1deg); opacity: 0; filter: blur(2px); }
     to { transform: scale(1) rotate(0deg); opacity: 1; filter: blur(0px); }
+}
+
+/* For Webkit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 12px;  /* Width of the vertical scrollbar */
+    height: 12px; /* Height of the horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary-darker);
+    box-shadow: inset 0 0 6px var(--shadow-dark); /* Creates a subtle inner trench effect */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--accent-red-dark);
+    border-radius: 6px;
+    border: 2px solid var(--primary-darker); /* Creates padding around the thumb */
+    background-image: linear-gradient(
+        180deg,
+        var(--accent-red) 0%,
+        var(--accent-red-darker) 100%
+    ); /* Subtle gradient for depth */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-red); /* Brightens the thumb on hover */
+    box-shadow: 0 0 12px var(--accent-red-glow-strong); /* Ominous glow on hover */
 }
 
 /* Responsive design */

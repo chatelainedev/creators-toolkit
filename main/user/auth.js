@@ -7,6 +7,7 @@ class AuthManager {
         this.apiBase = window.location.origin; // Use current origin for API calls
         this.sessionKey = 'writingTools_session';
         this.serverSessionKey = 'writingTools_serverSession';
+        this.sessionTokenKey = 'writingTools_sessionToken'; 
         this.migrationOfferedKey = 'writingTools_migrationOffered';
         this.eventListenersAttached = false; // Prevent duplicate listeners
         this.addTestingCommands();
@@ -80,12 +81,16 @@ class AuthManager {
         const messages = {
             'info-converter': 'Loading Lore Codex...',
             'roleplay-converter': 'Loading RP Archiver...',
+            'extractor': 'Loading Lorebook Manager...',
+            'character-manager': 'Loading Character Manager...',
             'default': 'Loading...'
         };
         
         const icons = {
             'info-converter': 'fas fa-file-alt',
             'roleplay-converter': 'fas fa-theater-masks',
+            'extractor': 'fas fa-tools',
+            'character-manager': 'fas fa-users',
         };
         
         const message = messages[toolName] || messages.default;
@@ -106,16 +111,32 @@ class AuthManager {
 
     // Initialize authentication system
     async initializeAuth() {
-        // Make available globally right away
         window.authManager = this;
         
         const startTime = Date.now();
-        const minLoadingTime = 500; // Minimum loading time for smooth UX
+        const minLoadingTime = 500;
         
-        // Start with loading state instead of showing login modal immediately
         this.showLoadingState();
         
-        // Quick check: if no local session at all, skip server checks
+        // CHECK FOR SESSION TOKEN FIRST
+        const sessionToken = localStorage.getItem(this.sessionTokenKey);
+        if (sessionToken) {
+            console.log('Found session token, validating...');
+            const sessionValid = await this.validateSession(sessionToken);
+            
+            if (sessionValid) {
+                await this.ensureMinimumLoadingTime(startTime, minLoadingTime);
+                this.showMainContent();
+                this.isInitialized = true;
+                console.log('✅ Auto-logged in via session token');
+                return;
+            } else {
+                // Session expired or invalid, clear it
+                localStorage.removeItem(this.sessionTokenKey);
+            }
+        }
+        
+        // Rest of existing code...
         const localSession = this.loadLocalSession();
         if (!localSession) {
             console.log('No local session found');
@@ -190,6 +211,46 @@ class AuthManager {
         await this.ensureMinimumLoadingTime(startTime, minLoadingTime);
         this.showAuthModal();
         this.setupEventListeners();
+    }
+
+    async validateSession(sessionToken) {
+        try {
+            const response = await fetch(`${this.apiBase}/api/auth/validate-session`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionToken })
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                
+                if (result.valid) {
+                    // Load full user profile
+                    const userContext = {
+                        userId: result.user.id,
+                        username: result.user.username,
+                        isGuest: false
+                    };
+                    
+                    const profileResponse = await fetch(`${this.apiBase}/api/user/profile`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userContext })
+                    });
+                    
+                    if (profileResponse.ok) {
+                        this.currentUser = await profileResponse.json();
+                        this.saveSession(result.user.id, result.user.username);
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        } catch (error) {
+            console.error('Session validation error:', error);
+            return false;
+        }
     }
 
     // Ensure loading shows for minimum time for smooth UX
@@ -347,7 +408,8 @@ class AuthManager {
     clearAllSessions() {
         localStorage.removeItem(this.sessionKey);
         localStorage.removeItem(this.serverSessionKey);
-        localStorage.removeItem('writingTools_guestMode'); // ADD THIS LINE
+        localStorage.removeItem(this.sessionTokenKey); // ADD THIS
+        localStorage.removeItem('writingTools_guestMode');
         this.currentUser = null;
     }
 
@@ -417,6 +479,14 @@ class AuthManager {
                 this.handleGuestMode();
             });
         }
+        
+        // Guest mode link in login tab (NEW)
+        const guestLinkLogin = document.getElementById('continue-as-guest-login');
+        if (guestLinkLogin) {
+            guestLinkLogin.addEventListener('click', () => {
+                this.handleGuestMode();
+            });
+        }
 
         // Mark listeners as attached
         this.eventListenersAttached = true;
@@ -424,6 +494,186 @@ class AuthManager {
 
         // Make available globally
         window.authManager = this;
+    }
+
+    // Load and display user selection grid
+    async loadUserSelectionGrid() {
+        try {
+            const response = await fetch(`${this.apiBase}/api/auth/users`);
+            if (!response.ok) return;
+            
+            const data = await response.json();
+            this.availableUsers = data.users || [];
+            this.currentUserPage = 0;
+            this.usersPerPage = 6;
+            
+            if (this.availableUsers.length > 0) {
+                this.renderUserGrid();
+            } else {
+                // Hide grid if no users
+                document.getElementById('user-selection-grid').style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Failed to load users:', error);
+        }
+    }
+
+    // Render user grid with pagination
+    renderUserGrid() {
+        const grid = document.getElementById('user-grid');
+        const pagination = document.getElementById('user-pagination');
+        
+        if (!grid) return;
+        
+        const start = this.currentUserPage * this.usersPerPage;
+        const end = start + this.usersPerPage;
+        const pageUsers = this.availableUsers.slice(start, end);
+        
+        grid.innerHTML = pageUsers.map(user => `
+            <div class="user-card" data-user-id="${user.id}" data-username="${user.username}">
+                <img src="${user.avatar}" alt="${user.username}" class="user-card-avatar">
+                <div class="user-card-name">${user.username}</div>
+            </div>
+        `).join('');
+        
+        // Setup click handlers
+        grid.querySelectorAll('.user-card').forEach(card => {
+            card.addEventListener('click', () => {
+                this.selectUser(card.dataset.userId, card.dataset.username);
+            });
+        });
+        
+        // Show/hide pagination
+        if (this.availableUsers.length > this.usersPerPage) {
+            pagination.style.display = 'flex';
+            this.setupUserPagination();
+        } else {
+            pagination.style.display = 'none';
+        }
+    }
+
+    // Setup pagination buttons
+    setupUserPagination() {
+        const prevBtn = document.getElementById('prev-users');
+        const nextBtn = document.getElementById('next-users');
+        
+        const totalPages = Math.ceil(this.availableUsers.length / this.usersPerPage);
+        
+        prevBtn.disabled = this.currentUserPage === 0;
+        nextBtn.disabled = this.currentUserPage >= totalPages - 1;
+        
+        prevBtn.onclick = () => {
+            if (this.currentUserPage > 0) {
+                this.currentUserPage--;
+                this.renderUserGrid();
+            }
+        };
+        
+        nextBtn.onclick = () => {
+            if (this.currentUserPage < totalPages - 1) {
+                this.currentUserPage++;
+                this.renderUserGrid();
+            }
+        };
+    }
+
+    // Select a user from the grid
+    async selectUser(userId, username) {
+        // Highlight selected card
+        document.querySelectorAll('.user-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        document.querySelector(`[data-user-id="${userId}"]`)?.classList.add('selected');
+        
+        // Get form elements
+        const usernameInput = document.getElementById('login-username');
+        const passwordInput = document.getElementById('login-password');
+        const rememberMeCheckbox = document.getElementById('remember-me-checkbox');
+        const loginAsBtn = document.getElementById('login-as-btn');
+        const loginAsUsername = document.getElementById('login-as-username');
+        
+        if (!usernameInput || !passwordInput || !loginAsBtn || !loginAsUsername) {
+            console.error('Login form elements not found');
+            return;
+        }
+        
+        // Fill username field
+        usernameInput.value = username;
+        
+        // Check remember me checkbox
+        if (rememberMeCheckbox) {
+            rememberMeCheckbox.checked = true;
+        }
+        
+        // Update username in button
+        loginAsUsername.textContent = username;
+        
+        // Show button with loading state
+        loginAsBtn.style.display = 'flex';
+        loginAsBtn.disabled = true;
+        
+        // Find the icon element and update it to spinner
+        let icon = loginAsBtn.querySelector('i');
+        if (icon) {
+            icon.className = 'fas fa-spinner fa-spin';
+        }
+        
+        // Try to get stored credentials to fill the password field
+        try {
+            const response = await fetch(`${this.apiBase}/api/auth/get-remembered-credentials`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId })
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                
+                if (result.found) {
+                    // Fill password field (but don't auto-login)
+                    passwordInput.value = result.password;
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching remembered credentials:', error);
+        }
+        
+        // Enable button - user must click it to login
+        loginAsBtn.disabled = false;
+        if (icon) {
+            icon.className = 'fas fa-sign-in-alt';
+        }
+        
+        // Setup login-as button click
+        loginAsBtn.onclick = () => {
+            if (!passwordInput.value) {
+                this.showFormError('login-password', 'Please enter your password');
+                passwordInput.focus();
+                return;
+            }
+            this.handleLogin();
+        };
+    }
+
+    // Check if password was autofilled and show login-as button
+    checkPasswordAutofill(username) {
+        const passwordInput = document.getElementById('login-password');
+        const loginAsBtn = document.getElementById('login-as-btn');
+        const loginAsUsername = document.getElementById('login-as-username');
+        
+        if (passwordInput.value.length > 0) {
+            // Password was autofilled!
+            loginAsUsername.textContent = username;
+            loginAsBtn.style.display = 'flex';
+            
+            // Setup login-as button click
+            loginAsBtn.onclick = () => {
+                this.handleLogin();
+            };
+        } else {
+            // No autofill, hide the button
+            loginAsBtn.style.display = 'none';
+        }
     }
 
     // FIXED: Switch between login and register tabs with better debugging
@@ -476,6 +726,7 @@ class AuthManager {
         const form = document.getElementById('login-form');
         const usernameOrEmail = document.getElementById('login-username').value.trim();
         const password = document.getElementById('login-password').value;
+        const rememberMe = document.getElementById('remember-me-checkbox').checked;
 
         // Clear previous errors
         this.clearFormErrors();
@@ -493,15 +744,25 @@ class AuthManager {
             const response = await fetch(`${this.apiBase}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usernameOrEmail, password })
+                body: JSON.stringify({ usernameOrEmail, password, rememberMe })
             });
 
             const result = await response.json();
 
             if (response.ok && result.success) {
-                // Registration successful - auto-login
-                localStorage.removeItem('writingTools_guestMode'); // ADD THIS LINE
+                // Clear guest mode
+                localStorage.removeItem('writingTools_guestMode');
+                
+                // Save session
                 this.saveSession(result.user.id, result.user.username);
+                
+                // Store session token if remember me was checked
+                if (result.sessionToken) {
+                    localStorage.setItem(this.sessionTokenKey, result.sessionToken);
+                } else {
+                    // If remember me was unchecked, make sure to clear any existing token
+                    localStorage.removeItem(this.sessionTokenKey);
+                }
                 
                 // Load full user profile
                 const userContext = {
@@ -742,6 +1003,9 @@ class AuthManager {
 
                 // Load version info when modal is shown
                 this.loadVersionInfo();
+                
+                // Load user selection grid (NEW)
+                this.loadUserSelectionGrid();
                 
                 // FIXED: Ensure event listeners are set up AFTER modal is fully visible
                 setTimeout(() => {

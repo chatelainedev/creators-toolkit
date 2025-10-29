@@ -138,7 +138,18 @@ router.post('/projects', async (req, res) => {
             if (entry.isDirectory()) {
                 const projectName = entry.name;
                 const projectPath = path.join(sitesFolder, projectName);
-                const infoPath = path.join(projectPath, 'info.html');
+                
+                // Read config to get filename
+                let htmlFilename = 'info.html';
+                const configPath = path.join(projectPath, 'project-config.json');
+                if (await fs.pathExists(configPath)) {
+                    try {
+                        const config = await fs.readJson(configPath);
+                        htmlFilename = config.htmlFilename || 'info.html';
+                    } catch (e) {}
+                }
+                
+                const infoPath = path.join(projectPath, htmlFilename);
                 
                 if (await fs.pathExists(infoPath)) {
                     const stats = await fs.stat(infoPath);
@@ -157,6 +168,7 @@ router.post('/projects', async (req, res) => {
 
                     projects.push({
                         projectName: projectName,
+                        htmlFilename: htmlFilename,  // ADD THIS
                         title: title,
                         lastModified: stats.mtime,
                         size: stats.size,
@@ -206,9 +218,20 @@ router.post('/user-sites', async (req, res) => {
             if (entry.isDirectory()) {
                 const projectName = entry.name;
                 const projectPath = path.join(sitesFolder, projectName);
-                const infoPath = path.join(projectPath, 'info.html');
                 
-                // Check if info.html exists in this directory
+                // Read config to get filename
+                let htmlFilename = 'info.html';
+                const configPath = path.join(projectPath, 'project-config.json');
+                if (await fs.pathExists(configPath)) {
+                    try {
+                        const config = await fs.readJson(configPath);
+                        htmlFilename = config.htmlFilename || 'info.html';
+                    } catch (e) {}
+                }
+                
+                const infoPath = path.join(projectPath, htmlFilename);
+                
+                // Check if HTML file exists in this directory
                 if (await fs.pathExists(infoPath)) {
                     const stats = await fs.stat(infoPath);
                     
@@ -238,9 +261,10 @@ router.post('/user-sites', async (req, res) => {
 
                     sites.push({
                         projectName: projectName,
+                        htmlFilename: htmlFilename,  // ADD THIS
                         title: title,
                         lastModified: stats.mtime,
-                        created: stats.birthtime || stats.mtime, // Use birthtime if available, fallback to mtime
+                        created: stats.birthtime || stats.mtime,
                         size: stats.size,
                         bannerPath: bannerPath,
                         bannerExists: bannerExists,
@@ -281,8 +305,19 @@ router.post('/projects/load', async (req, res) => {
         }
 
         const sitesFolder = getUserSitesFolder(userContext);
+        // Around line 266, in the load endpoint
         const projectPath = path.join(sitesFolder, projectName);
-        const filePath = path.join(projectPath, 'info.html');
+
+        // NEW: Read project metadata to get actual filename
+        // Read project config to get actual filename
+        let htmlFilename = 'info.html'; // default for backward compatibility
+        const configPath = path.join(projectPath, 'project-config.json');  // <-- MATCH THE SAVE ENDPOINT
+        if (await fs.pathExists(configPath)) {
+            const config = await fs.readJson(configPath);
+            htmlFilename = config.htmlFilename || 'info.html';  // <-- USE htmlFilename PROPERTY
+        }
+
+        const filePath = path.join(projectPath, htmlFilename); // CHANGED: use variable instead of hardcoded
         
         // Security check - ensure project is in users folder
         if (!projectPath.startsWith(USERS_FOLDER)) {
@@ -305,14 +340,13 @@ router.post('/projects/load', async (req, res) => {
 });
 
 // Save generated HTML to user's folder (local only)
-// Save HTML to user's sites folder (local only) - now user-aware with backup functionality
 router.post('/save', async (req, res) => {
     if (!IS_LOCAL) {
         return res.status(403).json({ error: 'File system access not available in hosted environment' });
     }
 
     try {
-        const { html, projectName, userContext, styleAssets = [] } = req.body;
+        const { html, projectName, userContext, styleAssets = [], filename = 'info.html' } = req.body;
         
         if (!html) {
             return res.status(400).json({ error: 'No HTML content provided' });
@@ -330,12 +364,37 @@ router.post('/save', async (req, res) => {
         const sitesFolder = getUserSitesFolder(userContext);
         const cleanProjectName = projectName.replace(/[^a-zA-Z0-9-_\s]/g, '');
         const projectFolder = path.join(sitesFolder, cleanProjectName);
-        const filePath = path.join(projectFolder, 'info.html');
+        
+        // Read existing config if it exists to get current filename
+        // Determine filename to use
+        let htmlFilename = filename; // Use the filename from request
+        if (!htmlFilename.endsWith('.html')) {
+            htmlFilename += '.html'; // Ensure .html extension
+        }
+
+        // Read existing config if it exists
+        const configPath = path.join(projectFolder, 'project-config.json');
+        let currentFilename = htmlFilename; // Default to the new filename
+
+        if (await fs.pathExists(configPath)) {
+            try {
+                const existingConfig = await fs.readJson(configPath);
+                // If no new filename provided, use existing one
+                if (!filename || filename === 'info' || filename === 'info.html') {
+                    currentFilename = existingConfig.htmlFilename || 'info.html';
+                    htmlFilename = currentFilename;
+                }
+            } catch (e) {
+                console.warn('Could not read existing config:', e);
+            }
+        }
+
+        const filePath = path.join(projectFolder, htmlFilename);
         
         // Ensure project folder exists
         await fs.ensureDir(projectFolder);
         
-        // BACKUP LOGIC: Check if info.html already exists and back it up (only if not skipping)
+        // BACKUP LOGIC: Check if HTML file already exists and back it up (only if not skipping)
         const shouldSkipBackup = req.body.skipBackup || false;
         let backupMessage = '';
         
@@ -349,11 +408,11 @@ router.post('/save', async (req, res) => {
                     const backupProjectFolder = path.join(userFolder, 'backups', 'sites', cleanProjectName);
                     await fs.ensureDir(backupProjectFolder);
                     
-                    // Copy existing info.html to backup location
-                    const backupPath = path.join(backupProjectFolder, 'info.html');
+                    // Copy existing HTML file to backup location with same filename
+                    const backupPath = path.join(backupProjectFolder, currentFilename);
                     await fs.copy(filePath, backupPath);
                     
-                    console.log(`✅ Backed up existing info.html for ${cleanProjectName} to user backups folder`);
+                    console.log(`✅ Backed up existing ${currentFilename} for ${cleanProjectName} to user backups folder`);
                 }
             } catch (backupError) {
                 console.error('❌ Backup failed:', backupError);
@@ -363,6 +422,24 @@ router.post('/save', async (req, res) => {
         
         // Save the new HTML file
         await fs.writeFile(filePath, html, 'utf8');
+        
+        // Save/update config file
+        const config = {
+            projectName: cleanProjectName,
+            htmlFilename: htmlFilename,
+            created: new Date().toISOString(),
+            modified: new Date().toISOString()
+        };
+        
+        // Preserve creation date if config already exists
+        if (await fs.pathExists(configPath)) {
+            try {
+                const existingConfig = await fs.readJson(configPath);
+                config.created = existingConfig.created || config.created;
+            } catch (e) {}
+        }
+        
+        await fs.writeJson(configPath, config, { spaces: 2 });
 
         // Copy required style assets if any
         // Clean up unused style assets first
@@ -425,6 +502,123 @@ router.post('/save', async (req, res) => {
     }
 });
 
+router.post('/projects/config', async (req, res) => {
+    const { projectName, userContext } = req.body;
+    const sitesFolder = getUserSitesFolder(userContext);
+    const projectFolder = path.join(sitesFolder, projectName);
+    const configPath = path.join(projectFolder, 'project-config.json');
+    
+    if (await fs.pathExists(configPath)) {
+        const config = await fs.readJson(configPath);
+        res.json(config);
+    } else {
+        res.json({ htmlFilename: 'info.html' });
+    }
+});
+
+// Rename project and/or HTML file (local only)
+router.post('/projects/rename', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'File system access not available in hosted environment' });
+    }
+
+    try {
+        const { oldProjectName, newProjectName, oldFilename, newFilename, userContext } = req.body;
+        
+        const validation = validateUserContext(userContext);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
+        if (!oldProjectName || !newProjectName || !oldFilename || !newFilename) {
+            return res.status(400).json({ error: 'All parameters are required' });
+        }
+
+        const sitesFolder = getUserSitesFolder(userContext);
+        const oldProjectFolder = path.join(sitesFolder, oldProjectName);
+        const newProjectFolder = path.join(sitesFolder, newProjectName);
+        
+        // Ensure old project exists
+        if (!await fs.pathExists(oldProjectFolder)) {
+            return res.status(404).json({ error: 'Original project not found' });
+        }
+
+        const projectNameChanged = oldProjectName !== newProjectName;
+        const filenameChanged = oldFilename !== newFilename;
+        
+        let oldHtmlFilename = oldFilename.endsWith('.html') ? oldFilename : oldFilename + '.html';
+        let newHtmlFilename = newFilename.endsWith('.html') ? newFilename : newFilename + '.html';
+
+        // CASE 1: Only HTML filename changed
+        if (!projectNameChanged && filenameChanged) {
+            const oldHtmlPath = path.join(oldProjectFolder, oldHtmlFilename);
+            const newHtmlPath = path.join(oldProjectFolder, newHtmlFilename);
+            
+            // Rename the HTML file
+            await fs.rename(oldHtmlPath, newHtmlPath);
+            
+            // Update or create config
+            const configPath = path.join(oldProjectFolder, 'project-config.json');
+            let config = {};
+            if (await fs.pathExists(configPath)) {
+                config = await fs.readJson(configPath);
+            }
+            config.htmlFilename = newHtmlFilename;
+            config.projectName = oldProjectName;
+            await fs.writeJson(configPath, config, { spaces: 2 });
+            
+            console.log(`✅ Renamed HTML file: ${oldHtmlFilename} → ${newHtmlFilename}`);
+            return res.json({ 
+                success: true, 
+                message: `HTML file renamed to ${newHtmlFilename}`,
+                projectName: oldProjectName
+            });
+        }
+        
+        // CASE 2: Project name changed (with or without filename change)
+        if (projectNameChanged) {
+            // Check if new project name already exists
+            if (await fs.pathExists(newProjectFolder)) {
+                return res.status(400).json({ error: 'A project with that name already exists' });
+            }
+            
+            // Copy entire project folder to new location
+            await fs.copy(oldProjectFolder, newProjectFolder);
+            
+            // If filename also changed, rename the HTML file in the new folder
+            if (filenameChanged) {
+                const oldHtmlPath = path.join(newProjectFolder, oldHtmlFilename);
+                const newHtmlPath = path.join(newProjectFolder, newHtmlFilename);
+                await fs.rename(oldHtmlPath, newHtmlPath);
+            }
+            
+            // Update config in new folder
+            const configPath = path.join(newProjectFolder, 'project-config.json');
+            const config = await fs.pathExists(configPath) 
+                ? await fs.readJson(configPath) 
+                : {};
+            
+            config.projectName = newProjectName;
+            config.htmlFilename = newHtmlFilename;
+            await fs.writeJson(configPath, config, { spaces: 2 });
+            
+            console.log(`✅ Created new project: ${newProjectName} (HTML: ${newHtmlFilename})`);
+            return res.json({ 
+                success: true, 
+                message: `Project created as "${newProjectName}"${filenameChanged ? ` with HTML file "${newHtmlFilename}"` : ''}`,
+                projectName: newProjectName
+            });
+        }
+        
+        // Should never reach here
+        return res.status(400).json({ error: 'No changes specified' });
+        
+    } catch (error) {
+        console.error('Error renaming project:', error);
+        res.status(500).json({ error: 'Failed to rename project' });
+    }
+});
+
 // Restore backup file (for auto-recovery)
 router.post('/restore-backup', async (req, res) => {
     if (!IS_LOCAL) {
@@ -448,12 +642,23 @@ router.post('/restore-backup', async (req, res) => {
         // Get paths
         const sitesFolder = getUserSitesFolder(userContext);
         const projectFolder = path.join(sitesFolder, cleanProjectName);
-        const currentFilePath = path.join(projectFolder, 'info.html');
+        
+        // Read config to get filename
+        let htmlFilename = 'info.html';
+        const configPath = path.join(projectFolder, 'project-config.json');
+        if (await fs.pathExists(configPath)) {
+            try {
+                const config = await fs.readJson(configPath);
+                htmlFilename = config.htmlFilename || 'info.html';
+            } catch (e) {}
+        }
+        
+        const currentFilePath = path.join(projectFolder, htmlFilename);
         
         const userFolder = userContext.isGuest 
             ? GUEST_FOLDER 
             : path.join(USERS_FOLDER, userContext.userId);
-        const backupPath = path.join(userFolder, 'backups', 'sites', cleanProjectName, 'info.html');
+        const backupPath = path.join(userFolder, 'backups', 'sites', cleanProjectName, htmlFilename);
         
         // Check if backup exists
         if (!(await fs.pathExists(backupPath))) {
@@ -883,10 +1088,12 @@ router.post('/assets/create', async (req, res) => {
             'assets/ui/overview',
             'assets/events',
             'assets/world',
+            'assets/world/general',
             'assets/world/locations',
             'assets/world/factions',
             'assets/world/culture',
             'assets/world/cultivation',
+            'assets/world/magic',
             'assets/world/concepts',
             'assets/world/creatures',
             'assets/world/plants',
@@ -913,10 +1120,12 @@ router.post('/assets/create', async (req, res) => {
         - \`overview/\` - Overview section images
         - \`events/\` - Event-related images
         - \`world/\` - World-building assets
+        - \`general/\` - General images
         - \`locations/\` - Images for locations
         - \`factions/\` - Images for factions
         - \`culture/\` - Cultural elements and imagery
         - \`cultivation/\` - Cultivation system images
+        - \`magic/\` - Magic system images
         - \`concepts/\` - Abstract concept illustrations
         - \`creatures/\` - Images for creatures
         - \`plants/\` - Images for plants and flora
@@ -945,6 +1154,139 @@ router.post('/assets/create', async (req, res) => {
     } catch (error) {
         console.error('Error creating assets folder:', error);
         res.status(500).json({ error: 'Failed to create assets folder' });
+    }
+});
+
+// Import general file to project (local only) - user-aware  
+router.post('/assets/import-file', multer({ 
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit for files
+}).single('file'), async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'File system access not available in hosted environment' });
+    }
+
+    try {
+        const { projectName, userContext: userContextStr, filename, folderPath } = req.body;
+        
+        if (!projectName || !userContextStr || !filename || !folderPath) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Missing required fields: projectName, userContext, filename, or folderPath' 
+            });
+        }
+
+        const userContext = JSON.parse(userContextStr);
+        const validation = validateUserContext(userContext);
+        
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'No file uploaded' 
+            });
+        }
+
+        // Build the destination path manually
+        const sitesFolder = getUserSitesFolder(userContext);
+        const projectPath = path.join(sitesFolder, projectName);
+        const destinationPath = path.join(projectPath, folderPath);
+        
+        // Security check
+        const resolvedDestination = path.resolve(destinationPath);
+        const resolvedProjectPath = path.resolve(projectPath);
+        
+        if (!resolvedDestination.startsWith(resolvedProjectPath)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Invalid destination path' 
+            });
+        }
+        
+        // Create directory if it doesn't exist
+        await fs.ensureDir(destinationPath);
+        
+        // Write the file manually
+        const finalPath = path.join(destinationPath, filename);
+        await fs.writeFile(finalPath, req.file.buffer);
+
+        console.log(`📁 File Import Success:`);
+        console.log(`  - Project: ${projectName}`);
+        console.log(`  - Folder: ${folderPath}`);
+        console.log(`  - Filename: ${filename}`);
+        console.log(`  - Size: ${req.file.size} bytes`);
+
+        // Build the relative path 
+        const relativePath = path.join(folderPath, filename).replace(/\\/g, '/');
+        
+        const userDisplay = userContext.isGuest ? 'Guest' : userContext.username;
+
+        res.json({
+            success: true,
+            message: `File imported successfully`,
+            relativePath: relativePath,
+            filename: filename,
+            size: req.file.size,
+            userContext: userContext
+        });
+
+    } catch (processingError) {
+        console.error('Error processing file import:', processingError);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to process file import' 
+        });
+    }
+});
+
+// Check for existing lorebook files (local only) - user-aware
+router.post('/assets/check-lorebook', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'File system access not available in hosted environment' });
+    }
+
+    try {
+        const { projectName, userContext } = req.body;
+        
+        if (!projectName) {
+            return res.json({ success: false, message: 'No project specified' });
+        }
+
+        const validation = validateUserContext(userContext);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
+        const sitesFolder = getUserSitesFolder(userContext);
+        const lorebookPath = path.join(sitesFolder, projectName, 'assets', 'lorebook');
+        
+        if (!await fs.pathExists(lorebookPath)) {
+            return res.json({ success: false, message: 'No lorebook folder found' });
+        }
+        
+        // Get the first JSON file in the lorebook folder
+        const files = await fs.readdir(lorebookPath);
+        const jsonFiles = files.filter(file => file.endsWith('.json'));
+        
+        if (jsonFiles.length === 0) {
+            return res.json({ success: false, message: 'No lorebook files found' });
+        }
+        
+        // Return the first lorebook file found
+        const lorebookFile = jsonFiles[0];
+        
+        res.json({ 
+            success: true,
+            lorebookFile: lorebookFile,
+            lorebookPath: path.join(lorebookPath, lorebookFile)
+        });
+        
+    } catch (error) {
+        console.error('Error checking lorebook:', error);
+        res.status(500).json({ success: false, error: 'Failed to check lorebook' });
     }
 });
 

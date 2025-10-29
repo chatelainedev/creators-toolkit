@@ -1,17 +1,19 @@
 import backToTopStyles from './templates/backtotop-styles.js';
 import titleFonts from './templates/titlefonts.js';
-import { generateOverviewStyles } from './templates/overview-styles.js';
-import { generateOverviewLinksCSS, generateCustomNavigationCSS, generateSharedButtonStyles} from './templates/button-styles.js';
-import { generateCardStyleCSS } from './templates/card-styles.js';
+import overviewStyles, { generateOverviewStyles } from './templates/overview-styles.js';
+import buttonStyles, { generateOverviewLinksCSS, generateCustomNavigationCSS, generateSharedButtonStyles} from './templates/button-styles.js';
+import cardStyles, { generateCardStyleCSS } from './templates/card-styles.js';
 import { generateUnifiedFilterCSS } from './modules/filter-css.js';
 import { generatePlansCSS } from './modules/plans-css.js';
 import { generateTimelineCSS } from './modules/timeline-css.js';
 import { generatePlaylistCSS } from './modules/playlist-css.js';
 import { generateCategoryStyles } from './templates/category-styles.js';
 import { generatePageHeaderStyles } from './templates/header-styles.js';
-import { generateNavigationStyles } from './templates/navigation-styles.js';
+import { generateStorylineStyles } from './templates/storyline-styles.js';
+import navigationStyles, { generateNavigationStyles } from './templates/navigation-styles.js';
 import bannerStyles, { generateBannerStyleCSS } from './templates/banner-styles.js';
-import { generateCharacterSubcontainerStyles, generateContainerStyles, generateSubcontainerStyles } from './templates/container-styles.js';
+import backgroundStyles, { generateBackgroundStyleCSS, backgroundColorOverlays, generateBackgroundColorOverlayCSS } from './templates/background-styles.js';
+import { generateCharacterSubcontainerStyles, generateContainerStyles, generateSubcontainerStyles, containerStyles, subcontainerStyles } from './templates/container-styles.js';
 // CSS Generation Functions
 // Split from html-generator.js to reduce file size
 // At the top of css-generator.js, after other dependencies
@@ -76,6 +78,7 @@ window.generateCSS = function() {
         items: '#f8f9ff',
         culture: '#fff8f0', // warm orange tint
         cultivation: '#f0f9f0', // green tint
+        magic: '#F0F0F9',
         statusIdea: '#dc3545',
         statusDraft: '#ffc107',
         statusCanon: '#28a745',
@@ -236,6 +239,8 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
     
     // Generate subcontainer-specific styles
     const subcontainerStyles = generateSubcontainerStyles(appearance.subcontainerStyle, colors);
+
+    const storylineStyles = generateStorylineStyles(appearance.storylineStyle || 'default', colors, fonts);
 
     const cardStyleCSS = (typeof generateCardStyleCSS === 'function') ? 
     generateCardStyleCSS(appearance, colors, fonts) : '';
@@ -431,6 +436,12 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         /* Banner Style Effects */
         ${generateBannerStyleCSS(appearance.bannerStyle || 'none')}
 
+        /* Background Style Effects */
+        ${generateBackgroundStyleCSS(appearance.backgroundStyle || 'none')}
+
+        /* Background Color Overlay */
+        ${generateBackgroundColorOverlayCSS(appearance.backgroundColorOverlay || 'none')}
+
         .title-overlay {
             position: absolute;
             z-index: 2;
@@ -504,7 +515,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
 
         /* Overview Title and Image Styles */
         .overview-title {
-            font-family: ${fonts.secondary};  // ← Use secondary for titles!
+            font-family: ${fonts.secondary};  
             font-size: 2.0em;
             font-weight: 700;
             color: ${colors.textTitle || colors.textPrimary};
@@ -770,6 +781,20 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             gap: 20px;
             margin-top: 20px;
         }
+        
+        /* Remove extra top margin when grid follows a section/subsection header */
+        .storyline-section-header + .storylines-grid,
+        .storyline-subsection-header + .storylines-grid {
+            margin-top: 0;
+        }
+        
+        /* Hide empty grids (when section has no direct storylines, only subsections) */
+        .storylines-grid:empty {
+            display: none;
+            margin: 0;
+        }
+
+        ${storylineStyles}
 
         .storyline-card {
             background: ${colors.headerBg};
@@ -836,6 +861,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
             overflow: hidden;
             line-height: 1.5;
             max-height: 4.5em; /* 3 lines × 1.5 line-height */
@@ -1247,6 +1273,59 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             font-style: italic;
         }
 
+        /* Context Menu Styles */
+        .context-menu {
+            position: fixed;
+            background: ${colors.containerBg};
+            border: 1px solid ${colors.borderPrimary || colors.textMuted};
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100001;
+            min-width: 120px;
+            display: none;
+            font-family: ${fonts.ui};
+        }
+
+        .context-menu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: ${colors.textPrimary};
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .context-menu-item:hover {
+            background: ${colors.headerBg || colors.navHover};
+            color: ${colors.textPrimary};
+        }
+
+        .context-menu-item i {
+            font-size: 12px;
+            width: 14px;
+            text-align: center;
+        }
+
+        /* Lorebook download icon styling */
+        .lorebook-download-btn {
+            transition: opacity 0.2s ease, color 0.2s ease;
+            display: inline-block;
+            line-height: 1;
+            color: ${colors.textMuted} !important;
+        }
+
+        .lorebook-download-btn:hover {
+            opacity: 1 !important;
+            color: ${colors.navActive} !important;
+            transform: scale(1.1);
+        }
+
+        .section-title .lorebook-download-btn {
+            flex-shrink: 0;
+        }
+
         /* Console hidden display styles */
         .world-item.dev-hidden {
             border: 2px dashed #ff6b6b !important;
@@ -1397,7 +1476,6 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         /* Filter CSS */
         ${generateUnifiedFilterCSS(colors, fonts, appearance)}
 
-        // Find where you're combining all CSS and add:
         ${generatePlaylistCSS(colors, fonts)}
 
         /* Plans modal styles */
@@ -1479,7 +1557,6 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
 
         ${generateWuxiaFogEffect(appearance.overviewStyle, colors)}
 
-        //WORLD Images
         /* Subtle image indicator */
         /* Image indicator - using higher specificity to avoid !important ....idk why i need these twice but it wont work without?? */
         .world-item .world-item-content .item-name .image-indicator {
@@ -1554,7 +1631,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             // Simple background assignment - no opacity or blur
             if (bgImage) {
                 // If there's an image, use it with optional color fallback
-                styles.push(`background: ${bgColor || colors.containerBg} url('${bgImage}') center/auto repeat`);
+                styles.push(`background: ${bgColor || colors.containerBg} url('${bgImage}') top center/auto repeat`);
             } else if (bgColor) {
                 // If just color, use it
                 styles.push(`background: ${bgColor}`);

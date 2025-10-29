@@ -400,9 +400,55 @@ function getVisibleTags(tags) {
     return tags.filter(tag => !tag.startsWith('!'));
 }
 
-// Helper function to strip "!" prefix for filtering comparisons
+// Helper function to strip "!" prefix and color syntax for filtering comparisons
 function stripHiddenPrefix(tag) {
-    return tag.startsWith('!') ? tag.substring(1) : tag;
+    let cleaned = tag.startsWith('!') ? tag.substring(1) : tag;
+    // Strip color syntax for filtering (now handles up to 3 colors separated by spaces)
+    cleaned = cleaned.replace(/\\(#[0-9A-Fa-f]{6}(?:\\s+#[0-9A-Fa-f]{6})?(?:\\s+#[0-9A-Fa-f]{6})?\\)$/, '');
+    return cleaned;
+}
+
+// Parse tag with color syntax: tagname(#color) or tagname(#bgcolor #textcolor) or tagname(#bgcolor #textcolor #hovercolor)
+function parseTagWithColor(tag) {
+    // First strip the hidden prefix if it exists
+    const isHidden = tag.startsWith('!');
+    const cleanTag = isHidden ? tag.substring(1) : tag;
+    
+    // Check for color syntax - now supports 3 colors separated by spaces
+    const colorMatch = cleanTag.match(/^(.+?)\((#[0-9A-Fa-f]{6})(?:\s+(#[0-9A-Fa-f]{6}))?(?:\s+(#[0-9A-Fa-f]{6}))?\)$/);
+    if (colorMatch) {
+        return { 
+            name: colorMatch[1], 
+            bgColor: colorMatch[2],
+            textColor: colorMatch[3] || null,
+            hoverColor: colorMatch[4] || null,
+            isHidden: isHidden
+        };
+    }
+    return { 
+        name: cleanTag, 
+        bgColor: null,
+        textColor: null,
+        hoverColor: null,
+        isHidden: isHidden
+    };
+}
+
+// Calculate contrasting text color (black or white) for a given background color
+function getContrastingTextColor(hexColor) {
+    // Remove # if present
+    const hex = hexColor.replace('#', '');
+    
+    // Convert to RGB
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Calculate relative luminance
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+    // Return black for light backgrounds, white for dark backgrounds
+    return luminance > 0.5 ? '#000000' : '#ffffff';
 }
 
 // NEW: Generate Plans content with Sub-Arcs support
@@ -631,7 +677,7 @@ function generatePlanModal(plan, index, data = {}) {
                         <h3 class="plan-subarcs-title">Sub-Arcs</h3>`;
             
             visibleSubArcs.forEach((subArc, subArcIndex) => {
-                modalHTML += generatePlanSubArc(subArc, subArcIndex, index);
+                modalHTML += generatePlanSubArc(subArc, subArcIndex, index, data);
             });
             
             modalHTML += `</div>`;
@@ -647,7 +693,7 @@ function generatePlanModal(plan, index, data = {}) {
 }
 
 // NEW: Generate Plan Sub-Arc with collapsible events
-function generatePlanSubArc(subArc, subArcIndex, planIndex) {
+function generatePlanSubArc(subArc, subArcIndex, planIndex, data) {
     let characterTagsDisplay = '';
     if (subArc.characterTags && subArc.characterTags.length > 0) {
         const visibleCharacterTags = getVisibleTags(subArc.characterTags);
@@ -675,7 +721,7 @@ function generatePlanSubArc(subArc, subArcIndex, planIndex) {
         const visibleEvents = subArc.events.filter(event => event.visible !== false);
         
         if (visibleEvents.length > 0) {
-            const storylinesData = window.currentInfoData?.storylines || [];
+            const storylinesData = data?.storylines || [];
             visibleEvents.forEach((event, eventIndex) => {
                 subArcHTML += generatePlanEvent(event, eventIndex, storylinesData, `subarc-${subArcIndex}`, planIndex);
             });
@@ -904,10 +950,13 @@ function generateJavaScript() {
         appearance: appearanceToEmbed,
         characters: infoData.characters,
         storylines: infoData.storylines,
+        storylinesOptions: infoData.storylinesOptions,  // ADD THIS LINE
+        charactersOptions: infoData.charactersOptions, 
         plans: infoData.plans,
         playlists: infoData.playlists,
-        customPages: infoData.customPages || [], // ADD THIS LINE
-        world: infoData.world
+        customPages: infoData.customPages || [],
+        world: infoData.world,
+        linkedLorebook: infoData.linkedLorebook
     };
     
     console.log('Embedding appearance data in HTML:', appearanceToEmbed);
@@ -937,7 +986,10 @@ function generateJavaScript() {
             let currentSearchFilter = '';
 
             function stripHiddenPrefix(tag) {
-                return tag.startsWith('!') ? tag.substring(1) : tag;
+                let cleaned = tag.startsWith('!') ? tag.substring(1) : tag;
+                // Strip color syntax for filtering (now handles up to 3 colors separated by spaces)
+                cleaned = cleaned.replace(/\\(#[0-9A-Fa-f]{6}(?:\\s+#[0-9A-Fa-f]{6})?(?:\\s+#[0-9A-Fa-f]{6})?\\)$/, '');
+                return cleaned;
             }
             
             // Hidden items console functions for the generated HTML
@@ -1097,6 +1149,49 @@ function generateJavaScript() {
                 const targetTab = document.getElementById(tabName + '-tab');
                 if (targetTab) {
                     targetTab.classList.add('active');
+                }
+            }
+
+            // Lorebook download functionality  
+            function downloadLinkedLorebook() {
+                console.log('Download function called');
+                console.log('fullInfoData:', fullInfoData);
+                
+                if (fullInfoData && fullInfoData.linkedLorebook) {
+                    try {
+                        console.log('Found linked lorebook:', fullInfoData.linkedLorebook.filename);
+                        
+                        // Create blob from lorebook data
+                        const lorebookData = fullInfoData.linkedLorebook.data;
+                        const jsonString = JSON.stringify(lorebookData, null, 2);
+                        const blob = new Blob([jsonString], {
+                            type: 'application/json;charset=utf-8'
+                        });
+                        
+                        // Create download link
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = fullInfoData.linkedLorebook.filename;
+                        link.style.display = 'none';
+                        
+                        // Trigger download
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        // Clean up
+                        URL.revokeObjectURL(url);
+                        
+                        console.log('Lorebook downloaded:', fullInfoData.linkedLorebook.filename);
+                    } catch (error) {
+                        console.error('Error downloading lorebook:', error);
+                        alert('Error downloading lorebook file: ' + error.message);
+                    }
+                } else {
+                    console.warn('No linked lorebook found in fullInfoData');
+                    console.log('Available data keys:', fullInfoData ? Object.keys(fullInfoData) : 'fullInfoData is null');
+                    alert('No linked lorebook available to download.');
                 }
             }
             
@@ -1710,6 +1805,8 @@ window.updatePreview = function(html) {
 }
 
 // Export functions globally when loaded as module
+window.parseTagWithColor = parseTagWithColor;
+window.getContrastingTextColor = getContrastingTextColor;
 window.generateHTML = generateHTML;
 window.updateSaveButtonState = updateSaveButtonState;
 window.getVisibleTags = getVisibleTags;

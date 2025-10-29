@@ -97,10 +97,8 @@
 
 .import-preview-header {
     background-color: var(--bg-tertiary);
-    padding: var(--space-lg);
     border-radius: var(--radius-md);
-    margin-bottom: var(--space-lg);
-    border: 1px solid var(--border-primary);
+    margin-bottom: var(--space-sm);
 }
 
 .import-preview-header p {

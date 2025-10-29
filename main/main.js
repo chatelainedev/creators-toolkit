@@ -138,10 +138,16 @@ class MainPageManager {
     // Setup card click interactions
     setupCardInteractions() {
         // Handle card clicks (entire card is clickable)
-        document.querySelectorAll('.tool-card').forEach(card => {
+        document.querySelectorAll('.tool-card, .mini-tool-card').forEach(card => {
             card.addEventListener('click', (e) => {
                 // Don't navigate if clicking the button directly (let button handle it)
                 if (e.target.closest('.card-launch-btn')) {
+                    return;
+                }
+
+                // For mini-cards, handle directly since they don't have buttons
+                if (card.classList.contains('mini-tool-card')) {
+                    this.handleMiniToolLaunch(card);
                     return;
                 }
                 
@@ -156,6 +162,12 @@ class MainPageManager {
             card.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
+
+                    if (card.classList.contains('mini-tool-card')) {
+                        this.handleMiniToolLaunch(card);
+                        return;
+                    }
+
                     const button = card.querySelector('.card-launch-btn');
                     if (button) {
                         this.handleToolLaunch(button);
@@ -405,7 +417,7 @@ class MainPageManager {
         
         // Wait additional time for better UX (so user can see the loading)
         console.log('⏱️ Starting 2.5-second delay before navigation...');
-        await new Promise(resolve => setTimeout(resolve, 2500));
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         console.log(`🔗 Now navigating to: ${url}`);
         console.log(`🏁 isNavigating flag at navigation time: ${this.isNavigating}`);
@@ -424,6 +436,28 @@ class MainPageManager {
                 window.authManager.hideGlobalLoading();
             }
         }
+    }
+
+    // Handle mini-tool launch
+    async handleMiniToolLaunch(card) {
+        const toolType = card.dataset.tool;
+        const url = card.dataset.url;
+        
+        if (!url) {
+            this.showToast('Tool URL not configured', 'error');
+            return;
+        }
+        
+        this.isNavigating = true;
+        
+        if (window.authManager) {
+            window.authManager.showNavigationLoading(toolType);
+        }
+        
+        // Navigate immediately (or with minimal delay)
+        setTimeout(() => {
+            window.location.href = url;
+        }, 400);
     }
 
     // Check if server is running at URL
@@ -449,7 +483,9 @@ class MainPageManager {
     getToolDisplayName(toolType) {
         const names = {
             'info-converter': 'Lore Codex',
-            'roleplay-converter': 'RP Archiver'
+            'roleplay-converter': 'RP Archiver',
+            'extractor': 'Lorebook Manager',
+            'character-manager': 'Character Manager'  // ADD THIS LINE
         };
         return names[toolType] || toolType;
     }
@@ -985,4 +1021,53 @@ document.addEventListener('DOMContentLoaded', () => {
         mainManager.checkToolAvailability();
         
     }, 100);
+});
+
+// Add this function to your MainPageManager class or at the end of main.js
+function initializeNavDropdown() {
+    const dropdown = document.querySelector('.nav-dropdown');
+    const dropdownBtn = document.querySelector('.nav-dropdown-btn');
+    const dropdownMenu = document.querySelector('.nav-dropdown-menu');
+    
+    if (!dropdown || !dropdownBtn) return;
+    
+    // Toggle dropdown on button click
+    dropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
+    
+    // Handle dropdown item clicks (show loading before navigation)
+    document.querySelectorAll('.nav-dropdown-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = item.getAttribute('href');
+            const toolName = item.querySelector('span').textContent;
+            
+            // Show loading and navigate
+            if (window.mainManager) {
+                window.mainManager.isNavigating = true;
+            }
+            
+            if (window.authManager) {
+                window.authManager.showNavigationLoading(toolName);
+            }
+            
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+        });
+    });
+}
+
+// Call this in DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    initializeNavDropdown();
 });

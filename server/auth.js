@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
+const crypto = require('crypto');
 
 // Import everything from core.js
 const {
@@ -29,7 +30,131 @@ const {
     avatarUpload
 } = require('./core');
 
+const SESSIONS_FOLDER = path.join(USERS_FOLDER, '_sessions');
+
 const router = express.Router();
+
+// =============================================================================
+// SESSION MANAGEMENT
+// =============================================================================
+
+function generateSessionToken() {
+    return crypto.randomBytes(32).toString('hex');
+}
+
+// ADD THESE NEW FUNCTIONS:
+function generateEncryptionKey() {
+    return crypto.randomBytes(32).toString('hex');
+}
+
+function encryptPassword(password, key) {
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key, 'hex'), iv);
+    let encrypted = cipher.update(password, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return {
+        iv: iv.toString('hex'),
+        encryptedData: encrypted
+    };
+}
+
+function decryptPassword(encryptedData, iv, key) {
+    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key, 'hex'), Buffer.from(iv, 'hex'));
+    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+}
+
+async function createUserSession(userId, username, password) {
+    await fs.ensureDir(SESSIONS_FOLDER);
+    const sessionToken = generateSessionToken();
+    const encryptionKey = generateEncryptionKey();
+    const expiresAt = Date.now() + (90 * 24 * 60 * 60 * 1000); // 90 days
+    
+    // Encrypt the password
+    const { iv, encryptedData } = encryptPassword(password, encryptionKey);
+    
+    const sessionData = {
+        userId,
+        username,
+        token: sessionToken,
+        encryptionKey,
+        encryptedPassword: encryptedData,
+        iv,
+        createdAt: Date.now(),
+        expiresAt
+    };
+    
+    const sessionFile = path.join(SESSIONS_FOLDER, `${userId}.json`);
+    await fs.writeJson(sessionFile, sessionData);
+    
+    return sessionToken;
+}
+
+async function validateSessionToken(token) {
+    try {
+        const files = await fs.readdir(SESSIONS_FOLDER);
+        
+        for (const file of files) {
+            if (!file.endsWith('.json')) continue;
+            
+            const sessionFile = path.join(SESSIONS_FOLDER, file);
+            const sessionData = await fs.readJson(sessionFile);
+            
+            if (sessionData.token === token) {
+                // Check if expired
+                if (Date.now() > sessionData.expiresAt) {
+                    await fs.remove(sessionFile);
+                    return null;
+                }
+                return sessionData;
+            }
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('Error validating session:', error);
+        return null;
+    }
+}
+
+async function clearUserSession(userId) {
+    const sessionFile = path.join(SESSIONS_FOLDER, `${userId}.json`);
+    if (await fs.pathExists(sessionFile)) {
+        await fs.remove(sessionFile);
+    }
+}
+
+async function getRememberedUsers() {
+    try {
+        await fs.ensureDir(SESSIONS_FOLDER);
+        const files = await fs.readdir(SESSIONS_FOLDER);
+        const remembered = [];
+        
+        for (const file of files) {
+            if (!file.endsWith('.json')) continue;
+            
+            const sessionFile = path.join(SESSIONS_FOLDER, file);
+            const sessionData = await fs.readJson(sessionFile);
+            
+            // Remove expired sessions
+            if (Date.now() > sessionData.expiresAt) {
+                await fs.remove(sessionFile);
+                continue;
+            }
+            
+            remembered.push({
+                userId: sessionData.userId,
+                username: sessionData.username
+            });
+        }
+        
+        return remembered;
+    } catch (error) {
+        console.error('Error getting remembered users:', error);
+        return [];
+    }
+}
 
 // =============================================================================
 // USER REGISTRATION & LOGIN
@@ -142,7 +267,7 @@ router.post('/auth/login', async (req, res) => {
     }
 
     try {
-        const { usernameOrEmail, password } = req.body;
+        const { usernameOrEmail, password, rememberMe } = req.body;
         
         if (!usernameOrEmail || !password) {
             return res.status(400).json({ error: 'Username/email and password are required' });
@@ -171,9 +296,18 @@ router.post('/auth/login', async (req, res) => {
         accounts[user.id] = user;
         await saveAccounts(accounts);
 
+        // Handle remember me - pass the plain password to store encrypted
+        let sessionToken = null;
+        if (rememberMe) {
+            sessionToken = await createUserSession(user.id, user.username, password);
+        } else {
+            // If they unchecked remember me, clear any existing session
+            await clearUserSession(user.id);
+        }
+
         console.log(`✅ User logged in: ${user.username} (${user.id})`);
 
-        // Return user data (without password hash)
+        // Return user data with session token
         res.json({
             success: true,
             user: {
@@ -181,12 +315,131 @@ router.post('/auth/login', async (req, res) => {
                 username: user.username,
                 email: user.email,
                 lastLogin: user.lastLogin
-            }
+            },
+            sessionToken
         });
 
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Login failed' });
+    }
+});
+
+// Validate session token
+router.post('/auth/validate-session', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'Session validation not available in hosted environment' });
+    }
+
+    try {
+        const { sessionToken } = req.body;
+        
+        if (!sessionToken) {
+            return res.json({ valid: false });
+        }
+
+        const sessionData = await validateSessionToken(sessionToken);
+        
+        if (!sessionData) {
+            return res.json({ valid: false });
+        }
+
+        // Load user account
+        const accounts = await loadAccounts();
+        const user = accounts[sessionData.userId];
+        
+        if (!user) {
+            return res.json({ valid: false });
+        }
+
+        console.log(`✅ Session validated for: ${user.username}`);
+
+        res.json({
+            valid: true,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            }
+        });
+
+    } catch (error) {
+        console.error('Session validation error:', error);
+        res.json({ valid: false });
+    }
+});
+
+// Get stored credentials for remembered user
+router.post('/auth/get-remembered-credentials', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'Not available in hosted environment' });
+    }
+
+    try {
+        const { userId } = req.body;
+        
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID required' });
+        }
+
+        const sessionFile = path.join(SESSIONS_FOLDER, `${userId}.json`);
+        
+        if (!await fs.pathExists(sessionFile)) {
+            return res.json({ found: false });
+        }
+
+        const sessionData = await fs.readJson(sessionFile);
+        
+        // Check if expired
+        if (Date.now() > sessionData.expiresAt) {
+            await fs.remove(sessionFile);
+            return res.json({ found: false });
+        }
+
+        // Decrypt password
+        const password = decryptPassword(
+            sessionData.encryptedPassword,
+            sessionData.iv,
+            sessionData.encryptionKey
+        );
+
+        res.json({
+            found: true,
+            username: sessionData.username,
+            password: password
+        });
+
+    } catch (error) {
+        console.error('Error getting remembered credentials:', error);
+        res.json({ found: false });
+    }
+});
+
+// Get list of registered users (for login screen) - ONLY REMEMBERED USERS
+router.get('/auth/users', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.json({ users: [] });
+    }
+
+    try {
+        const rememberedUsers = await getRememberedUsers(); // CHANGED THIS
+        
+        // Return only safe user info
+        const users = rememberedUsers.map(user => ({
+            id: user.userId,
+            username: user.username,
+            avatar: `/api/user/avatar?userContext=${encodeURIComponent(JSON.stringify({ 
+                userId: user.userId, 
+                username: user.username, 
+                isGuest: false 
+            }))}`
+        }));
+
+        res.json({ users });
+
+    } catch (error) {
+        console.error('Error loading users list:', error);
+        res.json({ users: [] });
     }
 });
 

@@ -209,9 +209,32 @@ function setupCharacterColorInputs() {
     }
 }
 
+function populateFactionDropdown() {
+    const factionSelect = document.getElementById('char-faction');
+    if (!factionSelect) return;
+    
+    // Clear existing options except "None"
+    factionSelect.innerHTML = '<option value="">None</option>';
+    
+    // Get factions from world building
+    if (infoData.world && infoData.world.factions) {
+        infoData.world.factions.forEach(faction => {
+            const option = document.createElement('option');
+            option.value = faction.name;
+            option.textContent = faction.name;
+            factionSelect.appendChild(option);
+        });
+    }
+}
+
 // Update openCharacterModal to set up color inputs
 function openCharacterModal(characterData = null) {
     const modalTitle = document.getElementById('character-modal-title');
+    editingIndex = characterData ? infoData.characters.indexOf(characterData) : -1;
+    editingType = 'character';
+    
+    // Populate faction dropdown BEFORE populating the modal
+    populateFactionDropdown(); // ADD THIS LINE
     
     if (characterData) {
         modalTitle.textContent = 'Edit Character';
@@ -236,6 +259,7 @@ function populateCharacterModal(character) {
     document.getElementById('char-tags').value = (character.tags || []).join(', ');
     document.getElementById('char-color').value = character.color || '#6c757d'; // NEW
     document.getElementById('char-color-picker').value = character.color || '#6c757d'; // NEW
+    document.getElementById('char-faction').value = character.faction || '';
     document.getElementById('char-basic').value = character.basic || '';
     document.getElementById('char-physical').value = character.physical || '';
     document.getElementById('char-personality').value = character.personality || '';
@@ -246,6 +270,8 @@ function populateCharacterModal(character) {
     document.getElementById('char-hobbies').value = character.hobbies || '';
     document.getElementById('char-quirks').value = character.quirks || '';
     document.getElementById('char-relationships').value = character.relationships || '';
+    document.getElementById('char-card-enabled').checked = character.cardEnabled || false;
+    document.getElementById('char-card-path').value = character.cardPath || '';
     document.getElementById('char-notes').value = character.notes || '';
     document.getElementById('char-gallery').value = (character.gallery || []).join('\n');
 }
@@ -260,6 +286,7 @@ function saveCharacter() {
             .map(tag => tag.trim())
             .filter(tag => tag),
         color: document.getElementById('char-color').value || '#6c757d', // NEW
+        faction: document.getElementById('char-faction').value.trim(), // ADD THIS LINE
         basic: document.getElementById('char-basic').value.trim(),
         physical: document.getElementById('char-physical').value.trim(),
         personality: document.getElementById('char-personality').value.trim(),
@@ -270,6 +297,8 @@ function saveCharacter() {
         hobbies: document.getElementById('char-hobbies').value.trim(),
         quirks: document.getElementById('char-quirks').value.trim(),
         relationships: document.getElementById('char-relationships').value.trim(),
+        cardEnabled: document.getElementById('char-card-enabled').checked,
+        cardPath: document.getElementById('char-card-path').value.trim(),       
         notes: document.getElementById('char-notes').value.trim(),
         gallery: document.getElementById('char-gallery').value
             .split('\n')
@@ -322,7 +351,69 @@ function openStorylineModal(storylineData = null) {
         clearModalFields('storylineModal');
     }
     
+    // Populate section datalist with existing sections
+    const sectionDatalist = document.getElementById('section-datalist');
+    sectionDatalist.innerHTML = '';
+    
+    const uniqueSections = new Set();
+    infoData.storylines.forEach(storyline => {
+        if (storyline.section && storyline.section.trim()) {
+            uniqueSections.add(storyline.section.trim());
+        }
+    });
+    
+    uniqueSections.forEach(section => {
+        const option = document.createElement('option');
+        option.value = section;
+        sectionDatalist.appendChild(option);
+    });
+    
+    // NEW: Set up subsection field behavior
+    const sectionInput = document.getElementById('story-section');
+    const subsectionInput = document.getElementById('story-subsection');
+    
+    // Enable/disable subsection based on section value
+    if (sectionInput.value.trim()) {
+        subsectionInput.disabled = false;
+        populateSubsectionDatalist(sectionInput.value.trim());
+    } else {
+        subsectionInput.disabled = true;
+        subsectionInput.value = '';
+    }
+    
+    // Listen for changes to section field
+    sectionInput.addEventListener('input', function() {
+        if (this.value.trim()) {
+            subsectionInput.disabled = false;
+            populateSubsectionDatalist(this.value.trim());
+        } else {
+            subsectionInput.disabled = true;
+            subsectionInput.value = '';
+        }
+    });
+    
     openModal('storylineModal');
+}
+
+function populateSubsectionDatalist(sectionName) {
+    const subsectionDatalist = document.getElementById('subsection-datalist');
+    subsectionDatalist.innerHTML = '';
+    
+    const uniqueSubsections = new Set();
+    infoData.storylines.forEach(storyline => {
+        // Only include subsections from the same section
+        if (storyline.section === sectionName && 
+            storyline.subsection && 
+            storyline.subsection.trim()) {
+            uniqueSubsections.add(storyline.subsection.trim());
+        }
+    });
+    
+    uniqueSubsections.forEach(subsection => {
+        const option = document.createElement('option');
+        option.value = subsection;
+        subsectionDatalist.appendChild(option);
+    });
 }
 
 function populateStorylineModal(storyline) {
@@ -330,6 +421,7 @@ function populateStorylineModal(storyline) {
     document.getElementById('story-pairing').value = storyline.pairing || '';
     document.getElementById('story-type').value = storyline.type || 'roleplay';
     document.getElementById('story-section').value = storyline.section || '';
+    document.getElementById('story-subsection').value = storyline.subsection || ''; // ADD THIS LINE
     document.getElementById('story-tags').value = (storyline.tags || []).join(', ');
     document.getElementById('story-wordcount').value = storyline.wordcount || '';
     document.getElementById('story-last-updated').value = storyline.lastUpdated || '';
@@ -380,6 +472,7 @@ function saveStoryline() {
         pairing: document.getElementById('story-pairing').value.trim(),
         type: document.getElementById('story-type').value,
         section: document.getElementById('story-section').value.trim(),
+        subsection: document.getElementById('story-subsection').value.trim(),
         tags: tags,
         wordcount: parseInt(document.getElementById('story-wordcount').value) || 0,
         lastUpdated: document.getElementById('story-last-updated').value.trim(),
@@ -519,6 +612,97 @@ function updateEventOrder(container) {
     markDataAsModified();
 }
 
+// Drag and drop for sub-arcs
+function initializeSubArcDragDrop(container) {
+    const subArcItems = container.querySelectorAll('.subarc-item');
+    let draggedElement = null;
+    
+    subArcItems.forEach(item => {
+        item.addEventListener('dragstart', function(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            container.classList.add('dragging');
+            
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.outerHTML);
+        });
+
+        item.addEventListener('dragend', function(e) {
+            this.classList.remove('dragging');
+            container.classList.remove('dragging');
+            
+            const allItems = container.querySelectorAll('.subarc-item');
+            allItems.forEach(item => item.classList.remove('drag-over'));
+            
+            // Update subarc order after drag ends
+            updateSubArcOrder(container);
+            
+            draggedElement = null;
+        });
+
+        item.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+
+            const siblings = container.querySelectorAll('.subarc-item');
+            siblings.forEach(sibling => sibling.classList.remove('drag-over'));
+
+            if (this !== draggedElement) {
+                this.classList.add('drag-over');
+            }
+        });
+
+        item.addEventListener('drop', function(e) {
+            e.preventDefault();
+            
+            if (this !== draggedElement && draggedElement) {
+                const rect = this.getBoundingClientRect();
+                const midpoint = rect.top + rect.height / 2;
+                
+                if (e.clientY < midpoint) {
+                    container.insertBefore(draggedElement, this);
+                } else {
+                    container.insertBefore(draggedElement, this.nextSibling);
+                }
+            }
+            
+            this.classList.remove('drag-over');
+        });
+    });
+
+    container.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    });
+
+    container.addEventListener('drop', function(e) {
+        e.preventDefault();
+        
+        if (e.target === container && draggedElement) {
+            container.appendChild(draggedElement);
+        }
+    });
+}
+
+function updateSubArcOrder(container) {
+    // Get the current visual order from DOM
+    const subArcItems = container.querySelectorAll('.subarc-item');
+    const newOrder = [];
+    
+    subArcItems.forEach(item => {
+        const originalIndex = parseInt(item.getAttribute('data-index'));
+        if (currentEditingSubArcs[originalIndex]) {
+            newOrder.push(currentEditingSubArcs[originalIndex]);
+        }
+    });
+    
+    // Update the sub-arcs array
+    currentEditingSubArcs = newOrder;
+    updateSubArcsListInModal(newOrder);
+    
+    markDataAsModified();
+}
+
 // Location modal functions
 function openLocationModal(locationData = null) {
     const modalTitle = document.getElementById('location-modal-title');
@@ -581,7 +765,9 @@ function saveLocation() {
 // Generic world item modal functions
 function openWorldItemModal(itemData = null, category) {
     const modalTitle = document.getElementById('world-item-modal-title');
-    const categoryName = category.charAt(0).toUpperCase() + category.slice(1, -1); // Capitalize and remove 's'
+    const categoryName = category === 'general' 
+    ? 'General' 
+    : category.charAt(0).toUpperCase() + category.slice(1, -1); // Capitalize and remove 's'
     
     if (itemData) {
         modalTitle.textContent = `Edit ${categoryName}`;
@@ -758,6 +944,13 @@ window.addCultivation = function() {
     editingType = 'worldItem';
     editingCategory = 'cultivation';
     openWorldItemModal(null, 'cultivation');
+}
+
+window.addMagic = function() {
+    editingIndex = -1;
+    editingType = 'worldItem';
+    editingCategory = 'magic';
+    openWorldItemModal(null, 'magic');
 }
 
 // Collapsible section functionality
@@ -980,7 +1173,7 @@ function createContentItem(name, type, index, category) {
     }
     
     item.innerHTML = `
-        <div style="display: flex; align-items: center; flex: 1;">
+        <div style="display: flex; align-items: center; flex: 1; min-width: 0;">
             <span class="content-item-name">${name || 'Unnamed Item'}</span>
             <span class="content-item-type">${typeDisplay}</span>
             ${extraInfo}
@@ -1294,6 +1487,9 @@ window.collectFormData = function() {
     if (!infoData.customPages) {
         infoData.customPages = [];
     }
+
+    // Ensure linked lorebook data is preserved
+    infoData.linkedLorebook = infoData.linkedLorebook || null;
     
     // Clean up data before processing
     cleanupData();
@@ -1321,6 +1517,7 @@ window.cleanupData = function() {
             name: '',
             image: '',
             tags: [],
+            faction: '',
             basic: '',
             physical: '',
             personality: '',
@@ -1512,6 +1709,66 @@ window.cleanupData = function() {
         };
     }
 }
+
+// Storylines Options functions
+function openStorylinesOptionsModal() {
+    // Populate checkboxes with current values
+    document.getElementById('storylines-show-toc').checked = infoData.storylinesOptions?.showTOC ?? true;
+    document.getElementById('storylines-show-sections').checked = infoData.storylinesOptions?.showSections ?? true;
+    document.getElementById('storylines-show-subsections').checked = infoData.storylinesOptions?.showSubsections ?? true;
+    
+    openModal('storylinesOptionsModal');
+}
+
+function saveStorylinesOptions() {
+    // Ensure storylinesOptions exists
+    if (!infoData.storylinesOptions) {
+        infoData.storylinesOptions = {};
+    }
+    
+    infoData.storylinesOptions.showTOC = document.getElementById('storylines-show-toc').checked;
+    infoData.storylinesOptions.showSections = document.getElementById('storylines-show-sections').checked;
+    infoData.storylinesOptions.showSubsections = document.getElementById('storylines-show-subsections').checked;
+    
+    closeModal('storylinesOptionsModal');
+    markDataAsModified();
+    
+    if (typeof showStatus === 'function') {
+        showStatus('success', 'Storylines display options saved!');
+    }
+}
+
+// Characters Options functions
+function openCharactersOptionsModal() {
+    // Populate checkbox with current value
+    document.getElementById('characters-show-by-faction').checked = infoData.charactersOptions?.showByFaction ?? true;
+    
+    openModal('charactersOptionsModal');
+}
+
+function saveCharactersOptions() {
+    // Ensure charactersOptions exists
+    if (!infoData.charactersOptions) {
+        infoData.charactersOptions = {};
+    }
+    
+    infoData.charactersOptions.showByFaction = document.getElementById('characters-show-by-faction').checked;
+    
+    closeModal('charactersOptionsModal');
+    markDataAsModified();
+    
+    if (typeof showStatus === 'function') {
+        showStatus('success', 'Characters display options saved!');
+    }
+}
+
+// Make functions globally available
+window.openCharactersOptionsModal = openCharactersOptionsModal;
+window.saveCharactersOptions = saveCharactersOptions;
+
+// Make functions globally available
+window.openStorylinesOptionsModal = openStorylinesOptionsModal;
+window.saveStorylinesOptions = saveStorylinesOptions;
 
 // Make sub-arc-related functions globally available
 window.addSubArc = addSubArc;

@@ -410,12 +410,25 @@ nav a:hover {
     align-items: center;
     cursor: pointer;
     font-size: 18px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .soundtrack-toggle:hover, .comments-toggle:hover {
     background-color: var(--primary-medium);
     color: var(--accent-green);
+}
+
+/* When panels are open, move toggles to top-right corner inside the panel */
+.soundtrack-panel.open .soundtrack-toggle,
+.comments-panel.open .comments-toggle {
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+    box-shadow: 0 2px 8px var(--shadow-medium);
 }
 
 /* Panel interaction logic */
@@ -434,7 +447,9 @@ nav a:hover {
 .comments-panel.open ~ .soundtrack-panel { 
     top: 40px; 
     z-index: 1000; 
-}.soundtrack-header { background: linear-gradient(135deg, var(--accent-green-dark) 0%, var(--accent-green-darker) 100%); color: var(--text-dark); padding: 20px 25px; font-weight: 700; font-size: 1.1em; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-heading); }
+}
+
+.soundtrack-header { background: linear-gradient(135deg, var(--accent-green-dark) 0%, var(--accent-green-darker) 100%); color: var(--text-dark); padding: 20px 25px; font-weight: 700; font-size: 1.1em; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-heading); }
 .comments-header { background: linear-gradient(135deg, var(--gray-medium) 0%, var(--gray-medium-dark) 100%); color: var(--text-main); padding: 20px 25px; font-weight: 700; font-size: 1.1em; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-heading); }
 .soundtrack-content, .comments-content { max-height: 60vh; overflow-y: auto; padding: 25px; scrollbar-width: thin; scrollbar-color: var(--gray-medium) var(--gray-lightest); }
 .soundtrack-content::-webkit-scrollbar, .comments-content::-webkit-scrollbar { width: 6px; }
@@ -450,21 +465,143 @@ nav a:hover {
 font[color=blue] { color: var(--accent-green) !important; }
 
 /* Image Modal */
-.image-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: var(--overlay-dark); backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease; }
-.image-modal.show { display: flex !important; justify-content: center; align-items: center; padding: 40px; box-sizing: border-box; opacity: 1; }
-.image-modal-content { position: relative; max-width: 90%; max-height: 90%; animation: fadeInScale 0.3s ease; }
-.image-modal img { width: 100%; height: 100%; object-fit: contain; box-shadow: 0 0 40px var(--accent-glow-strong); border: 2px solid var(--border-color); }
-.image-modal-close { position: absolute; top: -15px; right: -15px; background-color: var(--primary-dark); color: var(--text-main); border: 1px solid var(--border-color); width: 40px; height: 40px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px var(--shadow-modal); transition: all 0.2s ease; z-index: 2001; }
-.image-modal-close:hover { transform: scale(1.1); background-color: var(--accent-green-dark); color: var(--text-dark); }
-.image-modal-nav { position: absolute; top: 50%; transform: translateY(-50%); background-color: var(--primary-95); color: var(--text-main); border: 1px solid var(--border-color); width: 50px; height: 50px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px var(--shadow-dark); transition: all 0.2s ease; z-index: 2001; }
-.image-modal-nav:hover { transform: translateY(-50%) scale(1.1); background-color: var(--accent-green-dark); color: var(--text-dark); }
-.image-modal-nav.prev { left: -30px; }
-.image-modal-nav.next { right: -30px; }
-.image-modal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
-.image-modal-nav:disabled:hover { transform: translateY(-50%); background-color: var(--primary-95); color: var(--text-main); }
+/* Image Modal - Simple and Functional with Custom Colors */
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-dark);
+    backdrop-filter: blur(5px);
+}
+
+.image-modal.show {
+    display: block !important;
+}
+
+.image-modal-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.image-modal-content img {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    box-shadow: 0 0 40px var(--accent-glow-strong);
+    border: 2px solid var(--border-color);
+}
+
+.image-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background-color: var(--primary-dark);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px var(--shadow-modal);
+    transition: all 0.2s ease;
+    z-index: 2001;
+    border-radius: 4px;
+}
+
+.image-modal-close:hover {
+    transform: scale(1.1);
+    background-color: var(--accent-green-dark);
+    color: var(--text-dark);
+}
+
+.image-modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--primary-95);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px var(--shadow-dark);
+    transition: all 0.2s ease;
+    z-index: 2001;
+    border-radius: 50%;
+}
+
+.image-modal-nav:hover {
+    transform: translateY(-50%) scale(1.1);
+    background-color: var(--accent-green-dark);
+    color: var(--text-dark);
+}
+
+.image-modal-nav.prev {
+    left: 20px;
+}
+
+.image-modal-nav.next {
+    right: 20px;
+}
+
+.image-modal-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.image-modal-nav:disabled:hover {
+    transform: translateY(-50%);
+    background-color: var(--primary-95);
+    color: var(--text-main);
+}
+
+/* Hide nav buttons when only one image */
+.image-modal-nav[style*="display: none"] {
+    display: none !important;
+}
 
 /* Animations */
 @keyframes fadeInScale { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* For Webkit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 8px;   /* A slim, technical width */
+    height: 8px;  /* Height for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary-darker); /* Dark track to blend with the background */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--gray-medium); /* A visible but muted tech-gray handle */
+    /* No border-radius for a sharper, more angular look */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-green); /* Lights up with the theme's accent color */
+    box-shadow: 0 0 10px var(--accent-glow-strong); /* Add a subtle glow effect on hover */
+}
 
 /* Responsive design */
 @media (max-width: 768px) {

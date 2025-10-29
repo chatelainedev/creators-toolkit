@@ -1,6 +1,6 @@
 {
   "name": "creators-toolkit-server",
-  "version": "1.0.0 Alpha",
+  "version": "2.0.0 Beta",
   "description": "Server for Writing Tools - Lore Codex and RP Archiver",
   "main": "server.js",
   "scripts": {
@@ -17,13 +17,18 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "fs-extra": "^11.3.2",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "png-chunk-text": "^1.0.0",
+    "png-chunks-encode": "^1.0.0",
+    "png-chunks-extract": "^1.0.0",
+    "sharp": "^0.34.4"
   },
   "keywords": [
     "writing",
     "tools",
     "roleplay",
-    "info",
+    "creator",
+    "worldbuilding",
     "converter"
   ],
   "author": "Chatelaine Studios",

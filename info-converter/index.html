@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
     <title>Lore Codex</title>
-    <link rel="stylesheet" href="info-converter.css">
+    <link rel="stylesheet" href="css/info-converter.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/content.css">
     <link rel="stylesheet" href="modules/import/character-import.css">
     <link rel="stylesheet" href="modules/import/lorebook-import.css">
     <link rel="stylesheet" href="about/lore-codex-about.css">
@@ -66,6 +69,13 @@
             <!-- NEW: Simple user avatar display -->
             <div class="nav-user-avatar" id="nav-user-avatar" style="display: none;">
                 <img src="../images/default-avatar.png" alt="User Avatar" class="user-avatar" id="nav-avatar-img">
+            </div>
+            <!-- Context Menu for User Avatar -->
+            <div id="lore-context-menu" class="user-context-menu" style="display: none;">
+                <div class="context-menu-item" id="lore-logout-option">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
             </div>
             <!-- Lore Codex About Button -->
             <button class="nav-about-btn" id="lore-codex-about-btn" title="How to use Lore Codex">
@@ -402,11 +412,11 @@
                             <div class="sidebar-item" data-category="characters">
                                 <i class="fas fa-users"></i>
                                 <span class="category-name">Characters</span>
-                                <span class="item-count" id="characters-count">0</span>
                                 <i class="fas fa-file-import character-import-btn" 
                                 title="Import Character Card" 
-                                style="font-size: 0.8em; margin-left: 8px; cursor: pointer; opacity: 0.7;"
+                                style="font-size: 1em; cursor: pointer; opacity: 0.7; margin-left: auto; margin-right: 8px;"
                                 onclick="openCharacterImport()"></i>
+                                <span class="item-count" id="characters-count">0</span>
                             </div>
                             <div class="sidebar-item" data-category="storylines">
                                 <i class="fas fa-book-open"></i>
@@ -426,11 +436,19 @@
                         </div>
 
                         <div class="sidebar-section">
-                            <div class="section-title">World Building 
-                                <i class="fas fa-file-import lorebook-import-btn" 
-                                title="Import Lorebook" 
-                                style="font-size: 1em; margin-left: 80px; cursor: pointer; opacity: 0.7;"
-                                onclick="openLorebookImport()"></i>
+                            <div class="section-title" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span>World Building</span>
+                                <div style="display: flex; gap: 10px;">
+                                    <i class="fas fa-link lorebook-link-btn" 
+                                    title="Link Lorebook" 
+                                    id="lorebook-link-icon"
+                                    style="font-size: 1em; cursor: pointer; opacity: 0.7;"
+                                    onclick="openLorebookLink()"></i>
+                                    <i class="fas fa-file-import lorebook-import-btn" 
+                                    title="Import Lorebook" 
+                                    style="font-size: 1em; cursor: pointer; opacity: 0.7;"
+                                    onclick="openLorebookImport()"></i>
+                                </div>
                             </div>
                             <div class="sidebar-item" data-category="general">
                                 <i class="fas fa-info-circle"></i>
@@ -456,6 +474,11 @@
                                 <i class="fas fa-leaf"></i>
                                 <span class="category-name">Cultivation</span>
                                 <span class="item-count" id="cultivation-count">0</span>
+                            </div>
+                            <div class="sidebar-item" data-category="magic">
+                                <i class="fas fa-wand-magic-sparkles"></i>
+                                <span class="category-name">Magic</span>
+                                <span class="item-count" id="magic-count">0</span>
                             </div>
                         </div>
 
@@ -496,7 +519,12 @@
                     <div id="characters-section" class="content-section active">
                         <div class="section-header">
                             <h3><i class="fas fa-users"></i> Characters</h3>
-                            <button id="add-character" class="btn-add">+ Add Character</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button id="characters-options" class="btn-secondary" title="Characters Display Options">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button id="add-character" class="btn-add">+ Add Character</button>
+                            </div>
                         </div>
                         <div id="characters-list" class="content-list compact">
                             <div class="empty-state">No characters added yet</div>
@@ -510,7 +538,12 @@
                     <div id="storylines-section" class="content-section">
                         <div class="section-header">
                             <h3><i class="fas fa-book-open"></i> Storylines</h3>
-                            <button id="add-storyline" class="btn-add">+ Add Storyline</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button id="storylines-options" class="btn-secondary" title="Storylines Display Options">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button id="add-storyline" class="btn-add">+ Add Storyline</button>
+                            </div>
                         </div>
                         <div id="storylines-list" class="content-list compact">
                             <div class="empty-state">No storylines added yet</div>
@@ -600,6 +633,17 @@
                         </div>
                         <div id="cultivation-list" class="content-list compact">
                             <div class="empty-state">No cultivation entries added yet</div>
+                        </div>
+                    </div>
+
+                    <!-- Magic Section -->
+                    <div id="magic-section" class="content-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-wand-magic-sparkles"></i> Magic</h3>
+                            <button id="add-magic" class="btn-add">+ Add Magic</button>
+                        </div>
+                        <div id="magic-list" class="content-list compact">
+                            <div class="empty-state">No magic entries added yet</div>
                         </div>
                     </div>
 
@@ -737,6 +781,13 @@
                                 <div class="helper-text" id="page-header-description">
                                     Controls the style of page headers throughout the site
                                 </div>
+
+                                <label for="appearance-storyline-style">Storyline Style:</label>
+                                <select id="appearance-storyline-style">
+                                </select>
+                                <div class="helper-text" id="storyline-style-description">
+                                    Controls the style of storyline section headers, subsection headers, and table of contents
+                                </div>
                             </div>
                         </div>
                         
@@ -857,6 +908,20 @@
                                     <input type="color" id="background-color-picker" class="color-picker">
                                 </div>
                                 <div class="helper-text">Fallback color if no image is provided. Color picker syncs with text input.</div>
+                                <!-- Background Style -->
+                                <label for="appearance-background-style">Background Style:</label>
+                                <select id="appearance-background-style">
+                                </select>
+                                <div class="helper-text" id="background-style-description">
+                                    Apply visual effects to the site background
+                                </div> 
+                                <!-- Background Color Overlay -->
+                                <label for="appearance-background-color-overlay">Background Color Overlay:</label>
+                                <select id="appearance-background-color-overlay">
+                                </select>
+                                <div class="helper-text" id="background-color-overlay-description">
+                                    Apply a color tint over the background
+                                </div>                           
                             </div>
                             
                         <!-- NEW: Main Container Background Subsection -->
@@ -1013,6 +1078,12 @@ Color picker syncs with text input.</div>
                 </div>
                 <div class="helper-text">Color for this character in timeline views</div>
 
+                <label for="char-faction">Faction:</label>
+                <select id="char-faction">
+                    <option value="">None</option>
+                </select>
+                <div class="helper-text">Select a faction from World Building > Factions</div>
+
                 <label for="char-basic">Basic Information:</label>
                 <div class="textarea-container">
                     <textarea id="char-basic" rows="3" placeholder="Age, species, occupation, etc."></textarea>
@@ -1073,6 +1144,25 @@ Color picker syncs with text input.</div>
                     <button type="button" class="expand-text-btn" data-field="char-relationships" title="Expand text editor"><i class="fas fa-expand"></i></button>
                 </div>
 
+                <!-- Character Card Field -->
+                <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-xs);">
+                    <label for="char-card-path">Character Card:</label>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="char-card-enabled" title="Check to enable character card download">
+                        <label for="char-card-enabled">Enable</label>
+                    </div>
+                </div>
+                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                    <input type="text" id="char-card-path" placeholder="assets/characters/character-name/card.png" style="flex: 1;">
+                    <button class="nav-load-btn image-import-trigger" 
+                            title="Import PNG card from computer" 
+                            data-target-field="char-card-path" 
+                            data-context="character-card">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                </div>
+                <div class="helper-text">PNG file for character card download. Only PNG files are supported.</div>
+
                 <label for="char-notes">Notes (Development Only):</label>
                 <div class="textarea-container">
                     <textarea id="char-notes" rows="4" placeholder="Development notes, todo items, reminders, etc. These will not appear in the generated HTML."></textarea>
@@ -1088,6 +1178,32 @@ assets/characters/charactername/action.jpg"></textarea>
                 <div class="modal-actions">
                     <button id="save-character" class="btn-main-action">Save Character</button>
                     <button class="btn-cancel" data-modal="characterModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Characters Options Modal -->
+    <div id="charactersOptionsModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Characters Display Options</h3>
+                <span class="close" data-modal="charactersOptionsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="helper-text" style="margin-bottom: var(--space-md);">
+                    These settings control what appears in the generated HTML for Characters.
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="characters-show-by-faction" checked>
+                    <label for="characters-show-by-faction">Show Characters Organized by Faction</label>
+                </div>
+                <div class="helper-text">Group characters by their assigned factions</div>
+
+                <div class="modal-actions">
+                    <button id="save-characters-options" class="btn-main-action">Save Options</button>
+                    <button class="btn-cancel" data-modal="charactersOptionsModal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -1115,8 +1231,14 @@ assets/characters/charactername/action.jpg"></textarea>
                 <div class="helper-text">Whether this is a roleplay or solo storyline</div>
 
                 <label for="story-section">Section:</label>
-                <input type="text" id="story-section" placeholder="Part 1, Arc 2, etc. (optional)">
+                <input type="text" id="story-section" list="section-datalist" placeholder="Part 1, Arc 2, etc.">
+                <datalist id="section-datalist"></datalist>
                 <div class="helper-text">Optional section/part name for organizing storylines</div>
+
+                <label for="story-subsection">Subsection:</label>
+                <input type="text" id="story-subsection" list="subsection-datalist" placeholder="Chapter 1, Episode 3, etc." disabled>
+                <datalist id="subsection-datalist"></datalist>
+                <div class="helper-text">Optional subsection within the selected section</div>
 
                 <label for="story-tags">Tags:</label>
                 <input type="text" id="story-tags" placeholder="Tags separated by commas (e.g., angst, fluff, AU)">
@@ -1155,6 +1277,44 @@ assets/characters/charactername/action.jpg"></textarea>
                 <div class="modal-actions">
                     <button id="save-storyline" class="btn-main-action">Save Storyline</button>
                     <button class="btn-cancel" data-modal="storylineModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Storylines Options Modal -->
+    <div id="storylinesOptionsModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Storylines Display Options</h3>
+                <span class="close" data-modal="storylinesOptionsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="helper-text" style="margin-bottom: var(--space-md);">
+                    These settings control what appears in the generated HTML for Storylines.
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="storylines-show-toc" checked>
+                    <label for="storylines-show-toc">Show Table of Contents</label>
+                </div>
+                <div class="helper-text">Display a navigable table of contents when sections are present</div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="storylines-show-sections" checked>
+                    <label for="storylines-show-sections">Show Section Headers</label>
+                </div>
+                <div class="helper-text">Display section titles in the content</div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="storylines-show-subsections" checked>
+                    <label for="storylines-show-subsections">Show Subsection Headers</label>
+                </div>
+                <div class="helper-text">Display subsection titles within sections</div>
+
+                <div class="modal-actions">
+                    <button id="save-storylines-options" class="btn-main-action">Save Options</button>
+                    <button class="btn-cancel" data-modal="storylinesOptionsModal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -1573,11 +1733,13 @@ assets/characters/charactername/action.jpg"></textarea>
                 </select>
                 <div class="helper-text">Development status of this entry</div>
                 
-                <div class="checkbox-container">
+                <div class="checkbox-item">
                     <input type="checkbox" id="item-hidden">
-                    <label for="item-hidden" class="checkbox-label">Hidden (won't appear in generated page)</label>
+                    <div>
+                        <label for="item-hidden" class="checkbox-label">Hidden (won't appear in generated page)</label>
+                    </div>
                 </div>
-                <div class="helper-text">Check this to hide from the generated HTML page</div>
+                <div class="helper-text" style="margin: 0;">Check this to hide from the generated HTML page</div>
                 
                 <label for="item-image">Image Path:</label>
                 <div style="display: flex; gap: var(--space-xs); align-items: center;">
@@ -1650,8 +1812,6 @@ assets/characters/charactername/action.jpg"></textarea>
             </div>
             <div class="modal-body">
                 <div class="import-preview-header">
-                    <p>Review and edit entries before importing. Uncheck entries you don't want to include.</p>
-                    
                     <div class="preview-controls">
                         <label class="select-all-control">
                             <input type="checkbox" id="select-all-entries" checked onchange="toggleAllEntries(this.checked)">
@@ -1673,6 +1833,37 @@ assets/characters/charactername/action.jpg"></textarea>
                     <button class="btn-cancel" data-modal="lorebookPreviewModal">Cancel</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Lorebook Link Modal -->
+    <div id="lorebookLinkModal" class="modal">
+        <div class="modal-content lorebook-select-modal">
+            <div class="modal-header">
+                <h3>Link Lorebook File</h3>
+                <span class="close" data-modal="lorebookLinkModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="file-selection-area">
+                    <div class="file-drop-zone" onclick="document.getElementById('lorebook-link-file').click()">
+                        <i class="fas fa-file-upload"></i>
+                        <p>Click to select lorebook file to link</p>
+                        <span class="file-types">JSON files from SillyTavern, CharacterHub, etc.</span>
+                    </div>
+                    <input type="file" id="lorebook-link-file" accept=".json" style="display: none;" onchange="linkLorebookFile(this)">
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn-cancel" data-modal="lorebookLinkModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lorebook Context Menu -->
+    <div id="lorebookContextMenu" class="context-menu" style="display: none;">
+        <div class="context-menu-item" onclick="removeLorebookLink()">
+            <i class="fas fa-unlink"></i> Remove Lorebook Link
         </div>
     </div>
 
@@ -2657,6 +2848,54 @@ assets/characters/charactername/action.jpg"></textarea>
         </div>
     </div>
 
+    <!-- Save Project Modal -->
+    <div id="saveProjectModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Save Project</h3>
+                <span class="close" data-modal="saveProjectModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="save-project-name">Project Name:</label>
+                <input type="text" id="save-project-name" placeholder="Enter project name">
+                <div class="helper-text">The name of your project folder</div>
+                
+                <label for="save-html-filename">HTML Filename:</label>
+                <input type="text" id="save-html-filename" placeholder="info">
+                <div class="helper-text">Filename without .html extension</div>
+                
+                <div class="modal-actions">
+                    <button id="confirm-save-project" class="btn-main-action">Save</button>
+                    <button class="btn-cancel" data-modal="saveProjectModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rename Project Modal -->
+    <div id="renameProjectModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Rename Project</h3>
+                <span class="close" data-modal="renameProjectModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="rename-project-name">Project Name:</label>
+                <input type="text" id="rename-project-name" placeholder="Enter project name">
+                <div class="helper-text">The name of your project folder</div>
+                
+                <label for="rename-html-filename">HTML Filename:</label>
+                <input type="text" id="rename-html-filename" placeholder="info">
+                <div class="helper-text">Filename without .html extension</div>
+                
+                <div class="modal-actions">
+                    <button id="confirm-rename-project" class="btn-main-action">Rename</button>
+                    <button id="cancel-rename-project" class="btn-cancel" data-modal="renameProjectModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Context Menu for Color Pickers -->
     <div id="color-picker-context-menu" class="context-menu" style="display: none;">
         <div class="context-menu-item">
@@ -2681,6 +2920,9 @@ assets/characters/charactername/action.jpg"></textarea>
     <div id="nav-project-context-menu" class="context-menu" style="display: none;">
         <div class="context-menu-item" id="quick-load-option">
             <i class="fas fa-bolt"></i> Quick Load
+        </div>
+        <div class="context-menu-item" id="rename-project-option">
+            <i class="fas fa-edit"></i> Rename...
         </div>
     </div>
 
@@ -2707,6 +2949,7 @@ assets/characters/charactername/action.jpg"></textarea>
     <script src="modules/timeline-html.js"></script>        <!-- 4th - now can use getColorScheme -->
     <script src="modules/playlist-html.js"></script>
     <script src="modules/import/lorebook-import.js"></script>
+    <script src="modules/import/lorebook-link.js"></script>
     <script src="modules/import/character-import.js"></script>
     <script src="modules/world-html.js"></script>    
     <script src="modules/characters-html.js"></script>

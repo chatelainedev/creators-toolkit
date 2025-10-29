@@ -2,6 +2,12 @@
 
 class CoWriterManager {
     constructor() {
+        this.MESSAGE_BATCH_SIZE = 10; // Load 10 messages at a time
+        this.VISIBLE_MESSAGE_LIMIT = 20; // Keep 20 messages in DOM
+        this.AUTO_SAVE_INTERVAL = 5; // Auto-save every 5 messages
+        this.messagesAddedSinceLastSave = 0;
+        this.allMessages = []; // Full message history
+        this.visibleMessageStartIndex = 0; // Where visible window starts
         this.messages = [];
         this.currentEditingId = null;
         this.isProcessing = false;
@@ -29,7 +35,7 @@ class CoWriterManager {
     async initializeCoWriter() {
         this.setupEventListeners();
         await this.loadUserSettings();
-        
+        await this.loadActiveChat(); // Load any in-progress chat
         // Load templates for header dropdown (after settings are loaded)
         await this.loadTemplates();
         
@@ -454,24 +460,150 @@ class CoWriterManager {
     addMessage(type, content, options = {}) {
         const message = {
             id: options.id || this.generateMessageId(),
-            type: type, // 'user' or 'ai'
+            type: type,
             content: content,
             timestamp: options.timestamp || Date.now(),
             isWelcome: options.isWelcome || false
         };
 
-        this.messages.push(message);
+        this.allMessages.push(message);
+        this.messages = this.allMessages; // Keep reference
+        
+        // Auto-save every N messages
+        if (!message.isWelcome) {
+            this.messagesAddedSinceLastSave++;
+            if (this.messagesAddedSinceLastSave >= this.AUTO_SAVE_INTERVAL) {
+                this.autoSaveActiveChat();
+                this.messagesAddedSinceLastSave = 0;
+            }
+        }
+        
+        this.updateVisibleMessages();
         this.renderMessages();
         this.scrollToBottom();
         
         return message.id;
     }
 
+    // Update which messages are visible
+    updateVisibleMessages() {
+        const totalMessages = this.allMessages.length;
+        
+        // Always show welcome message if it exists
+        const welcomeMsg = this.allMessages.find(m => m.isWelcome);
+        
+        // Calculate start index for non-welcome messages
+        const nonWelcomeMessages = this.allMessages.filter(m => !m.isWelcome);
+        const visibleStartIndex = Math.max(0, nonWelcomeMessages.length - this.VISIBLE_MESSAGE_LIMIT);
+        
+        // Build visible messages array
+        this.messages = [];
+        if (welcomeMsg) {
+            this.messages.push(welcomeMsg);
+        }
+        this.messages.push(...nonWelcomeMessages.slice(visibleStartIndex));
+        
+        this.visibleMessageStartIndex = visibleStartIndex;
+    }
+
+    // Check if there are older messages to load
+    hasOlderMessages() {
+        const nonWelcomeMessages = this.allMessages.filter(m => !m.isWelcome);
+        return this.visibleMessageStartIndex > 0;
+    }
+
+    // Load more older messages
+    loadOlderMessages() {
+        const nonWelcomeMessages = this.allMessages.filter(m => !m.isWelcome);
+        const newStartIndex = Math.max(0, this.visibleMessageStartIndex - this.MESSAGE_BATCH_SIZE);
+        
+        this.visibleMessageStartIndex = newStartIndex;
+        this.updateVisibleMessages();
+        this.renderMessages();
+    }
+
+    // Auto-save active chat to disk
+    async autoSaveActiveChat() {
+        if (!this.isUserLoggedIn() && !this.getUserContext().isGuest) {
+            return;
+        }
+        
+        const activeChatData = {
+            messages: this.allMessages.filter(m => !m.isWelcome),
+            settings: { ...this.settings },
+            lastModified: Date.now()
+        };
+        
+        try {
+            const response = await fetch('/api/cowriter/active-chat/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userContext: this.getUserContext(),
+                    chatData: activeChatData
+                })
+            });
+            
+            if (response.ok) {
+                console.log('✅ Auto-saved active chat');
+            }
+        } catch (error) {
+            console.error('Auto-save failed:', error);
+        }
+    }
+
+    // Load active chat from disk
+    async loadActiveChat() {
+        if (!this.isUserLoggedIn() && !this.getUserContext().isGuest) {
+            return;
+        }
+        
+        try {
+            const userContext = encodeURIComponent(JSON.stringify(this.getUserContext()));
+            const response = await fetch(`/api/cowriter/active-chat?userContext=${userContext}`);
+            
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && result.chatData) {
+                    this.allMessages = [
+                        ...this.allMessages.filter(m => m.isWelcome),
+                        ...result.chatData.messages
+                    ];
+                    
+                    if (result.chatData.settings) {
+                        this.settings = { ...this.settings, ...result.chatData.settings };
+                    }
+                    
+                    this.updateVisibleMessages();
+                    this.renderMessages();
+                    console.log('✅ Loaded active chat from disk');
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load active chat:', error);
+        }
+    }
+
+    // Clear active chat file
+    async clearActiveChat() {
+        try {
+            await fetch('/api/cowriter/active-chat/clear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userContext: this.getUserContext()
+                })
+            });
+        } catch (error) {
+            console.error('Failed to clear active chat:', error);
+        }
+    }
+
     // Simulate AI response (temporary - replace with real LLM call)
     async simulateAIResponse(userMessage) {
         try {
             // Get chat history for context (exclude welcome messages)
-            const chatHistory = this.messages
+            const chatHistory = this.allMessages
                 .filter(m => !m.isWelcome)
                 .map(m => ({ type: m.type, content: m.content }));
 
@@ -567,6 +699,17 @@ class CoWriterManager {
         // Clear existing messages (except typing indicator)
         const typingIndicator = chatMessages.querySelector('.ai-typing');
         chatMessages.innerHTML = '';
+
+        // Add "Show More" button if there are older messages
+        if (this.hasOlderMessages()) {
+            const showMoreBtn = document.createElement('button');
+            showMoreBtn.className = 'show-more-messages-btn';
+            showMoreBtn.innerHTML = '<i class="fas fa-chevron-up"></i> Show More Messages';
+            showMoreBtn.addEventListener('click', () => {
+                this.loadOlderMessages();
+            });
+            chatMessages.appendChild(showMoreBtn);
+        }
         
         // Re-add messages
         this.messages.forEach(message => {
@@ -839,14 +982,14 @@ class CoWriterManager {
             return;
         }
 
-        // Find the AI message to refresh
-        const aiMessageIndex = this.messages.findIndex(m => m.id === messageId);
+        // Find the AI message to refresh in allMessages
+        const aiMessageIndex = this.allMessages.findIndex(m => m.id === messageId);
         if (aiMessageIndex === -1) {
             this.showToast('Message not found', 'error');
             return;
         }
 
-        const aiMessage = this.messages[aiMessageIndex];
+        const aiMessage = this.allMessages[aiMessageIndex];
         if (aiMessage.type !== 'ai') {
             this.showToast('Can only refresh AI messages', 'error');
             return;
@@ -855,8 +998,8 @@ class CoWriterManager {
         // Find the user message that prompted this AI response
         let userMessage = '';
         for (let i = aiMessageIndex - 1; i >= 0; i--) {
-            if (this.messages[i].type === 'user') {
-                userMessage = this.messages[i].content;
+            if (this.allMessages[i].type === 'user') {
+                userMessage = this.allMessages[i].content;
                 break;
             }
         }
@@ -866,8 +1009,9 @@ class CoWriterManager {
             return;
         }
 
-        // Remove the current AI message
-        this.messages.splice(aiMessageIndex, 1);
+        // Remove the current AI message from allMessages
+        this.allMessages.splice(aiMessageIndex, 1);
+        this.updateVisibleMessages();
         this.renderMessages();
 
         // Show typing indicator
@@ -876,8 +1020,8 @@ class CoWriterManager {
         try {
             this.isProcessing = true;
             
-            // Get chat history up to the point before this AI message
-            const chatHistory = this.messages
+            // Get chat history up to the point before this AI message (from allMessages)
+            const chatHistory = this.allMessages
                 .slice(0, aiMessageIndex)
                 .filter(m => !m.isWelcome)
                 .map(m => ({ type: m.type, content: m.content }));
@@ -939,17 +1083,21 @@ class CoWriterManager {
     }
 
     // Clear entire chat
-    clearChat() {
+    async clearChat() {
         if (this.messages.length <= 1) { // Only welcome message
             return;
         }
         
         if (confirm('Are you sure you want to clear the entire chat? This cannot be undone.')) {
             // Keep only welcome message
+            this.allMessages = this.allMessages.filter(m => m.isWelcome);
             this.messages = this.messages.filter(m => m.isWelcome);
             
             // Reset current chat tracking
             this.resetCurrentChat();
+            
+            // Clear active chat file
+            await this.clearActiveChat();
             
             this.renderMessages();
             this.showToast('Chat cleared', 'info');
@@ -1047,8 +1195,11 @@ class CoWriterManager {
 
     // Open settings modal
     openSettings() {
-        this.populateSettings();
+        // Show modal immediately
         document.getElementById('cowriter-settings-modal').style.display = 'flex';
+        
+        // Load content asynchronously without blocking
+        this.populateSettings();
     }
 
     // Close settings modal
@@ -1078,23 +1229,35 @@ class CoWriterManager {
 
     // Populate settings with current values
     async populateSettings() {
-        // Load writing styles from server - UPDATED
-        await this.loadTonesAndStyles();
+        // Set immediate values first (no async needed)
+        this.setImmediateSettings();
+        
+        // Load everything else in parallel
+        await Promise.all([
+            this.loadTonesAndStyles(),
+            this.loadProviders(),
+            this.populateWorldContextDropdown(),
+            this.initializePromptManager().then(() => {
+                if (this.promptManager) {
+                    return this.promptManager.loadActiveSelections().then(() => {
+                        this.promptManager.populateMainPromptDropdown();
+                        this.promptManager.updateMainPromptDisplay();
+                    });
+                }
+            })
+        ]);
+        
+        // Load models AFTER providers are loaded (keep this separate since it's slow)
+        // But don't await it - let it load in background
+        this.loadModelsForProvider(this.settings.provider);
+        
+        // Update API status
+        this.updateApiStatus();
+    }
 
-        // Ensure prompt manager is initialized
-        await this.initializePromptManager();
-        
-        // MAKE SURE this happens after prompt manager is ready - ADD THIS
-        if (this.promptManager) {
-            await this.promptManager.loadActiveSelections();
-            this.promptManager.populateMainPromptDropdown();
-            this.promptManager.updateMainPromptDisplay();
-        }
-        
-        // Load providers from server
-        await this.loadProviders();
-        
-        // Set current selections - MAKE SURE THESE LINES EXIST
+    // Set immediate settings that don't require async operations
+    setImmediateSettings() {
+        // Set current selections for dropdowns (they might be empty until data loads)
         const toneSelect = document.getElementById('tone-select');
         if (toneSelect) {
             toneSelect.value = this.settings.tone || '';
@@ -1110,22 +1273,24 @@ class CoWriterManager {
             templateSelect.value = this.settings.templateId || '';
         }
 
-        // World context dropdown
-        await this.populateWorldContextDropdown();
-
         // API key handling
         const apiKeyInput = document.getElementById('api-key-input');
         if (apiKeyInput) {
-            // Don't populate the actual key for security
             apiKeyInput.value = this.settings.hasApiKey ? '••••••••••••••••' : '';
             apiKeyInput.placeholder = this.settings.hasApiKey ? 'API key configured (enter new key to change)' : 'Enter your API key...';
         }
-
-        // Load models for current provider
-        this.loadModelsForProvider(this.settings.provider);
         
-        // Update API status
-        this.updateApiStatus();
+        // Set provider dropdown
+        const providerSelect = document.getElementById('provider-select');
+        if (providerSelect) {
+            providerSelect.value = this.settings.provider;
+        }
+        
+        // Set loading state for models dropdown
+        const modelSelect = document.getElementById('model-select');
+        if (modelSelect) {
+            modelSelect.innerHTML = '<option value="">Loading models...</option>';
+        }
     }
 
     refreshDropdowns() {

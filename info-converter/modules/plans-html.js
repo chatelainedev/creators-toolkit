@@ -295,6 +295,9 @@ function updateSubArcsListInModal(subArcs) {
         const subArcElement = createSubArcElement(subArc, index);
         container.appendChild(subArcElement);
     });
+
+    // Add drag and drop functionality
+    initializeSubArcDragDrop(container);  // ADD THIS LINE
 }
 
 // UPDATED: Functions for managing events within plans (now with context support)
@@ -714,6 +717,7 @@ function setupCharacterTagAutocomplete() {
 function createSubArcElement(subArc, index) {
     const subArcDiv = document.createElement('div');
     subArcDiv.className = 'subarc-item';
+    subArcDiv.draggable = true;  // ADD THIS LINE
     subArcDiv.setAttribute('data-index', index);
     
     const visibilityBadge = subArc.visible === false ? '<span class="hidden-badge">Hidden</span>' : '';
@@ -793,8 +797,8 @@ function createEventElement(event, index, context = 'main') {
             </div>
             ${characterTagsDisplay}
             <div class="event-bottom-info">
-                ${event.notes ? `<div class="event-notes-preview">Has notes</div>` : ''}
                 ${event.timing ? `<span class="event-timing-badge">${event.timing}</span>` : ''}
+                ${event.notes ? `<div class="event-notes-preview">Has notes</div>` : ''}
             </div>
         </div>
         <div class="event-actions">
@@ -987,7 +991,15 @@ function generateCardsView(data) {
     if (tagsArray.length > 0) {
         cardsHTML += '<div class="character-tag-links">';
         tagsArray.forEach(tag => {
-            cardsHTML += `<div class="character-tag-link" onclick="togglePlanTag('${tag}')">${tag}</div>`;
+            const parsed = parseTagWithColor(tag);
+            let styleAttr = '';
+            if (parsed.bgColor) {
+                const textColor = parsed.textColor || getContrastingTextColor(parsed.bgColor);
+                const hoverColor = parsed.hoverColor || parsed.bgColor;
+                styleAttr = ` style="background-color: ${parsed.bgColor}; color: ${textColor}; --hover-color: ${hoverColor};"`;
+            }
+            const escapedTag = tag.replace(/\\\\/g, '\\\\\\\\').replace(/'/g, "\\\\'");
+            cardsHTML += `<div class="character-tag-link" onclick="togglePlanTag('${escapedTag}')"${styleAttr}>${parsed.name}</div>`;
         });
         cardsHTML += '</div>';
     }
@@ -1127,8 +1139,12 @@ function generatePlanFilteringJavaScript() {
             if (!plansSection) return;
             
             plansSection.querySelectorAll('.character-tag-link').forEach(link => {
-                const tag = link.textContent;
-                if (selectedPlanTags.has(tag)) {
+                const onclickAttr = link.getAttribute('onclick');
+                const tagMatch = onclickAttr.match(/togglePlanTag\\('(.+?)'\\)/);
+                const fullTag = tagMatch ? tagMatch[1] : link.textContent;
+                const strippedTag = stripHiddenPrefix(fullTag);
+                
+                if (selectedPlanTags.has(strippedTag)) {
                     link.classList.add('selected');
                 } else {
                     link.classList.remove('selected');

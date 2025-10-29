@@ -216,7 +216,7 @@ function createOverviewLinkElement(link) {
         </div>
         <div class="overview-link-inputs">
             <div class="overview-link-field">
-                <label>Label:</label>
+                <label></label>
                 <input type="text" 
                        class="link-label-input" 
                        value="${escapeHtml(link.label)}" 
@@ -224,7 +224,7 @@ function createOverviewLinkElement(link) {
                        maxlength="20">
             </div>
             <div class="overview-link-field">
-                <label>URL:</label>
+                <label></label>
                 <div class="url-color-row">
                     <input type="text" 
                            class="link-url-input" 
@@ -656,7 +656,7 @@ function createCustomNavLinkElement(link) {
         </div>
         <div class="overview-link-inputs">
             <div class="overview-link-field">
-                <label>Label:</label>
+                <label></label>
                 <input type="text" 
                        class="link-label-input" 
                        value="${escapeHtml(link.label)}" 
@@ -664,7 +664,7 @@ function createCustomNavLinkElement(link) {
                        maxlength="20">
             </div>
             <div class="overview-link-field">
-                <label>URL:</label>
+                <label></label>
                 <div class="url-color-row">
                     <input type="text" 
                            class="link-url-input" 

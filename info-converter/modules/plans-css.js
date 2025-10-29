@@ -207,6 +207,7 @@ function generatePlansCSS(colors, fonts, appearance) {
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
             overflow: hidden;
             max-height: 4.5em;
         }

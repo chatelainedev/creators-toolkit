@@ -1,7 +1,154 @@
 // Generate container-specific styles for main containers (world items)
-function generateContainerStyles(containerStyle, colors) {
-    const categoryColors = colors;
+// Container style definitions (affects main world item containers)
+const containerStyles = {
+    'left-border': {
+        name: 'Left Border',
+        description: 'Colored left border, different colors per category'
+    },
+    'outlined': {
+        name: 'Outlined',
+        description: 'Border around entire container, different colors per category'
+    },
+    'cards': {
+        name: 'Cards',
+        description: 'Drop shadows with thick top borders, different colors per category'
+    },
+    'solid-bg': {
+        name: 'Solid Background',
+        description: 'Subtle solid color backgrounds with sharp corners'
+    },
+    'outlined-bg': {
+        name: 'Outlined Background',
+        description: 'Subtle solid color backgrounds with matching outlines and rounded corners'
+    },
+    'boxed': {
+        name: 'Boxed',
+        description: 'Clean boxes with subtle shadows and rounded corners'
+    },
+    'tabs': {
+        name: 'Tabs', 
+        description: 'File folder style with colored tabs at the top'
+    },
+    'rounded': {
+        name: 'Rounded',
+        description: 'Modern rounded design with soft shadows and category accents'
+    },
+    'kawaii': {
+        name: 'Kawaii',
+        description: 'Adorable pastel containers with rounded corners, soft shadows, and cute emoji accents'
+    },
+    'candyPop': {
+        name: 'Candy Pop',
+        description: 'Sweet candy-colored containers with bubbly borders and playful gradients'
+    },
+    'magicalGirl': {
+        name: 'Magical Girl',
+        description: 'Sparkly containers with star decorations, gradient borders, and magical shimmer effects'
+    },
+    'industrial': {
+        name: 'Industrial',
+        description: 'Just background color differences and colored category headers'
+    },
+    'wuxia': {
+        name: 'Wuxia',
+        description: 'Refined containers with subtle gradients, traditional patterns, and jade-colored category accents'
+    },
+    'playersHandbook': {
+        name: 'Player\'s Handbook',
+        description: 'Ornate D&D handbook entries with burgundy borders, corner decorations, and illuminated category headers'
+    },
+    'adventurersTome': {
+        name: 'Adventurer\'s Tome',
+        description: ''
+    },
+    'horrific': {
+        name: 'Horrific',
+        description: 'Cursed relics with occult symbols and blood-red seals'
+    },
+    'parchment': {
+        name: 'Parchment&Quill',
+        description: 'Elegant aged parchment documents with ink accents and regency styling'
+    },
+    'minimal': {
+        name: 'Minimal',
+        description: 'Just background color differences and colored category headers'
+    }
+};
 
+// Subcontainer style definitions (affects info sections within world items)
+const subcontainerStyles = {
+    'soft-bg': {
+        name: 'Soft Background',
+        description: 'Light background with subtle borders'
+    },
+    'outlined': {
+        name: 'Outlined',
+        description: 'Alternating solid and dashed borders'
+    },
+    'pills': {
+        name: 'Pills',
+        description: 'Rounded sections with shadows'
+    },
+    'stripes': {
+        name: 'Stripes',
+        description: 'Alternating colors with thick left borders'
+    },
+    'boxed': {
+        name: 'Boxed',
+        description: 'Simple contained sections with subtle borders'
+    },
+    'headers': {
+        name: 'Headers',
+        description: 'Clean section headers with colored backgrounds'
+    },
+    'rounded': {
+        name: 'Rounded',
+        description: 'Soft rounded sections to match rounded containers'
+    },
+    'kawaii': {
+        name: 'Kawaii',
+        description: 'Soft pastel info sections with rounded bubbles and gentle shadows'
+    },
+    'candyPop': {
+        name: 'Candy Pop', 
+        description: 'Sweet candy-themed sections with colorful borders and bubbly styling'
+    },
+    'magicalGirl': {
+        name: 'Magical Girl',
+        description: 'Enchanted info sections with sparkle effects and magical gradient backgrounds'
+    },
+    'industrial': {
+        name: 'Industrial',
+        description: 'Hard edges with a clipped corner, thick left border'
+    },
+    'wuxia': {
+        name: 'Wuxia',
+        description: 'Elegant sections with scholarly patterns and refined jade-tinted borders'
+    },
+    'playersHandbook': {
+        name: 'Player\'s Handbook',
+        description: 'Medieval manuscript sections with corner flourishes, illuminated headers, and parchment textures'
+    },
+    'adventurersTome': {
+        name: 'Adventurer\'s Tome',
+        description: ''
+    },
+    'horrific': {
+        name: 'Horrific', 
+        description: 'Forbidden scrolls with ancient parchment texture and wax seals'
+    },
+    'parchment': {
+        name: 'Parchment&Quill',
+        description: 'Refined letter sections with quill pen flourishes and watermark textures'
+    },
+    'minimal': {
+        name: 'Minimal',
+        description: 'Clean text with dotted separators'
+    }
+
+};
+
+function generateContainerStyles(containerStyle, colors) {
     switch (containerStyle) {
         case 'left-border':
             return `
@@ -14,34 +161,37 @@ function generateContainerStyles(containerStyle, colors) {
 
                 /* Different border colors for each category */
                 .world-item.general { 
-                    border-left-color: ${categoryColors.general};
+                    border-left-color: ${colors.general};
                 }
                 .world-item.locations { 
-                    border-left-color: ${categoryColors.locations};
+                    border-left-color: ${colors.locations};
                 }
                 .world-item.factions { 
-                    border-left-color: ${categoryColors.factions};
+                    border-left-color: ${colors.factions};
                 }
                 .world-item.concepts { 
-                    border-left-color: ${categoryColors.concepts};
+                    border-left-color: ${colors.concepts};
                 }
                 .world-item.events { 
-                    border-left-color: ${categoryColors.events};
+                    border-left-color: ${colors.events};
                 }
                 .world-item.creatures { 
-                    border-left-color: ${categoryColors.creatures};
+                    border-left-color: ${colors.creatures};
                 }
                 .world-item.plants { 
-                    border-left-color: ${categoryColors.plants};
+                    border-left-color: ${colors.plants};
                 }
                 .world-item.items { 
-                    border-left-color: ${categoryColors.items};
+                    border-left-color: ${colors.items};
                 }
                 .world-item.culture { 
-                    border-left-color: ${categoryColors.culture};
+                    border-left-color: ${colors.culture};
                 }
                 .world-item.cultivation { 
-                    border-left-color: ${categoryColors.cultivation};
+                    border-left-color: ${colors.cultivation};
+                }
+                .world-item.magic { 
+                    border-left-color: ${colors.magic};
                 }`;
 
         case 'outlined':
@@ -54,35 +204,37 @@ function generateContainerStyles(containerStyle, colors) {
                 .world-item .world-item-content .item-name .image-indicator { background: ${colors.linkColor} !important; }
 
                 .world-item.general { 
-                    border-color: ${categoryColors.general};
+                    border-color: ${colors.general};
                 }
-
                 .world-item.locations { 
-                    border-color: ${categoryColors.locations};
+                    border-color: ${colors.locations};
                 }
                 .world-item.factions { 
-                    border-color: ${categoryColors.factions};
+                    border-color: ${colors.factions};
                 }
                 .world-item.concepts { 
-                    border-color: ${categoryColors.concepts};
+                    border-color: ${colors.concepts};
                 }
                 .world-item.events { 
-                    border-color: ${categoryColors.events};
+                    border-color: ${colors.events};
                 }
                 .world-item.creatures { 
-                    border-color: ${categoryColors.creatures};
+                    border-color: ${colors.creatures};
                 }
                 .world-item.plants { 
-                    border-color: ${categoryColors.plants};
+                    border-color: ${colors.plants};
                 }
                 .world-item.items { 
-                    border-color: ${categoryColors.items};
+                    border-color: ${colors.items};
                 }
                 .world-item.culture { 
-                    border-color: ${categoryColors.culture};
+                    border-color: ${colors.culture};
                 }
                 .world-item.cultivation { 
-                    border-color: ${categoryColors.cultivation};
+                    border-color: ${colors.cultivation};
+                }
+                .world-item.magic { 
+                    border-color: ${colors.magic};
                 }`;
 
         case 'cards':
@@ -97,34 +249,37 @@ function generateContainerStyles(containerStyle, colors) {
                 .world-item .world-item-content .item-name .image-indicator { background: ${colors.statusCanon} !important; }
 
                 .world-item.general { 
-                    border-top-color: ${categoryColors.general};
+                    border-top-color: ${colors.general};
                 }
                 .world-item.locations { 
-                    border-top-color: ${categoryColors.locations};
+                    border-top-color: ${colors.locations};
                 }
                 .world-item.factions { 
-                    border-top-color: ${categoryColors.factions};
+                    border-top-color: ${colors.factions};
                 }
                 .world-item.concepts { 
-                    border-top-color: ${categoryColors.concepts};
+                    border-top-color: ${colors.concepts};
                 }
                 .world-item.events { 
-                    border-top-color: ${categoryColors.events};
+                    border-top-color: ${colors.events};
                 }
                 .world-item.creatures { 
-                    border-top-color: ${categoryColors.creatures};
+                    border-top-color: ${colors.creatures};
                 }
                 .world-item.plants { 
-                    border-top-color: ${categoryColors.plants};
+                    border-top-color: ${colors.plants};
                 }
                 .world-item.items { 
-                    border-top-color: ${categoryColors.items};
+                    border-top-color: ${colors.items};
                 }
                 .world-item.culture { 
-                    border-top-color: ${categoryColors.culture};
+                    border-top-color: ${colors.culture};
                 }
                 .world-item.cultivation { 
-                    border-top-color: ${categoryColors.cultivation};
+                    border-top-color: ${colors.cultivation};
+                }
+                .world-item.magic { 
+                    border-top-color: ${colors.magic};
                 }`;
 
         case 'solid-bg':
@@ -139,7 +294,6 @@ function generateContainerStyles(containerStyle, colors) {
                 .world-item.general { 
                     background: ${colors.general};
                 }
-
                 .world-item.locations { 
                     background: ${colors.locations};
                 }
@@ -166,6 +320,9 @@ function generateContainerStyles(containerStyle, colors) {
                 }
                 .world-item.cultivation { 
                     background: ${colors.cultivation};
+                }
+                .world-item.magic { 
+                    background: ${colors.magic};
                 }`;
 
         case 'outlined-bg':
@@ -179,43 +336,47 @@ function generateContainerStyles(containerStyle, colors) {
 
                 .world-item.general { 
                     background: ${colors.general};
-                    border-color: ${categoryColors.general};
+                    border-color: ${colors.general};
                 }
                 .world-item.locations { 
                     background: ${colors.locations};
-                    border-color: ${categoryColors.locations};
+                    border-color: ${colors.locations};
                 }
                 .world-item.factions { 
                     background: ${colors.factions};
-                    border-color: ${categoryColors.factions};
+                    border-color: ${colors.factions};
                 }
                 .world-item.concepts { 
                     background: ${colors.concepts};
-                    border-color: ${categoryColors.concepts};
+                    border-color: ${colors.concepts};
                 }
                 .world-item.events { 
                     background: ${colors.events};
-                    border-color: ${categoryColors.events};
+                    border-color: ${colors.events};
                 }
                 .world-item.creatures { 
                     background: ${colors.creatures};
-                    border-color: ${categoryColors.creatures};
+                    border-color: ${colors.creatures};
                 }
                 .world-item.plants { 
                     background: ${colors.plants};
-                    border-color: ${categoryColors.plants};
+                    border-color: ${colors.plants};
                 }
                 .world-item.items { 
                     background: ${colors.items};
-                    border-color: ${categoryColors.items};
+                    border-color: ${colors.items};
                 }
                 .world-item.culture { 
                     background: ${colors.culture};
-                    border-color: ${categoryColors.culture};
+                    border-color: ${colors.culture};
                 }
                 .world-item.cultivation { 
                     background: ${colors.cultivation};
-                    border-color: ${categoryColors.cultivation};
+                    border-color: ${colors.cultivation};
+                }
+                .world-item.magic { 
+                    background: ${colors.magic};
+                    border-color: ${colors.magic};
                 }`;
 
         case 'boxed':
@@ -239,16 +400,17 @@ function generateContainerStyles(containerStyle, colors) {
                     border-radius: 0 8px 0 8px;
                 }
 
-                .world-item.general::before { background: ${categoryColors.general}; }
-                .world-item.locations::before { background: ${categoryColors.locations}; }
-                .world-item.factions::before { background: ${categoryColors.factions}; }
-                .world-item.concepts::before { background: ${categoryColors.concepts}; }
-                .world-item.events::before { background: ${categoryColors.events}; }
-                .world-item.creatures::before { background: ${categoryColors.creatures}; }
-                .world-item.plants::before { background: ${categoryColors.plants}; }
-                .world-item.items::before { background: ${categoryColors.items}; }
-                .world-item.culture::before { background: ${categoryColors.culture}; }
-                .world-item.cultivation::before { background: ${categoryColors.cultivation}; }`;
+                .world-item.general::before { background: ${colors.general}; }
+                .world-item.locations::before { background: ${colors.locations}; }
+                .world-item.factions::before { background: ${colors.factions}; }
+                .world-item.concepts::before { background: ${colors.concepts}; }
+                .world-item.events::before { background: ${colors.events}; }
+                .world-item.creatures::before { background: ${colors.creatures}; }
+                .world-item.plants::before { background: ${colors.plants}; }
+                .world-item.items::before { background: ${colors.items}; }
+                .world-item.culture::before { background: ${colors.culture}; }
+                .world-item.cultivation::before { background: ${colors.cultivation}; }
+                .world-item.magic::before { background: ${colors.magic}; }`;
 
         case 'tabs':
             return `
@@ -273,16 +435,17 @@ function generateContainerStyles(containerStyle, colors) {
                     border-bottom: none;
                 }
 
-                .world-item.general::before { background: ${categoryColors.general}; }
-                .world-item.locations::before { background: ${categoryColors.locations}; }
-                .world-item.factions::before { background: ${categoryColors.factions}; }
-                .world-item.concepts::before { background: ${categoryColors.concepts}; }
-                .world-item.events::before { background: ${categoryColors.events}; }
-                .world-item.creatures::before { background: ${categoryColors.creatures}; }
-                .world-item.plants::before { background: ${categoryColors.plants}; }
-                .world-item.items::before { background: ${categoryColors.items}; }
-                .world-item.culture::before { background: ${categoryColors.culture}; }
-                .world-item.cultivation::before { background: ${categoryColors.cultivation}; }`;
+                .world-item.general::before { background: ${colors.general}; }
+                .world-item.locations::before { background: ${colors.locations}; }
+                .world-item.factions::before { background: ${colors.factions}; }
+                .world-item.concepts::before { background: ${colors.concepts}; }
+                .world-item.events::before { background: ${colors.events}; }
+                .world-item.creatures::before { background: ${colors.creatures}; }
+                .world-item.plants::before { background: ${colors.plants}; }
+                .world-item.items::before { background: ${colors.items}; }
+                .world-item.culture::before { background: ${colors.culture}; }
+                .world-item.cultivation::before { background: ${colors.cultivation}; }
+                .world-item.magic::before { background: ${colors.magic}; }`;
 
         case 'rounded':
             return `
@@ -307,16 +470,17 @@ function generateContainerStyles(containerStyle, colors) {
                     pointer-events: none;
                 }
 
-                .world-item.general::before { background: linear-gradient(135deg, ${categoryColors.general} 0%, transparent 60%); }
-                .world-item.locations::before { background: linear-gradient(135deg, ${categoryColors.locations} 0%, transparent 60%); }
-                .world-item.factions::before { background: linear-gradient(135deg, ${categoryColors.factions} 0%, transparent 60%); }
-                .world-item.concepts::before { background: linear-gradient(135deg, ${categoryColors.concepts} 0%, transparent 60%); }
-                .world-item.events::before { background: linear-gradient(135deg, ${categoryColors.events} 0%, transparent 60%); }
-                .world-item.creatures::before { background: linear-gradient(135deg, ${categoryColors.creatures} 0%, transparent 60%); }
-                .world-item.plants::before { background: linear-gradient(135deg, ${categoryColors.plants} 0%, transparent 60%); }
-                .world-item.items::before { background: linear-gradient(135deg, ${categoryColors.items} 0%, transparent 60%); }
-                .world-item.culture::before { background: linear-gradient(135deg, ${categoryColors.culture} 0%, transparent 60%); }
-                .world-item.cultivation::before { background: linear-gradient(135deg, ${categoryColors.cultivation} 0%, transparent 60%); }
+                .world-item.general::before { background: linear-gradient(135deg, ${colors.general} 0%, transparent 60%); }
+                .world-item.locations::before { background: linear-gradient(135deg, ${colors.locations} 0%, transparent 60%); }
+                .world-item.factions::before { background: linear-gradient(135deg, ${colors.factions} 0%, transparent 60%); }
+                .world-item.concepts::before { background: linear-gradient(135deg, ${colors.concepts} 0%, transparent 60%); }
+                .world-item.events::before { background: linear-gradient(135deg, ${colors.events} 0%, transparent 60%); }
+                .world-item.creatures::before { background: linear-gradient(135deg, ${colors.creatures} 0%, transparent 60%); }
+                .world-item.plants::before { background: linear-gradient(135deg, ${colors.plants} 0%, transparent 60%); }
+                .world-item.items::before { background: linear-gradient(135deg, ${colors.items} 0%, transparent 60%); }
+                .world-item.culture::before { background: linear-gradient(135deg, ${colors.culture} 0%, transparent 60%); }
+                .world-item.cultivation::before { background: linear-gradient(135deg, ${colors.cultivation} 0%, transparent 60%); }
+                .world-item.magic::before { background: linear-gradient(135deg, ${colors.magic} 0%, transparent 60%); }
 
                 /* Content positioning */
                 .world-item-content {
@@ -352,18 +516,19 @@ function generateContainerStyles(containerStyle, colors) {
                 .world-item .world-item-content .item-name .image-indicator { background: ${colors.kawaiiPink} !important; }
 
                 .world-item.general::before { content: "\\f005"; color: ${colors.general}; } 
-                .world-item.locations::before { content: "\\f015"; color: ${colors.locations}; } /* home */
-                .world-item.factions::before { content: "\\f0c0"; color: ${colors.factions}; } /* users */
-                .world-item.concepts::before { content: "\\f0eb"; color: ${colors.concepts}; } /* lightbulb */
-                .world-item.events::before { content: "\\f005"; color: ${colors.events}; } /* star */
-                .world-item.creatures::before { content: "\\f1b0"; color: ${colors.creatures}; } /* paw */
-                .world-item.plants::before { content: "\\f06c"; color: ${colors.plants}; } /* leaf */
-                .world-item.items::before { content: "\\f3a5"; color: ${colors.items}; } /* gem */
-                .world-item.culture::before { content: "\\f630"; color: ${colors.culture}; } /* theater-masks */
-                .world-item.cultivation::before { content: "\\f0d0"; color: ${colors.cultivation}; } /* magic */
+                .world-item.locations::before { content: "\\f015"; color: ${colors.locations}; }
+                .world-item.factions::before { content: "\\f0c0"; color: ${colors.factions}; }
+                .world-item.concepts::before { content: "\\f0eb"; color: ${colors.concepts}; }
+                .world-item.events::before { content: "\\f005"; color: ${colors.events}; }
+                .world-item.creatures::before { content: "\\f1b0"; color: ${colors.creatures}; }
+                .world-item.plants::before { content: "\\f06c"; color: ${colors.plants}; }
+                .world-item.items::before { content: "\\f3a5"; color: ${colors.items}; }
+                .world-item.culture::before { content: "\\f630"; color: ${colors.culture}; }
+                .world-item.cultivation::before { content: "\\f0d0"; color: ${colors.cultivation}; }
+                .world-item.magic::before { content: "\\f0d0"; color: ${colors.magic}; }
 
                 /* Soft colored borders */
-                .world-item.locations { border-color: ${colors.locations}66; }
+                .world-item.general { border-color: ${colors.general}66; }
                 .world-item.locations { border-color: ${colors.locations}66; }
                 .world-item.factions { border-color: ${colors.factions}66; }
                 .world-item.concepts { border-color: ${colors.concepts}66; }
@@ -372,7 +537,8 @@ function generateContainerStyles(containerStyle, colors) {
                 .world-item.plants { border-color: ${colors.plants}66; }
                 .world-item.items { border-color: ${colors.items}66; }
                 .world-item.culture { border-color: ${colors.culture}66; }
-                .world-item.cultivation { border-color: ${colors.cultivation}66; }`;
+                .world-item.cultivation { border-color: ${colors.cultivation}66; }
+                .world-item.magic { border-color: ${colors.magic}66; }`;
 
         case 'candyPop':
             return `
@@ -432,6 +598,10 @@ function generateContainerStyles(containerStyle, colors) {
                 .world-item.cultivation { 
                     border-color: ${colors.cultivation};
                     background-image: radial-gradient(circle at 20% 30%, ${colors.cultivation}20 0%, transparent 50%);
+                }
+                .world-item.magic { 
+                    border-color: ${colors.magic};
+                    background-image: radial-gradient(circle at 20% 30%, ${colors.magic}20 0%, transparent 50%);
                 }`;
 
         case 'magicalGirl':
@@ -463,15 +633,16 @@ function generateContainerStyles(containerStyle, colors) {
                 .world-item .world-item-content .item-name .image-indicator { background: ${colors.kawaiiGold} !important; }
 
                 .world-item.general::after { content: "\\f005"; color: ${colors.general}; }
-                .world-item.locations::after { content: "\\f005"; color: ${colors.locations}; } /* star */
-                .world-item.factions::after { content: "\\f0d0"; color: ${colors.factions}; } /* magic */
-                .world-item.concepts::after { content: "\\f005"; color: ${colors.concepts}; } /* star */
-                .world-item.events::after { content: "\\f0d0"; color: ${colors.events}; } /* magic */
-                .world-item.creatures::after { content: "\\f005"; color: ${colors.creatures}; } /* star */
-                .world-item.plants::after { content: "\\f0d0"; color: ${colors.plants}; } /* magic */
-                .world-item.items::after { content: "\\f3a5"; color: ${colors.items}; } /* gem */
-                .world-item.culture::after { content: "\\f005"; color: ${colors.culture}; } /* star */
-                .world-item.cultivation::after { content: "\\f0d0"; color: ${colors.cultivation}; } /* magic */
+                .world-item.locations::after { content: "\\f005"; color: ${colors.locations}; }
+                .world-item.factions::after { content: "\\f0d0"; color: ${colors.factions}; }
+                .world-item.concepts::after { content: "\\f005"; color: ${colors.concepts}; }
+                .world-item.events::after { content: "\\f0d0"; color: ${colors.events}; }
+                .world-item.creatures::after { content: "\\f005"; color: ${colors.creatures}; }
+                .world-item.plants::after { content: "\\f0d0"; color: ${colors.plants}; }
+                .world-item.items::after { content: "\\f3a5"; color: ${colors.items}; }
+                .world-item.culture::after { content: "\\f005"; color: ${colors.culture}; }
+                .world-item.cultivation::after { content: "\\f0d0"; color: ${colors.cultivation}; }
+                .world-item.magic::after { content: "\\f0d0"; color: ${colors.magic}; }
 
                 /* Subtle magical border glow */
                 .world-item.general { border-color: ${colors.general}80; }
@@ -483,7 +654,8 @@ function generateContainerStyles(containerStyle, colors) {
                 .world-item.plants { border-color: ${colors.plants}80; }
                 .world-item.items { border-color: ${colors.items}80; }
                 .world-item.culture { border-color: ${colors.culture}80; }
-                .world-item.cultivation { border-color: ${colors.cultivation}80; }`;
+                .world-item.cultivation { border-color: ${colors.cultivation}80; }
+                .world-item.magic { border-color: ${colors.magic}80; }`;
 
         case 'industrial':
             return `
@@ -492,42 +664,45 @@ function generateContainerStyles(containerStyle, colors) {
                     border-radius: 0 !important;
                     border: 1px solid ${colors.bannerBorder};
                     background: ${colors.containerBg};
-                    overflow: hidden; /* Ensures header fits cleanly */
+                    overflow: hidden;
                     box-shadow: none;
                 }
 
                 .world-item .world-item-content .item-name .image-indicator { background: ${colors.statusIdea} !important; }
 
-                /* Apply category colors to the header's left border */
+                /* Apply category colors to the border */
                 .world-item.general { 
-                    border-color: ${categoryColors.general};
+                    border-color: ${colors.general};
                 }
                 .world-item.locations { 
-                    border-color: ${categoryColors.locations};
+                    border-color: ${colors.locations};
                 }
                 .world-item.factions { 
-                    border-color: ${categoryColors.factions};
+                    border-color: ${colors.factions};
                 }
                 .world-item.concepts { 
-                    border-color: ${categoryColors.concepts};
+                    border-color: ${colors.concepts};
                 }
                 .world-item.events { 
-                    border-color: ${categoryColors.events};
+                    border-color: ${colors.events};
                 }
                 .world-item.creatures { 
-                    border-color: ${categoryColors.creatures};
+                    border-color: ${colors.creatures};
                 }
                 .world-item.plants { 
-                    border-color: ${categoryColors.plants};
+                    border-color: ${colors.plants};
                 }
                 .world-item.items { 
-                    border-color: ${categoryColors.items};
+                    border-color: ${colors.items};
                 }
                 .world-item.culture { 
-                    border-color: ${categoryColors.culture};
+                    border-color: ${colors.culture};
                 }
                 .world-item.cultivation { 
-                    border-color: ${categoryColors.cultivation};
+                    border-color: ${colors.cultivation};
+                }
+                .world-item.magic { 
+                    border-color: ${colors.magic};
                 }`;
 
         case 'wuxia':
@@ -595,72 +770,79 @@ function generateContainerStyles(containerStyle, colors) {
 
                 /* Category-specific jade accents */
                 .world-item.general .item-name { 
-                    border-left: 4px solid ${categoryColors.general};
+                    border-left: 4px solid ${colors.general};
                     background: linear-gradient(90deg, 
-                        ${categoryColors.general}08 0%, 
+                        ${colors.general}08 0%, 
                         transparent 100%);
                     padding-left: 25px;
                 }
                 .world-item.locations .item-name { 
-                    border-left: 4px solid ${categoryColors.locations};
+                    border-left: 4px solid ${colors.locations};
                     background: linear-gradient(90deg, 
-                        ${categoryColors.locations}08 0%, 
+                        ${colors.locations}08 0%, 
                         transparent 100%);
                     padding-left: 25px;
                 }
                 .world-item.factions .item-name { 
-                    border-left: 4px solid ${categoryColors.factions};
+                    border-left: 4px solid ${colors.factions};
                     background: linear-gradient(90deg, 
-                        ${categoryColors.factions}08 0%, 
+                        ${colors.factions}08 0%, 
                         transparent 100%);
                     padding-left: 25px;
                 }
                 .world-item.concepts .item-name { 
-                    border-left: 4px solid ${categoryColors.concepts};
+                    border-left: 4px solid ${colors.concepts};
                     background: linear-gradient(90deg, 
-                        ${categoryColors.concepts}08 0%, 
+                        ${colors.concepts}08 0%, 
                         transparent 100%);
                     padding-left: 25px;
                 }
                 .world-item.events .item-name { 
-                    border-left: 4px solid ${categoryColors.events};
+                    border-left: 4px solid ${colors.events};
                     background: linear-gradient(90deg, 
-                        ${categoryColors.events}08 0%, 
+                        ${colors.events}08 0%, 
                         transparent 100%);
                     padding-left: 25px;
                 }
                 .world-item.creatures .item-name { 
-                    border-left: 4px solid ${categoryColors.creatures};
+                    border-left: 4px solid ${colors.creatures};
                     background: linear-gradient(90deg, 
-                        ${categoryColors.creatures}08 0%, 
+                        ${colors.creatures}08 0%, 
                         transparent 100%);
                     padding-left: 25px;
                 }
                 .world-item.plants .item-name { 
-                    border-left: 4px solid ${categoryColors.plants};
+                    border-left: 4px solid ${colors.plants};
                     background: linear-gradient(90deg, 
-                        ${categoryColors.plants}08 0%, 
+                        ${colors.plants}08 0%, 
                         transparent 100%);
                     padding-left: 25px;
                 }
                 .world-item.items .item-name { 
-                    border-left: 4px solid ${categoryColors.items};
+                    border-left: 4px solid ${colors.items};
                     background: linear-gradient(90deg, 
-                        ${categoryColors.items}08 0%, 
+                        ${colors.items}08 0%, 
                         transparent 100%);
                     padding-left: 25px;
                 }
                 .world-item.culture .item-name { 
-                    border-left: 4px solid ${categoryColors.culture};
+                    border-left: 4px solid ${colors.culture};
                     background: linear-gradient(90deg, 
-                        ${categoryColors.culture}08 0%, 
+                        ${colors.culture}08 0%, 
                         transparent 100%);
                     padding-left: 25px;
                 }
                 .world-item.cultivation .item-name { 
-                    border-left: 4px solid ${categoryColors.cultivation};
+                    border-left: 4px solid ${colors.cultivation};
                     background: linear-gradient(90deg, 
-                        ${categoryColors.cultivation}08 0%, 
+                        ${colors.cultivation}08 0%, 
+                        transparent 100%);
+                    padding-left: 25px;
+                }
+                .world-item.magic .item-name { 
+                    border-left: 4px solid ${colors.magic};
+                    background: linear-gradient(90deg, 
+                        ${colors.magic}08 0%, 
                         transparent 100%);
                     padding-left: 25px;
                 }`;
@@ -721,8 +903,8 @@ function generateContainerStyles(containerStyle, colors) {
                 
                 /* Each world item is a simple page in the tome */
                 .world-item {
-                    background: ${colors.navHover}; /* The aged parchment color */
-                    border: 2px solid ${colors.navBg}; /* Simple dark leather border */
+                    background: ${colors.navHover};
+                    border: 2px solid ${colors.navBg};
                     border-radius: 4px;
                     padding: 20px;
                     margin-bottom: 20px;
@@ -745,16 +927,17 @@ function generateContainerStyles(containerStyle, colors) {
                 .world-item .world-item-content .item-name .image-indicator { background: ${colors.kawaiiGold} !important;}
 
                 /* The category color as a simple left border accent */
-                .world-item.general { border-left: 4px solid ${categoryColors.general}; }
-                .world-item.locations { border-left: 4px solid ${categoryColors.locations}; }
-                .world-item.factions { border-left: 4px solid ${categoryColors.factions}; }
-                .world-item.concepts { border-left: 4px solid ${categoryColors.concepts}; }
-                .world-item.events { border-left: 4px solid ${categoryColors.events}; }
-                .world-item.creatures { border-left: 4px solid ${categoryColors.creatures}; }
-                .world-item.plants { border-left: 4px solid ${categoryColors.plants}; }
-                .world-item.items { border-left: 4px solid ${categoryColors.items}; }
-                .world-item.culture { border-left: 4px solid ${categoryColors.culture}; }
-                .world-item.cultivation { border-left: 4px solid ${categoryColors.cultivation}; }
+                .world-item.general { border-left: 4px solid ${colors.general}; }
+                .world-item.locations { border-left: 4px solid ${colors.locations}; }
+                .world-item.factions { border-left: 4px solid ${colors.factions}; }
+                .world-item.concepts { border-left: 4px solid ${colors.concepts}; }
+                .world-item.events { border-left: 4px solid ${colors.events}; }
+                .world-item.creatures { border-left: 4px solid ${colors.creatures}; }
+                .world-item.plants { border-left: 4px solid ${colors.plants}; }
+                .world-item.items { border-left: 4px solid ${colors.items}; }
+                .world-item.culture { border-left: 4px solid ${colors.culture}; }
+                .world-item.cultivation { border-left: 4px solid ${colors.cultivation}; }
+                .world-item.magic { border-left: 4px solid ${colors.magic}; }
             `;
 
         case 'horrific':
@@ -811,152 +994,165 @@ function generateContainerStyles(containerStyle, colors) {
 
                 /* Category-specific cursed seals (dark colored left borders with symbols) */
                 .world-item.general { 
-                    border-left: 6px solid ${categoryColors.general};
+                    border-left: 6px solid ${colors.general};
                 }
-                /* Category-specific cursed seals with FontAwesome icons */
                 .world-item.general::after {
-                    content: "\\f3c5"; /* fas fa-map-marker-alt */
+                    content: "\\f3c5";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
                     top: 15px; left: -12px;
-                    color: ${categoryColors.general};
+                    color: ${colors.general};
                     font-size: 16px;
                     text-shadow: 0 0 8px ${colors.journalAccent}50;
                     z-index: 3;
                 }
 
                 .world-item.locations { 
-                    border-left: 6px solid ${categoryColors.locations};
+                    border-left: 6px solid ${colors.locations};
                 }
-                /* Category-specific cursed seals with FontAwesome icons */
                 .world-item.locations::after {
-                    content: "\\f3c5"; /* fas fa-map-marker-alt */
+                    content: "\\f3c5";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
                     top: 15px; left: -12px;
-                    color: ${categoryColors.locations};
+                    color: ${colors.locations};
                     font-size: 16px;
                     text-shadow: 0 0 8px ${colors.journalAccent}50;
                     z-index: 3;
                 }
 
                 .world-item.factions { 
-                    border-left: 6px solid ${categoryColors.factions};
+                    border-left: 6px solid ${colors.factions};
                 }
                 .world-item.factions::after {
-                    content: "\\f3ed"; /* fas fa-shield-alt */
+                    content: "\\f3ed";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
                     top: 15px; left: -12px;
-                    color: ${categoryColors.factions};
+                    color: ${colors.factions};
                     font-size: 16px;
                     text-shadow: 0 0 8px ${colors.journalAccent}50;
                     z-index: 3;
                 }
 
                 .world-item.concepts { 
-                    border-left: 6px solid ${categoryColors.concepts};
+                    border-left: 6px solid ${colors.concepts};
                 }
                 .world-item.concepts::after {
-                    content: "\\f5dc"; /* fas fa-brain */
+                    content: "\\f5dc";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
                     top: 15px; left: -12px;
-                    color: ${categoryColors.concepts};
+                    color: ${colors.concepts};
                     font-size: 16px;
                     text-shadow: 0 0 8px ${colors.journalAccent}50;
                     z-index: 3;
                 }
 
                 .world-item.events { 
-                    border-left: 6px solid ${categoryColors.events};
+                    border-left: 6px solid ${colors.events};
                 }
                 .world-item.events::after {
-                    content: "\\f017"; /* fas fa-clock */
+                    content: "\\f017";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
                     top: 15px; left: -12px;
-                    color: ${categoryColors.events};
+                    color: ${colors.events};
                     font-size: 16px;
                     text-shadow: 0 0 8px ${colors.journalAccent}50;
                     z-index: 3;
                 }
 
                 .world-item.creatures { 
-                    border-left: 6px solid ${categoryColors.creatures};
+                    border-left: 6px solid ${colors.creatures};
                 }
                 .world-item.creatures::after {
-                    content: "\\f6d5"; /* fas fa-dragon */
+                    content: "\\f6d5";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
                     top: 15px; left: -12px;
-                    color: ${categoryColors.creatures};
+                    color: ${colors.creatures};
                     font-size: 16px;
                     text-shadow: 0 0 8px ${colors.journalAccent}50;
                     z-index: 3;
                 }
 
                 .world-item.plants { 
-                    border-left: 6px solid ${categoryColors.plants};
+                    border-left: 6px solid ${colors.plants};
                 }
                 .world-item.plants::after {
-                    content: "\\f4d8"; /* fas fa-seedling */
+                    content: "\\f4d8";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
                     top: 15px; left: -12px;
-                    color: ${categoryColors.plants};
+                    color: ${colors.plants};
                     font-size: 16px;
                     text-shadow: 0 0 8px ${colors.journalAccent}50;
                     z-index: 3;
                 }
 
                 .world-item.items { 
-                    border-left: 6px solid ${categoryColors.items};
+                    border-left: 6px solid ${colors.items};
                 }
                 .world-item.items::after {
-                    content: "\\f3a5"; /* fas fa-gem */
+                    content: "\\f3a5";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
                     top: 15px; left: -12px;
-                    color: ${categoryColors.items};
+                    color: ${colors.items};
                     font-size: 16px;
                     text-shadow: 0 0 8px ${colors.journalAccent}50;
                     z-index: 3;
                 }
 
                 .world-item.culture { 
-                    border-left: 6px solid ${categoryColors.culture};
+                    border-left: 6px solid ${colors.culture};
                 }
                 .world-item.culture::after {
-                    content: "\\f630"; /* fas fa-theater-masks */
+                    content: "\\f630";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
                     top: 15px; left: -12px;
-                    color: ${categoryColors.culture};
+                    color: ${colors.culture};
                     font-size: 16px;
                     text-shadow: 0 0 8px ${colors.journalAccent}50;
                     z-index: 3;
                 }
 
                 .world-item.cultivation { 
-                    border-left: 6px solid ${categoryColors.cultivation};
+                    border-left: 6px solid ${colors.cultivation};
                 }
                 .world-item.cultivation::after {
-                    content: "\\f0d0"; /* fas fa-magic */
+                    content: "\\f0d0";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
                     top: 15px; left: -12px;
-                    color: ${categoryColors.cultivation};
+                    color: ${colors.cultivation};
+                    font-size: 16px;
+                    text-shadow: 0 0 8px ${colors.journalAccent}50;
+                    z-index: 3;
+                }
+
+                .world-item.magic { 
+                    border-left: 6px solid ${colors.magic};
+                }
+                .world-item.magic::after {
+                    content: "\\f0d0";
+                    font-family: "Font Awesome 5 Free";
+                    font-weight: 900;
+                    position: absolute;
+                    top: 15px; left: -12px;
+                    color: ${colors.magic};
                     font-size: 16px;
                     text-shadow: 0 0 8px ${colors.journalAccent}50;
                     z-index: 3;
@@ -1002,7 +1198,6 @@ function generateContainerStyles(containerStyle, colors) {
                     top: 0; left: 0;
                     width: 100%; height: 100%;
                     background: 
-                        /* Paper fiber lines */
                         repeating-linear-gradient(
                             0deg,
                             transparent,
@@ -1010,7 +1205,6 @@ function generateContainerStyles(containerStyle, colors) {
                             ${colors.bannerBorder}04 12px,
                             ${colors.bannerBorder}04 13px
                         ),
-                        /* Subtle watermark effect */
                         radial-gradient(circle at 85% 15%, 
                             ${colors.softBg}40 0%, 
                             transparent 30%);
@@ -1041,10 +1235,10 @@ function generateContainerStyles(containerStyle, colors) {
 
                 /* Category-specific ink stamp effects */
                 .world-item.general {
-                    border-left: 4px solid ${categoryColors.general};
+                    border-left: 4px solid ${colors.general};
                 }
-                .world-item.locations .item-name::after {
-                    content: "\\f005"; /* fas fa-home */
+                .world-item.general .item-name::after {
+                    content: "\\f005";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
@@ -1055,10 +1249,10 @@ function generateContainerStyles(containerStyle, colors) {
                 }
 
                 .world-item.locations {
-                    border-left: 4px solid ${categoryColors.locations};
+                    border-left: 4px solid ${colors.locations};
                 }
                 .world-item.locations .item-name::after {
-                    content: "\\f015"; /* fas fa-home */
+                    content: "\\f015";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
@@ -1069,10 +1263,10 @@ function generateContainerStyles(containerStyle, colors) {
                 }
 
                 .world-item.factions {
-                    border-left: 4px solid ${categoryColors.factions};
+                    border-left: 4px solid ${colors.factions};
                 }
                 .world-item.factions .item-name::after {
-                    content: "\\f0c0"; /* fas fa-users */
+                    content: "\\f0c0";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
@@ -1081,11 +1275,12 @@ function generateContainerStyles(containerStyle, colors) {
                     opacity: 0.3;
                     font-size: 16px;
                 }
+
                 .world-item.concepts {
-                    border-left: 4px solid ${categoryColors.concepts};
+                    border-left: 4px solid ${colors.concepts};
                 }
                 .world-item.concepts .item-name::after {
-                    content: "\\f0eb"; /* fas fa-lightbulb */
+                    content: "\\f0eb";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
@@ -1096,10 +1291,10 @@ function generateContainerStyles(containerStyle, colors) {
                 }
 
                 .world-item.events {
-                    border-left: 4px solid ${categoryColors.events};
+                    border-left: 4px solid ${colors.events};
                 }
                 .world-item.events .item-name::after {
-                    content: "\\f073"; /* fas fa-calendar-alt */
+                    content: "\\f073";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
@@ -1110,10 +1305,10 @@ function generateContainerStyles(containerStyle, colors) {
                 }
 
                 .world-item.creatures {
-                    border-left: 4px solid ${categoryColors.creatures};
+                    border-left: 4px solid ${colors.creatures};
                 }
                 .world-item.creatures .item-name::after {
-                    content: "\\f1b0"; /* fas fa-paw */
+                    content: "\\f1b0";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
@@ -1124,10 +1319,10 @@ function generateContainerStyles(containerStyle, colors) {
                 }
 
                 .world-item.plants {
-                    border-left: 4px solid ${categoryColors.plants};
+                    border-left: 4px solid ${colors.plants};
                 }
                 .world-item.plants .item-name::after {
-                    content: "\\f06c"; /* fas fa-leaf */
+                    content: "\\f06c";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
@@ -1138,10 +1333,10 @@ function generateContainerStyles(containerStyle, colors) {
                 }
 
                 .world-item.items {
-                    border-left: 4px solid ${categoryColors.items};
+                    border-left: 4px solid ${colors.items};
                 }
                 .world-item.items .item-name::after {
-                    content: "\\f466"; /* fas fa-box */
+                    content: "\\f466";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
@@ -1152,10 +1347,10 @@ function generateContainerStyles(containerStyle, colors) {
                 }
 
                 .world-item.culture {
-                    border-left: 4px solid ${categoryColors.culture};
+                    border-left: 4px solid ${colors.culture};
                 }
                 .world-item.culture .item-name::after {
-                    content: "\\f66f"; /* fas fa-landmark */
+                    content: "\\f66f";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
@@ -1166,10 +1361,24 @@ function generateContainerStyles(containerStyle, colors) {
                 }
 
                 .world-item.cultivation {
-                    border-left: 4px solid ${categoryColors.cultivation};
+                    border-left: 4px solid ${colors.cultivation};
                 }
                 .world-item.cultivation .item-name::after {
-                    content: "\\f005"; /* fas fa-star */
+                    content: "\\f005";
+                    font-family: "Font Awesome 5 Free";
+                    font-weight: 900;
+                    position: absolute;
+                    top: 50%; right: 15px;
+                    transform: translateY(-50%);
+                    opacity: 0.3;
+                    font-size: 16px;
+                }
+
+                .world-item.magic {
+                    border-left: 4px solid ${colors.magic};
+                }
+                .world-item.magic .item-name::after {
+                    content: "\\f0d0";
                     font-family: "Font Awesome 5 Free";
                     font-weight: 900;
                     position: absolute;
@@ -1203,44 +1412,48 @@ function generateContainerStyles(containerStyle, colors) {
                 }
 
                 .world-item.general .item-name { 
-                    background: ${categoryColors.general}22;
-                    border-left: 3px solid ${categoryColors.general};
+                    background: ${colors.general}22;
+                    border-left: 3px solid ${colors.general};
                 }
                 .world-item.locations .item-name { 
-                    background: ${categoryColors.locations}22;
-                    border-left: 3px solid ${categoryColors.locations};
+                    background: ${colors.locations}22;
+                    border-left: 3px solid ${colors.locations};
                 }
                 .world-item.factions .item-name { 
-                    background: ${categoryColors.factions}22;
-                    border-left: 3px solid ${categoryColors.factions};
+                    background: ${colors.factions}22;
+                    border-left: 3px solid ${colors.factions};
                 }
                 .world-item.concepts .item-name { 
-                    background: ${categoryColors.concepts}22;
-                    border-left: 3px solid ${categoryColors.concepts};
+                    background: ${colors.concepts}22;
+                    border-left: 3px solid ${colors.concepts};
                 }
                 .world-item.events .item-name { 
-                    background: ${categoryColors.events}22;
-                    border-left: 3px solid ${categoryColors.events};
+                    background: ${colors.events}22;
+                    border-left: 3px solid ${colors.events};
                 }
                 .world-item.creatures .item-name { 
-                    background: ${categoryColors.creatures}22;
-                    border-left: 3px solid ${categoryColors.creatures};
+                    background: ${colors.creatures}22;
+                    border-left: 3px solid ${colors.creatures};
                 }
                 .world-item.plants .item-name { 
-                    background: ${categoryColors.plants}22;
-                    border-left: 3px solid ${categoryColors.plants};
+                    background: ${colors.plants}22;
+                    border-left: 3px solid ${colors.plants};
                 }
                 .world-item.items .item-name { 
-                    background: ${categoryColors.items}22;
-                    border-left: 3px solid ${categoryColors.items};
+                    background: ${colors.items}22;
+                    border-left: 3px solid ${colors.items};
                 }
                 .world-item.culture .item-name { 
-                    background: ${categoryColors.culture}22;
-                    border-left: 3px solid ${categoryColors.culture};
+                    background: ${colors.culture}22;
+                    border-left: 3px solid ${colors.culture};
                 }
                 .world-item.cultivation .item-name { 
-                    background: ${categoryColors.cultivation}22;
-                    border-left: 3px solid ${categoryColors.cultivation};
+                    background: ${colors.cultivation}22;
+                    border-left: 3px solid ${colors.cultivation};
+                }
+                .world-item.magic .item-name { 
+                    background: ${colors.magic}22;
+                    border-left: 3px solid ${colors.magic};
                 }`;
     }
 }
@@ -2821,4 +3034,4 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
 }
 
 // Make globally available
-export { generateCharacterSubcontainerStyles, generateContainerStyles, generateSubcontainerStyles };
+export { generateCharacterSubcontainerStyles, generateContainerStyles, generateSubcontainerStyles, containerStyles, subcontainerStyles };

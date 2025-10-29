@@ -420,7 +420,8 @@ class MySitesManager {
         }
 
         const userPath = userContext.isGuest ? 'guest' : userContext.userId;
-        const siteUrl = `/projects/${userPath}/${site.projectName}/info.html`;
+        const htmlFilename = site.htmlFilename || 'info.html';
+        const siteUrl = `/projects/${userPath}/${site.projectName}/${htmlFilename}`;
         
         console.log('🏠 Navigating to site:', siteUrl);
         

@@ -267,10 +267,12 @@ function generateGlobalFilterJavaScript() {
                     card.classList.remove('filter-match');
                 });
                 
-                // Show all section headers and grids when clearing
+                // Show all section headers, subsection headers, and grids when clearing
                 const sectionHeaders = document.querySelectorAll('.storyline-section-header');
+                const subsectionHeaders = document.querySelectorAll('.storyline-subsection-header');
                 const sectionGrids = document.querySelectorAll('.storylines-grid');
                 sectionHeaders.forEach(header => header.style.display = '');
+                subsectionHeaders.forEach(header => header.style.display = '');
                 sectionGrids.forEach(grid => grid.style.display = '');
                 
                 return;
@@ -316,24 +318,58 @@ function generateGlobalFilterJavaScript() {
                 }
             });
             
-            // Update section visibility for BOTH views, not just the active one
+            // UPDATED: Handle section AND subsection visibility for BOTH views
             const bothViews = document.querySelectorAll('.storylines-view');
             bothViews.forEach(viewContainer => {
-                const sectionHeaders = viewContainer.querySelectorAll('.storyline-section-header');
-                sectionHeaders.forEach(header => {
-                    // Find the next grid element
-                    const nextGrid = header.nextElementSibling;
+                // First, handle all subsection headers and their grids
+                const subsectionHeaders = viewContainer.querySelectorAll('.storyline-subsection-header');
+                subsectionHeaders.forEach(subsectionHeader => {
+                    const nextGrid = subsectionHeader.nextElementSibling;
                     if (nextGrid && nextGrid.classList.contains('storylines-grid')) {
                         const visibleCards = nextGrid.querySelectorAll('.storyline-card:not(.hidden)');
                         
                         if (visibleCards.length > 0) {
-                            // Show both header and grid
-                            header.style.display = '';
+                            subsectionHeader.style.display = '';
                             nextGrid.style.display = '';
                         } else {
-                            // Hide both header and grid if no visible cards
-                            header.style.display = 'none';
+                            subsectionHeader.style.display = 'none';
                             nextGrid.style.display = 'none';
+                        }
+                    }
+                });
+                
+                // Then, handle section headers - hide only if ALL their content is hidden
+                const sectionHeaders = viewContainer.querySelectorAll('.storyline-section-header');
+                sectionHeaders.forEach(sectionHeader => {
+                    let currentElement = sectionHeader.nextElementSibling;
+                    let hasAnyVisibleContent = false;
+                    
+                    // Check all grids (main section grid + subsection grids) until next section header
+                    while (currentElement && !currentElement.classList.contains('storyline-section-header')) {
+                        if (currentElement.classList.contains('storylines-grid')) {
+                            const visibleCards = currentElement.querySelectorAll('.storyline-card:not(.hidden)');
+                            if (visibleCards.length > 0) {
+                                hasAnyVisibleContent = true;
+                                break;
+                            }
+                        }
+                        currentElement = currentElement.nextElementSibling;
+                    }
+                    
+                    // Show section header if ANY of its grids (main or subsections) have visible cards
+                    if (hasAnyVisibleContent) {
+                        sectionHeader.style.display = '';
+                        // Also ensure the main section grid is visible
+                        const mainGrid = sectionHeader.nextElementSibling;
+                        if (mainGrid && mainGrid.classList.contains('storylines-grid')) {
+                            mainGrid.style.display = '';
+                        }
+                    } else {
+                        sectionHeader.style.display = 'none';
+                        // Also hide the main section grid
+                        const mainGrid = sectionHeader.nextElementSibling;
+                        if (mainGrid && mainGrid.classList.contains('storylines-grid')) {
+                            mainGrid.style.display = 'none';
                         }
                     }
                 });

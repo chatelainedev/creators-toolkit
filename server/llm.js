@@ -114,6 +114,44 @@ async function loadPrompts() {
     };
 }
 
+// Truncate chat history based on provider limits
+async function truncateChatHistory(chatHistory, provider) {
+    const providers = await loadProviders();
+    const providerConfig = providers[provider];
+    
+    if (!providerConfig || !providerConfig.apiLimits) {
+        // No limits configured, return last 20 messages as fallback
+        return chatHistory.slice(-20);
+    }
+    
+    const limits = providerConfig.apiLimits;
+    
+    // First, limit by message count
+    let truncated = chatHistory.slice(-limits.maxChatHistoryMessages);
+    
+    // Then, limit by estimated tokens
+    const estimatedTokens = truncated.reduce((sum, msg) => {
+        return sum + (msg.content.length * limits.estimatedTokensPerChar);
+    }, 0);
+    
+    // If over token limit, remove oldest messages
+    if (estimatedTokens > limits.maxChatHistoryTokens) {
+        while (truncated.length > 0) {
+            const currentTokens = truncated.reduce((sum, msg) => {
+                return sum + (msg.content.length * limits.estimatedTokensPerChar);
+            }, 0);
+            
+            if (currentTokens <= limits.maxChatHistoryTokens) {
+                break;
+            }
+            
+            truncated.shift(); // Remove oldest message
+        }
+    }
+    
+    return truncated;
+}
+
 function getDefaultProviders() {
     return {
         google: {
@@ -1152,6 +1190,95 @@ router.get('/cowriter/quick-prompts', async (req, res) => {
 });
 
 // =============================================================================
+// ACTIVE CHAT MANAGEMENT (for auto-save)
+// =============================================================================
+
+// Save active chat
+router.post('/cowriter/active-chat/save', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'Active chat not available in hosted environment' });
+    }
+
+    try {
+        const { userContext, chatData } = req.body;
+        const validation = validateUserContext(userContext);
+        
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
+        const activeChatPath = getUserCoWriterFolder(userContext, 'active-chat.json');
+        await fs.writeJson(activeChatPath, chatData, { spaces: 2 });
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error saving active chat:', error);
+        res.status(500).json({ error: 'Failed to save active chat' });
+    }
+});
+
+// Load active chat
+router.get('/cowriter/active-chat', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'Active chat not available in hosted environment' });
+    }
+
+    try {
+        const { userContext } = req.query;
+        
+        if (!userContext) {
+            return res.status(400).json({ error: 'User context required' });
+        }
+
+        const parsedUserContext = JSON.parse(userContext);
+        const validation = validateUserContext(parsedUserContext);
+        
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
+        const activeChatPath = getUserCoWriterFolder(parsedUserContext, 'active-chat.json');
+        
+        if (await fs.pathExists(activeChatPath)) {
+            const chatData = await fs.readJson(activeChatPath);
+            res.json({ success: true, chatData });
+        } else {
+            res.json({ success: true, chatData: null });
+        }
+    } catch (error) {
+        console.error('Error loading active chat:', error);
+        res.status(500).json({ error: 'Failed to load active chat' });
+    }
+});
+
+// Clear active chat
+router.post('/cowriter/active-chat/clear', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'Active chat not available in hosted environment' });
+    }
+
+    try {
+        const { userContext } = req.body;
+        const validation = validateUserContext(userContext);
+        
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
+        const activeChatPath = getUserCoWriterFolder(userContext, 'active-chat.json');
+        
+        if (await fs.pathExists(activeChatPath)) {
+            await fs.remove(activeChatPath);
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error clearing active chat:', error);
+        res.status(500).json({ error: 'Failed to clear active chat' });
+    }
+});
+
+// =============================================================================
 // DEBUG ENDPOINTS
 // =============================================================================
 
@@ -1358,14 +1485,17 @@ async function assemblePrompt(userMessage, chatHistory, settings, coWriterManage
         fullPrompt += `<world context>Context about the setting and characters: ${settings.worldContext.trim()}</world context>\n\n`;
     }
     
-    // 6. Chat History (if provided) - unchanged
+    // 6. Chat History (if provided) - truncated based on provider limits
     if (chatHistory && chatHistory.length > 0) {
-        fullPrompt += '<chat history>Previous conversation:\n';
-        chatHistory.forEach(msg => {
-            const role = msg.type === 'user' ? 'User' : 'Assistant';
-            fullPrompt += `${role}: ${msg.content}\n`;
-        });
-        fullPrompt += '</chat history>\n\n';
+        const truncatedHistory = await truncateChatHistory(chatHistory, settings.provider);
+        if (truncatedHistory.length > 0) {
+            fullPrompt += '<chat history>Previous conversation:\n';
+            truncatedHistory.forEach(msg => {
+                const role = msg.type === 'user' ? 'User' : 'Assistant';
+                fullPrompt += `${role}: ${msg.content}\n`;
+            });
+            fullPrompt += '</chat history>\n\n';
+        }
     }
     
     // 7. Current User Request - unchanged
@@ -1433,3 +1563,5 @@ async function assemblePrompt(userMessage, chatHistory, settings, coWriterManage
 }
 
 module.exports = router;
+module.exports.loadApiKey = loadApiKey;
+module.exports.sendToLLM = sendToLLM;

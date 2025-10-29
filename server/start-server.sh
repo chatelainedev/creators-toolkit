@@ -11,8 +11,12 @@ echo "Installing core dependencies..."
 npm install express fs-extra cors --silent
 echo "Installing file upload support..."
 npm install multer --silent
+echo "Installing image processing support..."
+npm install sharp --silent
 echo "Installing password security..."
 npm install bcrypt --silent
+echo "Installing PNG metadata support..."
+npm install png-chunk-text png-chunks-extract png-chunks-encode --silent
 echo "Installing ZIP archive support..."
 npm install archiver --silent
 echo "Installing any remaining dependencies..."

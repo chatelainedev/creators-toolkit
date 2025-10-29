@@ -357,6 +357,7 @@ class RPProjectLoader {
             const result = await response.json();
             
             if (result.success) {
+                showToast('success', 'Data imported successfully!');
                 console.log(`✅ Successfully loaded ${universe}/${storyFilename}`);
                 
                 // Use the existing parseImportedHTML function
@@ -372,6 +373,7 @@ class RPProjectLoader {
             
         } catch (error) {
             console.error('❌ Error loading project:', error);
+            showToast('error', 'Error importing data');
             alert(`Failed to load project: ${error.message}`);
         }
     }

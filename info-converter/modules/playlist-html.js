@@ -131,7 +131,15 @@ function generatePlaylistNavigation(uniqueTags) {
                 <div class="storylines-tag-links">`;
     
     uniqueTags.forEach(tag => {
-        navHTML += `<span class="storylines-tag-link" onclick="togglePlaylistTag('${tag}')">${tag}</span>`;
+        const parsed = parseTagWithColor(tag);
+        let styleAttr = '';
+        if (parsed.bgColor) {
+            const textColor = parsed.textColor || getContrastingTextColor(parsed.bgColor);
+            const hoverColor = parsed.hoverColor || parsed.bgColor;
+            styleAttr = ` style="background-color: ${parsed.bgColor}; color: ${textColor}; --hover-color: ${hoverColor};"`;
+        }
+        const escapedTag = tag.replace(/\\\\/g, '\\\\\\\\').replace(/'/g, "\\\\'");
+        navHTML += `<span class="storylines-tag-link" onclick="togglePlaylistTag('${escapedTag}')"${styleAttr}>${parsed.name}</span>`;
     });
     
     navHTML += `
@@ -203,8 +211,12 @@ function generatePlaylistJavaScript() {
             if (navContainer) {
                 const tagLinks = navContainer.querySelectorAll('.storylines-tag-link');
                 tagLinks.forEach(link => {
-                    const tag = link.textContent;
-                    if (selectedPlaylistTags.has(tag)) {
+                    const onclickAttr = link.getAttribute('onclick');
+                    const tagMatch = onclickAttr.match(/togglePlaylistTag\\('(.+?)'\\)/);
+                    const fullTag = tagMatch ? tagMatch[1] : link.textContent;
+                    const strippedTag = stripHiddenPrefix(fullTag);
+                    
+                    if (selectedPlaylistTags.has(strippedTag)) {
                         link.classList.add('selected');
                     } else {
                         link.classList.remove('selected');

@@ -1,0 +1,424 @@
+/* ============================================
+   RP ARCHIVER - CONTENT STYLES
+   Dynamic Entries, Character Management, Specific Elements
+   ============================================ */
+
+/* ============================================
+   CHARACTER MANAGEMENT
+   ============================================ */
+.character-info {
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    background-color: var(--bg-tertiary);
+}
+
+.character-main-row {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.character-name-section {
+    flex: 1;
+    min-width: 0;
+}
+
+.character-name-section label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.character-name-section input {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.character-color-section {
+    flex-shrink: 0;
+    width: 60px;
+}
+
+.character-color-section label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.character-color-section input[type="color"] {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+/* Saved Colors Grid */
+.saved-colors {
+    display: grid;
+    grid-template-columns: repeat(12, 16px);
+    gap: var(--space-xs);
+    padding: var(--space-sm);
+    background-color: var(--bg-quaternary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-secondary);
+    margin-top: var(--space-xs);
+}
+
+.saved-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid var(--border-secondary);
+    transition: transform var(--transition-fast);
+}
+
+.saved-color:hover {
+    transform: scale(1.2);
+}
+
+/* ============================================
+   DYNAMIC CONTAINER ENTRIES
+   ============================================ */
+
+/* Base styles for all dynamic entries */
+.track-entry,
+.track-heading,
+.image-entry,
+.comment-entry,
+.comment-heading,
+.part-entry,
+.nav-entry {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    align-items: center;
+    position: relative;
+    cursor: move;
+    transition: all var(--transition-normal);
+    border-radius: var(--radius-sm);
+    padding: 10px 10px 0px 10px;
+    margin: var(--space-xs) 0;
+    background-color: var(--bg-tertiary);
+    border: 1px solid transparent;
+}
+
+.track-entry:hover,
+.track-heading:hover,
+.image-entry:hover,
+.comment-entry:hover,
+.comment-heading:hover,
+.part-entry:hover,
+.nav-entry:hover {
+    background-color: var(--bg-hover);
+    border-color: var(--border-secondary);
+}
+
+.track-entry input,
+.track-heading input,
+.image-entry input,
+.comment-entry input,
+.comment-heading input,
+.part-entry input,
+.nav-entry input {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* Specific width adjustments */
+.track-entry,
+.track-heading,
+.comment-entry,
+.comment-heading,
+.nav-entry {
+    width: 100% !important;
+}
+
+.comment-text {
+    margin-bottom: 0 !important;
+}
+
+/* ============================================
+   DRAG AND DROP STATES
+   ============================================ */
+.track-entry.dragging,
+.track-heading.dragging,
+.image-entry.dragging,
+.comment-entry.dragging,
+.comment-heading.dragging,
+.part-entry.dragging {
+    opacity: 0.5;
+    transform: rotate(1deg);
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+}
+
+.track-entry.drag-over,
+.track-heading.drag-over,
+.image-entry.drag-over,
+.comment-entry.drag-over,
+.comment-heading.drag-over,
+.part-entry.drag-over {
+    border-top: 3px solid var(--accent-primary);
+    margin-top: var(--space-sm);
+}
+
+#soundtrack-container.dragging,
+#images-container.dragging,
+#comments-container.dragging,
+#parts-container.dragging,
+#navigation-container.dragging {
+    background-color: var(--bg-primary);
+    border: 2px dashed var(--accent-primary);
+    border-radius: var(--radius-md);
+}
+
+/* ============================================
+   REMOVE BUTTONS
+   ============================================ */
+.remove-character-btn,
+.remove-track,
+.remove-heading,
+.remove-comment,
+.remove-comment-heading,
+.remove-image,
+.remove-part,
+.remove-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin: 0 0 10px 0;
+    font-size: var(--font-size-xs);
+    font-weight: bold;
+    line-height: 1;
+    background-color: var(--text-muted);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: all var(--transition-normal);
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.remove-character-btn:hover,
+.remove-track:hover,
+.remove-heading:hover,
+.remove-comment:hover,
+.remove-comment-heading:hover,
+.remove-image:hover,
+.remove-part:hover,
+.remove-nav:hover {
+    opacity: 1;
+    background-color: var(--accent-danger);
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(192, 87, 70, 0.3);
+}
+
+/* ============================================
+   EMPTY STATES
+   ============================================ */
+#soundtrack-container:empty::after,
+#images-container:empty::after,
+#comments-container:empty::after,
+#parts-container:empty::after,
+#navigation-container:empty::after,
+#characters-container:empty::after {
+    content: 'No items added yet';
+    display: block;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-style: italic;
+    padding: var(--space-xl);
+    border: 2px dashed var(--border-primary);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-primary);
+    font-size: var(--font-size-sm);
+}
+
+/* ============================================
+   PROJECT SELECTION
+   ============================================ */
+.project-selection-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.universe-select,
+.story-select {
+    padding: var(--space-xs) var(--space-sm);
+    margin: 0;
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    background-color: var(--bg-quaternary);
+    color: var(--text-inputs);
+    min-width: 200px;
+    max-width: 200px;
+    height: 36px;
+    min-height: 36px;
+    width: auto;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.universe-select:focus,
+.story-select:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(177, 182, 149, 0.1);
+    background-color: var(--bg-tertiary);
+}
+
+.universe-select:disabled,
+.story-select:disabled {
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    border-color: var(--border-primary);
+}
+
+/* Load button styling */
+#load-project-btn {
+    min-width: 34px;
+    width: 34px;
+    height: 32px;
+    padding: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+#load-project-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#load-project-btn:not(:disabled):hover {
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+    border-color: var(--accent-primary);
+}
+
+#load-project-btn:not(:disabled):active {
+    background-color: var(--accent-secondary);
+    border-color: var(--accent-secondary);
+}
+
+/* Loading state indicators */
+.universe-select.loading,
+.story-select.loading {
+    background: var(--bg-tertiary) url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjYiIHN0cm9rZT0iIzk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSIzIDMiIGZpbGw9Im5vbmUiPgogIDxhbmltYXRlVHJhbnNmb3JtIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIgdHlwZT0icm90YXRlIiB2YWx1ZXM9IjAgOCA4OzM2MCA4IDgiIGR1cj0iMXMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIi8+CjwvY2lyY2xlPgo8L3N2Zz4K') no-repeat right 8px center;
+    background-size: 16px 16px;
+}
+
+/* Empty state styling */
+.project-selection-controls .empty-state {
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: var(--font-size-xs);
+}
+
+/* ============================================
+   TEMPLATE CONTAINER (HIDDEN)
+   ============================================ */
+#template-container {
+    display: none !important;
+    visibility: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+#template-container * {
+    display: none !important;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+@media (max-width: 768px) {
+    .project-selection-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-xs);
+    }
+    
+    .universe-select,
+    .story-select {
+        min-width: 100%;
+        max-width: none;
+    }
+    
+    #load-project-btn {
+        align-self: flex-end;
+        width: 36px;
+        min-width: 36px;
+    }
+    
+    .character-main-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .character-color-section {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .universe-select,
+    .story-select {
+        font-size: var(--font-size-xs);
+        padding: var(--space-sm);
+    }
+    
+    #load-project-btn {
+        font-size: var(--font-size-xs);
+        padding: var(--space-sm) var(--space-md);
+    }
+}
+
+/* ============================================
+   DARK MODE SUPPORT (IF APPLICABLE)
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+    .universe-select,
+    .story-select {
+        background: var(--bg-tertiary);
+        border-color: var(--border-secondary);
+        color: var(--text-inputs);
+    }
+    
+    .universe-select:hover,
+    .story-select:hover {
+        background: var(--bg-quaternary);
+        border-color: var(--border-tertiary);
+    }
+    
+    .universe-select:disabled,
+    .story-select:disabled {
+        background: var(--bg-primary);
+        color: var(--text-muted);
+        border-color: var(--border-primary);
+    }
+}

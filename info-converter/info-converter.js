@@ -53,6 +53,11 @@ let infoData = {
     },
     characters: [],
     storylines: [],
+    storylinesOptions: {
+        showTOC: true,
+        showSections: true,
+        showSubsections: true
+    },
     plans: [], // NEW: Story arcs/plans with sub-arcs
     playlists: [], // ADD THIS LINE
     world: {
@@ -65,9 +70,11 @@ let infoData = {
         factions: [],
         culture: [],
         cultivation: [],
+        magic: [],
         general: []     // ADD THIS LINE
     },
-    customPages: []
+    customPages: [],
+    linkedLorebook: null,
 };
 // Make infoData globally accessible to other script files
 window.infoData = infoData;
@@ -91,7 +98,7 @@ let draggedElement = null;
 function ensureWorldCategories() {
     const expectedCategories = [
         'general', 'locations', 'concepts', 'events', 'creatures', 
-        'plants', 'items', 'factions', 'culture', 'cultivation'
+        'plants', 'items', 'factions', 'culture', 'cultivation', 'magic'
     ];
     
     if (!infoData.world) {
@@ -123,6 +130,52 @@ function switchMainTab(tabName) {
     }
 }
 
+// Initialize user avatar context menu
+function initializeLoreContextMenu() {
+    const navAvatarImg = document.getElementById('nav-avatar-img');
+    const contextMenu = document.getElementById('lore-context-menu');
+    const logoutOption = document.getElementById('lore-logout-option');
+
+    if (!navAvatarImg || !contextMenu) return;
+
+    // Show context menu on avatar click
+    navAvatarImg.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        // Position menu below avatar
+        const rect = navAvatarImg.getBoundingClientRect();
+        contextMenu.style.left = `${rect.left - 60}px`;
+        contextMenu.style.top = `${rect.bottom + 5}px`;
+        contextMenu.style.display = 'block';
+    });
+
+    // Handle logout click
+    logoutOption?.addEventListener('click', () => {
+        contextMenu.style.display = 'none';
+        
+        // Clear session completely (don't use logout() because it sets guest mode)
+        localStorage.removeItem('writingTools_session');
+        localStorage.removeItem('writingTools_guestMode');
+        
+        // Navigate back to main app which will show login screen
+        window.location.href = '../index.html';
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!contextMenu.contains(e.target) && e.target !== navAvatarImg) {
+            contextMenu.style.display = 'none';
+        }
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            contextMenu.style.display = 'none';
+        }
+    });
+}
+
 // Initialize application
 // Replace the existing one with this:
 document.addEventListener('DOMContentLoaded', async () => {
@@ -144,7 +197,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     await checkAssetsFolder();
     
     // Initialize appearance system
-    initializeAppearance();
+    // Initialize appearance system
+    if (typeof initializeAppearance === 'function') {
+        initializeAppearance();
+    }
     initializeOverviewLinks();
     // Initialize custom navigation
     initializeCustomNavigation();
@@ -153,6 +209,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize custom pages
     if (typeof initializeCustomPages === 'function') {
         initializeCustomPages();
+    }
+
+    // Add this where other initialization happens
+    if (typeof initializeLinkedLorebook === 'function') {
+        initializeLinkedLorebook();
     }
     
     // Ensure first main tab is active by default
@@ -177,6 +238,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize Lore Codex About system
     await initializeLoreCodexAbout();
+
+    initializeLoreContextMenu();
     
     console.log('Lore Codex initialized successfully with theme support');
 });
@@ -303,6 +366,11 @@ async function loadNavProject() {
             parseImportedHTML(result.content);
             currentProject = projectName;
             window.currentProject = currentProject;
+
+            // UPDATE LOREBOOK UI AFTER IMPORT
+            if (typeof updateLorebookLinkUI === 'function') {
+                updateLorebookLinkUI();
+            }
             
             // Update nav display
             updateNavProjectDisplay(projectName);
@@ -499,10 +567,24 @@ async function loadProject() {
             // Parse the HTML content and populate form
             parseImportedHTML(result.content);
             currentProject = projectName;
+            window.projectFilename = result.filename || 'info';  // ADD THIS
             window.currentProject = currentProject;
             document.getElementById('project-name').value = projectName;
 
             backupMadeThisSession = false;
+
+            // UPDATE LOREBOOK UI AFTER IMPORT
+            if (typeof updateLorebookLinkUI === 'function') {
+                updateLorebookLinkUI();
+            }
+
+            // Restore linked lorebook state
+            setTimeout(async () => {
+                await restoreLinkedLorebook(projectName);
+                if (typeof initializeLinkedLorebook === 'function') {
+                    initializeLinkedLorebook();
+                }
+            }, 200);
             
             // Multiple attempts to update appearance controls with delays
             setTimeout(() => {
@@ -556,8 +638,58 @@ async function loadProject() {
     }
 }
 
+// Add this function to info-converter.js
+async function restoreLinkedLorebook(projectName) {
+    if (!isLocal || !userSessionManager || !projectName) return;
+
+    // Don't restore from files if we already have lorebook data from HTML import
+    if (infoData.linkedLorebook && infoData.linkedLorebook.data) {
+        console.log('Lorebook already restored from HTML data');
+        linkedLorebookData = infoData.linkedLorebook.data;
+        linkedLorebookFilename = infoData.linkedLorebook.filename;
+        return;
+    }
+    
+    try {
+        const userContext = userSessionManager.getUserContext();
+        
+        // Check if lorebook folder exists and get files
+        const response = await fetch('/api/assets/check-lorebook', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ projectName, userContext })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success && result.lorebookFile) {
+            // Load the lorebook data
+            const lorebookResponse = await fetch(`/projects/${userContext.isGuest ? 'guest' : userContext.userId}/${projectName}/assets/lorebook/${result.lorebookFile}`);
+            const lorebookData = await lorebookResponse.json();
+            
+            // Restore the linked lorebook state
+            if (typeof linkedLorebookData !== 'undefined') {
+                window.linkedLorebookData = lorebookData;
+                window.linkedLorebookFilename = result.lorebookFile;
+            }
+            
+            // Store in infoData
+            infoData.linkedLorebook = {
+                filename: result.lorebookFile,
+                data: lorebookData
+            };
+            
+            console.log('Restored linked lorebook:', result.lorebookFile);
+        }
+    } catch (error) {
+        console.error('Error restoring linked lorebook:', error);
+    }
+}
+
 // Open current project in new tab
-function openCurrentProject() {
+async function openCurrentProject() {
     if (!isLocal || !currentProject || !userSessionManager) {
         showStatus('error', 'No current project to open');
         return;
@@ -565,10 +697,35 @@ function openCurrentProject() {
     
     const userContext = userSessionManager.getUserContext();
     const userPath = userContext.isGuest ? 'guest' : userContext.userId;
-    const projectUrl = `/projects/${userPath}/${currentProject}/info.html`;
     
-    console.log('Opening project URL:', projectUrl);
-    window.open(projectUrl, '_blank');
+    // Fetch config to get filename
+    try {
+        const response = await fetch('/api/projects/load', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ projectName: currentProject, userContext })
+        });
+        
+        const data = await response.json();
+        
+        // Extract filename from the loaded project or default to info.html
+        let htmlFilename = 'info.html';
+        
+        // Try to find config in the project folder
+        const configResponse = await fetch(`/projects/${userPath}/${currentProject}/project-config.json`);
+        if (configResponse.ok) {
+            const config = await configResponse.json();
+            htmlFilename = config.htmlFilename || 'info.html';
+        }
+        
+        const projectUrl = `/projects/${userPath}/${currentProject}/${htmlFilename}`;
+        
+        console.log('Opening project URL:', projectUrl);
+        window.open(projectUrl, '_blank');
+    } catch (error) {
+        console.error('Error opening project:', error);
+        showStatus('error', 'Failed to open project');
+    }
 }
 
 // UPDATE existing saveToSitesFolder function to update nav display
@@ -605,7 +762,16 @@ function updateOpenProjectButton() {
     }
 }
 
-// Enhanced saveToSitesFolder with better protection
+// Helper function used by saveToSitesFolder
+function checkForGenerationError(html) {
+    const titleMatch = html.match(/<title>(.*?)<\/title>/);
+    const htmlTitle = titleMatch ? titleMatch[1] : '';
+    const hasActualTitle = infoData.basic.title && infoData.basic.title.trim() !== '';
+    
+    return htmlTitle === 'World Information' && hasActualTitle;
+}
+
+// Enhanced saveToSitesFolder with modal for project name and filename
 async function saveToSitesFolder() {
     if (!isLocal || !userSessionManager) {
         showStatus('error', 'File system access not available');
@@ -629,15 +795,6 @@ async function saveToSitesFolder() {
         return;
     }
 
-    // Check for generation error (World Information title when we have actual data)
-    function checkForGenerationError(html) {
-        const titleMatch = html.match(/<title>(.*?)<\/title>/);
-        const htmlTitle = titleMatch ? titleMatch[1] : '';
-        const hasActualTitle = infoData.basic.title && infoData.basic.title.trim() !== '';
-        
-        return htmlTitle === 'World Information' && hasActualTitle;
-    }
-
     const hasError = checkForGenerationError(html);
     
     // Get project name
@@ -652,12 +809,67 @@ async function saveToSitesFolder() {
     } else if (navProjectList && navProjectList.value) {
         projectName = navProjectList.value.trim();
     } else {
-        projectName = prompt('Enter project name:');
-        if (!projectName) {
-            showStatus('error', 'Project name is required');
-            return;
-        }
+        // Show modal to get both project name and filename
+        const modal = document.getElementById('saveProjectModal');
+        const modalProjectNameInput = document.getElementById('save-project-name');
+        const filenameInput = document.getElementById('save-html-filename');
+        const confirmBtn = document.getElementById('confirm-save-project');
+        
+        // Clear previous values
+        modalProjectNameInput.value = '';
+        filenameInput.value = 'info';
+        
+        // Show modal
+        modal.classList.add('active');
+        modalProjectNameInput.focus();
+        
+        // Handle confirmation
+        const handleConfirm = () => {
+            projectName = modalProjectNameInput.value.trim();
+            const filename = filenameInput.value.trim();
+            
+            if (!projectName) {
+                showStatus('error', 'Project name is required');
+                return;
+            }
+            if (!filename) {
+                showStatus('error', 'Filename is required');
+                return;
+            }
+            
+            window.projectFilename = filename;
+            modal.classList.remove('active');
+            
+            // Remove listeners
+            confirmBtn.removeEventListener('click', handleConfirm);
+            modalProjectNameInput.removeEventListener('keydown', handleEnter);
+            filenameInput.removeEventListener('keydown', handleEnter);
+            
+            // Continue with the save by calling the rest of the function
+            continueSaveToFolder(projectName, hasError, html);
+        };
+        
+        // Handle Enter key in inputs
+        const handleEnter = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleConfirm();
+            }
+        };
+        
+        confirmBtn.addEventListener('click', handleConfirm);
+        modalProjectNameInput.addEventListener('keydown', handleEnter);
+        filenameInput.addEventListener('keydown', handleEnter);
+        
+        return; // Exit and wait for modal
     }
+    
+    // If we have project name, continue with save
+    continueSaveToFolder(projectName, hasError, html);
+}
+
+async function continueSaveToFolder(projectName, hasError, html) {
+    const projectNameInput = document.getElementById('project-name');
     
     try {
         const userContext = userSessionManager.getUserContext();
@@ -693,9 +905,10 @@ async function saveToSitesFolder() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     html: newHtml, 
-                    projectName, 
+                    projectName,
+                    filename: window.projectFilename || 'info',
                     userContext,
-                    skipBackup: true, // Don't overwrite the good backup
+                    skipBackup: backupMadeThisSession,
                     styleAssets: getRequiredStyleAssets(collectFormData())
                 })
             });
@@ -718,7 +931,8 @@ async function saveToSitesFolder() {
                 },
                 body: JSON.stringify({ 
                     html, 
-                    projectName, 
+                    projectName,
+                    filename: window.projectFilename || 'info',
                     userContext,
                     skipBackup: backupMadeThisSession,
                     styleAssets: getRequiredStyleAssets(collectFormData())
@@ -1490,6 +1704,7 @@ function getContentTypeFromContainer(container) {
     if (id.includes('factions')) return 'factions';
     if (id.includes('culture')) return 'culture';
     if (id.includes('cultivation')) return 'cultivation';
+    if (id.includes('magic')) return 'magic';
     return null;
 }
 
@@ -1719,6 +1934,9 @@ function initializeEventListeners() {
         
         // Click Quick Load option
         document.getElementById('quick-load-option').addEventListener('click', quickLoadLastProject);
+
+        // Click Rename option
+        document.getElementById('rename-project-option').addEventListener('click', showRenameProjectModal);
         
         // Hide nav context menu when clicking elsewhere (update existing document click handler)
         document.addEventListener('click', (e) => {
@@ -1881,6 +2099,16 @@ function initializeButtons() {
     if (addStorylineBtn) {
         addStorylineBtn.addEventListener('click', addStoryline);
     }
+
+    const storylinesOptionsBtn = document.getElementById('storylines-options');
+    if (storylinesOptionsBtn) {
+        storylinesOptionsBtn.addEventListener('click', openStorylinesOptionsModal);
+    }
+
+    const charactersOptionsBtn = document.getElementById('characters-options');
+    if (charactersOptionsBtn) {
+        charactersOptionsBtn.addEventListener('click', openCharactersOptionsModal);
+    }
     
     // Plan buttons
     const addPlanBtn = document.getElementById('add-plan');
@@ -1956,6 +2184,11 @@ function initializeButtons() {
         addCultivationBtn.addEventListener('click', addCultivation);
     }
 
+    const addMagicBtn = document.getElementById('add-magic');
+    if (addMagicBtn) {
+        addMagicBtn.addEventListener('click', addMagic);
+    }
+
     const addGeneralBtn = document.getElementById('add-general');
     if (addGeneralBtn) {
         addGeneralBtn.addEventListener('click', addGeneral);
@@ -1970,6 +2203,16 @@ function initializeButtons() {
     const saveStorylineBtn = document.getElementById('save-storyline');
     if (saveStorylineBtn) {
         saveStorylineBtn.addEventListener('click', saveStoryline);
+    }
+
+    const saveStorylinesOptionsBtn = document.getElementById('save-storylines-options');
+    if (saveStorylinesOptionsBtn) {
+        saveStorylinesOptionsBtn.addEventListener('click', saveStorylinesOptions);
+    }
+
+    const saveCharactersOptionsBtn = document.getElementById('save-characters-options');
+    if (saveCharactersOptionsBtn) {
+        saveCharactersOptionsBtn.addEventListener('click', saveCharactersOptions);
     }
     
     // Plan/event save buttons
@@ -2261,7 +2504,15 @@ async function downloadHTML() {
     }
     
     const projectName = document.getElementById('project-name')?.value.trim() || 'info';
-    const filename = 'info.html';
+    // Get filename from input or default to project name
+    const filenameInput = document.getElementById('html-filename');
+    let filename = filenameInput?.value.trim() || projectName || 'info';
+    // Ensure .html extension
+    if (!filename.endsWith('.html')) {
+        filename += '.html';
+    }
+    // Sanitize filename
+    filename = filename.replace(/[^a-zA-Z0-9-_.]/g, '');
     
     if (isLocal) {
         // In local mode, offer choice between download and save to sites
@@ -2350,6 +2601,14 @@ function resetForm() {
             },
             characters: [],
             storylines: [],
+            storylinesOptions: {
+                showTOC: true,
+                showSections: true,
+                showSubsections: true
+            },
+            charactersOptions: {
+                showByFaction: true
+            },
             plans: [], // Reset plans
             world: {
                 general: [],
@@ -2361,7 +2620,8 @@ function resetForm() {
                 items: [],
                 factions: [],
                 culture: [],
-                cultivation: []
+                cultivation: [],
+                magic: []
             }
         };
         
@@ -2551,9 +2811,9 @@ function updateItemCount(category) {
     
     // Update count badge visibility
     if (count > 0) {
-        countElement.style.display = 'inline-block';
+        countElement.style.visibility = 'visible';
     } else {
-        countElement.style.display = 'none';
+        countElement.style.visibility = 'hidden';
     }
 }
 
@@ -2561,7 +2821,7 @@ function updateItemCount(category) {
 function updateAllItemCounts() {
     const categories = [
         'characters', 'storylines', 'plans', 'playlists',
-        'general', 'locations', 'factions', 'culture', 'cultivation',
+        'general', 'locations', 'factions', 'culture', 'cultivation', 'magic',
         'concepts', 'events', 'creatures', 'plants', 'items'
     ];
     
@@ -2639,24 +2899,27 @@ function clearContentSearch() {
 }
 
 // Updated updateContentList function to work with new structure
-// This replaces the existing updateContentList function
 window.updateContentList = function(category) {
     const container = document.getElementById(`${category}-list`);
     let items;
     
     if (category === 'characters') {
-        items = infoData.characters;
+        items = infoData.characters || [];
     } else if (category === 'storylines') {
-        items = infoData.storylines;
+        items = infoData.storylines || [];
     } else if (category === 'plans') {
-        items = infoData.plans;
+        items = infoData.plans || [];
     } else if (category === 'playlists') {
-        items = infoData.playlists;
+        items = infoData.playlists || [];
     } else {
+        // Ensure the category exists before accessing it
+        if (!infoData.world[category]) {
+            infoData.world[category] = [];
+        }
         items = infoData.world[category];
     }
     
-    if (items.length === 0) {
+    if (items.length === 0) {  // Now items will always be an array
         const emptyText = category === 'plans' ? 'No story arcs added yet' : `No ${category} added yet`;
         container.innerHTML = `<div class="empty-state">${emptyText}</div>`;
     } else {
@@ -2910,6 +3173,32 @@ window.updateAllContentLists = function() {
     if (typeof window.populateAppearanceControls === 'function') {
         window.populateAppearanceControls();
     }
+
+    // Load storylines options checkboxes
+    if (infoData.storylinesOptions) {
+        const tocCheckbox = document.getElementById('storylines-show-toc');
+        const sectionsCheckbox = document.getElementById('storylines-show-sections');
+        const subsectionsCheckbox = document.getElementById('storylines-show-subsections');
+        
+        if (tocCheckbox) {
+            tocCheckbox.checked = infoData.storylinesOptions.showTOC ?? true;
+        }
+        if (sectionsCheckbox) {
+            sectionsCheckbox.checked = infoData.storylinesOptions.showSections ?? true;
+        }
+        if (subsectionsCheckbox) {
+            subsectionsCheckbox.checked = infoData.storylinesOptions.showSubsections ?? true;
+        }
+    }
+
+    // Load characters options checkboxes
+    if (infoData.charactersOptions) {
+        const showByFactionCheckbox = document.getElementById('characters-show-by-faction');
+        
+        if (showByFactionCheckbox) {
+            showByFactionCheckbox.checked = infoData.charactersOptions.showByFaction ?? true;
+        }
+    }
     
     // Update all content lists
     updateContentList('characters');
@@ -2926,6 +3215,7 @@ window.updateAllContentLists = function() {
     updateContentList('factions');
     updateContentList('culture');
     updateContentList('cultivation');
+    updateContentList('magic');
     
     // Update all item counts
     updateAllItemCounts();
@@ -3520,7 +3810,18 @@ async function handleImageFileSelection() {
     if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         
-        // Show compression status
+        // Get context to determine if we should compress
+        const modal = document.getElementById('imageImportModal');
+        const context = modal.getAttribute('data-context');
+        
+        // Skip compression for character cards - they must stay PNG
+        if (context === 'character-card') {
+            // Just use the suggested name from handleFileSelection, don't compress
+            updateFinalImagePath();
+            return;
+        }
+        
+        // Show compression status for other contexts
         const status = document.createElement('div');
         status.textContent = 'Compressing image...';
         status.style.color = '#007bff';
@@ -3528,10 +3829,6 @@ async function handleImageFileSelection() {
         
         try {
             // Get context-specific settings
-            const modal = document.getElementById('imageImportModal');
-            const context = modal.getAttribute('data-context');
-
-            // Around line 145-155 in info-converter.js, add these cases:
             let maxWidth = 1200, maxHeight = 1200;
             if (context === 'character') {
                 maxWidth = maxHeight = 800; // Smaller for character portraits
@@ -3539,9 +3836,9 @@ async function handleImageFileSelection() {
                 maxWidth = 1920; maxHeight = 1080; // Larger for backgrounds
             } else if (context === 'event') {
                 maxWidth = maxHeight = 300; // Smaller for timeline event markers
-            } else if (context === 'world-item') {  // ADD THIS
+            } else if (context === 'world-item') {
                 maxWidth = maxHeight = 600; // Medium size for world items
-            } else if (context === 'location') {    // ADD THIS
+            } else if (context === 'location') {
                 maxWidth = 800; maxHeight = 600; // Medium size for locations
             }
 
@@ -3558,8 +3855,8 @@ async function handleImageFileSelection() {
             dt.items.add(compressedFile);
             fileInput.files = dt.files;
             
-            // Update name and show compression results
-            nameInput.value = file.name.replace(/\.[^/.]+$/, '.jpg'); // Change extension to jpg
+            // Change extension to jpg ONLY for non-character-card contexts
+            nameInput.value = file.name.replace(/\.[^/.]+$/, '.jpg');
             
             const originalSize = (file.size / 1024).toFixed(1);
             const compressedSize = (compressedFile.size / 1024).toFixed(1);
@@ -3855,6 +4152,160 @@ function updateQuickLoadState() {
         quickLoadOption.classList.remove('disabled');
     } else {
         quickLoadOption.classList.add('disabled');
+    }
+}
+
+// Show rename project modal
+async function showRenameProjectModal() {
+    // Hide context menu
+    document.getElementById('nav-project-context-menu').style.display = 'none';
+    
+    if (!isLocal || !currentProject) {
+        showToast('error', 'No project selected to rename');
+        return;
+    }
+    
+    const modal = document.getElementById('renameProjectModal');
+    const projectNameInput = document.getElementById('rename-project-name');
+    const filenameInput = document.getElementById('rename-html-filename');
+    const confirmBtn = document.getElementById('confirm-rename-project');
+    const cancelBtn = document.getElementById('cancel-rename-project');
+    
+    // Get current filename from config
+    let currentFilename = 'info';
+    try {
+        const userContext = userSessionManager.getUserContext();
+        const userPath = userContext.isGuest ? 'guest' : userContext.userId;
+        const configResponse = await fetch(`/projects/${userPath}/${currentProject}/project-config.json`);
+        if (configResponse.ok) {
+            const config = await configResponse.json();
+            currentFilename = config.htmlFilename ? config.htmlFilename.replace('.html', '') : 'info';
+        }
+    } catch (error) {
+        console.warn('Could not load current filename:', error);
+    }
+    
+    // Pre-fill with current values
+    projectNameInput.value = currentProject;
+    filenameInput.value = currentFilename;
+    
+    // Show modal
+    modal.classList.add('active');
+    projectNameInput.focus();
+    projectNameInput.select();
+    
+    // Handle confirmation
+    const handleConfirm = async () => {
+        const newProjectName = projectNameInput.value.trim();
+        const newFilename = filenameInput.value.trim();
+        
+        if (!newProjectName) {
+            showToast('error', 'Project name is required');
+            return;
+        }
+        if (!newFilename) {
+            showToast('error', 'Filename is required');
+            return;
+        }
+        
+        // Check if anything actually changed
+        if (newProjectName === currentProject && newFilename === currentFilename) {
+            showToast('info', 'No changes made');
+            modal.classList.remove('active');
+            cleanup();
+            return;
+        }
+        
+        modal.classList.remove('active');
+        cleanup();
+        
+        // Perform the rename
+        await renameProject(currentProject, newProjectName, currentFilename, newFilename);
+    };
+    
+    // Handle cancel
+    const handleCancel = () => {
+        modal.classList.remove('active');
+        cleanup();
+    };
+    
+    // Handle Enter key
+    const handleEnter = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleConfirm();
+        } else if (e.key === 'Escape') {
+            handleCancel();
+        }
+    };
+    
+    const cleanup = () => {
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+        projectNameInput.removeEventListener('keydown', handleEnter);
+        filenameInput.removeEventListener('keydown', handleEnter);
+    };
+    
+    confirmBtn.addEventListener('click', handleConfirm);
+    cancelBtn.addEventListener('click', handleCancel);
+    projectNameInput.addEventListener('keydown', handleEnter);
+    filenameInput.addEventListener('keydown', handleEnter);
+}
+
+// Rename project and/or HTML file
+async function renameProject(oldProjectName, newProjectName, oldFilename, newFilename) {
+    try {
+        showToast('info', 'Renaming...');
+        
+        const userContext = userSessionManager.getUserContext();
+        
+        const response = await fetch('/api/projects/rename', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                oldProjectName,
+                newProjectName,
+                oldFilename,
+                newFilename,
+                userContext
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.error || 'Failed to rename');
+        }
+        
+        showToast('success', result.message);
+        
+        // Update current project if project name changed
+        if (oldProjectName !== newProjectName) {
+            currentProject = newProjectName;
+            window.currentProject = newProjectName;
+            updateNavProjectDisplay(newProjectName);
+        }
+        
+        // Update filename in memory if it changed
+        if (oldFilename !== newFilename) {
+            window.projectFilename = newFilename;
+        }
+        
+        // Refresh projects list
+        await loadProjects();
+        
+        // Select the new/renamed project in dropdown
+        const navProjectList = document.getElementById('nav-project-list');
+        if (navProjectList) {
+            navProjectList.value = newProjectName;
+        }
+
+        // Reload the project to pick up changes
+        await loadNavProject();
+        
+    } catch (error) {
+        console.error('Rename error:', error);
+        showToast('error', `Failed to rename: ${error.message}`);
     }
 }
 

@@ -1,7 +1,15 @@
+import overviewStyles from './templates/overview-styles.js';
+import navigationStyles from './templates/navigation-styles.js';
+import buttonStyles from './templates/button-styles.js';
+import cardStyles from './templates/card-styles.js';
+import { containerStyles, subcontainerStyles } from './templates/container-styles.js';
 import colorSchemes from './templates/color-schemes.js';
 import backToTopStyles from './templates/backtotop-styles.js';
 import fontSets from './templates/font-sets.js';
 import bannerStyles from './templates/banner-styles.js';
+import backgroundStyles, { backgroundColorOverlays } from './templates/background-styles.js';
+import storylineStyles from './templates/storyline-styles.js';
+import worldCategoriesHeaderStyles from './templates/header-styles.js';
 // Appearance Management System - Fixed
 
 // Default appearance settings
@@ -12,10 +20,13 @@ const defaultAppearance = {
     fontSet: 'serif',
     worldCategoriesHeader: 'default',
     pageHeader: 'standard',
+    storylineStyle: 'default',
     containerStyle: 'left-border',
     subcontainerStyle: 'soft-bg',
     bannerSize: 'large',
     bannerStyle: 'none',
+    backgroundStyle: 'none',
+    backgroundColorOverlay: 'none',
     buttonStyle: 'rounded',
     customNavButtonStyle: 'rounded',
     backToTopStyle: 'circular',
@@ -37,647 +48,6 @@ const templates = {
         name: 'Classic',
         description: 'Traditional formal document with ornate double borders in overview'
     }
-};
-
-// Overview style definitions
-const overviewStyles = {
-    journal: {
-        name: 'Journal',
-        description: 'Notebook aesthetic with lined paper and red margin line'
-    },
-    modern: {
-        name: 'Modern',
-        description: 'Clean cards with rounded corners and gradient header'
-    },
-    classic: {
-        name: 'Classic',
-        description: 'Traditional formal document with ornate double borders'
-    },
-    magazine: {
-        name: 'Magazine',
-        description: 'Clean editorial layout with professional typography and subtle accents'
-    },
-    minimal: {
-        name: 'Minimal',
-        description: 'Ultra-clean design with generous whitespace and subtle shadows'
-    },
-    botanical: {
-        name: 'Botanical',
-        description: 'Organic nature theme with vine patterns and leaf decorations'
-    },
-    constellation: {
-        name: 'Constellation', 
-        description: 'Starfield mapping with celestial navigation elements'
-    },
-    manuscript: {
-        name: 'Manuscript',
-        description: 'Medieval illuminated manuscript with drop caps and ornate borders'
-    },
-    neon: {
-        name: 'Neon',
-        description: 'Cyberpunk retro-future with glowing circuit patterns'
-    },
-    archive: {
-        name: 'Archive',
-        description: 'Research library filing system with classification labels'
-    },
-    kawaii: {
-        name: 'Kawaii',
-        descriptions: 'Soft pastel design with rounded corners, dreamy gradients, and adorable decorative elements.'
-    },
-    candyPop: {
-        name: 'Candy Pop',
-        description: '3D candy button styling with glossy shine effects.'
-    },
-    cottagecoreDiary: {
-        name: 'Cottagecore Diary',
-        description: 'A cozy, rustic journal with pressed flowers, delicate vines, and a warm, sun-drenched cottage feel.'
-    },
-    magicalGirlLocket: {
-        name: 'Magical Girl Locket',
-        description: 'A sparkling magical girl transformation item, with shimmering stars, pastel ribbons, and a radiant heart motif.'
-    },
-    pastelSpells: {
-        name: 'Pastel Spells',
-        description: 'A sweetly spooky grimoire mixing pastel magic with dark, gothic elements.'
-    },
-    strawberryPatch: {
-        name: 'Strawberry Patch',
-        description: 'A sweet and fresh design reminiscent of a picnic blanket.'
-    },
-    industrial: {
-        name: 'Industrial',
-        description: 'Wireframe/grid background overlay, hard angles'
-    },
-    wuxia: {
-        name: 'Wuxia',
-        description: 'Elegant cultivation manual page with traditional corner decorations and jade accents'
-    },
-    horrific: {
-        name: 'Horrific',
-        description: 'Cursed grimoire page with blood drips and ominous shadows'
-    },
-    foundFootage: {
-        name: 'Found Footage',
-        description: 'Simulates a night-vision security camera feed with scanlines, a REC indicator, timestamps, and a low-fi, gritty feel.'
-    },
-    badSignal: {
-        name: 'Bad Signal',
-        description: 'Mimics a degraded VHS tape or a haunted broadcast, featuring static, distortion, and unsettling visual glitches.'
-    },
-    theFurther: {
-        name: 'The Further',
-        description: 'A descent into a shadowy, ethereal realm. Features dark, smoky textures, faint, ghostly text effects, and an oppressive, claustrophobic atmosphere.'
-    },
-    parchment: {
-        name: 'Parchment&Quill',
-        description: 'Elegant personal letter with wax seal, letterhead, and refined correspondence styling'
-    },
-    dataTerminal: {
-        name: 'Data Terminal',
-        description: 'Cyberpunk terminal interface with scanlines, command prompts, line numbers, and monospace typography'
-    }
-};
-
-// Navigation style definitions
-const navigationStyles = {
-    hidden: {
-        name: 'Hidden',
-        description: 'Completely hide the navigation tabs from view'
-    },
-    journal: {
-        name: 'Journal',
-        description: 'Icon-based side navigation with hover effects'
-    },
-    modern: {
-        name: 'Modern',
-        description: 'Flat uppercase text tabs with bottom borders'
-    },
-    classic: {
-        name: 'Classic',
-        description: 'Traditional bordered navigation with standard styling'
-    },
-    circular: {
-        name: 'Circular',
-        description: 'Round circular tabs positioned vertically on the left side with letter initials'
-    },
-    squares: {
-        name: 'Squares',
-        description: 'Square icon tabs positioned vertically on the left side with FontAwesome icons'
-    },
-    pills: {
-        name: 'Pills',
-        description: 'Rounded pill-shaped tabs with smooth transitions and clean spacing'
-    },
-    underline: {
-        name: 'Underline',
-        description: 'Minimalist tabs with animated underlines and subtle hover effects'
-    },
-    kawaii: {
-        name: 'Kawaii',
-        description: 'Cute pastel bubble tabs with sparkle effects and bouncy hover animations'
-    },
-    hearts: {
-        name: 'Hearts',
-        description: 'Sweet heart-themed tabs with animated heart decorations and gentle heartbeat effects'
-    },
-    candy: {
-        name: 'Candy',
-        description: 'Round candy-like side tabs with cute emoji icons and playful scaling animations'
-    },
-    flowers: {
-        name: 'Flowers',
-        description: 'Flower petal-shaped tabs with blooming center animations and gentle rotation effects'
-    },
-    industrial: {
-        name: 'Industrial',
-        description: 'Hard-edged tabs attached to the main content area'
-    },
-    wuxia: {
-        name: 'Wuxia',
-        description: 'Elegant hanging scroll tabs with jade accents and flowing animations'
-    },
-    playersHandbook: {
-        name: 'Player\'s Handbook',
-        description: 'Ornate D&D handbook chapter tabs with corner flourishes and illuminated manuscript styling'
-    },
-    adventurersTome: {
-        name: 'Adventurer\'s Tome',
-        description: 'Tabs with a wooden effect, TTRPG inspired'
-    },
-    cartographersTable: {
-        name: 'Cartographer\'s Table',
-        description: 'Torn map fragments on a dark leather background, with a dotted line connecting to the active tab.'
-    },
-    royalBanner: {
-        name: 'Royal Banner',
-        description: 'Hanging silk banners sealed with a royal crest, fit for a king\'s council chamber.'
-    },
-    steppingStones: {
-        name: 'Stepping Stones',
-        description: 'Vertically-aligned, moss-covered runestones that glow softly with an inner light when selected.'
-    },
-    starforged: {
-        name: 'Starforged',
-        description: 'Celestial navigation points that form a guiding constellation when a path is chosen.'
-    },
-    horrific: {
-        name: 'Horrific',
-        description: 'Cursed grimoire tabs with occult symbols and blood red accents'
-    },
-    foundFootage: {
-        name: 'Found Footage',
-        description: 'A glitchy camcorder interface with scanlines and a REC indicator, inspired by found footage horror.'
-    },
-    badSignal: {
-        name: 'Bad Signal',
-        description: 'A distorted, flickering VHS tape interface with analog static and unsettling visual corruption.'
-    },
-    theFurther: {
-        name: 'The Further',
-        description: 'A dark, ethereal style with floating, smoky tabs and an ominous, ghostly glow on the active selection.'
-    },
-    parchment: {
-        name: 'Parchment&Quill',
-        description: 'Elegant folded parchment tabs with wax seals, inspired by regency correspondence'
-    },
-    cyberpunk: {
-        name: 'Cyberpunk',
-        description: 'Neon-glowing terminal tabs with holographic brackets, scanning lines, and futuristic styling'
-    },
-    holographic: {
-        name: 'Holographic',
-        description: 'Iridescent tabs with prismatic shimmer effects and color-shifting borders'
-    },
-    matrix: {
-        name: 'Matrix',
-        description: 'Digital rain terminal interface with vertical tabs and cascading code effects'
-    },
-    neuralNetwork: {
-        name: 'Neural Network',
-        description: 'Circular connected nodes with pulsing neural connections and data flow animations'
-    },
-    glitch: {
-        name: 'Glitch',
-        description: 'Digital corruption effects with RGB separation, static noise, and data distortion'
-    },
-};
-
-// Button styles
-const buttonStyles = {
-    'rounded': {
-        name: 'Rounded',
-        description: 'Buttons with soft rounded corners'
-    },
-    'sharp': {
-        name: 'Sharp', 
-        description: 'Buttons with square corners'
-    },
-    'pill': {
-        name: 'Pill',
-        description: 'Buttons with fully rounded edges'
-    },
-    'subtle': {
-        name: 'Subtle',
-        description: 'Buttons with minimal rounded corners'
-    },
-    'neon': {
-        name: 'Neon',
-        description: 'Cyberpunk glowing neon buttons with electric effects'
-    },
-    'glassmorphism': {
-        name: 'Glassmorphism', 
-        description: 'Modern frosted glass effect with subtle transparency'
-    },
-    'origami': {
-        name: 'Origami',
-        description: 'Folded paper effect with crisp angular shadows'
-    },
-    'holographic': {
-        name: 'Holographic',
-        description: 'Iridescent rainbow shimmer effects that shift with hover'
-    },
-    'sketch': {
-        name: 'Sketch',
-        description: 'Hand-drawn artistic style with rough, sketchy borders'
-    },
-    'crystal': {
-        name: 'Crystal',
-        description: 'Faceted gem-like appearance with prismatic reflections'
-    },
-    'typewriter': {
-        name: 'Typewriter',
-        description: 'Vintage typewriter key styling with mechanical click effects'
-    },
-    'liquid': {
-        name: 'Liquid',
-        description: 'Organic flowing blob shapes that morph on hover'
-    },
-    'kawaii': {
-        name: 'Kawaii',
-        description: 'Cute rounded buttons with soft shadows and heart decorations'
-    },
-    'candyPop': {
-        name: 'Candy Pop',
-        description: 'Glossy 3D candy buttons with shine effects and gentle scaling'
-    },
-    'magicalGirl': {
-        name: 'Magical Girl', 
-        description: 'Sparkly buttons with star decorations and magical glow effects'
-    },
-    'industrial': {
-        name: 'Industrial',
-        description: 'Angular buttons with clipped corners and metal-like styling'
-    },
-    'wuxia': {
-        name: 'Wuxia',
-        description: 'Elegant jade-inspired buttons with traditional patterns'
-    },
-    'horrific': {
-        name: 'Horrific',
-        description: 'Dark gothic buttons with blood-drip effects and ominous shadows'
-    },
-    'glitchSignal': {
-        name: 'Glitch Signal',
-        description: 'An analog horror button that flickers and distorts with corrupted data and RGB-shifting text.'
-    },
-    'ectoplasm': {
-        name: 'Ectoplasm',
-        description: 'A semi-transparent, ghostly button with a wispy, morphing shape and an ethereal glow.'
-    },
-    'runicCarving': {
-        name: 'Runic Carving',
-        description: 'Looks like a symbol carved into ancient stone, with inset text and a faint, ominous energy.'
-    },
-    'parchment': {
-        name: 'Parchment',
-        description: 'Aged paper buttons with ink-stain effects and quill flourishes'
-    }
-};
-
-// World Categories Header style definitions
-const worldCategoriesHeaderStyles = {
-    'default': {
-        name: 'Default',
-        description: 'Standard category headers with basic styling'
-    },
-    'hidden': {
-        name: 'Hidden',
-        description: 'Hide category headers completely'
-    },
-    'enhanced': {
-        name: 'Enhanced',
-        description: 'Bold headers with colored underlines and caps'
-    },
-    'boxed': {
-        name: 'Boxed',
-        description: 'Headers in bordered boxes with background'
-    },
-    'accent': {
-        name: 'Accent Bar',
-        description: 'Left accent bar with gradient background'
-    },
-    'underlined': {
-        name: 'Underlined',
-        description: 'Clean headers with simple bottom borders and uppercase styling'
-    },
-    'simple': {
-        name: 'Simple',
-        description: 'Basic headers with light backgrounds and subtle borders'
-    },
-    'bordered': {
-        name: 'Bordered',
-        description: 'Clean headers with full borders and centered text'
-    },
-    'minimal': {
-        name: 'Minimal',
-        description: 'Ultra-minimal headers with just uppercase text and spacing'
-    },
-    'clean': {
-        name: 'Clean',
-        description: 'Modern headers with soft backgrounds and left accent borders'
-    },
-    'kawaii': {
-        name: 'Kawaii',
-        description: 'Adorable rounded headers with soft pastel gradients and heart decorations'
-    },
-    'candyPop': {
-        name: 'Candy Pop',
-        description: 'Transparent candy-style headers with glossy shine effects and glass-like appearance'
-    },
-    'magicalGirl': {
-        name: 'Magical Girl',
-        description: 'Sparkly headers with star decorations and magical gradient backgrounds'
-    },
-    'industrial': {
-        name: 'Industrial',
-        description: 'Technical headers with hard edges, clipped corners, and bold left borders'
-    },
-    'wuxia': {
-        name: 'Wuxia',
-        description: 'Elegant headers with jade accents, subtle gradients, and traditional diamond flourishes'
-    },
-    'playersHandbook': {
-        name: 'Player\'s Handbook',
-        description: 'Ornate D&D manuscript headers with burgundy gradients and corner flourishes'
-    },
-    'adventurersTome': {
-        name: 'Adventurer\'s Tome',
-        description: 'Wooden tome headers with leather-bound styling and colored category tabs'
-    },
-    'horrific': {
-        name: 'Horrific',
-        description: 'Dark occult headers with blood red accents and ominous glowing seals'
-    },
-    'parchmentQuill': {
-        name: 'Parchment&Quill',
-        description: 'Elegant aged parchment headers with quill pen flourishes and ink accents'
-    },
-    'cyberpunk': {
-        name: 'Cyberpunk',
-        description: 'Simple neon terminal headers with glowing text and left accent borders'
-    },
-    'holographic': {
-        name: 'Holographic',
-        description: 'Subtle gradient headers with soft borders and light text glow'
-    },
-    'digitalMinimal': {
-        name: 'Digital Minimal',
-        description: 'Clean tech headers with bottom borders and spaced lettering'
-    },
-    'neonBoxed': {
-        name: 'Neon Boxed',
-        description: 'Simple bordered headers with centered text and subtle glow'
-    },
-    'dataLabel': {
-        name: 'Data Label',
-        description: 'File system style headers with monospace font and comment prefixes'
-    }
-};
-
-// Container style definitions (affects main world item containers)
-const containerStyles = {
-    'left-border': {
-        name: 'Left Border',
-        description: 'Colored left border, different colors per category'
-    },
-    'outlined': {
-        name: 'Outlined',
-        description: 'Border around entire container, different colors per category'
-    },
-    'cards': {
-        name: 'Cards',
-        description: 'Drop shadows with thick top borders, different colors per category'
-    },
-    'solid-bg': {
-        name: 'Solid Background',
-        description: 'Subtle solid color backgrounds with sharp corners'
-    },
-    'outlined-bg': {
-        name: 'Outlined Background',
-        description: 'Subtle solid color backgrounds with matching outlines and rounded corners'
-    },
-    'boxed': {
-        name: 'Boxed',
-        description: 'Clean boxes with subtle shadows and rounded corners'
-    },
-    'tabs': {
-        name: 'Tabs', 
-        description: 'File folder style with colored tabs at the top'
-    },
-    'rounded': {
-        name: 'Rounded',
-        description: 'Modern rounded design with soft shadows and category accents'
-    },
-    'kawaii': {
-        name: 'Kawaii',
-        description: 'Adorable pastel containers with rounded corners, soft shadows, and cute emoji accents'
-    },
-    'candyPop': {
-        name: 'Candy Pop',
-        description: 'Sweet candy-colored containers with bubbly borders and playful gradients'
-    },
-    'magicalGirl': {
-        name: 'Magical Girl',
-        description: 'Sparkly containers with star decorations, gradient borders, and magical shimmer effects'
-    },
-    'industrial': {
-        name: 'Industrial',
-        description: 'Just background color differences and colored category headers'
-    },
-    'wuxia': {
-        name: 'Wuxia',
-        description: 'Refined containers with subtle gradients, traditional patterns, and jade-colored category accents'
-    },
-    'playersHandbook': {
-        name: 'Player\'s Handbook',
-        description: 'Ornate D&D handbook entries with burgundy borders, corner decorations, and illuminated category headers'
-    },
-    'adventurersTome': {
-        name: 'Adventurer\'s Tome',
-        description: ''
-    },
-    'horrific': {
-        name: 'Horrific',
-        description: 'Cursed relics with occult symbols and blood-red seals'
-    },
-    'parchment': {
-        name: 'Parchment&Quill',
-        description: 'Elegant aged parchment documents with ink accents and regency styling'
-    },
-    'minimal': {
-        name: 'Minimal',
-        description: 'Just background color differences and colored category headers'
-    }
-};
-
-// Subcontainer style definitions (affects info sections within world items)
-const subcontainerStyles = {
-    'soft-bg': {
-        name: 'Soft Background',
-        description: 'Light background with subtle borders'
-    },
-    'outlined': {
-        name: 'Outlined',
-        description: 'Alternating solid and dashed borders'
-    },
-    'pills': {
-        name: 'Pills',
-        description: 'Rounded sections with shadows'
-    },
-    'stripes': {
-        name: 'Stripes',
-        description: 'Alternating colors with thick left borders'
-    },
-    'boxed': {
-        name: 'Boxed',
-        description: 'Simple contained sections with subtle borders'
-    },
-    'headers': {
-        name: 'Headers',
-        description: 'Clean section headers with colored backgrounds'
-    },
-    'rounded': {
-        name: 'Rounded',
-        description: 'Soft rounded sections to match rounded containers'
-    },
-    'kawaii': {
-        name: 'Kawaii',
-        description: 'Soft pastel info sections with rounded bubbles and gentle shadows'
-    },
-    'candyPop': {
-        name: 'Candy Pop', 
-        description: 'Sweet candy-themed sections with colorful borders and bubbly styling'
-    },
-    'magicalGirl': {
-        name: 'Magical Girl',
-        description: 'Enchanted info sections with sparkle effects and magical gradient backgrounds'
-    },
-    'industrial': {
-        name: 'Industrial',
-        description: 'Hard edges with a clipped corner, thick left border'
-    },
-    'wuxia': {
-        name: 'Wuxia',
-        description: 'Elegant sections with scholarly patterns and refined jade-tinted borders'
-    },
-    'playersHandbook': {
-        name: 'Player\'s Handbook',
-        description: 'Medieval manuscript sections with corner flourishes, illuminated headers, and parchment textures'
-    },
-    'adventurersTome': {
-        name: 'Adventurer\'s Tome',
-        description: ''
-    },
-    'horrific': {
-        name: 'Horrific', 
-        description: 'Forbidden scrolls with ancient parchment texture and wax seals'
-    },
-    'parchment': {
-        name: 'Parchment&Quill',
-        description: 'Refined letter sections with quill pen flourishes and watermark textures'
-    },
-    'minimal': {
-        name: 'Minimal',
-        description: 'Clean text with dotted separators'
-    }
-
-};
-
-// Card style definitions (affects character, storyline, plan, and playlist cards)
-const cardStyles = {
-    'current': {
-        name: 'Current',
-        description: 'Current card styling for characters, storylines, plans, and playlists'
-    },
-    'modern': {
-        name: 'Modern',
-        description: 'Clean modern cards with subtle shadows and rounded corners'
-    },
-    'minimal': {
-        name: 'Minimal',
-        description: 'Simple flat cards with basic borders and clean typography'
-    },
-    'detailed': {
-        name: 'Detailed',
-        description: 'Rich cards with multiple visual elements and enhanced spacing'
-    },
-    'corporate': {
-        name: 'Corporate', 
-        description: 'Professional business-like design with structured borders and uppercase styling'
-    },
-    'vintage': {
-        name: 'Vintage',
-        description: 'Retro aesthetic with sepia tinting, inset shadows, and classic styling'
-    },
-    'frost': {
-        name: 'Frost',
-        description: 'Modern transparency effects with subtle backdrop blur and gradient backgrounds'
-    },
-    'slate': {
-        name: 'Slate',
-        description: 'Flat design emphasizing contrast with bold borders and clean typography'
-    },
-    'kawaii': {
-        name: 'Kawaii',
-        description: 'Cute rounded cards with heart decorations and soft pastel styling'
-    },
-    'pastelDream': {
-        name: 'Pastel Dream',
-        description: 'Dreamy ultra-soft cards with gentle shimmer effects and ethereal gradients'
-    },
-    'candyPop': {
-        name: 'Candy Pop',
-        description: 'Sweet bouncy cards with candy-colored borders, glossy shine effects, and playful scaling animations'
-    },
-    'magicalGirl': {
-        name: 'Magical Girl',
-        description: 'Sparkly transformation-themed cards with rainbow borders, floating animations, and magical glow effects'
-    },
-    'industrial': {
-        name: 'Industrial',
-        description: 'Stamped metal and dossier cards'
-    },
-    'wuxia': {
-        name: 'Wuxia',
-        description: 'Refined jade tablet cards with traditional patterns and elegant Chinese character accents'
-    },
-    'playersHandbook': {
-        name: 'Player\'s Handbook',
-        description: 'Ornate medieval manuscript cards with illuminated portraits, quest descriptions, battle maps, and bardic song sheets'
-    },
-    'adventurersTome': {
-        name: 'Adventurer\'s Tome',
-        description: ''
-    },
-    'horrific': {
-        name: 'Horrific',
-        description: 'Cursed portraits and forbidden tome pages with dark textures'
-    },
-    'parchment': {
-        name: 'Parchment&Quill',
-        description: 'Refined regency calling cards and correspondence with wax seals and elegant paper textures'
-    },
 };
 
 // Initialize appearance settings
@@ -729,6 +99,8 @@ function populateAppearanceControls() {
         'appearance-subcontainer-style',
         'appearance-banner-size',
         'appearance-button-style',
+        'appearance-background-style',
+        'appearance-background-color-overlay',
         'appearance-custom-nav-button-style',
         'appearance-back-to-top-style',
         'appearance-site-width'
@@ -756,6 +128,32 @@ function populateAppearanceControls() {
             bannerStyleSelect.appendChild(option);
         });
         bannerStyleSelect.value = appearance.bannerStyle || 'none';
+    }
+
+    // Background style dropdown
+    const backgroundStyleSelect = document.getElementById('appearance-background-style');
+    if (backgroundStyleSelect) {
+        backgroundStyleSelect.innerHTML = '';
+        Object.entries(backgroundStyles).forEach(([key, style]) => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = style.name;
+            backgroundStyleSelect.appendChild(option);
+        });
+        backgroundStyleSelect.value = appearance.backgroundStyle || 'none';
+    }
+
+    // Background color overlay dropdown
+    const backgroundColorOverlaySelect = document.getElementById('appearance-background-color-overlay');
+    if (backgroundColorOverlaySelect) {
+        backgroundColorOverlaySelect.innerHTML = '';
+        Object.entries(backgroundColorOverlays).forEach(([key, overlay]) => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = overlay.name;
+            backgroundColorOverlaySelect.appendChild(option);
+        });
+        backgroundColorOverlaySelect.value = appearance.backgroundColorOverlay || 'none';
     }
     
     // Overview style dropdown
@@ -849,6 +247,19 @@ function populateAppearanceControls() {
             pageHeaderSelect.appendChild(option);
         });
         pageHeaderSelect.value = appearance.pageHeader || 'standard';
+    }
+
+    // Storyline style dropdown
+    const storylineStyleSelect = document.getElementById('appearance-storyline-style');
+    if (storylineStyleSelect) {
+        storylineStyleSelect.innerHTML = '';
+        Object.entries(storylineStyles).forEach(([key, style]) => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = style.name;
+            storylineStyleSelect.appendChild(option);
+        });
+        storylineStyleSelect.value = appearance.storylineStyle || 'default';
     }
 
     // Card style dropdown
@@ -1000,10 +411,13 @@ function addAppearanceEventListeners() {
         'appearance-font-set',
         'appearance-world-categories-header',  // ADD THIS LINE
         'appearance-page-header',
+        'appearance-storyline-style',
         'appearance-container-style',
         'appearance-subcontainer-style',
         'appearance-banner-size',
-        'appearance-banner-style', 
+        'appearance-banner-style',
+        'appearance-background-style', 
+        'appearance-background-color-overlay',
         'appearance-button-style',
         'appearance-custom-nav-button-style',
         'appearance-back-to-top-style',
@@ -1060,6 +474,9 @@ function handleAppearanceChange(event) {
             window.infoData.appearance.pageHeader = value;
             console.log('Page header changed to:', value); // ADD DEBUG LINE
             break;
+        case 'appearance-storyline-style':  // ADD THIS CASE
+            window.infoData.appearance.storylineStyle = value;
+            break;
         case 'appearance-container-style':
             window.infoData.appearance.containerStyle = value;
             break;
@@ -1071,6 +488,12 @@ function handleAppearanceChange(event) {
             break;
         case 'appearance-banner-style':
             window.infoData.appearance.bannerStyle = value;
+            break;
+        case 'appearance-background-style':
+            window.infoData.appearance.backgroundStyle = value;
+            break;
+        case 'appearance-background-color-overlay':
+            window.infoData.appearance.backgroundColorOverlay = value;
             break;
         case 'appearance-button-style':  // NEW: Handle timeline style changes
             window.infoData.appearance.buttonStyle = value;
@@ -1109,6 +532,26 @@ function updateAppearanceDescriptions() {
         const styleObj = bannerStyles[style];
         if (styleObj) {
             bannerStyleDesc.textContent = styleObj.description;
+        }
+    }
+
+    // Background style description
+    const backgroundStyleDesc = document.getElementById('background-style-description');
+    if (backgroundStyleDesc) {
+        const style = appearance.backgroundStyle || 'none';
+        const styleObj = backgroundStyles[style];
+        if (styleObj) {
+            backgroundStyleDesc.textContent = styleObj.description;
+        }
+    }
+
+    // Background color overlay description
+    const backgroundColorOverlayDesc = document.getElementById('background-color-overlay-description');
+    if (backgroundColorOverlayDesc) {
+        const overlay = appearance.backgroundColorOverlay || 'none';
+        const overlayObj = backgroundColorOverlays[overlay];
+        if (overlayObj) {
+            backgroundColorOverlayDesc.textContent = overlayObj.description;
         }
     }
     
@@ -1167,6 +610,13 @@ function updateAppearanceDescriptions() {
             'neuralInterface': 'Connected network nodes with pulsing connections and data flow animations'
         };
         pageHeaderDesc.textContent = descriptions[style] || 'Controls the style of page headers throughout the site';
+    }
+
+    // Storyline style description
+    const storylineStyleDesc = document.getElementById('storyline-style-description');
+    if (storylineStyleDesc) {
+        const style = appearance.storylineStyle || 'default';
+        storylineStyleDesc.textContent = storylineStyles[style]?.description || 'Controls the style of storyline section headers, subsection headers, and table of contents';
     }
 
     // Card style description

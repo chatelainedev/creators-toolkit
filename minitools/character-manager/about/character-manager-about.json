@@ -1,0 +1,244 @@
+{
+  "title": "Character Manager Guide",
+  "sections": [
+    {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "content": "Character Manager helps you organize, edit, and export AI character cards. You can import existing character cards (JSON or PNG format), create new characters from scratch, and manage them in organized projects.",
+      "subsections": [
+        {
+          "id": "first-steps",
+          "title": "First Steps",
+          "content": "When you first open Character Manager, you'll see an empty project. You can either import existing character cards or create a new character from scratch using the **+ button** in the control bar. All changes are saved to projects, which can be loaded and managed from the top navigation bar."
+        },
+        {
+          "id": "navigation",
+          "title": "Navigation",
+          "content": "The top navigation contains project controls, import button, and settings. The control bar below provides search, filters, view options, and character management tools. You can switch between Grid View and Folder View to organize your characters differently."
+        }
+      ]
+    },
+    {
+      "id": "importing",
+      "title": "Importing Characters",
+      "content": "Character Manager supports importing character cards in both PNG and JSON formats. These can come from various AI chat applications and follow the Character Card V2 specification.",
+      "subsections": [
+        {
+          "id": "import-process",
+          "title": "Import Process",
+          "content": "Click the **Import Characters** button and select one or more PNG or JSON files. Character Manager will process them and show a preview modal where you can select which characters to import. Each character's token count and tags are displayed for review before importing."
+        },
+        {
+          "id": "supported-formats",
+          "title": "Supported Formats",
+          "content": "Both V2 and V3 character card formats are supported. PNG files should contain embedded character data in the `chara` text chunk. JSON files should follow the standard character card schema with fields like name, description, personality, scenario, first message, and example dialogue."
+        },
+        {
+          "id": "avatar-handling",
+          "title": "Avatar Handling",
+          "content": "When importing PNG character cards, the image is automatically extracted and stored as a thumbnail for better performance. Multiple avatars can be added to any character after import, and you can switch between them when editing."
+        }
+      ]
+    },
+    {
+      "id": "editing-characters",
+      "title": "Editing Characters",
+      "content": "Double-click any character card to open the edit modal. Here you can modify all aspects of the character including their avatar, name, description, personality, scenario, dialogue, and advanced settings.",
+      "subsections": [
+        {
+          "id": "basic-fields",
+          "title": "Basic Fields",
+          "content": "The edit modal contains sections for Core Details (description, personality, scenario), Dialogue (first message, example messages), and Advanced settings. Each text field shows a real-time token count to help you manage the character's total size. The **Display Name** is optional and appears above the character name on cards."
+        },
+        {
+          "id": "alternates",
+          "title": "Alternate Versions",
+          "content": "Click the **ALT** button next to Description, Personality, Scenario, Example Messages, Character Note, or Post-History Instructions to manage alternate versions of that field. This lets you maintain multiple versions of the same character trait and switch between them easily. Alternates are particularly useful for seasonal variations or different story contexts."
+        },
+        {
+          "id": "multiple-avatars",
+          "title": "Multiple Avatars",
+          "content": "Characters can have multiple avatars. Use the navigation arrows above the avatar preview to cycle through them, or click the camera button to add new ones. The currently displayed avatar becomes the active one when you save. This is useful for different outfits, expressions, or time periods."
+        },
+        {
+          "id": "expanded-editor",
+          "title": "Expanded Text Editor",
+          "content": "Click the expand icon next to any text field to open a full-screen editor with more space for writing. The expanded editor shows token counts and lets you edit comfortably without the constraints of the main modal. Click **Update Field** to save your changes back to the main form."
+        }
+      ]
+    },
+    {
+      "id": "greetings",
+      "title": "Alternative Greetings",
+      "content": "Characters can have multiple greeting messages. Click the **Alternative Greetings** button in the Dialogue section to manage them.",
+      "subsections": [
+        {
+          "id": "greeting-management",
+          "title": "Managing Greetings",
+          "content": "The Alternative Greetings modal shows all your character's opening messages. The first greeting in your character's First Message field is shown at the top. You can add new greetings, edit existing ones, delete them, or reorder them by dragging. Each greeting can be expanded for full-screen editing."
+        },
+        {
+          "id": "greeting-usage",
+          "title": "When to Use Multiple Greetings",
+          "content": "Multiple greetings are useful for characters who might start conversations differently depending on context - morning vs evening, different moods, various scenarios, or response to different user characters. AI chat applications that support alternative greetings will let users choose which one to start with."
+        }
+      ]
+    },
+    {
+      "id": "character-books",
+      "title": "Character Books",
+      "content": "Character Books (also called Lorebooks) contain entries that provide additional context to the AI when specific keywords are mentioned in conversation.",
+      "subsections": [
+        {
+          "id": "book-basics",
+          "title": "Book Basics",
+          "content": "Click the **Character Book** button in the Advanced section to open the Character Book editor. Each entry has keywords that trigger it, content that gets inserted, and various settings controlling when and how it appears. This is useful for defining relationships, locations, events, or any information that shouldn't always be in the character's description."
+        },
+        {
+          "id": "entry-fields",
+          "title": "Entry Fields",
+          "content": "Each entry contains:\n\n**Keywords** - Words/phrases that trigger this entry (comma-separated)\n**Content** - The text that gets inserted when triggered\n**Priority** - Higher numbers insert first (default 100)\n**Order** - Whether to insert before or after character description\n**Position** - Where in context to insert (before/after character definition)\n\nAdditional settings include **Enabled** toggle, **Case Sensitive** matching, **Constant** (always active), and **Selective** (only trigger on specific words)."
+        },
+        {
+          "id": "scan-settings",
+          "title": "Global Settings",
+          "content": "The book itself has settings for **Scan Depth** (how many messages to check for keywords) and **Token Budget** (maximum tokens to use from all triggered entries). These help control performance and prevent context overflow."
+        }
+      ]
+    },
+    {
+      "id": "folders",
+      "title": "Organizing with Folders",
+      "content": "Folders help you organize characters into categories. Switch to Folder View to see all your folders, or use the folder filter in Grid View.",
+      "subsections": [
+        {
+          "id": "creating-folders",
+          "title": "Creating Folders",
+          "content": "Click the **Manage Folders** button (folder+ icon) to open the folder management modal. Enter a name and click Create to make a new folder. You can also create folders on-the-fly when moving characters via the right-click context menu."
+        },
+        {
+          "id": "folder-covers",
+          "title": "Folder Covers",
+          "content": "Edit any folder to add a custom cover image. This image appears in Folder View and helps visually distinguish your categories. Covers can be uploaded directly and are stored as compressed thumbnails for performance."
+        },
+        {
+          "id": "moving-characters",
+          "title": "Moving Characters to Folders",
+          "content": "Right-click any character and select **Move to...** to assign it to a folder, or use the folder dropdown in the character edit modal. You can also bulk move multiple selected characters at once. Characters can also have no folder assigned (\"No Folder\")."
+        }
+      ]
+    },
+    {
+      "id": "projects",
+      "title": "Projects",
+      "content": "Projects save your entire character collection, folders, and view settings. This lets you maintain separate collections for different purposes or campaigns.",
+      "subsections": [
+        {
+          "id": "saving-projects",
+          "title": "Saving Projects",
+          "content": "Click the **Save** button (💾) to save your current project. If this is a new project, you'll be prompted for a name. Existing projects can be resaved to update them. Your project name appears in the dropdown menu for easy identification."
+        },
+        {
+          "id": "loading-projects",
+          "title": "Loading Projects",
+          "content": "Select a project from the dropdown and click the **Load** button to open it. All characters, folders, and settings will be restored. If you have unsaved changes in your current project, consider saving first."
+        },
+        {
+          "id": "project-management",
+          "title": "Managing Projects",
+          "content": "Right-click the project dropdown to access **Quick Load** (loads your last project) and **Rename** (renames the current project). When a project is loaded and selected in the dropdown, the load button changes to a delete button (🗑️) - use this to permanently remove a project."
+        }
+      ]
+    },
+    {
+      "id": "bulk-operations",
+      "title": "Bulk Operations",
+      "content": "You can select multiple characters and perform actions on them simultaneously.",
+      "subsections": [
+        {
+          "id": "selecting",
+          "title": "Selecting Characters",
+          "content": "**Click** a character to select it. **Ctrl+Click** (Cmd+Click on Mac) to add/remove characters from selection. **Shift+Click** to select a range. The bulk action toolbar appears when multiple characters are selected."
+        },
+        {
+          "id": "bulk-actions",
+          "title": "Available Bulk Actions",
+          "content": "When multiple characters are selected, you can:\n\n**Add Tags** - Add tags to all selected characters\n**Move to Folder** - Assign all selected characters to a folder\n**Delete All** - Remove all selected characters\n**Clear Selection** - Deselect all characters\n\nThese operations affect all selected characters at once, saving time when organizing large collections."
+        }
+      ]
+    },
+    {
+      "id": "export",
+      "title": "Exporting Characters",
+      "content": "Characters can be exported in multiple formats for use in other applications or for backup purposes.",
+      "subsections": [
+        {
+          "id": "export-formats",
+          "title": "Export Formats",
+          "content": "Right-click any character and choose **Export** to see available formats:\n\n**JSON** - Character data in JSON format\n**PNG** - Complete character card with embedded data (if character has an avatar)\n**TXT** - Plain text export of all character fields\n\nPNG exports embed all character data into the image file, making them fully compatible with most AI chat applications."
+        },
+        {
+          "id": "sillytavern",
+          "title": "SillyTavern Integration",
+          "content": "If you've configured your SillyTavern path in Settings, you can send characters directly to SillyTavern profiles. Right-click a character with a PNG avatar and select **Send to SillyTavern**. Choose the target profile from the list, and the character will be saved directly to that profile's characters folder. Remember to refresh SillyTavern to see the new character."
+        }
+      ]
+    },
+    {
+      "id": "search-filter",
+      "title": "Search and Filtering",
+      "content": "The search bar and filters help you find specific characters quickly, especially in large collections.",
+      "subsections": [
+        {
+          "id": "search",
+          "title": "Search",
+          "content": "Type in the search bar to filter characters by name, display name, description, or tags. The character counter updates to show how many characters match your search. Click the **X** button to clear the search."
+        },
+        {
+          "id": "filters",
+          "title": "Folder and Tag Filters",
+          "content": "Use the **folder dropdown** to show only characters in a specific folder or characters with no folder assigned. The **tag filter** lets you filter by specific tags. Both filters can be combined with search for precise results."
+        },
+        {
+          "id": "views",
+          "title": "View Modes",
+          "content": "**Grid View** shows all characters as cards in a grid layout. **Folder View** shows folders as cards - click a folder to see the characters inside it. Use the view toggle buttons in the control bar to switch between these modes."
+        }
+      ]
+    },
+    {
+      "id": "settings",
+      "title": "Settings",
+      "content": "Click the **Settings** button (⚙️) to configure Character Manager options.",
+      "subsections": [
+        {
+          "id": "sillytavern-path",
+          "title": "SillyTavern Path",
+          "content": "Enter the full path to your SillyTavern installation folder (the one containing the `data` folder with characters, worlds, etc.). This enables the **Send to SillyTavern** feature in the character context menu. Example paths:\n\n**Windows**: `C:\\SillyTavern`\n**Linux/Mac**: `/home/username/SillyTavern`"
+        }
+      ]
+    },
+    {
+      "id": "tips",
+      "title": "Tips & Tricks",
+      "content": "Here are some helpful tips for getting the most out of Character Manager.",
+      "subsections": [
+        {
+          "id": "token-management",
+          "title": "Token Management",
+          "content": "Keep an eye on token counts for each field and the total. Most AI models have context limits, and smaller characters load faster and cost less. Consider using Character Books for information that only matters sometimes, rather than including everything in the description."
+        },
+        {
+          "id": "context-menus",
+          "title": "Context Menus",
+          "content": "Right-clicking reveals many useful options. Right-click characters for edit/duplicate/move/export/delete options. Right-click folders in Folder View to edit or delete them. Right-click the project dropdown for quick load and rename options."
+        },
+        {
+          "id": "keyboard-shortcuts",
+          "title": "Keyboard Shortcuts",
+          "content": "Press **ESC** to close any open modal. Use **Ctrl/Cmd+Click** and **Shift+Click** for multi-selection. These shortcuts help speed up your workflow when managing many characters."
+        }
+      ]
+    }
+  ]
+}

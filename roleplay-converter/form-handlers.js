@@ -214,7 +214,7 @@ function addNavigation(label = '', url = '') {
     const navEntry = document.createElement('div');
     navEntry.className = 'nav-entry';
     navEntry.innerHTML = `
-        <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+        <div style="display: flex; gap: 8px; margin-bottom: 0px; align-items: center; width: 100%;">
             <input type="text" class="nav-label" placeholder="Link text (e.g., Home)" value="${label}" style="flex: 1;">
             <input type="text" class="nav-url" placeholder="URL (e.g., ../index.html)" value="${url}" style="flex: 2;">
             <span class="remove-nav fake-btn-remove" title="Remove navigation link">×</span>

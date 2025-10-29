@@ -84,6 +84,15 @@ function getSmartDefaultPath(context) {
                 return `assets/characters/${safeName}/`;
             }
             return 'assets/characters/';
+        case 'character-card':  // NEW: Add this case
+            // Try to get character name from the form
+            const cardCharName = document.getElementById('char-name')?.value.trim();
+            if (cardCharName) {
+                // Sanitize name for filesystem
+                const safeName = cardCharName.toLowerCase().replace(/[^a-z0-9]/g, '');
+                return `assets/characters/${safeName}/`;
+            }
+            return 'assets/characters/';
         case 'world-item':
             // Try to get the world category from editing context
             if (editingCategory) {
@@ -107,14 +116,21 @@ function handleFileSelection(e) {
     const file = e.target.files[0];
     if (!file) return;
     
+    const context = currentImageContext.context;
+    
+    // NEW: PNG-only validation for character cards
+    if (context === 'character-card' && file.type !== 'image/png') {
+        alert('Character cards must be PNG files only!');
+        e.target.value = '';
+        return;
+    }
+    
     // Auto-suggest filename based on original name
     const originalName = file.name;
     const extension = originalName.split('.').pop().toLowerCase();
     
     // Generate smart filename suggestions
     let suggestedName = originalName;
-    
-    const context = currentImageContext.context;
     
     if (context === 'character') {
         const charName = document.getElementById('char-name')?.value.trim();
@@ -129,6 +145,15 @@ function handleFileSelection(e) {
             } else {
                 suggestedName = `${safeName}.${extension}`;
             }
+        }
+    } else if (context === 'character-card') {  
+        const charName = document.getElementById('char-name')?.value.trim();
+        if (charName) {
+            const safeName = charName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            // FORCE PNG extension for character cards
+            suggestedName = `${safeName}-card.png`;
+        } else {
+            suggestedName = `character-card.png`;
         }
     } else if (context === 'world-item') {
         const itemName = document.getElementById('item-name')?.value.trim();

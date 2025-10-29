@@ -139,8 +139,8 @@ function addComment(text = '') {
     commentEntry.className = 'comment-entry';
     commentEntry.draggable = true;
     commentEntry.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 0px; padding-bottom:0px; width: 100%;">
-            <div style="display: flex; gap: 4px; align-items: flex-start; width: 100%;">
+        <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 0px; padding-bottom:10px; width: 100%;">
+            <div style="display: flex; gap: 4px; align-items: center; width: 100%;">
                 <textarea class="comment-text" placeholder="comment: Your comment text here..." style="flex: 1; min-height: 80px; resize: vertical; width: 100%;">${text}</textarea>
                 <span class="remove-comment fake-btn-remove" style="margin-top: 0; flex-shrink: 0;" title="Remove comment">×</span>
             </div>

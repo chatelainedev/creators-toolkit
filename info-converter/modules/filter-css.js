@@ -541,10 +541,10 @@ function generateUnifiedFilterCSS(colors, fonts, appearance) {
         .character-tag-link:hover,
         .timeline-tag-link:hover,
         .storylines-tag-link:hover {
-            background: ${colors.textMuted};
+            background: var(--hover-color, ${colors.textMuted}) !important;
             text-decoration: none;
             color: ${colors.containerBg};
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* Subtle shadow change instead of transform */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
 
         /* Selected state - just color change, no × button, no padding change */
@@ -552,10 +552,9 @@ function generateUnifiedFilterCSS(colors, fonts, appearance) {
         .world-tag-link.selected,
         .timeline-tag-link.selected,
         .storylines-tag-link.selected {
-            background: linear-gradient(135deg, ${colors.statusDraft} 0%, ${colors.statusDraft}dd 100%);
+            background-color: var(--hover-color, ${colors.statusDraft}) !important;
             border-color: ${colors.statusDraft}66;
             box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            /* No padding change, no ::after pseudo-element */
         }
 
         /* Status filter dropdown (World section) */

@@ -28,7 +28,7 @@
     /* Text colors - high contrast */
     --text-main: #e5e5e5;
     --text-muted: #8a8a9e;
-    --text-dialog: #CBCCCC;
+    --text-dialog: #9ACCCC;
     
     /* Base whites */
     --white: #ffffff;
@@ -82,7 +82,8 @@
 
 body {
     font-family: 'Source Sans Pro', 'Helvetica Neue', sans-serif;
-    line-height: 1.7;
+    font-size: 18px;
+    line-height: 1.5;
     margin: 0;
     padding: 20px;
     background-color: var(--background-main);
@@ -430,8 +431,11 @@ nav a:hover {
     top: 150px;
 }
 
-.soundtrack-panel.open, .comments-panel.open { transform: translateX(0); }
+.soundtrack-panel.open, .comments-panel.open { 
+    transform: translateX(0); 
+}
 
+/* Toggle buttons - stick out to the right when panel is closed */
 .soundtrack-toggle, .comments-toggle {
     position: absolute;
     top: 0;
@@ -446,21 +450,33 @@ nav a:hover {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .soundtrack-toggle { 
-    background-color: var(--accent-pink); 
+    background-color: #000000; 
 }
 .soundtrack-toggle:hover { 
-    background-color: var(--accent-pink-dark); 
+    background-color: var(--accent-pink); 
 }
 
 .comments-toggle { 
-    background-color: var(--accent-blue); 
+    background-color: #000000; 
 }
 .comments-toggle:hover { 
-    background-color: #00c4cc; 
+    background-color: var(--accent-blue); 
+}
+
+/* When panels are open, move toggles to top-right corner inside the panel */
+.soundtrack-panel.open .soundtrack-toggle,
+.comments-panel.open .comments-toggle {
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px var(--shadow-dark);
 }
 
 /* Hide the other toggle when one panel is open */
@@ -471,7 +487,9 @@ nav a:hover {
 }
 
 /* Adjust z-index and positioning when panels are open */
-.soundtrack-panel.open, .comments-panel.open { z-index: 1001; }
+.soundtrack-panel.open, .comments-panel.open { 
+    z-index: 1001; 
+}
 
 .soundtrack-panel.open ~ .comments-panel { 
     top: 200px; 
@@ -500,32 +518,115 @@ nav a:hover {
 .soundtrack-track a:hover, .table-of-contents a:hover { color: var(--accent-pink); }
 
 /* Image Modal */
+/* Image Modal */
 .image-modal {
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     background-color: var(--overlay-dark);
     backdrop-filter: blur(5px);
 }
 
-.image-modal img {
+.image-modal.show {
+    display: block !important;
+}
+
+.image-modal-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.image-modal-content img {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     border: 4px solid var(--white);
     box-shadow: 0 8px 40px var(--shadow-modal);
 }
 
-.image-modal-close, .image-modal-nav {
+.image-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
     background-color: var(--white);
     color: var(--accent-pink);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 100001;
     border: none;
     border-radius: 0;
-    font-weight: bold;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    transition: all 0.2s ease;
 }
 
-.image-modal-close:hover, .image-modal-nav:hover {
+.image-modal-close:hover {
     background-color: var(--accent-pink);
     color: var(--white);
     transform: scale(1.1);
 }
 
+.image-modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--white);
+    color: var(--accent-pink);
+    border: none;
+    border-radius: 0;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100001;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
 .image-modal-nav:hover {
+    background-color: var(--accent-pink);
+    color: var(--white);
     transform: translateY(-50%) scale(1.1);
+}
+
+.image-modal-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.image-modal-nav:disabled:hover {
+    background-color: var(--white);
+    color: var(--accent-pink);
+    transform: translateY(-50%);
+}
+
+.image-modal-nav.prev {
+    left: 20px;
+}
+
+.image-modal-nav.next {
+    right: 20px;
+}
+
+/* Hide nav buttons when only one image */
+.image-modal-nav[style*="display: none"] {
+    display: none !important;
 }
 
 /* Animations */
@@ -565,17 +666,6 @@ nav a:hover {
 .comment-block em { font-style: italic; color: var(--text-muted); }
 .comment-block del { text-decoration: none; opacity: 0.7; }
 font[color=blue] { color: var(--accent-blue) !important; }
-.image-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease; }
-.image-modal.show { display: flex !important; justify-content: center; align-items: center; padding: 40px; box-sizing: border-box; opacity: 1; }
-.image-modal-content { position: relative; max-width: 90%; max-height: 90%; animation: fadeInScale 0.3s ease; }
-.image-modal-content img { width: 100%; height: 100%; object-fit: contain; }
-.image-modal-close { position: absolute; top: -15px; right: -15px; width: 40px; height: 40px; font-size: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px var(--shadow-modal); transition: transform 0.2s ease; z-index: 2001; }
-.image-modal-close:hover { transform: scale(1.1); }
-.image-modal-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; font-size: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px var(--shadow-dark); transition: transform 0.2s ease; z-index: 2001; }
-.image-modal-nav.prev { left: -30px; }
-.image-modal-nav.next { right: -30px; }
-.image-modal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
-.image-modal-nav:disabled:hover { transform: translateY(-50%); }
 .gallery-header { padding: 15px 25px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; font-weight: 600; color: var(--text-main); }
 .gallery-header:hover { background-color: var(--primary-medium) !important; }
 .toggle-icon { font-size: 14px; transition: transform 0.15s ease; color: var(--text-muted); }
@@ -584,6 +674,27 @@ font[color=blue] { color: var(--accent-blue) !important; }
 .gallery-content.collapsed { max-height: 0; padding: 0; border: none; }
 .part-toggle.collapsed { transform: rotate(-90deg); }
 .rp-container.collapsed { display: none; }
+
+/* For Webkit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 12px;  /* A slightly thicker, more UI-heavy scrollbar */
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary-darker); /* Dark track to match the content background */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--gray-light); /* Muted gray for the default state */
+    border-radius: 0; /* Sharp edges to match the theme's aesthetic */
+    border: 2px solid var(--primary-darker); /* Creates a "padding" effect */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-pink); /* Iconic pink on hover */
+}
+
 @media (max-width: 768px) {
     body { padding: 0 15px; }
     .content-wrapper { padding: 20px; }

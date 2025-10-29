@@ -273,7 +273,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(4px);
 }
 
 .message-action-btn:hover {
@@ -518,7 +517,6 @@
     overflow-y: auto;
     z-index: 100;
     display: none;
-    animation: dropdownSlideUp 0.2s ease;
 }
 
 @keyframes dropdownSlideUp {
@@ -596,6 +594,7 @@
     justify-content: center;
     margin: 0;
     position: relative;
+    border-bottom: 2px solid transparent; /* Always have border, just invisible */
 }
 
 .cowriter-settings-tab:hover {
@@ -607,7 +606,7 @@
 .cowriter-settings-tab.active {
     color: var(--accent-primary);
     background: var(--bg-secondary);
-    border-bottom: 2px solid var(--accent-primary);
+    border-bottom-color: var(--accent-primary); /* Just change color, not add border */
 }
 
 .cowriter-scrollable-content {
@@ -1436,7 +1435,6 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1657,4 +1655,27 @@ select optgroup {
     margin: 2px 0;
     height: 1px;
     background: var(--border-primary);
+}
+
+.show-more-messages-btn {
+    display: block;
+    width: 100%;
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.show-more-messages-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+}
+
+.show-more-messages-btn i {
+    margin-right: var(--space-sm);
 }

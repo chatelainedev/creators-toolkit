@@ -33,8 +33,9 @@ const colorSchemes = {
             creatures: '#E6AEC8',
             plants: '#98D8C5',
             items: '#94BEC5',
-            culture: '#DDA8AD',        // Red for culture
+            culture: '#DDA8AD',        
             cultivation: '#8AB193',
+            magic: '#D5C4F0',
             itemName: '#282626', 
             
             //Character profile item colors
@@ -51,7 +52,7 @@ const colorSchemes = {
             // NEW: Link colors for arc and storyline links
             linkColor: '#85AB97',           
             linkHover: '#4A5D70',  
-            linkColorSecondary: '#6c9bd1',  // Softer, muted blue
+            linkColorSecondary: '#6c9bd1',  
             linkHoverSecondary: '#5a7ba8',
             
             // Status badge colors (vibrant)
@@ -69,14 +70,14 @@ const colorSchemes = {
 
             softBg: '#f8f9fa',
 
-            kawaiiPink: '#ff69b4',      // Hot pink (vibrant)
-            kawaiiPurple: '#9370db',    // Medium slate blue  
-            kawaiiBlue: '#00bfff',      // Deep sky blue
-            kawaiiGold: '#ffd700',      // Gold
-            kawaiiGreen: '#32cd32',     // Lime green
-            kawaiiOrange: '#ff6347',    // Tomato
+            kawaiiPink: '#ff69b4',      
+            kawaiiPurple: '#9370db',   
+            kawaiiBlue: '#00bfff',      
+            kawaiiGold: '#ffd700',      
+            kawaiiGreen: '#32cd32',    
+            kawaiiOrange: '#ff6347',   
 
-            wuxiaAccent: '#85AB97',        // Use your existing green
+            wuxiaAccent: '#85AB97',        
             wuxiaAccentLight: '#A3C2AB',   // Lighter version
             wuxiaGlow: 'rgba(133,171,151,0.6)', // Glow effect
 
@@ -118,6 +119,7 @@ const colorSchemes = {
             items: '#f8f9fa',
             culture: '#f8f9fa',
             cultivation: '#f8f9fa',
+            magic: '#f8f9fa',
             itemName: '#383838', 
 
             //Character profile item colors
@@ -132,9 +134,9 @@ const colorSchemes = {
             relationships: '#495057',
 
             // NEW: Link colors (neutral theme)
-            linkColor: '#6c757d',           // Muted gray
+            linkColor: '#6c757d',           
             linkHover: '#495057', 
-            linkColorSecondary: '#8e9aaf',  // Slightly blue-tinted gray
+            linkColorSecondary: '#8e9aaf',  
             linkHoverSecondary: '#7a8699',
             
             // Status badge colors (neutral)
@@ -144,23 +146,23 @@ const colorSchemes = {
             statusArchived: '#868e96',
 
             seasonal: {
-                winter: '#F8FAFA',    // Very subtle blue tint
-                spring: '#F8FAF8',    // Very subtle green tint  
-                summer: '#FAFAF8',    // Very subtle warm tint
-                autumn: '#FAF8F8'     // Very subtle orange tint
+                winter: '#F8FAFA',    
+                spring: '#F8FAF8',    
+                summer: '#FAFAF8',   
+                autumn: '#FAF8F8'     
             },
 
             softBg: '#f8f9fa',  // Same neutral light
 
-            kawaiiPink: '#d1bcc2',      // Muted rose
-            kawaiiPurple: '#b8adc7',    // Muted lavender
-            kawaiiBlue: '#a8c5d1',     // Muted sky blue
-            kawaiiGold: '#d4c5a0',     // Muted gold
-            kawaiiGreen: '#b5c7a8',    // Muted sage
-            kawaiiOrange: '#d1b5a8',   // Muted peach
+            kawaiiPink: '#d1bcc2',      
+            kawaiiPurple: '#b8adc7',    
+            kawaiiBlue: '#a8c5d1',     
+            kawaiiGold: '#d4c5a0',    
+            kawaiiGreen: '#b5c7a8',    
+            kawaiiOrange: '#d1b5a8',   
 
             wuxiaAccent: '#9ca3af',        // Neutral gray-green
-            wuxiaAccentLight: '#d1d5db',   // Light gray
+            wuxiaAccentLight: '#d1d5db',   
             wuxiaGlow: 'rgba(156,163,175,0.4)', // Subtle glow
 
             journalAccent: '#B9B9B9'
@@ -171,83 +173,84 @@ const colorSchemes = {
         description: 'Conservative business palette with muted grays and navy accents for formal documentation',
         colors: {
             // Background and base colors - conservative business feel
-            bodyBg: '#fafafa',          // Very light neutral gray
-            containerBg: '#ffffff',     // Pure white for content
-            headerBg: '#f5f5f5',        // Light neutral gray header
-            bannerBorder: 'rgba(55, 65, 81, 0.2)', // Muted dark gray border
+            bodyBg: '#fafafa',          
+            containerBg: '#ffffff',    
+            headerBg: '#f5f5f5',        
+            bannerBorder: 'rgba(55, 65, 81, 0.2)', 
             
             // Navigation - conservative and understated
             navBg: '#fafafa',           // Match body for seamless look
-            navText: '#374151',         // Dark gray
+            navText: '#374151',         
             navActive: '#1f2937',       // Dark charcoal active
-            navActiveText: '#ffffff',   // White text on dark
-            navHover: '#B3B4B6',        // Very light gray hover
+            navActiveText: '#ffffff',   
+            navHover: '#B3B4B6',       
             
             // Content colors - conservative and highly readable
-            textPrimary: '#111827',     // Nearly black
-            textSecondary: '#374151',   // Dark gray
-            textMuted: '#6b7280',       // Medium gray
-            textTitle: '#000000',       // Pure black for titles
+            textPrimary: '#111827',     
+            textSecondary: '#374151',  
+            textMuted: '#6b7280',       
+            textTitle: '#000000',       
             textContent: '#1f2937',     // Dark charcoal for reading
             
             // World item backgrounds - very subtle neutral variations
             general: '#f9fafb', 
-            locations: '#f9fafb',       // Barely tinted gray (places)
-            factions: '#f8f9fa',        // Subtle cool gray (groups)
-            concepts: '#fafbfc',        // Nearly white (knowledge)
-            events: '#fffef7',          // Hint of warm (happenings)
-            creatures: '#fafbfa',       // Hint of green (beings)
-            plants: '#f9fbf9',          // Very subtle green (flora)
-            items: '#f8f9fb',           // Hint of blue (objects)
-            culture: '#faf9fb',         // Hint of purple (traditions)
-            cultivation: '#f8fafb',     // Subtle blue (practices)
-            itemName: '#000000',        // Pure black for item names
+            locations: '#f9fafb',       
+            factions: '#f8f9fa',        
+            concepts: '#fafbfc',       
+            events: '#fffef7',          
+            creatures: '#fafbfa',     
+            plants: '#f9fbf9',          
+            items: '#f8f9fb',           
+            culture: '#faf9fb',        
+            cultivation: '#f8fafb',
+            magic: '#fafbfc',    
+            itemName: '#000000',        
             
             // Character profile item colors - muted professional palette
-            physical: '#1e40af',        // Navy blue (appearance)
-            personality: '#374151',     // Dark gray (character)
-            sexuality: '#be185d',       // Muted rose (passion)
-            fighting: '#991b1b',        // Dark red (combat)
-            background: '#581c87',      // Dark purple (history)
-            weapons: '#1f2937',         // Charcoal (implements)
-            hobbies: '#0f766e',         // Dark teal (leisure)
-            quirks: '#92400e',          // Dark amber (traits)
-            relationships: '#166534',   // Dark green (connections)
+            physical: '#1e40af',        
+            personality: '#374151',     
+            sexuality: '#be185d',       
+            fighting: '#991b1b',        
+            background: '#581c87',      
+            weapons: '#1f2937',         
+            hobbies: '#0f766e',         
+            quirks: '#92400e',          
+            relationships: '#166534',   
 
             // Link colors - conservative and professional
-            linkColor: '#1e40af',           // Navy blue
-            linkHover: '#1e3a8a',           // Darker navy on hover
-            linkColorSecondary: '#374151',  // Dark gray for variety
-            linkHoverSecondary: '#1f2937',  // Darker gray on hover
+            linkColor: '#1e40af',          
+            linkHover: '#1e3a8a',           
+            linkColorSecondary: '#374151',  
+            linkHoverSecondary: '#1f2937',  
             
             // Status badge colors - conservative business indicators
-            statusIdea: '#6b7280',      // Gray (preliminary)
-            statusDraft: '#1e40af',     // Navy (in review)
-            statusCanon: '#166534',     // Dark green (approved)
-            statusArchived: '#4b5563',  // Medium gray (archived)
+            statusIdea: '#6b7280',    
+            statusDraft: '#1e40af',    
+            statusCanon: '#166534',     
+            statusArchived: '#4b5563',  
 
             // Seasonal colors - barely perceptible professional variations
             seasonal: {
                 winter: '#f8f9fb',      // Barely cool tinted
-                spring: '#f9fbf9',      // Barely green tinted
+                spring: '#f9fbf9',      
                 summer: '#fffef9',      // Barely warm tinted
                 autumn: '#fffef7'       // Barely amber tinted
             },
 
-            softBg: '#f9fafb',  // Very subtle gray
+            softBg: '#f9fafb',  
 
             kawaiiPink: '#c4a4a7',      // Professional rose
-            kawaiiPurple: '#a294b8',    // Professional lavender
-            kawaiiBlue: '#6b9bd1',      // Professional blue
-            kawaiiGold: '#b8a876',      // Professional gold
+            kawaiiPurple: '#a294b8',   
+            kawaiiBlue: '#6b9bd1',      
+            kawaiiGold: '#b8a876',      
             kawaiiGreen: '#8ba67c',     // Professional sage
             kawaiiOrange: '#c49a7c',    // Professional bronze
 
-            wuxiaAccent: '#374151',        // Professional dark gray
-            wuxiaAccentLight: '#6b7280',   // Medium gray
-            wuxiaGlow: 'rgba(55,65,81,0.3)', // Subtle gray glow
+            wuxiaAccent: '#374151',        
+            wuxiaAccentLight: '#6b7280',   
+            wuxiaGlow: 'rgba(55,65,81,0.3)', 
 
-            journalAccent: '#1e40af'    // Navy blue journal accent
+            journalAccent: '#1e40af'    
         }
     },
     modernBlue: {
@@ -255,17 +258,17 @@ const colorSchemes = {
         description: 'Clean contemporary design with cool grays and vibrant blue accents',
         colors: {
             // Background and base colors 
-            bodyBg: '#f8f9fb',          // Very light cool gray
-            containerBg: '#ffffff',      // Pure white for content
+            bodyBg: '#f8f9fb',          
+            containerBg: '#ffffff',      
             headerBg: '#e8ebf0',        // Light blue-gray header
             bannerBorder: 'rgba(71, 85, 105, 0.3)', // Professional slate border
             
             // Navigation
             navBg: '#f8f9fb',           // Match body for seamless look
-            navText: '#475569',         // Slate gray
-            navActive: '#3b82f6',       // Professional blue active
-            navActiveText: '#ffffff',   // White text on blue
-            navHover: '#C4CBD4',        // Light gray hover
+            navText: '#475569',         
+            navActive: '#3b82f6',       
+            navActiveText: '#ffffff',   
+            navHover: '#C4CBD4',       
             
             // Content colors
             textPrimary: '#1e293b',     // Dark slate
@@ -278,37 +281,38 @@ const colorSchemes = {
             general: '#f1f5f9', 
             locations: '#f1f5f9',       // Cool blue-white (places)
             factions: '#f0f4f8',        // Neutral blue-white (groups)
-            concepts: '#f8fafc',        // Pure cool white (knowledge)
-            events: '#fef3c7',          // Subtle amber (happenings)
-            creatures: '#ecfdf5',       // Subtle green (beings)
-            plants: '#f0fdf4',          // Fresh green-white (flora)
-            items: '#eff6ff',           // Professional blue (objects)
-            culture: '#faf5ff',         // Subtle purple (traditions)
-            cultivation: '#f0f9ff',     // Light blue (practices)
+            concepts: '#f8fafc',       
+            events: '#fef3c7',          
+            creatures: '#ecfdf5',       
+            plants: '#f0fdf4',         
+            items: '#eff6ff',           
+            culture: '#faf5ff',       
+            cultivation: '#f0f9ff', 
+            magic: '#f0f9ff',    
             itemName: '#0f172a',        // Dark slate for item names
             
             // Character profile item colors 
-            physical: '#3b82f6',        // Professional blue (appearance)
-            personality: '#6366f1',     // Indigo (character)
-            sexuality: '#ec4899',       // Pink (passion)
-            fighting: '#ef4444',        // Red (combat)
-            background: '#8b5cf6',      // Purple (history)
-            weapons: '#64748b',         // Slate (implements)
-            hobbies: '#06b6d4',         // Cyan (leisure)
+            physical: '#3b82f6',        
+            personality: '#6366f1',    
+            sexuality: '#ec4899',       
+            fighting: '#ef4444',       
+            background: '#8b5cf6',      
+            weapons: '#64748b',        
+            hobbies: '#06b6d4',        
             quirks: '#f59e0b',          // Amber (traits)
             relationships: '#10b981',   // Emerald (connections)
 
             // Link colors
-            linkColor: '#3b82f6',           // Professional blue
-            linkHover: '#2563eb',           // Darker blue on hover
-            linkColorSecondary: '#6366f1',  // Indigo for variety
-            linkHoverSecondary: '#4f46e5',  // Darker indigo on hover
+            linkColor: '#3b82f6',           
+            linkHover: '#2563eb',           
+            linkColorSecondary: '#6366f1',  
+            linkHoverSecondary: '#4f46e5',  
             
             // Status badge colors 
-            statusIdea: '#f59e0b',      // Amber (brainstorming)
-            statusDraft: '#3b82f6',     // Blue (in progress)
-            statusCanon: '#10b981',     // Green (approved)
-            statusArchived: '#6b7280',  // Gray (archived)
+            statusIdea: '#f59e0b',      
+            statusDraft: '#3b82f6',     
+            statusCanon: '#10b981',     
+            statusArchived: '#6b7280', 
 
             // Seasonal colors 
             seasonal: {
@@ -318,14 +322,14 @@ const colorSchemes = {
                 autumn: '#fef3c7'       // Professional amber-white
             },
 
-            softBg: '#f8fafc',  // Very light cool gray
+            softBg: '#f8fafc',  
 
-            kawaiiPink: '#ec8bb7',      // Cool pink
-            kawaiiPurple: '#a78bfa',    // Cool purple
-            kawaiiBlue: '#3b82f6',      // Professional blue (existing)
-            kawaiiGold: '#fbbf24',      // Cool gold
+            kawaiiPink: '#ec8bb7',     
+            kawaiiPurple: '#a78bfa',   
+            kawaiiBlue: '#3b82f6',      
+            kawaiiGold: '#fbbf24',    
             kawaiiGreen: '#34d399',     // Cool emerald
-            kawaiiOrange: '#fb923c',    // Cool orange
+            kawaiiOrange: '#fb923c',   
 
             wuxiaAccent: '#10b981',        // Professional emerald
             wuxiaAccentLight: '#34d399',   // Light emerald
@@ -369,6 +373,7 @@ const colorSchemes = {
             items: '#3a3a3a',
             culture: '#3a3a3a',
             cultivation: '#3a3a3a',
+            magic: '#3a2c3e',
             itemName: '#BCBABA', 
 
             //Character profile item colors
@@ -385,7 +390,7 @@ const colorSchemes = {
             // NEW: Link colors (dark theme)
             linkColor: '#C8D3C0',           
             linkHover: '#A3AB9D', 
-            linkColorSecondary: '#a8c5e8', // Softer light blue
+            linkColorSecondary: '#a8c5e8', 
             linkHoverSecondary: '#bdd4f0',   // Even lighter on hover          
             
             // Status badge colors (muted cool tones for dark theme)
@@ -395,20 +400,20 @@ const colorSchemes = {
             statusArchived: '#6b6b6b',
 
             seasonal: {
-                winter: '#2A3F4F',    // Deep blue-gray
-                spring: '#2F4A3A',    // Dark forest green
-                summer: '#4A3F2A',    // Warm dark brown
-                autumn: '#4A322A'     // Rich dark auburn
+                winter: '#2A3F4F',    
+                spring: '#2F4A3A',    
+                summer: '#4A3F2A',    
+                autumn: '#4A322A'     
             },
 
             softBg: '#404040',  // Lighter than containerBg but still dark
 
-            kawaiiPink: '#c4829e',      // Dark rose
-            kawaiiPurple: '#9a7fb8',    // Dark lavender
-            kawaiiBlue: '#7a9ec4',      // Dark sky blue
-            kawaiiGold: '#c4b87a',      // Dark gold
+            kawaiiPink: '#c4829e',      
+            kawaiiPurple: '#9a7fb8',    
+            kawaiiBlue: '#7a9ec4',     
+            kawaiiGold: '#c4b87a',      
             kawaiiGreen: '#7bc49a',     // Dark mint
-            kawaiiOrange: '#c4997a',    // Dark peach
+            kawaiiOrange: '#c4997a',    
 
             wuxiaAccent: '#6b7a65',        // Dark jade from your existing statusCanon
             wuxiaAccentLight: '#8a9690',   // Lighter dark jade
@@ -452,6 +457,7 @@ const colorSchemes = {
             items: '#f1f3f4',
             culture: '#F8F4F0', 
             cultivation: '#F2F0F4', 
+            magic: '#F0F0F9',
             itemName: '#282C29', // World item text
 
             //Character profile item colors
@@ -478,20 +484,20 @@ const colorSchemes = {
             statusArchived: '#9ca3af',
 
             seasonal: {
-                winter: '#E5EDF3',    // Sophisticated ice blue
-                spring: '#EBF4EB',    // Refined sage green
+                winter: '#E5EDF3',    
+                spring: '#EBF4EB',    
                 summer: '#EEEAE1',    // Elegant warm cream
-                autumn: '#F2EBE9',     // Refined warm rose            
+                autumn: '#F2EBE9',             
             },
 
             softBg: '#f6f7f8',  // Softer than headerBg
 
             kawaiiPink: '#d4a8b8',      // Elegant rose
-            kawaiiPurple: '#b8a8d4',    // Elegant lavender
+            kawaiiPurple: '#b8a8d4',    
             kawaiiBlue: '#a8c4d4',      // Elegant sky
             kawaiiGold: '#d4c8a8',      // Elegant champagne
             kawaiiGreen: '#a8d4b8',     // Elegant jade
-            kawaiiOrange: '#d4b8a8',    // Elegant coral
+            kawaiiOrange: '#d4b8a8',    
 
             wuxiaAccent: '#93B086',        // Use your existing physical color
             wuxiaAccentLight: '#A3AEB7',   // Use your existing hobbies color
@@ -506,23 +512,23 @@ const colorSchemes = {
         colors: {
             // Background and base colors
             bodyBg: '#F9F5F0',          // Warm parchment
-            containerBg: '#FFFBF5',      // Creamy white
-            headerBg: '#EFEAE4',        // Soft warm gray
-            bannerBorder: 'rgba(140, 80, 60, 0.8)', // Muted crimson border
+            containerBg: '#FFFBF5',     
+            headerBg: '#EFEAE4',        
+            bannerBorder: 'rgba(140, 80, 60, 0.8)', 
             
             // Navigation
-            navBg: '#4D382D',           // Deep, dark brown
-            navText: '#D4C2B4',          // Warm beige text
+            navBg: '#4D382D',           
+            navText: '#D4C2B4',          
             navActive: '#A8A39A',        // Cream active background
-            navActiveText: '#4D382D',    // Dark brown text
-            navHover: '#6A5546',         // Lighter warm brown
+            navActiveText: '#4D382D',    
+            navHover: '#6A5546',         
             
             // Content colors
-            textPrimary: '#3B2E26',      // Dark espresso brown
+            textPrimary: '#3B2E26',     
             textSecondary: '#6A5546',    // Warm mid-brown
             textMuted: '#9A8478',        // Soft taupe
-            textTitle: '#3B2E26',        // Darkest brown for titles
-            textContent: '#6A5546',      // Warm brown for content
+            textTitle: '#3B2E26',        
+            textContent: '#6A5546',     
             
             // World item backgrounds (subtle warm tones)
             general: '#F7F2EC',
@@ -535,34 +541,35 @@ const colorSchemes = {
             items: '#F7F2EC',
             culture: '#F5F0E8', 
             cultivation: '#F8F4EF', 
+            magic: '#F0E8F5',
             itemName: '#4D382D',         // World item text
 
             //Character profile item colors
-            physical: '#9A453D',         // Deep crimson
-            personality: '#4A5D43',      // Deep, muted forest green
-            sexuality: '#C77B57',        // Burnt orange / Terracotta
-            fighting: '#6A5546',         // Strong warm brown
-            background: '#B59461',       // Muted gold / Ochre
-            weapons: '#3B2E26',          // Darkest brown
-            hobbies: '#C77B57',        // Burnt orange
-            quirks: '#B59461',           // Muted gold
-            relationships: '#4A5D43',      // Deep green
+            physical: '#9A453D',        
+            personality: '#4A5D43',      
+            sexuality: '#C77B57',        
+            fighting: '#6A5546',         
+            background: '#B59461',     
+            weapons: '#3B2E26',         
+            hobbies: '#C77B57',        
+            quirks: '#B59461',          
+            relationships: '#4A5D43',      
 
             // Link colors
-            linkColor: '#C77B57',         // Burnt orange
-            linkHover: '#9A453D',        // Deep crimson on hover
-            linkColorSecondary: '#B59461', // Muted gold
-            linkHoverSecondary: '#9C7E52', // Darker gold on hover          
+            linkColor: '#C77B57',        
+            linkHover: '#9A453D',        
+            linkColorSecondary: '#B59461', 
+            linkHoverSecondary: '#9C7E52',          
             
-            // Status badge colors (rich autumn tones)
-            statusIdea: '#C77B57',       // Burnt orange
-            statusDraft: '#B59461',      // Muted gold
-            statusCanon: '#9A453D',      // Deep crimson
+            // Status badge colors (rich tones)
+            statusIdea: '#C77B57',     
+            statusDraft: '#B59461',      
+            statusCanon: '#9A453D',      
             statusArchived: '#8D7B70',   // Muted brown-gray
 
             seasonal: {
                 winter: '#F0EBE4',       // Cooler, muted cream
-                spring: '#F3F5EB',       // Hint of green
+                spring: '#F3F5EB',       
                 summer: '#FFF4E0',       // Warmer, golden cream
                 autumn: '#F9F0E5',       // Richer autumn cream         
             },
@@ -570,17 +577,17 @@ const colorSchemes = {
             softBg: '#FAF7F2',  // Warm cream, lighter than containerBg
 
             kawaiiPink: '#d4857a',      // Autumn rose
-            kawaiiPurple: '#a67c8f',    // Autumn plum
-            kawaiiBlue: '#7a8fb8',      // Autumn steel blue
-            kawaiiGold: '#d4af5d',      // Rich autumn gold
+            kawaiiPurple: '#a67c8f',    
+            kawaiiBlue: '#7a8fb8',      
+            kawaiiGold: '#d4af5d',      
             kawaiiGreen: '#8fb87a',     // Autumn sage
-            kawaiiOrange: '#d49a5d',    // Rich autumn orange
+            kawaiiOrange: '#d49a5d',    
 
             wuxiaAccent: '#8AB193',        // Muted autumn jade
             wuxiaAccentLight: '#A3C2AB',   // Lighter autumn jade
             wuxiaGlow: 'rgba(138,177,147,0.5)', // Warm jade glow
 
-            journalAccent: '#9A453D'     // Deep crimson
+            journalAccent: '#9A453D'   
         }
     },
     cloudRecesses: {
@@ -588,12 +595,12 @@ const colorSchemes = {
         description: 'Elegant jade and ivory palette inspired by Mo Dao Zu Shi',
         colors: {
             // Background and base colors - serene whites with jade hints
-            bodyBg: '#f8faf9',          // Soft jade-tinted white
-            containerBg: '#ffffff',      // Pure white for content
+            bodyBg: '#f8faf9',          
+            containerBg: '#ffffff',    
             headerBg: '#f0f4f1',        // Very light jade
             bannerBorder: 'rgba(160, 190, 170, 0.6)', // Soft jade border
             
-            // Navigation - like polished jade and ivory
+            // Navigation - like polished jade 
             navBg: '#f8faf9',           // Match body for seamless look
             navText: '#4a5d4f',         // Deep jade-gray
             navActive: '#a0beaa',       // Soft jade active
@@ -618,28 +625,29 @@ const colorSchemes = {
             items: '#f4f6f5',           // Neutral jade (objects)
             culture: '#f6f4f0',         // Warm ivory-jade (traditions)
             cultivation: '#f0f7f3',     // Pure jade (spiritual practices)
+            magic: '#f0f7f3',
             itemName: '#2d3d32',        // Deep jade for item names
             
             // Character profile item colors - refined jade palette
-            physical: '#7ba885',        // Soft jade green
+            physical: '#7ba885',       
             personality: '#6b9470',     // Medium jade
-            sexuality: '#d4a574',       // Warm gold (for passion/desire)
+            sexuality: '#d4a574',    
             fighting: '#5d7864',        // Deeper jade (martial arts)
             background: '#8fb197',      // Light jade (past/history)
             weapons: '#4a5d4f',         // Dark jade (implements)
             hobbies: '#a3c2ab',         // Bright jade (leisure)
-            quirks: '#c4a876',          // Soft gold (unique traits)
+            quirks: '#c4a876',          
             relationships: '#7ba885',   // Jade (connections)
 
             // Link colors - like flowing silk ribbons
             linkColor: '#7ba885',           // Soft jade
             linkHover: '#5d7864',           // Deeper jade on hover
-            linkColorSecondary: '#c4a876',  // Warm gold for variety
-            linkHoverSecondary: '#b8995f',  // Deeper gold on hover
+            linkColorSecondary: '#c4a876',  
+            linkHoverSecondary: '#b8995f',  
             
             // Status badge colors - like traditional seals
             statusIdea: '#a3c2ab',      // Light jade (new ideas)
-            statusDraft: '#c4a876',     // Gold (in progress)
+            statusDraft: '#c4a876',    
             statusCanon: '#7ba885',     // Jade (established)
             statusArchived: '#8a9690',  // Muted jade-gray (stored)
 
@@ -654,11 +662,11 @@ const colorSchemes = {
             softBg: '#f5f8f6',  // Very pale jade-tinted
 
             kawaiiPink: '#c4a8b1',      // Jade-tinted rose
-            kawaiiPurple: '#a8b8c4',    // Jade-tinted lavender
-            kawaiiBlue: '#8fb8a8',      // Jade-tinted blue
-            kawaiiGold: '#c4b88f',      // Jade-tinted gold
+            kawaiiPurple: '#a8b8c4',    
+            kawaiiBlue: '#8fb8a8',      
+            kawaiiGold: '#c4b88f',     
             kawaiiGreen: '#8fb197',     // Cloud recesses jade (existing)
-            kawaiiOrange: '#b8a48f',    // Jade-tinted coral
+            kawaiiOrange: '#b8a48f',   
 
             wuxiaAccent: '#7ba885',        // Main jade color for wuxia theme
             wuxiaAccentLight: '#a3c2ab',   // Lighter jade for hover effects
@@ -673,35 +681,36 @@ const colorSchemes = {
         colors: {
             // Background and base colors
             bodyBg: '#F5F1EB',      // Cream base
-            containerBg: '#F8F4EC', // Light cream instead of pure white
-            headerBg: '#E8DDD0',    // Light tan
-            bannerBorder: 'rgba(175, 127, 93, 0.9)', // Tan brown border
+            containerBg: '#F8F4EC', 
+            headerBg: '#E8DDD0',    
+            bannerBorder: 'rgba(175, 127, 93, 0.9)', 
             
             // Navigation  
-            navBg: '#6F4E37',       // Coffee brown
-            navText: '#C09A7F',     // Light tan text
+            navBg: '#6F4E37',       
+            navText: '#C09A7F',     
             navActive: '#b39b7b',   // Cream active
             navActiveText: '#2B1E15', // Dark text on cream
             navHover: '#8D6B52',
             
             // Content colors
-            textPrimary: '#2B1E15', // Dark coffee brown
-            textSecondary: '#4D3626', // Medium coffee brown
-            textMuted: '#916648',   // Light coffee brown
+            textPrimary: '#2B1E15', 
+            textSecondary: '#4D3626', 
+            textMuted: '#916648',   
             textTitle: '#2B1E15',   // Dark coffee for titles
             textContent: '#4D3626', // Medium coffee for content
             
             // World item backgrounds (cream variations)
             general: '#AF7F5D', 
-            locations: '#AF7F5D',     // Tan brown
-            factions: '#6F4E37',      // Coffee brown
+            locations: '#AF7F5D',    
+            factions: '#6F4E37',      
             concepts: '#916648',      // Light coffee
             events: '#8B7865',        // Muted coffee
             creatures: '#A67C52',     // Medium coffee
             plants: '#9A6B47',        // Rich coffee
             items: '#7D5A42',         // Dark coffee
-            culture: '#B8956A',       // Light tan brown
-            cultivation: '#8A6F50',    // Deep coffee brown
+            culture: '#B8956A',      
+            cultivation: '#8A6F50',    // Deep coffee 
+            magic: '#AA8971',
             itemName: '#453425', // World item text
 
             //Character profile item colors
@@ -715,9 +724,9 @@ const colorSchemes = {
             quirks: '#B8956A',
             relationships: '#9A6B47',
 
-            linkColor: '#AF7F5D',           // Tan brown
+            linkColor: '#AF7F5D',           
             linkHover: '#6F4E37',
-            linkColorSecondary: '#C4A484',  // Softer, lighter tan
+            linkColorSecondary: '#C4A484', 
             linkHoverSecondary: '#B08968',
             
             // Status badge colors (coffee themed)
@@ -737,8 +746,8 @@ const colorSchemes = {
 
             kawaiiPink: '#d4a08f',      // Coffee rose
             kawaiiPurple: '#b88fa8',    // Coffee lavender
-            kawaiiBlue: '#8fa8b8',      // Coffee blue
-            kawaiiGold: '#d4b88f',      // Coffee cream gold
+            kawaiiBlue: '#8fa8b8',      
+            kawaiiGold: '#d4b88f',      
             kawaiiGreen: '#a8b88f',     // Coffee sage
             kawaiiOrange: '#d4a875',    // Coffee caramel
 
@@ -784,6 +793,8 @@ const colorSchemes = {
             items: '#a78bfa',           // Vibrant purple
             culture: '#8b5cf6',         // Medium purple
             cultivation: '#7c3aed',     // Deep purple
+            magic: '#ddd6fe',
+            itemName: '#383838', 
 
             //Character profile item colors
             physical: '#7c3aed',
@@ -865,6 +876,8 @@ const colorSchemes = {
             items: '#c026d3',           // Deep pink
             culture: '#a21caf',         // Rich pink
             cultivation: '#86198f',     // Purple-pink
+            magic: '#fae8ff',
+            itemName: '#383838', 
 
             //Character profile item colors
             physical: '#be185d',
@@ -946,6 +959,7 @@ const colorSchemes = {
             items: '#16a34a',           // Deep green
             culture: '#15803d',         // Rich green
             cultivation: '#166534',     // Forest green
+            magic: '#dcfce7',
             itemName: '#064e3b',
 
             //Character profile item colors
@@ -1028,6 +1042,7 @@ const colorSchemes = {
             items: '#ea580c',           // Deep orange
             culture: '#dc2626',         // Rich red-orange
             cultivation: '#b91c1c',     // Deep red
+            magic: '#ffedd5',
             itemName: '#7c2d12',
 
             //Character profile item colors
@@ -1110,6 +1125,7 @@ const colorSchemes = {
             items: '#0284c7',           // Deep blue
             culture: '#0369a1',         // Rich blue
             cultivation: '#075985',     // Ocean blue
+            magic: '#e0f2fe',
             itemName: '#082f49',
 
             //Character profile item colors
@@ -1192,6 +1208,7 @@ const colorSchemes = {
             items: '#fafeff',           // Whisper sky
             culture: '#fefffe',         // Whisper lavender
             cultivation: '#fdfffe',     // Whisper mint
+            magic: '#fefbfd',
             itemName: '#4a3d4f',
             
             // Character profile item colors - soft bubble pastels
@@ -1276,6 +1293,7 @@ const colorSchemes = {
             items: '#dda0dd',           // Plum
             culture: '#ffb6c1',         // Light pink
             cultivation: '#98fb98',     // Pale green
+            magic: '#faf5ff',
             itemName: '#701a75',
             
             // Character profile colors (magical girl themed)
@@ -1361,6 +1379,7 @@ const colorSchemes = {
             items: '#3a2c3e',            // Dark purple tint
             culture: '#3e2c3c',          // Dark magenta tint
             cultivation: '#2c3e3e',      // Dark cyan tint
+            magic: '#2c1e3a',
             itemName: '#ffffff',         // White text for contrast
             
             //Character profile item colors (vibrant accents)
@@ -1406,7 +1425,7 @@ const colorSchemes = {
             wuxiaAccentLight: '#7dffff',   // Bright cyan
             wuxiaGlow: 'rgba(0,246,255,0.8)', // Bright neon glow
 
-            journalAccent: '#ff007f'     // Thematic hot pink
+            journalAccent: '#6fe7f5'     // Thematic hot pink
         }
     },
     urbanGrit: {
@@ -1444,6 +1463,7 @@ const colorSchemes = {
             items: '#33333a',         
             culture: '#3a342c',      
             cultivation: '#313a2c',   
+            magic: '#33313a',
             itemName: '#d1d5db',      // World item text
             
             //Character profile item colors (bronze, grays, and steel)
@@ -1527,6 +1547,7 @@ const colorSchemes = {
             items: '#333333',
             culture: '#333333',
             cultivation: '#333333',
+            magic: '#1f2a1f',
             itemName: '#00ff9c',         // Accent green text for contrast
             
             //Character profile item colors (shades of green and gray)
@@ -1610,6 +1631,7 @@ const colorSchemes = {
             items: '#f0e6dc',           // Aged parchment (objects)
             culture: '#f4ebe1',         // Parchment main (traditions)
             cultivation: '#ebe0d6',     // Parchment dark (practices)
+            magic: '#e6dbd0',
             itemName: '#2a1c0f',        // Dark brown for item names
             
             // Character profile item colors - handbook browns and burgundy
@@ -1694,6 +1716,7 @@ const colorSchemes = {
             items: '#2a1810',           // Dark leather (objects)
             culture: '#1d1208',         // Darker leather (traditions)
             cultivation: '#3d2a1a',     // Medium leather (practices)
+            magic: '#3d2a1a',
             itemName: '#c9a876',        // Aged brass for item names
             
             // Character profile item colors - deep muted jewel tones
@@ -1778,6 +1801,7 @@ const colorSchemes = {
             items: '#292230',           // Hint of deep blue
             culture: '#31261f',
             cultivation: '#222922',
+            magic: '#262a29',
             itemName: '#cca45e',        // Gold for item names
             
             // Character profile item colors - rich, deep jewel tones
@@ -1863,6 +1887,7 @@ const colorSchemes = {
             items: '#ede8e1',            // Sun-bleached wood
             culture: '#f5e8e8',          // Faded berry red (traditions, painted doors)
             cultivation: '#e9f0e8',      // Well-tended garden green
+            magic: '#eaf2e9',
             itemName: '#3d3222',         // Darkest earth for item names, for max contrast
 
             // Character profile item colors - like a colorful hobbit's waistcoat
@@ -1948,6 +1973,7 @@ const colorSchemes = {
             items: '#241d2a',           // Dark purple (cursed objects)
             culture: '#2a1f1d',         // Dark copper (corrupted traditions)
             cultivation: '#1f241d',     // Dark olive (dark practices)
+            magic: '#241d2a',
             itemName: '#f4f1eb',        // Bone white item names for contrast
             
             // Character profile item colors - horror-themed personality aspects
@@ -2001,66 +2027,172 @@ const colorSchemes = {
         name: 'Static Dread',
         description: 'The decaying green glow of a CRT screen and the ominous red of a recording light against a deep, static-filled black. Perfect for analog and digital horror.',
         colors: {
+            // Background and base colors
             bodyBg: '#0A0A0A',
             containerBg: '#121212',
             headerBg: '#1a1a1a',
+            bannerBorder: '#333333',
+            
+            // Navigation
             navBg: '#050505',
+            navText: '#999999',
             navActive: '#222222',
+            navActiveText: '#e0e0e0',
             navHover: '#1f1f1f',
             
+            // Content colors
             textPrimary: '#c2c2c2',
             textSecondary: '#7d7d7d',
             textMuted: '#444444',
+            textTitle: '#e0e0e0',
+            textContent: '#999999',
             
-            navText: '#999999',
-            navActiveText: '#e0e0e0',
+            // World item backgrounds - grimy, desaturated horror tints
+            general: '#1a1a1a',
+            locations: '#8b6f5a',      // Dusty, decaying brown
+            factions: '#3a6e71',       // Muted, murky teal
+            concepts: '#798a67',       // Sickly yellow-green
+            events: '#7a6555',         // Dark rust
+            creatures: '#5a6e5a',      // Swampy dark green
+            plants: '#4f614a',         // Dark, swampy green
+            items: '#6e5a6e',          // Dull purple-gray
+            culture: '#7a5a5a',        // Dried blood brown
+            cultivation: '#5a6e61',    // Murky teal-green
+            magic: '#3a4e3a',          // Dark mossy green
+            itemName: '#c2c2c2',
             
-            journalAccent: '#ff0000', // The ominous red REC light
-            bannerBorder: '#333333',
+            // Character profile item colors - desaturated horror palette
+            physical: '#6e7a6e',       // Gray-green
+            personality: '#7a6e7a',    // Gray-purple
+            sexuality: '#7a5a5a',      // Dusty rose-brown
+            fighting: '#5a5a5a',       // Dark gray
+            background: '#6e6e5a',     // Olive-gray
+            weapons: '#5a6e6e',        // Teal-gray
+            hobbies: '#7a7a6e',        // Warm gray
+            quirks: '#6e6e7a',         // Cool gray
+            relationships: '#6e7a5a',  // Moss gray
             
-            // Desaturated, "grimy" category colors
-            concepts: '#798a67',     // Sickly yellow-green
-            factions: '#3a6e71',     // Muted, murky teal
-            locations: '#8b6f5a',    // Dusty, decaying brown
-            plants: '#4f614a',       // Dark, swampy green
+            // Link colors
+            linkColor: '#798a67',      // Sickly green
+            linkHover: '#8b9b77',      // Lighter sickly green
+            linkColorSecondary: '#ff0000',  // Warning red
+            linkHoverSecondary: '#cc0000',  // Darker red
             
-            // Wuxia specific (re-themed for horror)
-            wuxiaAccent: '#6e0000',      // Deep, dried blood red
+            // Status badge colors
+            statusIdea: '#798a67',     // Sickly green (new)
+            statusDraft: '#8b6f5a',    // Dusty brown (processing)
+            statusCanon: '#3a6e71',    // Murky teal (confirmed)
+            statusArchived: '#444444', // Dark gray (archived)
+            
+            // Seasonal colors
+            seasonal: {
+                winter: '#0f1214',     // Cold black-blue
+                spring: '#12140f',     // Decayed green-black
+                summer: '#14120f',     // Warm decay-black
+                autumn: '#14100f'      // Rust-black
+            },
+            
+            softBg: '#1a1a1a',
+            
+            // Kawaii colors - all desaturated/grimy
+            kawaiiPink: '#7a5a6e',     // Grimy mauve
+            kawaiiPurple: '#6e5a7a',   // Grimy purple
+            kawaiiBlue: '#5a6e7a',     // Grimy slate blue
+            kawaiiGold: '#7a6e5a',     // Grimy tan
+            kawaiiGreen: '#5a7a6e',    // Grimy teal
+            kawaiiOrange: '#7a655a',   // Grimy rust
+            
+            wuxiaAccent: '#6e0000',        // Deep, dried blood red
             wuxiaAccentLight: '#8a4b4b',
-            wuxiaGlow: 'rgba(255, 0, 0, 0.4)'
+            wuxiaGlow: 'rgba(255, 0, 0, 0.4)',
+            
+            journalAccent: '#ff0000'   // Ominous red REC light
         }
     },
     quietEcho: {
         name: 'Quiet Echo',
         description: 'The inky, bottomless dark of a supernatural void, pierced by a cold, spectral cyan glow. Creates an atmosphere of quiet, ethereal dread.',
         colors: {
+            // Background and base colors
             bodyBg: '#0d101e',
             containerBg: '#14182b',
             headerBg: '#1a1f36',
-            navBg: '#080a14',
-            navActive: '#222a4a',
-            navHover: '#1c223b',
-            
-            textPrimary: '#d0efff',    // A very light, cold blue
-            textSecondary: '#7c89b3',  // Desaturated slate blue
-            textMuted: '#3e4766',
-            
-            navText: '#8a99c2',
-            navActiveText: '#ffffff',
-            
-            journalAccent: '#00ffff', // The spectral cyan glow
             bannerBorder: '#2a3150',
             
-            // Muted, ghostly category colors
-            concepts: '#6a5e93',     // Muted lavender
-            factions: '#935e76',     // Dusty, faded rose
-            locations: '#3b8085',    // Deep, cold teal
-            plants: '#628b7a',       // Ghostly, grayish green
+            // Navigation
+            navBg: '#080a14',
+            navText: '#8a99c2',
+            navActive: '#222a4a',
+            navActiveText: '#ffffff',
+            navHover: '#1c223b',
             
-            // Wuxia specific (re-themed for the abyss)
-            wuxiaAccent: '#00a1a1',      // Deeper version of the spectral cyan
+            // Content colors
+            textPrimary: '#d0efff',    // Very light, cold blue
+            textSecondary: '#7c89b3',  // Desaturated slate blue
+            textMuted: '#3e4766',
+            textTitle: '#e0f4ff',      // Icy white-blue
+            textContent: '#a8c5d1',    // Cool reading blue
+            
+            // World item backgrounds - ghostly, muted palette
+            general: '#1a1f36',
+            locations: '#3b8085',      // Deep, cold teal
+            factions: '#935e76',       // Dusty, faded rose
+            concepts: '#6a5e93',       // Muted lavender
+            events: '#857a93',         // Dusty purple-gray
+            creatures: '#5e7a93',      // Ghostly blue-gray
+            plants: '#628b7a',         // Ghostly, grayish green
+            items: '#6a7a93',          // Cool slate
+            culture: '#856a7a',        // Faded mauve
+            cultivation: '#5e8085',    // Deep teal-gray
+            magic: '#2a2f4a',          // Deep void purple
+            itemName: '#d0efff',
+            
+            // Character profile item colors - spectral, ethereal palette
+            physical: '#3b8085',       // Cold teal
+            personality: '#6a5e93',    // Ghostly lavender
+            sexuality: '#935e76',      // Faded rose
+            fighting: '#4a5566',       // Slate gray
+            background: '#5e7a93',     // Misty blue
+            weapons: '#3e4766',        // Dark void
+            hobbies: '#628b7a',        // Spectral green
+            quirks: '#857a93',         // Dusty purple
+            relationships: '#7a8b93',  // Cool gray-blue
+            
+            // Link colors
+            linkColor: '#00ffff',      // Spectral cyan
+            linkHover: '#66ffff',      // Brighter cyan
+            linkColorSecondary: '#6a5e93',  // Ghostly lavender
+            linkHoverSecondary: '#8a7eb3',  // Lighter lavender
+            
+            // Status badge colors
+            statusIdea: '#6a5e93',     // Lavender (nascent)
+            statusDraft: '#3b8085',    // Teal (forming)
+            statusCanon: '#00a1a1',    // Deep cyan (manifested)
+            statusArchived: '#3e4766', // Void gray (forgotten)
+            
+            // Seasonal colors - all variations of void
+            seasonal: {
+                winter: '#1a2236',     // Frozen void
+                spring: '#1a2e2a',     // Awakening void
+                summer: '#222a36',     // Warm void
+                autumn: '#2a2236'      // Dying void
+            },
+            
+            softBg: '#1a1f36',
+            
+            // Kawaii colors - all spectral/ghostly
+            kawaiiPink: '#b38aa3',     // Spectral rose
+            kawaiiPurple: '#a38ab3',   // Spectral lavender
+            kawaiiBlue: '#8aa3b3',     // Spectral blue
+            kawaiiGold: '#b3a38a',     // Spectral gold
+            kawaiiGreen: '#8ab393',    // Spectral mint
+            kawaiiOrange: '#b3938a',   // Spectral peach
+            
+            wuxiaAccent: '#00a1a1',        // Deeper spectral cyan
             wuxiaAccentLight: '#4bb8b8',
-            wuxiaGlow: 'rgba(0, 255, 255, 0.3)'
+            wuxiaGlow: 'rgba(0, 255, 255, 0.3)',
+            
+            journalAccent: '#00ffff'   // Spectral cyan
         }
     },
     parchment: {
@@ -2098,6 +2230,7 @@ const colorSchemes = {
             items: '#f7f4f0',           // Neutral cream (objects)
             culture: '#f9f6f2',         // Rich cream (traditions)
             cultivation: '#f5f2ee',     // Scholarly cream (practices)
+            magic: '#f5f2ee',
             itemName: '#2e1a16',        // Deep brown for item names
             
             // Character profile item colors - refined browns and golds
@@ -2182,6 +2315,7 @@ const colorSchemes = {
             items: '#f3f1f4',           // Soft lilac tint (objects)
             culture: '#f4f1f0',         // Warm coral tint (traditions)
             cultivation: '#f0f3f2',     // Pale jade tint (practices)
+            magic: '#f2f4f0',
             itemName: '#3d342c',        // Deep brown for item names
             
             // Character profile item colors - elegant regency palette
@@ -2266,6 +2400,7 @@ const colorSchemes = {
             items: '#2a1a2e',           // Purple tech district
             culture: '#2e1a24',         // Pink entertainment zone
             cultivation: '#1a242e',     // Blue-gray training zone
+            magic: '#2a1a2e',
             itemName: '#00ffff',        // Cyan item names
             
             // Character profile item colors - cyberpunk enhancement categories
@@ -2351,6 +2486,7 @@ const colorSchemes = {
             items: '#1f0f2a',           // Indigo tech quarters
             culture: '#2a0f1f',         // Rose entertainment hubs
             cultivation: '#0f1f2a',     // Blue training facilities
+            magic: '#1f0f2a',
             itemName: '#ff8c00',        // Orange item names
             
             // Character profile item colors - enhanced human categories

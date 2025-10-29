@@ -386,3 +386,182 @@ html {
     font-family: "Nunito Sans", sans-serif;
     opacity: 0.7;
 }
+
+/* User Selection Grid */
+.user-selection-grid {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.user-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.user-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-xs);
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+}
+
+.user-card:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-secondary);
+}
+
+.user-card.selected {
+    background-color: rgba(184, 149, 107, 0.08);
+    border-color: var(--accent-primary);
+}
+
+.user-card.selected::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border-radius: var(--radius-lg);
+    padding: 1px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.5;
+}
+
+.user-card-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--border-secondary);
+    object-fit: cover;
+    transition: all var(--transition-normal);
+}
+
+.user-card:hover .user-card-avatar {
+    border-color: var(--accent-primary);
+    transform: scale(1.05);
+}
+
+.user-card.selected .user-card-avatar {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(184, 149, 107, 0.15);
+}
+
+.user-card-name {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    text-align: center;
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 400;
+    transition: color var(--transition-fast);
+}
+
+.user-card:hover .user-card-name {
+    color: var(--text-primary);
+}
+
+.user-card.selected .user-card-name {
+    color: var(--accent-primary);
+    font-weight: 500;
+}
+
+/* User Pagination */
+.user-pagination {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+
+.pagination-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 1px solid var(--border-secondary);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: rgba(184, 149, 107, 0.08);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+}
+
+.pagination-btn:disabled:hover {
+    background-color: transparent;
+    border-color: var(--border-secondary);
+    color: var(--text-secondary);
+    transform: none;
+}
+
+/* Login as [Username] button */
+.login-as-btn {
+    width: 100%;
+    padding: var(--space-md) var(--space-xl);
+    margin-bottom: var(--space-lg);
+    background: linear-gradient(135deg, rgba(184, 149, 107, 0.1), rgba(184, 149, 107, 0.15));
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    transition: all var(--transition-normal);
+}
+
+.login-as-btn:hover {
+    background: linear-gradient(135deg, rgba(184, 149, 107, 0.15), rgba(184, 149, 107, 0.25));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(184, 149, 107, 0.2);
+}
+
+.login-as-btn strong {
+    color: var(--text-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .user-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .user-card-avatar {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .user-card-name {
+        font-size: var(--font-size-xs);
+    }
+}

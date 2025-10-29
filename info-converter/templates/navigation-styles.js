@@ -1,4 +1,128 @@
 // 4. ADD: New generateNavigationStyles() function:
+// Navigation style definitions
+const navigationStyles = {
+    hidden: {
+        name: 'Hidden',
+        description: 'Completely hide the navigation tabs from view'
+    },
+    journal: {
+        name: 'Journal',
+        description: 'Icon-based side navigation with hover effects'
+    },
+    modern: {
+        name: 'Modern',
+        description: 'Flat uppercase text tabs with bottom borders'
+    },
+    classic: {
+        name: 'Classic',
+        description: 'Traditional bordered navigation with standard styling'
+    },
+    circular: {
+        name: 'Circular',
+        description: 'Round circular tabs positioned vertically on the left side with letter initials'
+    },
+    squares: {
+        name: 'Squares',
+        description: 'Square icon tabs positioned vertically on the left side with FontAwesome icons'
+    },
+    pills: {
+        name: 'Pills',
+        description: 'Rounded pill-shaped tabs with smooth transitions and clean spacing'
+    },
+    underline: {
+        name: 'Underline',
+        description: 'Minimalist tabs with animated underlines and subtle hover effects'
+    },
+    kawaii: {
+        name: 'Kawaii',
+        description: 'Cute pastel bubble tabs with sparkle effects and bouncy hover animations'
+    },
+    hearts: {
+        name: 'Hearts',
+        description: 'Sweet heart-themed tabs with animated heart decorations and gentle heartbeat effects'
+    },
+    candy: {
+        name: 'Candy',
+        description: 'Round candy-like side tabs with cute emoji icons and playful scaling animations'
+    },
+    flowers: {
+        name: 'Flowers',
+        description: 'Flower petal-shaped tabs with blooming center animations and gentle rotation effects'
+    },
+    industrial: {
+        name: 'Industrial',
+        description: 'Hard-edged tabs attached to the main content area'
+    },
+    wuxia: {
+        name: 'Wuxia',
+        description: 'Elegant hanging scroll tabs with jade accents and flowing animations'
+    },
+    playersHandbook: {
+        name: 'Player\'s Handbook',
+        description: 'Ornate D&D handbook chapter tabs with corner flourishes and illuminated manuscript styling'
+    },
+    adventurersTome: {
+        name: 'Adventurer\'s Tome',
+        description: 'Tabs with a wooden effect, TTRPG inspired'
+    },
+    cartographersTable: {
+        name: 'Cartographer\'s Table',
+        description: 'Torn map fragments on a dark leather background, with a dotted line connecting to the active tab.'
+    },
+    royalBanner: {
+        name: 'Royal Banner',
+        description: 'Hanging silk banners sealed with a royal crest, fit for a king\'s council chamber.'
+    },
+    steppingStones: {
+        name: 'Stepping Stones',
+        description: 'Vertically-aligned, moss-covered runestones that glow softly with an inner light when selected.'
+    },
+    starforged: {
+        name: 'Starforged',
+        description: 'Celestial navigation points that form a guiding constellation when a path is chosen.'
+    },
+    horrific: {
+        name: 'Horrific',
+        description: 'Cursed grimoire tabs with occult symbols and blood red accents'
+    },
+    foundFootage: {
+        name: 'Found Footage',
+        description: 'A glitchy camcorder interface with scanlines and a REC indicator, inspired by found footage horror.'
+    },
+    badSignal: {
+        name: 'Bad Signal',
+        description: 'A distorted, flickering VHS tape interface with analog static and unsettling visual corruption.'
+    },
+    theFurther: {
+        name: 'The Further',
+        description: 'A dark, ethereal style with floating, smoky tabs and an ominous, ghostly glow on the active selection.'
+    },
+    parchment: {
+        name: 'Parchment&Quill',
+        description: 'Elegant folded parchment tabs with wax seals, inspired by regency correspondence'
+    },
+    cyberpunk: {
+        name: 'Cyberpunk',
+        description: 'Neon-glowing terminal tabs with holographic brackets, scanning lines, and futuristic styling'
+    },
+    holographic: {
+        name: 'Holographic',
+        description: 'Iridescent tabs with prismatic shimmer effects and color-shifting borders'
+    },
+    matrix: {
+        name: 'Matrix',
+        description: 'Digital rain terminal interface with vertical tabs and cascading code effects'
+    },
+    neuralNetwork: {
+        name: 'Neural Network',
+        description: 'Circular connected nodes with pulsing neural connections and data flow animations'
+    },
+    glitch: {
+        name: 'Glitch',
+        description: 'Digital corruption effects with RGB separation, static noise, and data distortion'
+    },
+};
+
 function generateNavigationStyles(navigationStyle, colors, fonts) {
     switch (navigationStyle) {
         case 'hidden':
@@ -2925,3 +3049,4 @@ case 'playersHandbook':
 
 // Make functions globally available
 export { generateNavigationStyles };
+export default navigationStyles;

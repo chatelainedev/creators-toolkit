@@ -341,6 +341,7 @@ function generateTimelineCSS(colors, fonts) {
             overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 6;
+            line-clamp: 6;
             -webkit-box-orient: vertical;
             word-wrap: break-word;
         }

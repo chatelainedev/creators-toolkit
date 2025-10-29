@@ -1,4 +1,104 @@
 // Overview Style Generation Functions
+// Overview style definitions
+const overviewStyles = {
+    journal: {
+        name: 'Journal',
+        description: 'Notebook aesthetic with lined paper and red margin line'
+    },
+    modern: {
+        name: 'Modern',
+        description: 'Clean cards with rounded corners and gradient header'
+    },
+    classic: {
+        name: 'Classic',
+        description: 'Traditional formal document with ornate double borders'
+    },
+    magazine: {
+        name: 'Magazine',
+        description: 'Clean editorial layout with professional typography and subtle accents'
+    },
+    minimal: {
+        name: 'Minimal',
+        description: 'Ultra-clean design with generous whitespace and subtle shadows'
+    },
+    botanical: {
+        name: 'Botanical',
+        description: 'Organic nature theme with vine patterns and leaf decorations'
+    },
+    constellation: {
+        name: 'Constellation', 
+        description: 'Starfield mapping with celestial navigation elements'
+    },
+    manuscript: {
+        name: 'Manuscript',
+        description: 'Medieval illuminated manuscript with drop caps and ornate borders'
+    },
+    neon: {
+        name: 'Neon',
+        description: 'Cyberpunk retro-future with glowing circuit patterns'
+    },
+    archive: {
+        name: 'Archive',
+        description: 'Research library filing system with classification labels'
+    },
+    kawaii: {
+        name: 'Kawaii',
+        descriptions: 'Soft pastel design with rounded corners, dreamy gradients, and adorable decorative elements.'
+    },
+    candyPop: {
+        name: 'Candy Pop',
+        description: '3D candy button styling with glossy shine effects.'
+    },
+    cottagecoreDiary: {
+        name: 'Cottagecore Diary',
+        description: 'A cozy, rustic journal with pressed flowers, delicate vines, and a warm, sun-drenched cottage feel.'
+    },
+    magicalGirlLocket: {
+        name: 'Magical Girl Locket',
+        description: 'A sparkling magical girl transformation item, with shimmering stars, pastel ribbons, and a radiant heart motif.'
+    },
+    pastelSpells: {
+        name: 'Pastel Spells',
+        description: 'A sweetly spooky grimoire mixing pastel magic with dark, gothic elements.'
+    },
+    strawberryPatch: {
+        name: 'Strawberry Patch',
+        description: 'A sweet and fresh design reminiscent of a picnic blanket.'
+    },
+    industrial: {
+        name: 'Industrial',
+        description: 'Wireframe/grid background overlay, hard angles'
+    },
+    wuxia: {
+        name: 'Wuxia',
+        description: 'Elegant cultivation manual page with traditional corner decorations and jade accents'
+    },
+    horrific: {
+        name: 'Horrific',
+        description: 'Cursed grimoire page with blood drips and ominous shadows'
+    },
+    foundFootage: {
+        name: 'Found Footage',
+        description: 'Simulates a night-vision security camera feed with scanlines, a REC indicator, timestamps, and a low-fi, gritty feel.'
+    },
+    badSignal: {
+        name: 'Bad Signal',
+        description: 'Mimics a degraded VHS tape or a haunted broadcast, featuring static, distortion, and unsettling visual glitches.'
+    },
+    theFurther: {
+        name: 'The Further',
+        description: 'A descent into a shadowy, ethereal realm. Features dark, smoky textures, faint, ghostly text effects, and an oppressive, claustrophobic atmosphere.'
+    },
+    parchment: {
+        name: 'Parchment&Quill',
+        description: 'Elegant personal letter with wax seal, letterhead, and refined correspondence styling'
+    },
+    dataTerminal: {
+        name: 'Data Terminal',
+        description: 'Cyberpunk terminal interface with scanlines, command prompts, line numbers, and monospace typography'
+    }
+};
+
 function generateOverviewStyles(overviewStyle, colors, fonts, generateOverviewMainBackgroundStyle) {
     switch (overviewStyle) {
         case 'journal':
@@ -2792,3 +2892,4 @@ function generateOverviewStyles(overviewStyle, colors, fonts, generateOverviewMa
 }
 
 export { generateOverviewStyles };
+export default overviewStyles;

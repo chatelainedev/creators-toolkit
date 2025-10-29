@@ -63,7 +63,7 @@
     {
       "id": "tags",
       "title": "Tags",
-      "content": "Lore Codex supports several types of tags. Filter tags are standard and allow for basic filtering. Adding an exclamation point (e.g., \"!tagname\") makes the tag a **global tag**. Global tags are hidden from the generated site’s filter list but can be used with custom link buttons to pre-filter specific pages, e.g. \"#filter:tagname\". Character tags added in Plans modals indicate which characters are involved in certain events or arcs."
+      "content": "Lore Codex supports several types of tags with special syntax options:\n\n**Filter tags** are standard and allow for basic filtering.\n\n**Global tags** use an exclamation point prefix (e.g., \"!tagname\") to hide the tag from the generated site's filter list. Global tags can still be used with custom link buttons to pre-filter specific pages, e.g. \"#filter:tagname\".\n\n**Color tags** use parentheses to customize tag appearance: \"tagname(#fc1808)\" sets the background color, while \"tagname(#bg #text #hover)\" sets the background, text, and hover/selected colors. Color syntax can be combined with global tags, e.g. \"!tagname(#fc1808)\".\n\n**Character tags** added in Plans modals indicate which characters are involved in certain events or arcs."
     },
     {
       "id": "appearance",
@@ -79,6 +79,11 @@
       "id": "generate",
       "title": "Generate",
       "content": "When your project is ready, the Generate tab creates the HTML for your site. It provides both an HTML preview and a visual preview (without images). You can either download the HTML directly or save it to your \"sites\" folder. Files are saved in \"sites/projectname\", which is created automatically if it doesn’t already exist. Each generation produces a fresh version of your site."
+    },
+    {
+      "id": "rename",
+      "title": "Rename",
+      "content": "By right-clicking the project dropdown you can **Rename** your project's sites folder, or the generated HTML file. Renaming your project will create a whole new folder with all of your files in it."
     },
     {
       "id": "quick-access",

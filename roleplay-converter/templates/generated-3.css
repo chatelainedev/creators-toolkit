@@ -28,7 +28,7 @@
     /* Text colors */
     --text-main: #4b4237; /* Dark Sepia Ink */
     --text-muted: #8a7f72; /* Muted Taupe */
-    --text-dialog: #5c5247; /* Slightly lighter ink for dialogue */
+    --text-dialog: #7B7369; /* Slightly lighter ink for dialogue */
     
     /* Base whites - shades of cream and parchment */
     --white: #fdfbf7; /* Clean Parchment for content */
@@ -122,7 +122,8 @@ del {
 }
 
 .dialogue {
-    font-family: "Cormorant Garamond", serif;
+    font-family: "Helvetica", sans-serif;
+    font-size: 16px;
     color: var(--text-dialog);
 }
 
@@ -347,7 +348,7 @@ nav a:hover {
 
 /* End-of-story marker - a classic fleuron */
 .rp-container:last-of-type::after {
-    content: "❦";
+    content: " ༺ ༻ ";
     display: block;
     text-align: center;
     padding-top: 10px;
@@ -464,8 +465,11 @@ nav a:hover {
     top: 90px;
 }
 
-.soundtrack-panel.open, .comments-panel.open { transform: translateX(0); }
+.soundtrack-panel.open, .comments-panel.open { 
+    transform: translateX(0); 
+}
 
+/* Toggle buttons - stick out when closed, move inside when open */
 .soundtrack-toggle, .comments-toggle {
     position: absolute;
     top: 0;
@@ -482,10 +486,32 @@ nav a:hover {
     cursor: pointer;
     font-size: 18px;
     box-shadow: 2px 0 10px var(--shadow-medium);
-    transition: background-color 0.2s ease;
+    transition: all 0.3s ease;
 }
 
-.soundtrack-toggle:hover, .comments-toggle:hover { background-color: var(--primary-medium); }
+.soundtrack-toggle:hover, .comments-toggle:hover { 
+    background-color: var(--primary-medium); 
+}
+
+/* When panels are open, move toggles to top-right corner inside panel */
+.soundtrack-panel.open .soundtrack-toggle,
+.comments-panel.open .comments-toggle {
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    background-color: var(--primary-dark);
+    border: 1px solid var(--primary-darker);
+    border-radius: 50%;
+    font-size: 16px;
+    box-shadow: 0 2px 8px var(--shadow-medium);
+}
+
+.soundtrack-panel.open .soundtrack-toggle:hover,
+.comments-panel.open .comments-toggle:hover {
+    background-color: var(--primary-medium);
+    transform: scale(1.1);
+}
 
 /* Hide the other toggle when one panel is open */
 .soundtrack-panel.open ~ .comments-panel .comments-toggle,
@@ -495,7 +521,9 @@ nav a:hover {
 }
 
 /* Adjust z-index and positioning when panels are open */
-.soundtrack-panel.open, .comments-panel.open { z-index: 1001; }
+.soundtrack-panel.open, .comments-panel.open { 
+    z-index: 1001; 
+}
 
 .soundtrack-panel.open ~ .comments-panel { 
     top: 140px; 
@@ -529,37 +557,193 @@ font[color=blue] {
     color: var(--accent-main) !important;
 }
 
-/* Image Modal */
+/* Image Modal - Regency Elegant */
 .image-modal {
-    display: none; position: fixed; z-index: 2000; left: 0; top: 0;
-    width: 100%; height: 100%;
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     background-color: var(--overlay-dark);
     backdrop-filter: blur(3px);
-    opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
 .image-modal.show {
-    display: flex !important; justify-content: center; align-items: center;
-    padding: 40px; box-sizing: border-box;
-    opacity: 1;
+    display: block !important;
 }
 
-.image-modal-content { position: relative; max-width: 90%; max-height: 90%; animation: fadeInScale 0.3s ease; }
-.image-modal img { width: 100%; height: 100%; object-fit: contain; box-shadow: 0 8px 40px var(--shadow-modal); }
-.image-modal-close { position: absolute; top: -15px; right: -15px; background-color: var(--white); color: var(--text-main); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px var(--shadow-modal); transition: transform 0.2s ease; z-index: 2001; }
-.image-modal-close:hover { transform: scale(1.1); }
-.image-modal-nav { position: absolute; top: 50%; transform: translateY(-50%); background-color: var(--white-95); color: var(--text-main); border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px var(--shadow-dark); transition: transform 0.2s ease; z-index: 2001; }
-.image-modal-nav:hover { transform: translateY(-50%) scale(1.1); }
-.image-modal-nav.prev { left: -30px; }
-.image-modal-nav.next { right: -30px; }
-.image-modal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
-.image-modal-nav:disabled:hover { transform: translateY(-50%); }
+.image-modal-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+.image-modal-content img {
+    max-width: calc(90vw - 80px);
+    max-height: calc(90vh - 80px);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    box-shadow: 
+        0 0 0 8px var(--white),
+        0 0 0 12px var(--accent-main),
+        0 8px 30px var(--shadow-modal);
+    border-radius: 2px;
+    filter: sepia(0.1) contrast(1.05);
+}
+
+.image-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background-color: var(--white);
+    color: var(--primary-dark);
+    border: 2px solid var(--accent-main);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px var(--shadow-modal);
+    transition: all 0.3s ease;
+    z-index: 100001;
+    font-family: 'Cinzel', serif;
+}
+
+.image-modal-close:hover {
+    background-color: var(--accent-main);
+    color: var(--white);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px var(--shadow-modal);
+}
+
+.image-modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--white);
+    color: var(--primary-dark);
+    border: 2px solid var(--accent-main);
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px var(--shadow-modal);
+    transition: all 0.3s ease;
+    z-index: 100001;
+    font-weight: bold;
+    font-family: 'Cinzel', serif;
+}
+
+.image-modal-nav::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 1px solid var(--gray-light);
+    opacity: 0.5;
+}
+
+.image-modal-nav:hover {
+    background-color: var(--accent-main);
+    color: var(--white);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px var(--shadow-modal);
+}
+
+.image-modal-nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: var(--gray-lightest);
+    color: var(--gray-medium);
+    border-color: var(--gray-light);
+}
+
+.image-modal-nav:disabled:hover {
+    transform: translateY(-50%);
+    background-color: var(--gray-lightest);
+    color: var(--gray-medium);
+    box-shadow: 0 4px 15px var(--shadow-modal);
+}
+
+.image-modal-nav.prev {
+    left: 30px;
+}
+
+.image-modal-nav.next {
+    right: 30px;
+}
+
+/* Ornate corner decorations */
+.image-modal-content::before,
+.image-modal-content::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background-image: 
+        radial-gradient(circle at 50% 50%, var(--accent-main) 1px, transparent 1px),
+        radial-gradient(circle at 25% 25%, var(--accent-main) 0.5px, transparent 0.5px);
+    background-size: 8px 8px, 4px 4px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.image-modal-content::before {
+    top: 20px;
+    left: 20px;
+}
+
+.image-modal-content::after {
+    bottom: 20px;
+    right: 20px;
+    transform: rotate(180deg);
+}
+
+/* Hide nav buttons when only one image */
+.image-modal-nav[style*="display: none"] {
+    display: none !important;
+}
 
 /* Animations */
 @keyframes fadeInScale {
     from { transform: scale(0.9); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
+}
+
+/* For Webkit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 9px;  /* A slightly more slender scrollbar for an elegant feel */
+    height: 9px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-lighter); /* Matches the lighter parchment tones */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--gray-dark); /* A muted, earthy color for the handle */
+    border-radius: 4px; /* A subtle rounding */
+    border: 2px solid var(--gray-lighter); /* Creates a nice inset effect */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-main); /* The claret red accent for hover feedback */
 }
 
 /* Responsive design */

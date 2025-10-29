@@ -1,6 +1,8 @@
-# Creator's Toolkit v1.0
+# Creator's Toolkit v2.0
 
 A comprehensive writing suite featuring Lore Codex (worldbuilding organizer), RP Archiver (roleplay project manager), and CoWriter (AI writing assistant).
+
+[![ct-main.png](https://i.postimg.cc/3NHymxMc/ct-main.png)](https://postimg.cc/MMdK8xp7)
 
 ## Quick Start
 
@@ -36,6 +38,7 @@ You need Node.js installed on your computer to run Creator's Toolkit.
 ## What's Included
 
 ### Lore Codex
+[![lc-main.png](https://i.postimg.cc/L8GbzcX5/lc-main.png)](https://postimg.cc/bZHgPF1f)
 - Organize characters, locations, cultures, religions, and more
 - Multiple templates (Basic, Detailed, Fantasy, Sci-Fi, etc.)
 - Auto-generates beautiful HTML websites from your data
@@ -43,6 +46,7 @@ You need Node.js installed on your computer to run Creator's Toolkit.
 - Project management with favorites and tags
 
 ### RP Archiver
+[![rpa-main.png](https://i.postimg.cc/sg0RbHgH/rpa-main.png)](https://postimg.cc/yD95ZP90)
 - Create "universes" to organize roleplay projects
 - Story management with chapters and scenes
 - Character profiles and relationships
@@ -50,10 +54,37 @@ You need Node.js installed on your computer to run Creator's Toolkit.
 - Export to clean HTML formats
 
 ### CoWriter
+[![cw-example.png](https://i.postimg.cc/mZ0jpY4q/cw-example.png)](https://postimg.cc/Lh3jnZnB)
+[![cw-styles.png](https://i.postimg.cc/2jPG9QYH/cw-styles.png)](https://postimg.cc/DmP18b8s)
 - AI-powered writing suggestions
 - Custom prompts and templates
 - Context-aware assistance
+- Create Snippets to use with Notebook
+
+### Notebook
+[![nt-example.png](https://i.postimg.cc/9fjDwfGC/nt-example.png)](https://postimg.cc/212kPrcK)
 - Built-in notebook for ideas and snippets
+- Markdown theme options
+- Write and view as markdown
+- Save multiple notebooks for different note collections
+
+### Managers
+#### Character Manager
+[![cm-folders.png](https://i.postimg.cc/TPVjsFdx/cm-folders.png)](https://postimg.cc/JyhBDTHY)
+[![cm-chara.png](https://i.postimg.cc/1zG0d2m1/cm-chara.png)](https://postimg.cc/5HtFYPQs)
+[![cm-charaedit.png](https://i.postimg.cc/7L31RdH8/cm-charaedit.png)](https://postimg.cc/McGjMsfd)
+- Import or create character cards for popular AI roleplay platforms
+- Add alternate fields or alternate avatars
+- Card Management: organize cards into folders
+- Export in a variety of formats
+
+#### Lorebook Manager
+[![lm-main.png](https://i.postimg.cc/DwFqtFzp/lm-main.png)](https://postimg.cc/ppGhFwzK)
+- Import or create lorebooks for popular AI roleplay platforms
+- Edit existing entries or create new ones
+- Organize entries into categories that can be hidden, only export visible entries
+- Bulk Edit entries
+- AI Helper for entry suggestions
 
 ## File Organization
 
@@ -66,9 +97,12 @@ creators-toolkit/
 └── users/
     ├── guest/                  # Guest user data 
     ├── userID/                 # Your personal folder
+    │   ├── backups/            # File backups
+    │   ├── cowriter/           # CoWriter saves/settings     
+    │   ├── notebooks/          # Notebook notes/settings
     │   ├── sites/              # Lore Codex projects
     │   ├── roleplays/          # RP Archiver projects
-    │   └── settings/           # Your preferences & avatar
+    │   └── settings/           # Your preferences & avatar, Character Manager and Lorebook Manager saves
     └── accounts.json           # User accounts 
 ```
 
@@ -106,22 +140,3 @@ creators-toolkit/
 - Your projects remain private unless you choose to export/share them
 - User passwords are securely hashed with bcrypt
 - File-based storage means no dependency on browser localStorage
-
-## Features
-
-### User Management
-- File-based user accounts and avatars
-- Password security with bcrypt hashing
-- Data migration from browser localStorage
-- User-specific project folders
-- Persistent settings and preferences
-
-### Supported File Types
-- **Avatars:** JPG, PNG, GIF, WebP (2MB max)
-- **Exports:** HTML, ZIP archives
-
-### Project Organization
-- **Lore Codex projects:** `users/userID/sites/project-name/`
-- **Roleplay projects:** `users/userID/roleplays/universe-name/`
-- **User settings:** `users/userID/settings/`
-- **Guest mode:** `users/guest/`

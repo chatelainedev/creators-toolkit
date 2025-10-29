@@ -40,6 +40,12 @@
         "recommended": false
       }
     ],
+
+    "apiLimits": {
+      "maxChatHistoryMessages": 20,
+      "maxChatHistoryTokens": 20000,
+      "estimatedTokensPerChar": 0.3
+    },
     
     "defaultGenerationConfig": {
       "temperature": 0.7,
@@ -100,7 +106,13 @@
         "contextLength": 16385,
         "recommended": false
       }
-    ]
+    ],
+
+    "apiLimits": {
+      "maxChatHistoryMessages": 20,
+      "maxChatHistoryTokens": 8000,
+      "estimatedTokensPerChar": 0.3
+    }
   },
   
   "anthropic": {
@@ -130,7 +142,13 @@
         "contextLength": 200000,
         "recommended": false
       }
-    ]
+    ],
+
+    "apiLimits": {
+      "maxChatHistoryMessages": 15,
+      "maxChatHistoryTokens": 150000,
+      "estimatedTokensPerChar": 0.3
+    }
   },
   
   "mistral": {

@@ -1,4 +1,80 @@
 // COMPLETE: Generate card style CSS with ALL base styles included
+// Card style definitions (affects character, storyline, plan, and playlist cards)
+const cardStyles = {
+    'current': {
+        name: 'Current',
+        description: 'Current card styling for characters, storylines, plans, and playlists'
+    },
+    'modern': {
+        name: 'Modern',
+        description: 'Clean modern cards with subtle shadows and rounded corners'
+    },
+    'minimal': {
+        name: 'Minimal',
+        description: 'Simple flat cards with basic borders and clean typography'
+    },
+    'detailed': {
+        name: 'Detailed',
+        description: 'Rich cards with multiple visual elements and enhanced spacing'
+    },
+    'corporate': {
+        name: 'Corporate', 
+        description: 'Professional business-like design with structured borders and uppercase styling'
+    },
+    'vintage': {
+        name: 'Vintage',
+        description: 'Retro aesthetic with sepia tinting, inset shadows, and classic styling'
+    },
+    'frost': {
+        name: 'Frost',
+        description: 'Modern transparency effects with subtle backdrop blur and gradient backgrounds'
+    },
+    'slate': {
+        name: 'Slate',
+        description: 'Flat design emphasizing contrast with bold borders and clean typography'
+    },
+    'kawaii': {
+        name: 'Kawaii',
+        description: 'Cute rounded cards with heart decorations and soft pastel styling'
+    },
+    'pastelDream': {
+        name: 'Pastel Dream',
+        description: 'Dreamy ultra-soft cards with gentle shimmer effects and ethereal gradients'
+    },
+    'candyPop': {
+        name: 'Candy Pop',
+        description: 'Sweet bouncy cards with candy-colored borders, glossy shine effects, and playful scaling animations'
+    },
+    'magicalGirl': {
+        name: 'Magical Girl',
+        description: 'Sparkly transformation-themed cards with rainbow borders, floating animations, and magical glow effects'
+    },
+    'industrial': {
+        name: 'Industrial',
+        description: 'Stamped metal and dossier cards'
+    },
+    'wuxia': {
+        name: 'Wuxia',
+        description: 'Refined jade tablet cards with traditional patterns and elegant Chinese character accents'
+    },
+    'playersHandbook': {
+        name: 'Player\'s Handbook',
+        description: 'Ornate medieval manuscript cards with illuminated portraits, quest descriptions, battle maps, and bardic song sheets'
+    },
+    'adventurersTome': {
+        name: 'Adventurer\'s Tome',
+        description: ''
+    },
+    'horrific': {
+        name: 'Horrific',
+        description: 'Cursed portraits and forbidden tome pages with dark textures'
+    },
+    'parchment': {
+        name: 'Parchment&Quill',
+        description: 'Refined regency calling cards and correspondence with wax seals and elegant paper textures'
+    },
+};
+
 function generateCardStyleCSS(appearance, colors, fonts) {
     const cardStyle = appearance.cardStyle || 'current';
 
@@ -3178,3 +3254,4 @@ case 'magicalGirl':
 
 // Make globally available
 export { generateCardStyleCSS };
+export default cardStyles;

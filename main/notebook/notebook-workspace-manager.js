@@ -185,31 +185,51 @@ class NotebookWorkspaceManager {
 
     // Setup event listeners
     setupEventListeners() {
-        // Notebook selector change
-        document.addEventListener('change', (e) => {
+        // Store handlers
+        this.changeHandler = (e) => {
             if (e.target.id === 'notebook-selector') {
                 const selectedNotebookId = e.target.value;
                 if (selectedNotebookId !== this.currentNotebookId) {
                     this.switchNotebook(selectedNotebookId);
                 }
             }
-        });
-
-        // Create notebook button
-        document.addEventListener('click', (e) => {
+        };
+        
+        this.createBtnHandler = (e) => {
             if (e.target.closest('#create-notebook-btn')) {
                 e.stopPropagation();
                 this.showCreateNotebookModal();
             }
-        });
-
-        // Manage notebooks button
-        document.addEventListener('click', (e) => {
+        };
+        
+        this.manageBtnHandler = (e) => {
             if (e.target.closest('#manage-notebooks-btn')) {
                 e.stopPropagation();
                 this.showManageNotebooksModal();
             }
-        });
+        };
+        
+        // Remove old listeners if they exist
+        if (this._listenersAttached) {
+            document.removeEventListener('change', this.changeHandler);
+            document.removeEventListener('click', this.createBtnHandler);
+            document.removeEventListener('click', this.manageBtnHandler);
+        }
+        
+        document.addEventListener('change', this.changeHandler);
+        document.addEventListener('click', this.createBtnHandler);
+        document.addEventListener('click', this.manageBtnHandler);
+        this._listenersAttached = true;
+    }
+
+    // ADD cleanup method:
+    cleanup() {
+        if (this._listenersAttached) {
+            document.removeEventListener('change', this.changeHandler);
+            document.removeEventListener('click', this.createBtnHandler);
+            document.removeEventListener('click', this.manageBtnHandler);
+            this._listenersAttached = false;
+        }
     }
 
     // Load notebooks from server

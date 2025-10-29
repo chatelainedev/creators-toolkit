@@ -102,7 +102,6 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
-    backdrop-filter: blur(10px);
     position: relative; /* IMPORTANT: For absolute positioning of right elements */
 }
 
@@ -404,7 +403,6 @@ button:active {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -587,7 +585,6 @@ button:active {
 
 /* Loading state overlay - professional and smooth */
 #auth-loading {
-    backdrop-filter: blur(1px);
     transition: opacity 0.3s ease-in-out;
 }
 
@@ -678,4 +675,88 @@ html {
 .settings-btn,
 .about-btn {
     display: none !important;
+}
+
+/* Nav Dropdown Styles */
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    font-family: "Nunito Sans", sans-serif;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.nav-dropdown-btn:hover {
+    color: var(--text-primary);
+    background: transparent;
+    transform: none;
+}
+
+.nav-dropdown-btn i {
+    font-size: 10px;
+    transition: transform var(--transition-normal);
+}
+
+.nav-dropdown.open .nav-dropdown-btn i {
+    transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all var(--transition-normal);
+    z-index: 1001;
+}
+
+.nav-dropdown.open .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.nav-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.nav-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.nav-dropdown-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.nav-dropdown-item i {
+    color: var(--accent-primary);
+    width: 16px;
+    text-align: center;
 }

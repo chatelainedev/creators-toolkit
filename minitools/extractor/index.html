@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorebook Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="extractor.css">
+    <link rel="stylesheet" href="entry-helper.css">
+    <link rel="stylesheet" href="user/auth-ui.css">
+    <link rel="stylesheet" href="about/lorebook-manager-about.css">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-home-btn" title="Back to Creator's Toolkit">
+                <i class="fas fa-home"></i>
+            </a>
+            
+            <h1 class="nav-title">Lorebook Manager</h1>
+            
+            <div class="nav-controls">
+                <!-- Move import controls BEFORE project-controls -->
+                <div class="import-controls">
+                    <input type="file" id="import-file" accept=".json" multiple style="display: none;">
+                    <button id="import-btn" class="btn-primary">
+                        <i class="fas fa-upload"></i> Import Lorebooks
+                    </button>
+                </div>
+                
+                <div class="project-controls">
+                    <select id="project-dropdown" class="project-select" disabled>
+                        <option value="">New Project</option>
+                    </select>
+                    <button id="save-project-btn" class="btn-secondary" disabled title="Save Project">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button id="load-project-btn" class="btn-secondary" disabled title="Load Project">
+                        <i class="fas fa-folder-open"></i>
+                    </button>
+                    <button id="settings-btn" class="btn-secondary" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Avatar (positioned absolute) -->
+        <div id="nav-user-avatar" class="nav-user-avatar" style="display: none;">
+            <button class="nav-about-btn" id="lorebook-manager-about-btn" title="How to use Lorebook Manager">
+                <i class="fas fa-question-circle"></i>
+            </button>
+            <img id="nav-avatar-img" class="user-avatar" alt="User Avatar">
+        </div>
+
+        <!-- User Context Menu -->
+        <div id="extractor-context-menu" class="user-context-menu" style="display: none;">
+            <div class="context-menu-item" id="extractor-logout-option">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <div class="content-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-tabs">
+                    <button class="tab-btn active" data-tab="bulk-actions">
+                        <i class="fas fa-tasks"></i>
+                        <span class="tab-text">Bulk</span>
+                    </button>
+                    <button class="tab-btn" data-tab="categories">
+                        <i class="fas fa-tags"></i>
+                        <span class="tab-text">Categories</span>
+                    </button>
+                    <button class="tab-btn" data-tab="entry-helper">
+                        <i class="fas fa-magic"></i>
+                        <span class="tab-text">AI Helper</span>
+                    </button>
+                </div>
+                
+                <div class="tab-content">
+                    <!-- Bulk Actions Tab -->
+                    <div id="bulk-actions-tab" class="tab-pane active">
+                        <div class="bulk-actions-controls">
+                            <div class="bulk-select-all">
+                                <label class="bulk-select-all-label">
+                                    <input type="checkbox" id="bulk-select-all">
+                                    <span class="checkmark"></span>
+                                    Select All
+                                </label>
+                            </div>
+                            
+                            <div class="bulk-header-buttons">
+                                <button id="bulk-revert-all" class="btn-secondary" disabled title="Revert All">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                                <button id="bulk-save-all" class="btn-secondary" disabled title="Save All">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                                <button id="bulk-delete-all" class="btn-danger" disabled title="Delete All">
+                                    <i class="fas fa-trash"></i> Delete All
+                                </button>
+                            </div>
+
+                            <!--Titles Section-->
+                            <div class="bulk-section collapsed">
+                                <h4 class="bulk-section-title" id="bulk-titles-toggle">
+                                    <i class="fas fa-chevron-down bulk-section-icon"></i>
+                                    TITLES
+                                </h4>
+                                
+                                <div class="bulk-section-content" id="bulk-titles-content">
+                                    <div class="bulk-form-group">
+                                        <select id="bulk-title-mode" class="bulk-select" title="Title Mode">
+                                            <option value="keep">Keep existing title</option>
+                                            <option value="replace">Replace existing title</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="bulk-form-group">
+                                        <input type="text" id="bulk-prefix" class="bulk-input" placeholder="Prefix" title="Prefix">
+                                    </div>
+
+                                    <div class="bulk-form-group">
+                                        <input type="text" id="bulk-suffix" class="bulk-input" placeholder="Suffix" title="Suffix">
+                                    </div>
+
+                                    <div class="bulk-form-group">
+                                        <input type="number" id="bulk-remove-chars" class="bulk-input" min="0" value="0" placeholder="Remove characters" title="Remove Characters">
+                                    </div>
+
+                                    <div class="bulk-form-group">
+                                        <input type="text" id="bulk-numbering" class="bulk-input" placeholder="Add numbering" title="Add Numbering">
+                                        <select id="bulk-numbering-order" class="bulk-select" title="Numbering Order">
+                                            <option value="asc">Ascending</option>
+                                            <option value="desc">Descending</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="bulk-syntax-help">
+                                        Available syntax: {{counter}} {{original}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--Order Section -->
+                            <div class="bulk-section collapsed">
+                                <h4 class="bulk-section-title" id="bulk-order-toggle">
+                                    <i class="fas fa-chevron-down bulk-section-icon"></i>
+                                    ORDER
+                                </h4>
+                                
+                                <div class="bulk-section-content" id="bulk-order-content">
+                                    <div class="bulk-form-group">
+                                        <input type="number" id="bulk-order-start" class="bulk-input" min="0" max="9999" value="100" placeholder="Starting order" title="Starting Order">
+                                    </div>
+
+                                    <div class="bulk-form-group">
+                                        <select id="bulk-order-direction" class="bulk-select" title="Order Direction">
+                                            <option value="asc">Low → High</option>
+                                            <option value="desc">High → Low</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--Position Section -->
+                            <div class="bulk-section collapsed">
+                                <h4 class="bulk-section-title" id="bulk-position-toggle">
+                                    <i class="fas fa-chevron-down bulk-section-icon"></i>
+                                    POSITION
+                                </h4>
+                                
+                                <div class="bulk-section-content" id="bulk-position-content">
+                                    <div class="bulk-form-group">
+                                        <select id="bulk-position-select" class="bulk-select" title="Position">
+                                            <option value="">Current Position</option>
+                                            <option value="0">Before Character</option>
+                                            <option value="1">After Character</option>
+                                            <option value="2">Author's Note Top</option>
+                                            <option value="3">Author's Note Bottom</option>
+                                            <option value="4">At Depth</option>
+                                            <option value="5">Example Chat Top</option>
+                                            <option value="6">Example Chat Bottom</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="bulk-form-group" id="bulk-depth-group" style="display: none;">
+                                        <input type="number" id="bulk-depth-value" class="bulk-input" min="1" max="100" value="1" placeholder="Depth" title="Depth">
+                                    </div>
+
+                                    <div class="bulk-form-group" id="bulk-role-group" style="display: none;">
+                                        <select id="bulk-role-select" class="bulk-select" title="Role">
+                                            <option value="0">System</option>
+                                            <option value="1">User</option>
+                                            <option value="2">Assistant</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--Content Section -->
+                            <div class="bulk-section collapsed">
+                                <h4 class="bulk-section-title" id="bulk-content-toggle">
+                                    <i class="fas fa-chevron-down bulk-section-icon"></i>
+                                    CONTENT
+                                </h4>
+                                
+                                <div class="bulk-section-content" id="bulk-content-content">
+                                    <div class="bulk-form-group">
+                                        <input type="text" id="bulk-content-prefix" class="bulk-input" placeholder="Prefix" title="Prefix">
+                                    </div>
+
+                                    <div class="bulk-form-group">
+                                        <input type="text" id="bulk-content-suffix" class="bulk-input" placeholder="Suffix" title="Suffix">
+                                    </div>
+
+                                    <div class="bulk-form-group">
+                                        <input type="number" id="bulk-content-remove-chars" class="bulk-input" min="0" value="0" placeholder="Remove characters" title="Remove Characters">
+                                    </div>
+
+                                    <div class="bulk-syntax-help">
+                                        Available syntax: {{title}} {{original}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--Category Section -->
+                            <div class="bulk-section collapsed">
+                                <h4 class="bulk-section-title" id="bulk-category-toggle">
+                                    <i class="fas fa-chevron-down bulk-section-icon"></i>
+                                    CATEGORY
+                                </h4>
+                                
+                                <div class="bulk-section-content" id="bulk-category-content">
+                                    <div class="bulk-form-group">
+                                        <select id="bulk-category-select" class="bulk-select" title="Category">
+                                            <option value="">No Change</option>
+                                            <option value="none">Remove Category</option>
+                                            <!-- Categories will be populated here -->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <!-- Categories Tab -->
+                    <div id="categories-tab" class="tab-pane">
+                        <div class="category-controls">
+                            <div class="category-activation-row">
+                                <div class="category-activation-dropdown">
+                                    <button id="category-activation-btn" class="category-input" type="button">
+                                        <span id="category-activation-text">Select categories...</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    <div id="category-activation-options" class="category-activation-options">
+                                        <!-- Will be populated with checkboxes for all categories -->
+                                    </div>
+                                </div>
+                                <button id="activate-categories-btn" class="btn-icon" title="Apply Selection">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="new-category-row">
+                                <input type="text" id="new-category-name" class="category-input" placeholder="New category name...">
+                                <label class="category-scope-toggle" title="Global categories are available in all projects">
+                                    <input type="checkbox" id="category-is-global" checked>
+                                    <span class="toggle-text">Global</span>
+                                </label>
+                                <button id="add-category-btn" class="btn-icon" disabled title="Add Category">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            
+                            <label class="checkbox-label category-select-all">
+                                <input type="checkbox" id="select-all-categories" checked>
+                                Select All Active
+                            </label>
+                        </div>
+                        
+                        <div id="categories-list" class="categories-list">
+                            <!-- Active categories will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Entries Tab -->
+                    <div id="entry-helper-tab" class="tab-pane">
+                        <div class="entry-helper-container">
+                            <!-- ADD THIS NEW SELECT ALL SECTION -->
+                            <div class="bulk-select-all">
+                                <label class="bulk-select-all-label">
+                                    <input type="checkbox" id="entry-helper-select-all">
+                                    <span class="checkmark"></span>
+                                    Select All
+                                </label>
+                            </div>
+                            
+                            <!-- User Prompt Section -->
+                            <div class="eh-section">
+                                <div class="eh-section-header" data-toggle="user-prompt-section">
+                                    <i class="fas fa-chevron-down eh-toggle-icon"></i>
+                                    <h3>User Prompt</h3>
+                                </div>
+                                <div class="eh-section-content" id="user-prompt-section">
+                                    <div class="eh-form-group">
+                                        <label for="user-prompt-text">What entries would you like me to create?</label>
+                                        <textarea 
+                                            id="user-prompt-text" 
+                                            class="eh-textarea" 
+                                            rows="8" 
+                                            placeholder="Describe what kind of lorebook entries you need. For example: 'Create entries for the main noble houses in my fantasy kingdom' or 'I need entries about the different types of magic in my world'..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Context Section -->
+                            <div class="eh-section">
+                                <div class="eh-section-header" data-toggle="additional-context-section">
+                                    <i class="fas fa-chevron-down eh-toggle-icon"></i>
+                                    <h3>Additional Context</h3>
+                                </div>
+                                <div class="eh-section-content" id="additional-context-section">
+                                    
+                                    <!-- Character Context -->
+                                    <div class="eh-subsection">
+                                        <h4><i class="fas fa-users"></i> Character Context</h4>
+                                        <div class="eh-form-row">
+                                            <div class="eh-form-group">
+                                                <label for="cm-project-select">Project</label>
+                                                <select id="cm-project-select" class="eh-select" disabled>
+                                                    <option value="">Select a project...</option>
+                                                </select>
+                                            </div>
+                                            <div class="eh-form-group">
+                                                <label for="cm-character-select">Character</label>
+                                                <select id="cm-character-select" class="eh-select" disabled>
+                                                    <option value="">Select a character...</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="selected-character-display" class="eh-selected-item" style="display: none;">
+                                            <span class="eh-selected-text">
+                                                <i class="fas fa-user"></i>
+                                                <span id="selected-character-name">Character Name</span>
+                                            </span>
+                                            <button id="remove-character-btn" class="eh-remove-btn" title="Remove character context">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Selected Entries Context -->
+                                    <div class="eh-subsection">
+                                        <h4><i class="fas fa-list"></i> Selected Entries Context</h4>
+                                        <div id="selected-entries-display" class="eh-context-display">
+                                            <p class="eh-no-selection">No entries selected. Select entries from the main list to include them as context.</p>
+                                            <div id="selected-entries-summary" class="eh-selected-item" style="display: none;">
+                                                <span class="eh-selected-text">
+                                                    <i class="fas fa-list"></i>
+                                                    <span id="selected-entries-text">0 entries selected</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Response Settings Section -->
+                            <div class="eh-section">
+                                <div class="eh-section-header" data-toggle="response-settings-section">
+                                    <i class="fas fa-chevron-down eh-toggle-icon"></i>
+                                    <h3>Response Settings</h3>
+                                </div>
+                                <div class="eh-section-content" id="response-settings-section">
+                                    <div class="eh-form-row">
+                                        <div class="eh-form-group">
+                                            <label for="max-context-tokens">Max Context Tokens</label>
+                                            <input 
+                                                type="number" 
+                                                id="max-context-tokens" 
+                                                class="eh-input" 
+                                                min="0" 
+                                                max="100000" 
+                                                value="8000"
+                                                placeholder="8000">
+                                            <small class="eh-form-text">Maximum tokens for context (0 = unlimited)</small>
+                                        </div>
+                                        <div class="eh-form-group">
+                                            <label for="max-response-tokens">Max Response Tokens</label>
+                                            <input 
+                                                type="number" 
+                                                id="max-response-tokens" 
+                                                class="eh-input" 
+                                                min="0" 
+                                                max="8192" 
+                                                value="2048"
+                                                placeholder="2048">
+                                            <small class="eh-form-text">Maximum tokens for AI response</small>
+                                        </div>
+                                    </div>
+                                    <div class="eh-form-group">
+                                        <label for="blacklisted-words">Blacklisted Words (comma-separated)</label>
+                                        <input 
+                                            type="text" 
+                                            id="blacklisted-words" 
+                                            class="eh-input" 
+                                            placeholder="ethereal, mystical, ancient, forbidden...">
+                                        <small class="eh-form-text">Words you want the AI to avoid using</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Generate Section -->
+                            <div class="eh-generate-section">
+                                <button id="generate-entries-btn" class="btn-primary eh-generate-btn" disabled>
+                                    <i class="fas fa-magic"></i> Generate Entries
+                                </button>
+                                <div class="eh-status" id="generation-status" style="display: none;">
+                                    <div class="eh-spinner"></div>
+                                    <span>Generating entries...</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="main-area">
+                <!-- Control Bar -->
+                <div class="control-bar">
+                    <div class="search-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-input" placeholder="Search entries...">
+                            <button id="clear-search" class="clear-btn" title="Clear search">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="entry-counter" class="entry-counter">
+                            <span id="entry-counter-text">0/0</span>
+                        </div>
+                        
+                        <select id="sort-select" class="sort-select">
+                            <option value="manual-order">Manual Order</option>
+                            <option value="name-asc">Name A-Z</option>
+                            <option value="name-desc">Name Z-A</option>
+                            <option value="content-length">Content Length</option>
+                            <option value="category">Category</option>
+                            <option value="order">Import Order</option>
+                        </select>
+
+                        <div class="view-controls">
+                            <button id="view-compact-btn" class="btn-secondary view-btn active" title="Compact View">
+                                <i class="fas fa-compress"></i>
+                            </button>
+                            <button id="view-expanded-btn" class="btn-secondary view-btn" title="Expanded View">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+
+                        <button id="add-entry-btn" class="btn-secondary" title="Add New Entry">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="action-controls">
+                        <button id="export-txt-btn" class="btn-secondary" disabled title="Export as Plain Text">
+                            <i class="fas fa-file-text"></i>
+                        </button>
+                        <button id="export-md-btn" class="btn-secondary" disabled title="Export as Markdown">
+                            <i class="fas fa-file-code"></i>
+                        </button>
+                        <button id="export-json-btn" class="btn-secondary" disabled title="Export as Lorebook JSON">
+                            <i class="fas fa-file-export"></i>
+                        </button>
+                        <button id="send-st-btn" class="btn-secondary" disabled title="Send to SillyTavern">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Entry List -->
+                <div class="entry-list-container">
+                    <div id="entry-list" class="entry-list">
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <h3>No entries loaded</h3>
+                            <p>Import lorebook files to get started</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Preview Modal -->
+    <div id="import-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content import-modal">
+            <div class="modal-header">
+                <h3>Import Lorebook Entries</h3>
+                <button id="import-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="import-summary">
+                    <p>Found <span id="total-entries">0</span> entries across <span id="total-files">0</span> files</p>
+                </div>
+                
+                <div class="import-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="select-all-entries" checked>
+                        Select All
+                    </label>
+                </div>
+                
+                <div id="import-entry-list" class="import-entry-list">
+                    <!-- Import entries will be populated here -->
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="import-cancel" class="btn-secondary">Cancel</button>
+                <button id="import-confirm" class="btn-primary">Import Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Entry Modal -->
+    <div id="edit-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content edit-modal">
+            <div class="modal-header">
+                <h3>Edit Entry</h3>
+                <button id="edit-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="edit-name">Name:</label>
+                    <input type="text" id="edit-name" class="edit-input">
+                </div>
+                
+                <div class="form-group keys-group">
+                    <div class="keys-row">
+                        <div class="keys-field">
+                            <label for="edit-keys">Keys:</label>
+                            <input type="text" id="edit-keys" class="edit-input" placeholder="comma, separated, keys">
+                        </div>
+                        
+                        <div class="logic-field">
+                            <label for="edit-logic">Logic:</label>
+                            <select id="edit-logic" class="edit-select">
+                                <option value="0">AND ANY</option>
+                                <option value="1">NOT ALL</option>
+                                <option value="2">NOT ANY</option>
+                                <option value="3">AND ALL</option>
+                            </select>
+                        </div>
+                        
+                        <div class="secondary-keys-field">
+                            <label for="edit-secondary-keys">Secondary Keys:</label>
+                            <input type="text" id="edit-secondary-keys" class="edit-input" placeholder="secondary, keys">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-content">Content:</label>
+                    <textarea id="edit-content" class="edit-textarea"></textarea>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="edit-cancel" class="btn-secondary">Cancel</button>
+                <button id="edit-save" class="btn-primary">Save</button>
+                <button id="edit-delete" class="btn-danger">Delete Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Icon Selection Modal -->
+    <div id="icon-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content icon-modal">
+            <div class="modal-header">
+                <h3>Select Category Icon</h3>
+                <button id="icon-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="icon-grid" class="icon-grid">
+                    <!-- Icons will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Context Menu -->
+    <div id="category-context-menu" class="category-context-menu" style="display: none;">
+        <button class="context-menu-item" data-action="edit">
+            <i class="fas fa-edit"></i>
+            Rename Category
+        </button>
+        <div class="context-menu-separator"></div>
+        <button class="context-menu-item danger" data-action="delete">
+            <i class="fas fa-trash"></i>
+            Delete Category
+        </button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content folder-edit-modal">
+            <div class="modal-header">
+                <h3>Lorebook Manager Settings</h3>
+                <button id="settings-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="sillytavern-folder-path">SillyTavern Folder Location:</label>
+                    <input type="text" id="sillytavern-folder-path" class="edit-input" placeholder="e.g., C:\SillyTavern or /home/user/SillyTavern">
+                    <small style="color: var(--text-tertiary); margin-top: var(--space-xs); display: block;">
+                        Enter the full path to your SillyTavern installation folder (contains characters, worlds, etc.)
+                    </small>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="settings-cancel" class="btn-secondary-text">Cancel</button>
+                <button id="settings-save" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entry Helper Results Modal -->
+    <div id="entry-helper-modal" class="modal" style="display: none;">
+        <div class="modal-content eh-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-magic"></i> Generated Entries</h2>
+                <button class="modal-close" id="entry-helper-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="generated-entries-container" class="eh-results-container">
+                    <!-- Generated entries will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu for Project Dropdown -->
+<div id="project-context-menu" class="project-context-menu" style="display: none;">
+        <div class="context-menu-item" id="quick-load-option">
+            <i class="fas fa-bolt"></i> Quick Load
+        </div>
+        <div class="context-menu-item" id="rename-project-option" style="display: none;">
+            <i class="fas fa-edit"></i> Rename
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="user/user-session.js"></script>
+    <script src="user/auth-ui.js"></script>
+    <script src="themes/theme-manager.js"></script>
+    <script src="modules/bulk-actions.js"></script>
+    <script src="extractor.js"></script>
+    <script src="modules/sillytavern-integration.js"></script>
+    <script src="modules/entry-helper.js"></script>
+    <script src="about/lorebook-manager-about.js"></script>
+</body>
+</html>

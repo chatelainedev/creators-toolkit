@@ -220,6 +220,13 @@ class CollectionsManager {
                     this.notebook.showToast(error.message || 'Failed to create collection', 'error');
                 }
             });
+
+            modal.addEventListener('remove', () => {
+                // Clean up all event listeners when modal is removed
+                colorOptions.forEach(option => {
+                    option.replaceWith(option.cloneNode(true));
+                });
+            });
         }
         
         // Enter key handler
@@ -299,6 +306,7 @@ class CollectionsManager {
         }
         
         // Refresh the notebook view
+        this.notebook._forceRebuild = true;  // ADD THIS LINE
         this.notebook.renderCollectionsTree();        
     }
 
@@ -583,6 +591,7 @@ class CollectionsManager {
         }
         
         // Refresh the notebook view
+        this.notebook._forceRebuild = true;  // ADD THIS LINE
         this.notebook.renderCollectionsTree();        
     }
 
@@ -712,6 +721,7 @@ class CollectionsManager {
             }
         }
         
+        this.notebook._forceRebuild = true;  // ADD THIS LINE
         this.notebook.renderCollectionsTree();
         this.notebook.showToast(`Deleted collection: ${collection.name}`, 'info');
     }

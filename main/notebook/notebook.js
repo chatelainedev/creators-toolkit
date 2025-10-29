@@ -141,8 +141,7 @@ class NotebookManager {
         });
 
         // Close snippets panel when clicking outside
-        document.addEventListener('click', (e) => {
-            // Don't interfere with other modals
+        this.snippetsPanelClickHandler = (e) => {
             if (e.target.closest('.modal-overlay')) {
                 return;
             }
@@ -151,12 +150,19 @@ class NotebookManager {
             const snippetsBtn = document.getElementById('snippets-btn');
             
             if (snippetsPanel && snippetsPanel.classList.contains('open')) {
-                // Don't close if clicking inside the panel or on the snippets button
                 if (!snippetsPanel.contains(e.target) && !snippetsBtn.contains(e.target)) {
                     this.closeSnippetsPanel();
                 }
             }
-        });
+        };
+
+        // Remove old listener if exists
+        if (this._snippetsPanelListenerAttached) {
+            document.removeEventListener('click', this.snippetsPanelClickHandler);
+        }
+
+        document.addEventListener('click', this.snippetsPanelClickHandler);
+        this._snippetsPanelListenerAttached = true;
 
         // Snippets search
         const snippetsSearchInput = document.getElementById('snippets-search');
@@ -182,46 +188,49 @@ class NotebookManager {
                document.querySelector('textarea[placeholder*="Start writing"]');
     }
 
-    // Setup context menu integration - THIS IS CRITICAL FOR COWRITER
     setupContextMenuIntegration() {
-        
-        // Listen for right-clicks EVERYWHERE (CoWriter and Notebook)
-        document.addEventListener('contextmenu', (e) => {
-            
-            // Check if we're in CoWriter content
+        // Store handlers so we can remove them later
+        this.contextMenuHandler = (e) => {
             const isCoWriterText = e.target.closest('#chat-messages .message-text') ||
-                                  e.target.closest('.cowriter-content .message-text') ||
-                                  e.target.closest('#cowriter-content .message-text');
+                                e.target.closest('.cowriter-content .message-text') ||
+                                e.target.closest('#cowriter-content .message-text');
             
-            // Check if we're in Notebook content  
             const isNotebookText = e.target.closest('#markdown-editor') ||
-                                  e.target.closest('#notebook-textarea') ||
-                                  e.target.closest('.editor-content');
-            
+                                e.target.closest('#notebook-textarea') ||
+                                e.target.closest('.editor-content');
             
             if (isCoWriterText || isNotebookText) {
                 const selection = window.getSelection().toString().trim();
                 
                 if (selection.length > 5) {
                     e.preventDefault();
-                    this.showSnippetContextMenu(e, selection);
+                    // Pass the context to the menu function
+                    const context = isCoWriterText ? 'cowriter' : 'notebook';
+                    this.showSnippetContextMenu(e, selection, context);
                 }
             }
-        });
+        };
         
-        // Hide context menu on click outside
-        // Hide context menu on click outside
-        document.addEventListener('click', (e) => {
-            // Only hide if context menu exists and click is outside it
+        this.clickOutsideHandler = (e) => {
             const contextMenu = document.getElementById('notebook-context-menu');
             if (contextMenu && !contextMenu.contains(e.target)) {
                 this.hideSnippetContextMenu();
             }
-        });        
+        };
+        
+        // Remove old listeners if they exist
+        if (this._listenersAttached) {
+            document.removeEventListener('contextmenu', this.contextMenuHandler);
+            document.removeEventListener('click', this.clickOutsideHandler);
+        }
+        
+        document.addEventListener('contextmenu', this.contextMenuHandler);
+        document.addEventListener('click', this.clickOutsideHandler);
+        this._listenersAttached = true;
     }
 
-    // Show snippet context menu - RESTORED WORKING VERSION
-    showSnippetContextMenu(event, selectedText) {
+    // Show snippet context menu - MODIFIED to show different options based on context
+    showSnippetContextMenu(event, selectedText, context = 'notebook') {
         this.hideSnippetContextMenu(); // Remove any existing menu
         
         const menu = document.createElement('div');
@@ -240,17 +249,35 @@ class NotebookManager {
             display: block;
         `;
         
-        menu.innerHTML = `
-            <div class="context-menu-item primary" data-action="create-snippet" style="padding: var(--space-sm) var(--space-md); cursor: pointer; font-size: var(--font-size-xs); color: var(--text-secondary); display: flex; align-items: center; gap: var(--space-sm); transition: all var(--transition-fast);">
-                <i class="fas fa-magic"></i> Create Snippet
-            </div>
-            <div class="context-menu-item" data-action="send-to-cowriter" style="padding: var(--space-sm) var(--space-md); cursor: pointer; font-size: var(--font-size-xs); color: var(--text-secondary); display: flex; align-items: center; gap: var(--space-sm); transition: all var(--transition-fast);">
-                <i class="fas fa-paper-plane"></i> Send to CoWriter
-            </div>
+        // Build menu items based on context
+        let menuItems = '';
+        
+        // Show "Create Snippet" only in CoWriter
+        if (context === 'cowriter') {
+            menuItems += `
+                <div class="context-menu-item primary" data-action="create-snippet" style="padding: var(--space-sm) var(--space-md); cursor: pointer; font-size: var(--font-size-xs); color: var(--text-secondary); display: flex; align-items: center; gap: var(--space-sm); transition: all var(--transition-fast);">
+                    <i class="fas fa-magic"></i> Create Snippet
+                </div>
+            `;
+        }
+        
+        // Show "Send to CoWriter" only in Notebook
+        if (context === 'notebook') {
+            menuItems += `
+                <div class="context-menu-item" data-action="send-to-cowriter" style="padding: var(--space-sm) var(--space-md); cursor: pointer; font-size: var(--font-size-xs); color: var(--text-secondary); display: flex; align-items: center; gap: var(--space-sm); transition: all var(--transition-fast);">
+                    <i class="fas fa-paper-plane"></i> Send to CoWriter
+                </div>
+            `;
+        }
+        
+        // Copy option always available
+        menuItems += `
             <div class="context-menu-item" data-action="copy" style="padding: var(--space-sm) var(--space-md); cursor: pointer; font-size: var(--font-size-xs); color: var(--text-secondary); display: flex; align-items: center; gap: var(--space-sm); transition: all var(--transition-fast);">
                 <i class="fas fa-copy"></i> Copy
             </div>
         `;
+        
+        menu.innerHTML = menuItems;
         
         // Position menu near cursor
         const x = Math.min(event.pageX, window.innerWidth - 200);
@@ -274,21 +301,40 @@ class NotebookManager {
         });
         
         // Add event listeners
-        menu.querySelector('[data-action="create-snippet"]').addEventListener('click', () => {
-            this.openSnippetModal(selectedText);
-            this.hideSnippetContextMenu();
-        });
+        const createSnippetBtn = menu.querySelector('[data-action="create-snippet"]');
+        if (createSnippetBtn) {
+            createSnippetBtn.addEventListener('click', () => {
+                this.openSnippetModal(selectedText);
+                this.hideSnippetContextMenu();
+            });
+        }
         
-        menu.querySelector('[data-action="copy"]').addEventListener('click', () => {
-            navigator.clipboard.writeText(selectedText);
-            this.showToast('Text copied to clipboard', 'info');
-            this.hideSnippetContextMenu();
-        });
+        const copyBtn = menu.querySelector('[data-action="copy"]');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(selectedText);
+                this.showToast('Text copied to clipboard', 'info');
+                this.hideSnippetContextMenu();
+            });
+        }
 
-        menu.querySelector('[data-action="send-to-cowriter"]').addEventListener('click', () => {
-            this.sendToCoWriter(selectedText);
-            this.hideSnippetContextMenu();
-        });        
+        const sendToCoWriterBtn = menu.querySelector('[data-action="send-to-cowriter"]');
+        if (sendToCoWriterBtn) {
+            sendToCoWriterBtn.addEventListener('click', () => {
+                this.sendToCoWriter(selectedText);
+                this.hideSnippetContextMenu();
+            });
+        }
+        
+        // Store reference to cleanup
+        const menuCleanup = () => {
+            if (menu.parentNode) {
+                menu.remove();
+            }
+        };
+
+        // Auto-cleanup after 30 seconds if not manually removed
+        setTimeout(menuCleanup, 30000);
     }
 
     // Hide snippet context menu
@@ -366,6 +412,7 @@ class NotebookManager {
         this.updatePreview();
         this.updateWordCount();
         this.updateNoteBreadcrumb();
+        this._forceRebuild = true;
         this.renderCollectionsTree();
 
         this.showToast('New note created', 'info');
@@ -665,6 +712,27 @@ class NotebookManager {
         const container = document.getElementById('collections-tree');
         if (!container) return;
 
+        // ADD THIS CHECK:
+        // Only rebuild if something actually changed
+        const currentNoteIds = this.savedNotes.map(n => n.id).sort().join(',');
+        if (this._lastRenderedNoteIds === currentNoteIds && !this._forceRebuild) {
+            return; // Skip rebuild
+        }
+        this._lastRenderedNoteIds = currentNoteIds;
+        this._forceRebuild = false;
+
+        // ADD THIS: Clean up any existing observers before rebuilding
+        if (this._lazyLoadObservers) {
+            this._lazyLoadObservers.forEach(observer => {
+                try {
+                    observer.disconnect();
+                } catch (e) {
+                    // Observer might already be disconnected
+                }
+            });
+            this._lazyLoadObservers = [];
+        }
+
         container.innerHTML = '';
 
         // Use collections manager if available
@@ -868,14 +936,78 @@ class NotebookManager {
             .filter(note => note) // Remove undefined notes
             .sort((a, b) => b.lastModified - a.lastModified); // Sort by last modified
         
-        notes.forEach(note => {
+        const INITIAL_NOTE_DISPLAY = 30;
+        const notesToShow = notes.slice(0, INITIAL_NOTE_DISPLAY);
+        const remainingNotes = notes.slice(INITIAL_NOTE_DISPLAY); // Mutable array for lazy loading
+
+        // Render initial batch
+        notesToShow.forEach(note => {
             const noteItem = this.createNoteItem(note);
             notesDiv.appendChild(noteItem);
         });
+
+        // Setup lazy loading if there are more notes
+        if (remainingNotes.length > 0) {
+            // Create loading sentinel
+            const sentinel = document.createElement('div');
+            sentinel.className = 'notes-loading-sentinel';
+            sentinel.style.cssText = `
+                padding: var(--space-sm);
+                text-align: center;
+                color: var(--text-tertiary);
+                font-size: var(--font-size-xs);
+                margin: var(--space-xs) 0;
+            `;
+            sentinel.innerHTML = `<i class="fas fa-ellipsis-h"></i> ${remainingNotes.length} more note${remainingNotes.length !== 1 ? 's' : ''}`;
+            notesDiv.appendChild(sentinel);
+            
+            // Setup intersection observer for lazy loading
+            this.setupLazyNoteLoading(notesDiv, remainingNotes, sentinel);
+        }
         
         collectionDiv.appendChild(notesDiv);
         
         return collectionDiv;
+    }
+
+    // Setup lazy loading for note lists using Intersection Observer
+    setupLazyNoteLoading(notesDiv, remainingNotes, sentinel) {
+        // Observer to load more when sentinel is visible
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && remainingNotes.length > 0) {
+                    // Load next batch
+                    const BATCH_SIZE = 30;
+                    const batch = remainingNotes.splice(0, BATCH_SIZE);
+                    
+                    batch.forEach(note => {
+                        const noteItem = this.createNoteItem(note);
+                        notesDiv.insertBefore(noteItem, sentinel);
+                    });
+                    
+                    // Update or remove sentinel
+                    if (remainingNotes.length === 0) {
+                        observer.disconnect();
+                        sentinel.remove();
+                    } else {
+                        // Update loading indicator
+                        sentinel.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Loading more notes...`;
+                    }
+                }
+            });
+        }, {
+            root: document.getElementById('collections-tree'),
+            rootMargin: '150px', // Start loading 150px before sentinel is visible
+            threshold: 0
+        });
+        
+        observer.observe(sentinel);
+        
+        // Store observer for cleanup
+        if (!this._lazyLoadObservers) {
+            this._lazyLoadObservers = [];
+        }
+        this._lazyLoadObservers.push(observer);
     }
 
     // ADD THIS NEW METHOD: Fallback simple collections rendering
@@ -1131,6 +1263,7 @@ class NotebookManager {
             }
             
             // Refresh UI
+            this._forceRebuild = true;  // ADD THIS LINE
             this.renderCollectionsTree();
             
             const targetCollectionName = this.collectionsManager.getCollection(targetCollection)?.name || 'Uncategorized';
@@ -1197,6 +1330,7 @@ class NotebookManager {
             this.updatePreview();
             this.updateWordCount();
             this.updateNoteBreadcrumb();
+            this._forceRebuild = true;
             this.renderCollectionsTree(); // Update active state            
         } catch (error) {
             this.showToast('Failed to load note', 'error');
@@ -1937,7 +2071,12 @@ class NotebookManager {
 
     // Auto-save functionality
     setupAutoSave() {
-        setInterval(() => {
+        // Clear any existing interval
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+        }
+        
+        this.autoSaveInterval = setInterval(() => {
             if (this.isDirty && this.currentNote.id && this.isUserLoggedIn()) {
                 this.autoSaveNote();
             }
@@ -1973,7 +2112,12 @@ class NotebookManager {
     }
 
     setupWordCounter() {
-        setInterval(() => {
+        // Clear any existing interval
+        if (this.wordCountInterval) {
+            clearInterval(this.wordCountInterval);
+        }
+        
+        this.wordCountInterval = setInterval(() => {
             this.updateWordCount();
         }, 1000);
     }
@@ -2256,6 +2400,62 @@ class NotebookManager {
         
         this.renderCollectionsTree();
         this.updateStats();
+        
+        // ADD THIS LINE:
+        this.cleanup();
+    }
+
+    cleanup() {
+        console.log('🧹 Cleaning up Notebook Manager...');
+        
+        // Clear timers
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+            this.autoSaveInterval = null;
+        }
+        
+        if (this.wordCountInterval) {
+            clearInterval(this.wordCountInterval);
+            this.wordCountInterval = null;
+        }
+        
+        if (this.autoSaveTimer) {
+            clearTimeout(this.autoSaveTimer);
+            this.autoSaveTimer = null;
+        }
+        
+        if (this.wordCountTimer) {
+            clearTimeout(this.wordCountTimer);
+            this.wordCountTimer = null;
+        }
+        
+        // Remove document-level listeners
+        if (this.contextMenuHandler) {
+            document.removeEventListener('contextmenu', this.contextMenuHandler);
+        }
+        
+        if (this.clickOutsideHandler) {
+            document.removeEventListener('click', this.clickOutsideHandler);
+        }
+        
+        if (this.snippetsPanelClickHandler) {
+            document.removeEventListener('click', this.snippetsPanelClickHandler);
+            this._snippetsPanelListenerAttached = false;
+        }
+
+        // Cleanup lazy load observers
+        if (this._lazyLoadObservers) {
+            this._lazyLoadObservers.forEach(observer => {
+                try {
+                    observer.disconnect();
+                } catch (e) {
+                    // Observer might already be disconnected
+                }
+            });
+            this._lazyLoadObservers = [];
+        }
+        
+        console.log('✅ Notebook Manager cleanup complete');
     }
 }
 

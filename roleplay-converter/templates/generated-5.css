@@ -552,12 +552,25 @@ nav a:hover {
     align-items: center;
     cursor: pointer;
     font-size: 18px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .soundtrack-toggle:hover, .comments-toggle:hover {
     background-color: var(--primary-medium);
     color: var(--accent-main);
+}
+
+/* When panels are open, move toggles to top-right corner inside the panel */
+.soundtrack-panel.open .soundtrack-toggle,
+.comments-panel.open .comments-toggle {
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+    box-shadow: 0 2px 8px var(--shadow-medium);
 }
 
 /* Panel interaction logic */
@@ -663,37 +676,38 @@ font[color=blue] {
     color: var(--accent-main) !important;
 }
 
-/* Image Modal */
+/* Image Modal - Simple and Functional with Custom Colors */
 .image-modal {
     display: none;
     position: fixed;
     z-index: 2000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     background-color: var(--overlay-dark);
     backdrop-filter: blur(5px);
-    opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
 .image-modal.show {
-    display: flex !important;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-    box-sizing: border-box;
-    opacity: 1;
+    display: block !important;
 }
 
 .image-modal-content {
     position: relative;
-    max-width: 90%;
-    max-height: 90%;
-    animation: fadeInScale 0.3s ease;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
-.image-modal img {
-    width: 100%; height: 100%;
+.image-modal-content img {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
     object-fit: contain;
     box-shadow: 0 8px 40px var(--shadow-modal);
     border: 2px solid var(--border-color);
@@ -701,13 +715,16 @@ font[color=blue] {
 
 .image-modal-close {
     position: absolute;
-    top: -15px; right: -15px;
+    top: 20px;
+    right: 30px;
     background-color: var(--primary-dark);
     color: var(--text-main);
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    width: 40px; height: 40px;
-    font-size: 20px; font-weight: bold;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    font-weight: bold;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -731,8 +748,10 @@ font[color=blue] {
     color: var(--text-main);
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    width: 50px; height: 50px;
-    font-size: 20px; font-weight: bold;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -748,23 +767,55 @@ font[color=blue] {
     color: var(--text-dark);
 }
 
-.image-modal-nav.prev { left: -30px; }
-.image-modal-nav.next { right: -30px; }
+.image-modal-nav.prev { 
+    left: 20px; 
+}
+
+.image-modal-nav.next { 
+    right: 20px; 
+}
 
 .image-modal-nav:disabled {
     opacity: 0.3;
     cursor: not-allowed;
 }
+
 .image-modal-nav:disabled:hover {
     transform: translateY(-50%);
     background-color: var(--primary-95);
     color: var(--text-main);
 }
 
+/* Hide nav buttons when only one image */
+.image-modal-nav[style*="display: none"] {
+    display: none !important;
+}
+
 /* Animations */
 @keyframes fadeInScale {
     from { transform: scale(0.9); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
+}
+
+/* For Webkit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 10px;  /* Width of the vertical scrollbar */
+    height: 10px; /* Height of the horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary-dark); /* Dark track, matching UI panels */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--gray-medium-dark); /* The draggable handle */
+    border-radius: 4px; /* Subtle radius to match the theme */
+    border: 2px solid var(--primary-dark); /* Creates padding around thumb */
+    transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-main); /* Glows with the accent color on hover */
 }
 
 /* Responsive design */

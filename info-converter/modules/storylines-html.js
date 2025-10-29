@@ -70,8 +70,12 @@ function generateStorylinesJavaScript() {
             if (navContainer) {
                 const tagLinks = navContainer.querySelectorAll('.storylines-tag-link');
                 tagLinks.forEach(link => {
-                    const tag = link.textContent;
-                    if (selectedTags.has(tag)) {
+                    const onclickAttr = link.getAttribute('onclick');
+                    const tagMatch = onclickAttr.match(/toggleStorylinesTag\\('(.+?)', '\\w+'\\)/);
+                    const fullTag = tagMatch ? tagMatch[1] : link.textContent;
+                    const strippedTag = stripHiddenPrefix(fullTag);
+                    
+                    if (selectedTags.has(strippedTag)) {
                         link.classList.add('selected');
                     } else {
                         link.classList.remove('selected');
@@ -91,6 +95,26 @@ function generateStorylinesJavaScript() {
                 } else {
                     clearBtn.classList.remove('active');
                 }
+            }
+        }
+
+        // Toggle table of contents
+        function toggleStorylineTOC(viewType) {
+            const tocContent = document.querySelector('.storyline-toc-content');
+            const tocToggle = document.querySelector('.storyline-toc-toggle');
+            
+            if (tocContent && tocToggle) {
+                tocContent.classList.toggle('collapsed');
+                tocToggle.classList.toggle('expanded');
+                tocToggle.textContent = tocContent.classList.contains('collapsed') ? '▶' : '▼';
+            }
+        }
+        
+        // Smooth scroll to storyline section
+        function scrollToStorylineSection(anchorId) {
+            const element = document.getElementById(anchorId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
 
@@ -172,6 +196,8 @@ function generateStorylinesJavaScript() {
         window.clearAllStorylinesTags = clearAllStorylinesTags;
         window.selectedRoleplayTags = selectedRoleplayTags;
         window.selectedSoloTags = selectedSoloTags;
+        window.toggleStorylineTOC = toggleStorylineTOC;
+        window.scrollToStorylineSection = scrollToStorylineSection;
     `;
 }
 
@@ -244,27 +270,52 @@ function generateStorylinesGrid(data, filterType) {
     const uniqueTags = collectStorylinesTagsForType(data, filterType);
     const navigationHTML = generateStorylinesNavigation(uniqueTags, filterType);
     
-    let gridHTML = navigationHTML; // Add navigation above grid
-    gridHTML += '<div class="storylines-grid" id="storylines-grid-' + filterType + '">';
-    
-    // Separate storylines into ungrouped and grouped
-    // Separate storylines into ungrouped and grouped
+    // Organize storylines into hierarchy: ungrouped, sections with subsections
     const ungroupedStorylines = [];
-    const groupedStorylines = {};
+    const sectionedStorylines = {}; // { sectionName: { noSubsection: [], subsections: { subsectionName: [] } } }
 
     filteredStorylines.forEach(storyline => {
         const section = (storyline.section || '').trim();
+        const subsection = (storyline.subsection || '').trim();
+        
         if (!section) {
+            // No section at all - completely ungrouped
             ungroupedStorylines.push(storyline);
         } else {
-            if (!groupedStorylines[section]) {
-                groupedStorylines[section] = [];
+            // Has a section
+            if (!sectionedStorylines[section]) {
+                sectionedStorylines[section] = {
+                    noSubsection: [],
+                    subsections: {}
+                };
             }
-            groupedStorylines[section].push(storyline);
+            
+            if (!subsection) {
+                // Has section but no subsection
+                sectionedStorylines[section].noSubsection.push(storyline);
+            } else {
+                // Has both section and subsection
+                if (!sectionedStorylines[section].subsections[subsection]) {
+                    sectionedStorylines[section].subsections[subsection] = [];
+                }
+                sectionedStorylines[section].subsections[subsection].push(storyline);
+            }
         }
     });
 
-    // Render ungrouped storylines first
+    // Build HTML: navigation + TOC + grids
+    let gridHTML = navigationHTML; // Add navigation first
+    
+    // Add table of contents if there are sections AND option is enabled
+    const showTOC = data.storylinesOptions?.showTOC ?? true;
+    if (Object.keys(sectionedStorylines).length > 0 && showTOC) {
+        gridHTML += generateStorylineTOC(sectionedStorylines, filterType);
+    }
+    
+    // Start the main grid for ungrouped storylines
+    gridHTML += '<div class="storylines-grid" id="storylines-grid-' + filterType + '">';
+    
+    // Render ungrouped storylines first (no section at all)
     ungroupedStorylines.forEach((storyline, index) => {
         gridHTML += generateStorylineCard(storyline, index);
     });
@@ -272,22 +323,54 @@ function generateStorylinesGrid(data, filterType) {
     // Close the initial grid
     gridHTML += '</div>';
 
-    // Render each section with its own header and grid
-    Object.keys(groupedStorylines).sort().forEach(sectionName => {
-        gridHTML += `<div class="storyline-section-header">
-            <h3 class="storyline-section-title">— ${sectionName} —</h3>
-        </div>`;
+    // Render each section with its subsections
+    Object.keys(sectionedStorylines).sort().forEach(sectionName => {
+        const sectionData = sectionedStorylines[sectionName];
+        
+        // Section header (if enabled)
+        const showSections = data.storylinesOptions?.showSections ?? true;
+        if (showSections) {
+            gridHTML += `<div class="storyline-section-header">
+                <h3 class="storyline-section-title">${sectionName}</h3>
+            </div>`;
+        }
         
         // Start a new grid for this section
-        gridHTML += '<div class="storylines-grid" id="storylines-grid-' + filterType + '-section-' + sectionName.replace(/\s+/g, '-').toLowerCase() + '">';
+        const sectionId = sectionName.replace(/\s+/g, '-').toLowerCase();
+        gridHTML += '<div class="storylines-grid" id="storylines-grid-' + filterType + '-section-' + sectionId + '">';
         
-        groupedStorylines[sectionName].forEach((storyline, index) => {
+        // Render storylines in this section with NO subsection first
+        sectionData.noSubsection.forEach((storyline, index) => {
             gridHTML += generateStorylineCard(storyline, index);
         });
         
-        // Close this section's grid
+        // Close the section's main grid
         gridHTML += '</div>';
+        
+        // Now render each subsection within this section
+        Object.keys(sectionData.subsections).sort().forEach(subsectionName => {
+            // Subsection header (if enabled)
+            const showSubsections = data.storylinesOptions?.showSubsections ?? true;
+            if (showSubsections) {
+                gridHTML += `<div class="storyline-subsection-header">
+                    <h4 class="storyline-subsection-title">${subsectionName}</h4>
+                </div>`;
+            }
+            
+            // Start a grid for this subsection
+            const subsectionId = subsectionName.replace(/\s+/g, '-').toLowerCase();
+            gridHTML += '<div class="storylines-grid" id="storylines-grid-' + filterType + '-section-' + sectionId + '-subsection-' + subsectionId + '">';
+            
+            // Render storylines in this subsection
+            sectionData.subsections[subsectionName].forEach((storyline, index) => {
+                gridHTML += generateStorylineCard(storyline, index);
+            });
+            
+            // Close subsection grid
+            gridHTML += '</div>';
+        });
     });
+    
     return gridHTML;
 }
 
@@ -336,7 +419,15 @@ function generateStorylinesNavigation(uniqueTags, viewType) {
     if (uniqueTags.length > 0) {
         navHTML += '<div class="storylines-tag-links">';
         uniqueTags.forEach(tag => {
-            navHTML += `<span class="storylines-tag-link" onclick="toggleStorylinesTag('${tag}', '${viewType}')">${tag}</span>`;
+            const parsed = parseTagWithColor(tag);
+            let styleAttr = '';
+            if (parsed.bgColor) {
+                const textColor = parsed.textColor || getContrastingTextColor(parsed.bgColor);
+                const hoverColor = parsed.hoverColor || parsed.bgColor;
+                styleAttr = ` style="background-color: ${parsed.bgColor}; color: ${textColor}; --hover-color: ${hoverColor};"`;
+            }
+            const escapedTag = tag.replace(/\\\\/g, '\\\\\\\\').replace(/'/g, "\\\\'");
+            navHTML += `<span class="storylines-tag-link" onclick="toggleStorylinesTag('${escapedTag}', '${viewType}')"${styleAttr}>${parsed.name}</span>`;
         });
         navHTML += '</div>';
     }
@@ -346,6 +437,53 @@ function generateStorylinesNavigation(uniqueTags, viewType) {
         </div>`;
     
     return navHTML;
+}
+
+// Generate table of contents for storyline sections
+function generateStorylineTOC(sectionedStorylines, filterType) {
+    let tocHTML = `
+        <div class="storyline-toc">
+            <div class="storyline-toc-header" onclick="toggleStorylineTOC('${filterType}')">
+                <span class="storyline-toc-title">Table of Contents</span>
+                <span class="storyline-toc-toggle">▶</span>
+            </div>
+            <div class="storyline-toc-content collapsed">
+                <ul class="storyline-toc-list">`;
+    
+    // Sort sections alphabetically
+    Object.keys(sectionedStorylines).sort().forEach(sectionName => {
+        const sectionData = sectionedStorylines[sectionName];
+        const sectionId = sectionName.replace(/\s+/g, '-').toLowerCase();
+        const sectionAnchor = `storylines-grid-${filterType}-section-${sectionId}`;
+        
+        tocHTML += `<li class="storyline-toc-section">
+            <a href="#${sectionAnchor}" onclick="scrollToStorylineSection('${sectionAnchor}'); return false;">${sectionName}</a>`;
+        
+        // Add subsections if they exist
+        if (Object.keys(sectionData.subsections).length > 0) {
+            tocHTML += '<ul class="storyline-toc-subsections">';
+            
+            Object.keys(sectionData.subsections).sort().forEach(subsectionName => {
+                const subsectionId = subsectionName.replace(/\s+/g, '-').toLowerCase();
+                const subsectionAnchor = `storylines-grid-${filterType}-section-${sectionId}-subsection-${subsectionId}`;
+                
+                tocHTML += `<li class="storyline-toc-subsection">
+                    <a href="#${subsectionAnchor}" onclick="scrollToStorylineSection('${subsectionAnchor}'); return false;">${subsectionName}</a>
+                </li>`;
+            });
+            
+            tocHTML += '</ul>';
+        }
+        
+        tocHTML += '</li>';
+    });
+    
+    tocHTML += `
+                </ul>
+            </div>
+        </div>`;
+    
+    return tocHTML;
 }
 
 // Helper function to generate individual storyline card HTML

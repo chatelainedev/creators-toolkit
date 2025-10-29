@@ -3,6 +3,11 @@
 function parseImportedHTML(htmlContent) {
     try {
         console.log('Starting HTML import/parse...');
+
+        // CLEAR LOREBOOK VARIABLES AT THE START OF IMPORT
+        linkedLorebookData = null;
+        linkedLorebookFilename = null;
+        infoData.linkedLorebook = null;
         
         // Create a temporary DOM element to parse the HTML
         const parser = new DOMParser();
@@ -90,6 +95,28 @@ function parseImportedHTML(htmlContent) {
                         });
                         
                     }
+                    if (fullData.storylinesOptions) {
+                        infoData.storylinesOptions = fullData.storylinesOptions;
+                        console.log('✓ Loaded storylines options:', fullData.storylinesOptions);
+                    } else {
+                        // Set defaults if not present
+                        infoData.storylinesOptions = {
+                            showTOC: true,
+                            showSections: true,
+                            showSubsections: true
+                        };
+                        console.log('⚠ No storylines options found, using defaults');
+                    }
+                    if (fullData.charactersOptions) {
+                        infoData.charactersOptions = fullData.charactersOptions;
+                        console.log('✓ Loaded characters options:', fullData.charactersOptions);
+                    } else {
+                        // Set defaults if not present
+                        infoData.charactersOptions = {
+                            showByFaction: true
+                        };
+                        console.log('⚠ No characters options found, using defaults');
+                    }
                     if (fullData.plans) {
                         infoData.plans = fullData.plans;
                         console.log('Plans details:', fullData.plans.map(p => ({
@@ -109,6 +136,18 @@ function parseImportedHTML(htmlContent) {
                     }
                     if (fullData.world) {
                         infoData.world = fullData.world;
+                    }
+
+                    if (fullData.linkedLorebook) {
+                        infoData.linkedLorebook = fullData.linkedLorebook;
+                        console.log('✓ Loaded linked lorebook:', fullData.linkedLorebook.filename);
+                        
+                        // Initialize the lorebook data variables
+                        if (typeof initializeLinkedLorebook === 'function') {
+                            setTimeout(() => {
+                                initializeLinkedLorebook();
+                            }, 100);
+                        }
                     }
                     
                     foundEmbeddedData = true;
@@ -246,6 +285,13 @@ function parseImportedHTML(htmlContent) {
         console.log('- Subtitle:', infoData.basic.subtitle);
         console.log('- Overview title:', infoData.basic.overviewTitle);
         console.log('- Overview image:', infoData.basic.overviewImage);
+
+        // Ensure all required data arrays exist before updating lists
+        if (!infoData.characters) infoData.characters = [];
+        if (!infoData.storylines) infoData.storylines = [];
+        if (!infoData.plans) infoData.plans = [];
+        if (!infoData.playlists) infoData.playlists = [];
+        if (!infoData.world) infoData.world = {};
         
         window.updateAllContentLists();
         
@@ -284,9 +330,9 @@ function parseImportedHTML(htmlContent) {
     } catch (error) {
         console.error('Error parsing HTML:', error);
         if (typeof showStatus === 'function') {
-            showStatus('error', 'Error importing file. Please make sure it\'s a valid info.html file.');
+            showStatus('error', 'Error importing file. Please make sure it\'s a valid .html file.');
         } else {
-            alert('Error importing file. Please make sure it\'s a valid info.html file.');
+            alert('Error importing file. Please make sure it\'s a valid .html file.');
         }
     }
 }
@@ -464,6 +510,7 @@ function extractAppearanceInfo(doc) {
             navigationStyle: 'journal', 
             colorScheme: 'current',
             fontSet: 'serif',
+            storylineStyle: 'default',
             containerStyle: 'left-border',
             subcontainerStyle: 'soft-bg',
             bannerSize: 'large',
@@ -761,6 +808,7 @@ function extractCharacterFromCard(card, doc, index) {
         name: '',
         image: '',
         tags: [], // NEW: Initialize tags array
+        faction: '',
         basic: '',
         physical: '',
         personality: '',
@@ -1080,7 +1128,8 @@ function extractWorldInfo(doc) {
         items: [],
         factions: [],
         culture: [],
-        cultivation: []
+        cultivation: [],
+        magic: []
     };
     
     // Try to extract from embedded JavaScript data first (includes hidden items!)
@@ -1157,6 +1206,9 @@ function extractWorldInfo(doc) {
                 break;
             case 'cultivation':
                 category = 'cultivation';
+                break;
+            case 'magic':
+                category = 'magic';
                 break;
             default:
                 return; // Skip unknown sections
@@ -1377,6 +1429,7 @@ function importData() {
                         fontSet: 'serif',
                         worldCategoriesHeader: 'default',
                         pageHeader: 'standard',
+                        storylineStyle: 'default',
                         containerStyle: 'left-border',
                         subcontainerStyle: 'soft-bg',
                         bannerSize: 'large',
@@ -1410,6 +1463,9 @@ function importData() {
                 if (!data.world.cultivation) {
                     data.world.cultivation = [];
                 }
+                if (!data.world.magic) {
+                    data.world.magic = [];
+                }
                 
                 // Ensure characters have all required fields including notes and tags
                 if (data.characters && Array.isArray(data.characters)) {
@@ -1420,8 +1476,12 @@ function importData() {
                         if (!character.hasOwnProperty('notes')) {
                             character.notes = '';
                         }
-                        if (!character.hasOwnProperty('tags')) {
+                        if (!character.hasOwnProperty('tags')) { // NEW: Ensure tags exist
                             character.tags = [];
+                        }
+                        // ADD THIS:
+                        if (!character.hasOwnProperty('faction')) {
+                            character.faction = '';
                         }
                     });
                 }
@@ -1486,6 +1546,19 @@ function importData() {
                                     event.visible = true;
                                 }
                             });
+                        }
+                    });
+                }
+
+                // Ensure all characters have all required fields including new card fields
+                if (data.characters && Array.isArray(data.characters)) {
+                    data.characters.forEach(character => {
+                        // ... existing field checks ...
+                        if (!character.hasOwnProperty('cardEnabled')) {
+                            character.cardEnabled = false;
+                        }
+                        if (!character.hasOwnProperty('cardPath')) {
+                            character.cardPath = '';
                         }
                     });
                 }

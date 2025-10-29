@@ -1,4 +1,104 @@
 // Page Header Styles Generation - Fixed
+// World Categories Header style definitions
+const worldCategoriesHeaderStyles = {
+    'default': {
+        name: 'Default',
+        description: 'Standard category headers with basic styling'
+    },
+    'hidden': {
+        name: 'Hidden',
+        description: 'Hide category headers completely'
+    },
+    'enhanced': {
+        name: 'Enhanced',
+        description: 'Bold headers with colored underlines and caps'
+    },
+    'boxed': {
+        name: 'Boxed',
+        description: 'Headers in bordered boxes with background'
+    },
+    'accent': {
+        name: 'Accent Bar',
+        description: 'Left accent bar with gradient background'
+    },
+    'underlined': {
+        name: 'Underlined',
+        description: 'Clean headers with simple bottom borders and uppercase styling'
+    },
+    'simple': {
+        name: 'Simple',
+        description: 'Basic headers with light backgrounds and subtle borders'
+    },
+    'bordered': {
+        name: 'Bordered',
+        description: 'Clean headers with full borders and centered text'
+    },
+    'minimal': {
+        name: 'Minimal',
+        description: 'Ultra-minimal headers with just uppercase text and spacing'
+    },
+    'clean': {
+        name: 'Clean',
+        description: 'Modern headers with soft backgrounds and left accent borders'
+    },
+    'kawaii': {
+        name: 'Kawaii',
+        description: 'Adorable rounded headers with soft pastel gradients and heart decorations'
+    },
+    'candyPop': {
+        name: 'Candy Pop',
+        description: 'Transparent candy-style headers with glossy shine effects and glass-like appearance'
+    },
+    'magicalGirl': {
+        name: 'Magical Girl',
+        description: 'Sparkly headers with star decorations and magical gradient backgrounds'
+    },
+    'industrial': {
+        name: 'Industrial',
+        description: 'Technical headers with hard edges, clipped corners, and bold left borders'
+    },
+    'wuxia': {
+        name: 'Wuxia',
+        description: 'Elegant headers with jade accents, subtle gradients, and traditional diamond flourishes'
+    },
+    'playersHandbook': {
+        name: 'Player\'s Handbook',
+        description: 'Ornate D&D manuscript headers with burgundy gradients and corner flourishes'
+    },
+    'adventurersTome': {
+        name: 'Adventurer\'s Tome',
+        description: 'Wooden tome headers with leather-bound styling and colored category tabs'
+    },
+    'horrific': {
+        name: 'Horrific',
+        description: 'Dark occult headers with blood red accents and ominous glowing seals'
+    },
+    'parchmentQuill': {
+        name: 'Parchment&Quill',
+        description: 'Elegant aged parchment headers with quill pen flourishes and ink accents'
+    },
+    'cyberpunk': {
+        name: 'Cyberpunk',
+        description: 'Simple neon terminal headers with glowing text and left accent borders'
+    },
+    'holographic': {
+        name: 'Holographic',
+        description: 'Subtle gradient headers with soft borders and light text glow'
+    },
+    'digitalMinimal': {
+        name: 'Digital Minimal',
+        description: 'Clean tech headers with bottom borders and spaced lettering'
+    },
+    'neonBoxed': {
+        name: 'Neon Boxed',
+        description: 'Simple bordered headers with centered text and subtle glow'
+    },
+    'dataLabel': {
+        name: 'Data Label',
+        description: 'File system style headers with monospace font and comment prefixes'
+    }
+};
+
 function generatePageHeaderStyles(pageHeaderStyle, colors, fonts) {
     switch (pageHeaderStyle) {
         case 'minimal':
@@ -2290,4 +2390,5 @@ function generatePageHeaderStyles(pageHeaderStyle, colors, fonts) {
 }
 
 // Export functions
+export default worldCategoriesHeaderStyles;
 export { generatePageHeaderStyles };

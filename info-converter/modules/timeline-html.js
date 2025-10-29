@@ -670,7 +670,15 @@ function generateTimelineNavigation(uniqueTags, yearRange) {
         navHTML += '<div class="timeline-tag-links">';
         
         uniqueTags.forEach(tag => {
-            navHTML += `<div class="timeline-tag-link" onclick="toggleTimelineTag('${tag}')">${tag}</div>`;
+            const parsed = parseTagWithColor(tag);
+            let styleAttr = '';
+            if (parsed.bgColor) {
+                const textColor = parsed.textColor || getContrastingTextColor(parsed.bgColor);
+                const hoverColor = parsed.hoverColor || parsed.bgColor;
+                styleAttr = ` style="background-color: ${parsed.bgColor}; color: ${textColor}; --hover-color: ${hoverColor};"`;
+            }
+            const escapedTag = tag.replace(/\\\\/g, '\\\\\\\\').replace(/'/g, "\\\\'");
+            navHTML += `<div class="timeline-tag-link" onclick="toggleTimelineTag('${escapedTag}')"${styleAttr}>${parsed.name}</div>`;
         });
         
         navHTML += '</div>';
@@ -1346,15 +1354,18 @@ function generateTimelineFilteringJavaScript() {
         
         function updateTimelineTagStates() {
             document.querySelectorAll('.timeline-tag-link').forEach(link => {
-                const tag = link.textContent;
-                if (selectedTimelineTags.has(tag)) {
+                const onclickAttr = link.getAttribute('onclick');
+                const tagMatch = onclickAttr.match(/toggleTimelineTag\\('(.+?)'\\)/);
+                const fullTag = tagMatch ? tagMatch[1] : link.textContent;
+                const strippedTag = stripHiddenPrefix(fullTag);
+                
+                if (selectedTimelineTags.has(strippedTag)) {
                     link.classList.add('selected');
                 } else {
                     link.classList.remove('selected');
                 }
             });
-        } 
-
+        }
 
         function updateTimelineClearButtonState() {
             const clearBtn = document.getElementById('timeline-clear-selected-btn');

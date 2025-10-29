@@ -64,14 +64,24 @@
     padding-bottom: 0;
 }
 
-.settings-section h3 {
-    margin: 0 0 var(--space-lg) 0;
+settings-section h3 {
+    margin: 0 0 var(--space-xs) 0;
     font-size: var(--font-size-lg);
     font-weight: 600;
+    color: var(--text-primary);
     font-family: "Nunito Sans", sans-serif;
-    color: var(--text-labels);
-    border-bottom: 1px solid var(--border-secondary);
-    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--border-primary);
+    padding-bottom: 0;
+}
+
+.settings-modal .section-header h3 {
+    margin: 0 0 var(--space-xs) 0 !important;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+    padding-bottom: 0;
+
 }
 
 .settings-section .form-group {
@@ -100,18 +110,23 @@
 }
 
 /* Avatar Section Specific Styles */
-/* Replace the existing .avatar-section styles */
 .avatar-section {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-2xl);
+    display: block;
     margin-top: var(--space-lg);
+    overflow: hidden; /* Move overflow here */
 }
 
 .current-avatar {
-    flex-shrink: 0;
+    float: left;
+    margin-right: var(--space-lg);
+    margin-bottom: var(--space-lg);
     cursor: pointer;
     position: relative;
+}
+
+/* Add spacing back to form groups since we removed gap */
+.avatar-section .form-group {
+    margin-bottom: var(--space-md);
 }
 
 .current-avatar img {
@@ -152,56 +167,54 @@
     opacity: 1;
 }
 
-/* New account fields container */
-.account-fields {
-    flex: 1;
+/* Username with badge layout */
+.username-with-badge {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: var(--space-md);
 }
 
-/* Premium button styling */
-.btn-premium {
-    background: linear-gradient(135deg, #B1B695 0%, #8A8B6F 100%);
-    border: none;
-    color: var(--bg-primary);
-    font-weight: 600;
-    padding: var(--space-sm) var(--space-lg);
-    font-size: var(--font-size-sm);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition-normal);
+.username-with-badge input {
+    flex: 0 0 60%; /* Username takes 60% of width */
+    max-width: 60%;
 }
 
-.btn-premium.btn-compact {
+/* Username with badge layout */
+.user-id-badge {
+    display: inline-flex;
+    align-items: center;
     padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
     font-size: var(--font-size-xs);
-    min-width: auto;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+    margin-top: var(--space-xs); /* Add spacing above badge */
 }
 
-.btn-premium:hover {
-    background: linear-gradient(135deg, #9CA085 0%, #7A7B5F 100%);
-    box-shadow: var(--shadow-lg);
-}
-
-.btn-premium:active {
-    background: linear-gradient(135deg, #8A8B6F 0%, #6A6B4F 100%);
-    transform: translateY(0);
-}
-
-/* Premium badge for user display */
-.premium-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #B1B695 0%, #8A8B6F 100%);
-    color: var(--bg-primary);
-    font-size: 8px;
-    font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 8px;
-    margin-right: var(--space-xs);
-    vertical-align: middle;
+.user-id-badge.guest-badge {
+    color: var(--text-tertiary);
+    font-family: "Nunito Sans", sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+/* Keep username to the right of avatar, don't let it wrap */
+.avatar-section .form-group:first-child {
+    overflow: hidden; /* Creates new block formatting context */
+    margin-bottom: var(--space-lg);
+}
+
+.avatar-section .form-group:first-child input,
+.avatar-section .form-group:first-child .user-id-badge {
+    display: block; /* Make them stack vertically */
+    width: 100%; /* But take full available width to the right of avatar */
+}
+
+/* Make Email field clear the float and start below avatar */
+.avatar-section .form-group:nth-child(2) {
+    clear: left;
 }
 
 /* Loading states for settings forms */
@@ -238,6 +251,12 @@
     margin: 0;
     border-bottom: none;
     padding-bottom: 0;
+    line-height: 1.4; /* Adjust line height for better alignment */
+}
+
+.section-header .user-id-badge {
+    margin-top: 0; /* Remove any top margin */
+    margin-left: auto; /* Push to the right */
 }
 
 /* Success/Error states for settings */

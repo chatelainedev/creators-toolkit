@@ -33,6 +33,22 @@
                 <button class="main-tab" data-tab="my-sites">My Sites</button>
                 <button class="main-tab" data-tab="notebook">Notebook</button>
                 <button class="main-tab" data-tab="cowriter">CoWriter</button>
+                <!-- ADD THIS NEW DROPDOWN -->
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn">
+                        Managers <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a href="http://localhost:3000/extractor" class="nav-dropdown-item">
+                            <i class="fas fa-book"></i>
+                            <span>Lorebook Manager</span>
+                        </a>
+                        <a href="http://localhost:3000/character-manager" class="nav-dropdown-item">
+                            <i class="fas fa-user-friends"></i>
+                            <span>Character Manager</span>
+                        </a>
+                    </div>
+                </div>
             </div>
             
             <!-- User info (stays on right) -->
@@ -1015,6 +1031,28 @@
             <!-- Login Form -->
             <div class="auth-form active" id="login-form">
                 <h2>Welcome Back</h2>
+                
+                <!-- User Selection Grid (NEW) -->
+                <div class="user-selection-grid" id="user-selection-grid">
+                    <div class="user-grid" id="user-grid">
+                        <!-- User cards will be populated by JavaScript -->
+                    </div>
+                    <div class="user-pagination" id="user-pagination" style="display: none;">
+                        <button class="pagination-btn" id="prev-users" type="button">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="pagination-btn" id="next-users" type="button">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Login as [Username] button (hidden by default) -->
+                <button type="button" class="login-as-btn" id="login-as-btn" style="display: none;">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login as <strong id="login-as-username"></strong></span>
+                </button>
+                
                 <form id="login-form-element">
                     <div class="form-group">
                         <label for="login-username">Username or Email:</label>
@@ -1024,10 +1062,22 @@
                         <label for="login-password">Password:</label>
                         <input type="password" id="login-password" required>
                     </div>
+                    <!-- Remember Me: -->
+                    <div class="form-group" style="margin-bottom: var(--space-md);">
+                        <label style="display: flex; align-items: center; gap: var(--space-sm); cursor: pointer; font-weight: 400;">
+                            <input type="checkbox" id="remember-me-checkbox" style="width: auto; margin: 0;">
+                            <span>Remember Me</span>
+                        </label>
+                    </div>
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">Login</button>
                     </div>
                 </form>
+                
+                <!-- Guest option in Login tab (NEW) -->
+                <div class="auth-guest-option">
+                    <span class="guest-link" id="continue-as-guest-login">Continue as Guest</span>
+                </div>
             </div>
 
             <!-- Register Form -->
@@ -1079,6 +1129,7 @@
                 <div class="settings-section">
                     <div class="section-header">
                         <h3>Profile</h3>
+                        <span class="user-id-badge" id="user-id-badge"></span>
                     </div>
                     <div class="avatar-section">
                         <div class="current-avatar" title="Click to change avatar">

@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Initialize user system first
         await initializeUserSystem();
+
+        // Initialize avatar context menu
+        initializeRPContextMenu();
         
         // Initialize the rest of the app
         initializeEventListeners();
@@ -29,6 +32,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 window.initializeRPProjectLoader();
             }, 200);
         }
+
+        // Initialize HEX copy/paste functionality AFTER everything else
+        setTimeout(() => {
+            initializeHexCopyPaste();
+        }, 100);
         
         console.log('✅ RP Archiver initialized successfully');
         
@@ -68,6 +76,52 @@ async function initializeUserSystem() {
             userSessionManager.updateUserDisplay();
         }
     }
+}
+
+// Initialize avatar context menu for logout
+function initializeRPContextMenu() {
+    const navAvatarImg = document.getElementById('nav-avatar-img');
+    const contextMenu = document.getElementById('rp-context-menu');
+    const logoutOption = document.getElementById('rp-logout-option');
+
+    if (!navAvatarImg || !contextMenu) return;
+
+    // Show context menu on avatar click
+    navAvatarImg.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        // Position menu below avatar
+        const rect = navAvatarImg.getBoundingClientRect();
+        contextMenu.style.left = `${rect.left - 60}px`;
+        contextMenu.style.top = `${rect.bottom + 5}px`;
+        contextMenu.style.display = 'block';
+    });
+
+    // Handle logout click
+    logoutOption?.addEventListener('click', () => {
+        contextMenu.style.display = 'none';
+        
+        // Clear session completely (don't use logout() because it sets guest mode)
+        localStorage.removeItem('writingTools_session');
+        localStorage.removeItem('writingTools_guestMode');
+        
+        // Navigate back to main app which will show login screen
+        window.location.href = '../index.html';
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!contextMenu.contains(e.target) && e.target !== navAvatarImg) {
+            contextMenu.style.display = 'none';
+        }
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            contextMenu.style.display = 'none';
+        }
+    });
 }
 
 // Initialize basic event listeners

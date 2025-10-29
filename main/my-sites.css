@@ -223,8 +223,8 @@
     position: absolute;
     top: var(--space-md);
     right: var(--space-md);
-    background: var(--accent-success);
-    color: var(--text-primary);
+    background: var(--accent-primary);
+    color: var(--border-primary);
     font-size: var(--font-size-xs);
     font-weight: 600;
     padding: var(--space-xs) var(--space-sm);

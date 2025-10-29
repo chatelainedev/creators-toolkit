@@ -670,7 +670,6 @@
     box-shadow: var(--shadow-lg);
     z-index: 10001;
     min-width: 150px;
-    backdrop-filter: blur(10px);
 }
 
 .context-menu-item {

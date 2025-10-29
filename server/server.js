@@ -42,6 +42,9 @@ const exportRouter = require('./export');
 const notebookRouter = require('./notebook');
 const notebookWorkspacesRouter = require('./notebook-workspaces');
 const promptsRouter = require('./prompts');
+const extractorRouter = require('./extractor');
+const characterManagerRouter = require('./character-manager');
+const entryHelperRoutes = require('./entry-helper');
 
 const packageJson = require('./package.json');
 
@@ -83,6 +86,12 @@ app.use('/api', notebookRouter);
 app.use('/api', notebookWorkspacesRouter);
 
 app.use('/api', promptsRouter);
+
+app.use('/api', extractorRouter);
+
+app.use('/api', characterManagerRouter);
+
+app.use('/api', entryHelperRoutes);
 
 // Serve project files (local only) - user-aware static serving
 app.get('/projects/:userContext/:projectName/*', (req, res) => {
@@ -127,6 +136,8 @@ app.get('/projects/:userContext/:projectName/*', (req, res) => {
 app.use('/info-converter', express.static(path.join(__dirname, '..', 'info-converter')));
 app.use('/roleplay-converter', express.static(path.join(__dirname, '..', 'roleplay-converter')));
 app.use('/cowriter', express.static(path.join(__dirname, '..', 'cowriter'))); // NEW: CoWriter static files
+app.use('/extractor', express.static(path.join(__dirname, '..', 'minitools', 'extractor')));
+app.use('/character-manager', express.static(path.join(__dirname, '..', 'minitools', 'character-manager'))); 
 app.use('/', express.static(path.join(__dirname, '..', 'main')));
 
 // =============================================================================
@@ -139,6 +150,14 @@ app.get('/info-converter', (req, res) => {
 
 app.get('/roleplay-converter', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'roleplay-converter', 'index.html'));
+});
+
+app.get('/extractor', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'minitools', 'extractor', 'index.html'));
+});
+
+app.get('/character-manager', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'minitools', 'character-manager', 'index.html'));
 });
 
 app.get('/', (req, res) => {
@@ -217,6 +236,7 @@ app.listen(PORT, () => {
     console.log(`📖 Lore Codex: http://localhost:${PORT}/info-converter`);
     console.log(`🎭 RP Archiver: http://localhost:${PORT}/roleplay-converter`);
     console.log(`🤖 CoWriter: Integrated in Main App`); // NEW
+     console.log(`🎭 Character Manager: http://localhost:${PORT}/character-manager`);
     console.log(`🌐 Environment: ${IS_LOCAL ? 'Local Development' : 'Production'}`);
     if (IS_LOCAL) {
         console.log(`👥 User data: File-based system`);

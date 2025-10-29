@@ -1,6 +1,96 @@
 // Button Styles CSS Generation - Refactored with shared styling
 // Overview Links + Custom Navigation CSS functions
-
+// Button styles
+const buttonStyles = {
+    'rounded': {
+        name: 'Rounded',
+        description: 'Buttons with soft rounded corners'
+    },
+    'sharp': {
+        name: 'Sharp', 
+        description: 'Buttons with square corners'
+    },
+    'pill': {
+        name: 'Pill',
+        description: 'Buttons with fully rounded edges'
+    },
+    'subtle': {
+        name: 'Subtle',
+        description: 'Buttons with minimal rounded corners'
+    },
+    'neon': {
+        name: 'Neon',
+        description: 'Cyberpunk glowing neon buttons with electric effects'
+    },
+    'glassmorphism': {
+        name: 'Glassmorphism', 
+        description: 'Modern frosted glass effect with subtle transparency'
+    },
+    'origami': {
+        name: 'Origami',
+        description: 'Folded paper effect with crisp angular shadows'
+    },
+    'holographic': {
+        name: 'Holographic',
+        description: 'Iridescent rainbow shimmer effects that shift with hover'
+    },
+    'sketch': {
+        name: 'Sketch',
+        description: 'Hand-drawn artistic style with rough, sketchy borders'
+    },
+    'crystal': {
+        name: 'Crystal',
+        description: 'Faceted gem-like appearance with prismatic reflections'
+    },
+    'typewriter': {
+        name: 'Typewriter',
+        description: 'Vintage typewriter key styling with mechanical click effects'
+    },
+    'liquid': {
+        name: 'Liquid',
+        description: 'Organic flowing blob shapes that morph on hover'
+    },
+    'kawaii': {
+        name: 'Kawaii',
+        description: 'Cute rounded buttons with soft shadows and heart decorations'
+    },
+    'candyPop': {
+        name: 'Candy Pop',
+        description: 'Glossy 3D candy buttons with shine effects and gentle scaling'
+    },
+    'magicalGirl': {
+        name: 'Magical Girl', 
+        description: 'Sparkly buttons with star decorations and magical glow effects'
+    },
+    'industrial': {
+        name: 'Industrial',
+        description: 'Angular buttons with clipped corners and metal-like styling'
+    },
+    'wuxia': {
+        name: 'Wuxia',
+        description: 'Elegant jade-inspired buttons with traditional patterns'
+    },
+    'horrific': {
+        name: 'Horrific',
+        description: 'Dark gothic buttons with blood-drip effects and ominous shadows'
+    },
+    'glitchSignal': {
+        name: 'Glitch Signal',
+        description: 'An analog horror button that flickers and distorts with corrupted data and RGB-shifting text.'
+    },
+    'ectoplasm': {
+        name: 'Ectoplasm',
+        description: 'A semi-transparent, ghostly button with a wispy, morphing shape and an ethereal glow.'
+    },
+    'runicCarving': {
+        name: 'Runic Carving',
+        description: 'Looks like a symbol carved into ancient stone, with inset text and a faint, ominous energy.'
+    },
+    'parchment': {
+        name: 'Parchment',
+        description: 'Aged paper buttons with ink-stain effects and quill flourishes'
+    }
+};
 // SHARED FUNCTION: Generate button styles for any class name
 function generateSharedButtonStyles(buttonStyle, className, colors, fonts, shouldFillSpace = false) {
     // Generate button styles based on theme
@@ -1234,3 +1324,4 @@ function generateSiteLeftNavigationCSS(alignment, spacing, position, siteWidth =
 
 // Export functions for global access
 export { generateSharedButtonStyles, generateOverviewLinksCSS, generateCustomNavigationCSS };
+export default buttonStyles;

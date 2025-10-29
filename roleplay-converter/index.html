@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
     <title>RP Archiver</title>
-    <link rel="stylesheet" href="converter.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/content.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="rp-project-styles.css">
     <link rel="stylesheet" href="user/auth-ui.css">
     <link rel="stylesheet" href="about/rp-archiver-about.css">
@@ -75,6 +78,13 @@
             <div class="nav-user-avatar" id="nav-user-avatar" style="display: none;">
                 <img src="../main/images/default-avatar.png" alt="User Avatar" class="user-avatar" id="nav-avatar-img">
             </div>
+            <!-- User Context Menu -->
+            <div id="rp-context-menu" class="user-context-menu" style="display: none;">
+                <div class="context-menu-item" id="rp-logout-option">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -136,9 +146,9 @@
                 </div>
                 
                 <!-- Collapse button at bottom -->
-                <div class="sidebar-footer">
-                    <button id="sidebar-collapse-btn" class="btn-icon" title="Collapse sidebar">‹</button>
-                </div>
+                <button id="sidebar-collapse-btn" title="Collapse sidebar">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
             </div>
 
             <!-- Main Content Area -->
@@ -149,34 +159,53 @@
                         <h3>Story Information</h3>
                     </div>
                     <div class="section-content">
-                        <label for="title">Story Title:</label>
-                        <input type="text" id="title" placeholder="Enter story title">
-
-                        <label for="subtitle">Subtitle:</label>
-                        <input type="text" id="subtitle" placeholder="A Universe Story" value="A Universe Story">
+                        <!-- Title and Subtitle Row -->
+                        <div class="form-row">
+                            <div>
+                                <label for="title">Story Title:</label>
+                                <input type="text" id="title" placeholder="Enter story title">
+                            </div>
+                            <div>
+                                <label for="subtitle">Subtitle:</label>
+                                <input type="text" id="subtitle" placeholder="A Universe Story" value="A Universe Story">
+                            </div>
+                        </div>
                         
+                        <!-- Description (full width) -->
                         <label for="description">Description:</label>
                         <textarea id="description" rows="4" placeholder="Enter a brief description of your story"></textarea>
                         
-                        <label for="universe">Universe:</label>
-                        <input type="text" id="universe" placeholder="Enter universe name">
+                        <!-- Universe and Pairing Row -->
+                        <div class="form-row">
+                            <div>
+                                <label for="universe">Universe:</label>
+                                <input type="text" id="universe" placeholder="Enter universe name">
+                            </div>
+                            <div>
+                                <label for="pairing">Pairing:</label>
+                                <input type="text" id="pairing" placeholder="Character1/Character2">
+                            </div>
+                        </div>
                         
                         <div class="helper-text" style="margin-top: -8px;">
                             If Universe is the same as a Lore Codex Project name, you can access this roleplay after saving in the Lore Codex Storylines modal.
                         </div>
-
-                        <label for="pairing">Pairing:</label>
-                        <input type="text" id="pairing" placeholder="Character1/Character2">
                         
-                        <label for="date">Last Updated:</label>
-                        <input type="text" id="date" placeholder="Month Day, Year">
-                        
-                        <label for="status">Status:</label>
-                        <select id="status">
-                            <option value="Ongoing">Ongoing</option>
-                            <option value="Complete">Complete</option>
-                            <option value="Hiatus">Hiatus</option>
-                        </select>
+                        <!-- Last Updated and Status Row -->
+                        <div class="form-row">
+                            <div>
+                                <label for="date">Last Updated:</label>
+                                <input type="text" id="date" placeholder="Month Day, Year">
+                            </div>
+                            <div>
+                                <label for="status">Status:</label>
+                                <select id="status">
+                                    <option value="Ongoing">Ongoing</option>
+                                    <option value="Complete">Complete</option>
+                                    <option value="Hiatus">Hiatus</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -239,65 +268,74 @@
                         <h3>Banner</h3>
                     </div>
                     <div class="section-content">
-                        <div class="section-header-with-import">
-                            <h4>Banner Image</h4>
-                            <button type="button" id="banner-image-browse" class="btn-secondary" title="Browse for Banner Image">
-                                <i class="fas fa-upload"></i>
-                            </button>
-                        </div>
-                        <div class="helper-text">
-                            Optional banner image for the story header. Will replace the solid color background in the title area.
-                        </div>
-
-                        <input type="file" id="banner-image-file" accept="image/*" style="display: none;">
-                        <div id="banner-image-display" class="file-display"></div>
-                        
-                        <label for="banner-size">Banner Size:</label>
-                        <select id="banner-size" style="width: 100%; margin-bottom: var(--space-lg);">
-                            <option value="small">Small (80px height)</option>
-                            <option value="medium" selected>Medium (120px height)</option>
-                            <option value="large">Large (160px height)</option>
-                        </select>
-
-                        <h4 style="margin-top: var(--space-2xl);">Title & Subtitle</h4>
-                        
-                        <div class="checkbox-container">
-                            <input type="checkbox" id="show-title" checked>
-                            <label for="show-title" class="checkbox-label">Show story title</label>
-                        </div>
-                        
-                        <div class="checkbox-container">
-                            <input type="checkbox" id="show-subtitle" checked>
-                            <label for="show-subtitle" class="checkbox-label">Show subtitle ("A [Universe] Story")</label>
-                        </div>
-                        
-                        <label for="title-font-size-banner">Title Font Size:</label>
-                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: var(--space-lg);">
-                            <input type="range" id="title-font-size-banner" min="24" max="48" value="32" style="flex: 1; margin-bottom: 0;">
-                            <span id="title-font-size-banner-value" style="font-size: var(--font-size-sm); color: var(--text-tertiary); min-width: 40px;">32px</span>
-                        </div>
-                        
-                        <div class="color-controls-row">
-                            <div class="color-control-group">
-                                <label for="title-font-color">Title Font Color:</label>
-                                <div class="color-input-row">
-                                    <input type="text" id="title-font-color" value="#ffffff">
-                                    <input type="color" id="title-font-color-picker" value="#ffffff">
+                        <!-- Two Column Layout -->
+                        <div class="two-column-layout">
+                            <!-- Left Column: Title & Subtitle Options + Font Controls -->
+                            <div class="column-left">
+                                <h4 style="margin-bottom: var(--space-md);">Title & Subtitle</h4>
+                                
+                                <div class="checkbox-container">
+                                    <input type="checkbox" id="show-title" checked>
+                                    <label for="show-title" class="checkbox-label">Show story title</label>
+                                </div>
+                                
+                                <div class="checkbox-container">
+                                    <input type="checkbox" id="show-subtitle" checked>
+                                    <label for="show-subtitle" class="checkbox-label">Show subtitle ("A [Universe] Story")</label>
+                                </div>
+                                
+                                <label for="title-font-size-banner" style="margin-top: var(--space-lg);">Title Font Size:</label>
+                                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: var(--space-lg);">
+                                    <input type="range" id="title-font-size-banner" min="24" max="48" value="32" style="flex: 1; margin-bottom: 0;">
+                                    <span id="title-font-size-banner-value" style="font-size: var(--font-size-sm); color: var(--text-tertiary); min-width: 40px;">32px</span>
+                                </div>
+                                
+                                <div class="color-control-group">
+                                    <label for="title-font-color">Title Font Color:</label>
+                                    <div class="color-input-row">
+                                        <input type="text" id="title-font-color" value="#ffffff">
+                                        <input type="color" id="title-font-color-picker" value="#ffffff">
+                                    </div>
+                                </div>
+                                
+                                <div class="color-control-group">
+                                    <label for="subtitle-font-color">Subtitle Font Color:</label>
+                                    <div class="color-input-row">
+                                        <input type="text" id="subtitle-font-color" value="#cccccc">
+                                        <input type="color" id="subtitle-font-color-picker" value="#cccccc">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="color-control-group">
-                                <label for="subtitle-font-color">Subtitle Font Color:</label>
-                                <div class="color-input-row">
-                                    <input type="text" id="subtitle-font-color" value="#cccccc">
-                                    <input type="color" id="subtitle-font-color-picker" value="#cccccc">
+
+                            <!-- Right Column: Banner Image, Size, and Tips -->
+                            <div class="column-right">
+                                <div class="section-header-with-import">
+                                    <h4>Banner Image</h4>
+                                    <button type="button" id="banner-image-browse" class="btn-secondary" title="Browse for Banner Image">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>
+                                <div class="helper-text">
+                                    Optional banner image for the story header.
+                                </div>
+
+                                <input type="file" id="banner-image-file" accept="image/*" style="display: none;">
+                                <div id="banner-image-display" class="file-display banner-display"></div>
+                                
+                                <label for="banner-size" style="margin-top: var(--space-md);">Banner Size:</label>
+                                <select id="banner-size" style="width: 100%; margin-bottom: var(--space-md);">
+                                    <option value="small">Small (80px height)</option>
+                                    <option value="medium" selected>Medium (120px height)</option>
+                                    <option value="large">Large (160px height)</option>
+                                </select>
+                                
+                                <h4 style="margin-bottom: var(--space-sm); color: var(--accent-primary);">Tips:</h4>
+                                <div class="helper-text" style="margin-top: 0; margin-bottom: 0;">
+                                    <p>• Banner image displayed at full width</p>
+                                    <p>• Title/subtitle overlaid on banner</p>
+                                    <p>• Choose contrasting colors</p>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="helper-text">
-                            <p>• Banner image will be displayed at full width with the selected height</p>
-                            <p>• Title and subtitle will be overlaid on the banner (or color background if no image)</p>
-                            <p>• Choose colors that contrast well with your banner image</p>
                         </div>
                     </div>
                 </div>
@@ -308,6 +346,7 @@
                         <h3>Images & Background</h3>
                     </div>
                     <div class="section-content">
+                        <!-- Story Images (full width) -->
                         <div class="section-header-with-import">
                             <h4>Story Images</h4>
                             <button type="button" id="story-images-browse" class="btn-secondary" title="Browse for Story Images">
@@ -319,52 +358,52 @@
                         </div>
 
                         <input type="file" id="story-images-file" accept="image/*" multiple style="display: none;">
-
-                        <input type="file" id="story-images-file" accept="image/*" multiple style="display: none;">
                         <div id="story-images-display" class="file-display">
                             <div id="images-container">
                                 <!-- Image entries will be added here dynamically -->
                             </div>
                         </div>
                         
-                        <div class="section-header-with-import" style="margin-top: var(--space-2xl);">
-                            <h4>Background Image</h4>
-                            <button type="button" id="background-image-browse" class="btn-secondary" title="Browse for Background Image">
-                                <i class="fas fa-upload"></i>
-                            </button>
-                        </div>
-                        <div class="helper-text">
-                            Optional background image for the entire page. Will be blurred and dimmed to not interfere with text readability.
-                        </div>
+                        <!-- Two Column Layout for Background -->
+                        <div class="two-column-layout" style="margin-top: var(--space-2xl);">
+                            <!-- Left Column: Background Image -->
+                            <div class="column-left">
+                                <div class="section-header-with-import">
+                                    <h4>Background Image</h4>
+                                    <button type="button" id="background-image-browse" class="btn-secondary" title="Browse for Background Image">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>
+                                <div class="helper-text">
+                                    Optional background image for the entire page. Will be blurred and dimmed to not interfere with text readability.
+                                </div>
 
-                        <input type="file" id="background-image-file" accept="image/*" style="display: none;">
-                        <div id="background-image-display" class="file-display"></div>
-                        
-                        <div style="display: flex; gap: var(--space-lg); margin-top: var(--space-md);">
-                            <div style="flex: 1;">
+                                <input type="file" id="background-image-file" accept="image/*" style="display: none;">
+                                <div id="background-image-display" class="file-display background-display"></div>
+                            </div>
+
+                            <!-- Right Column: Opacity, Blur, CSS Template -->
+                            <div class="column-right">
                                 <label for="background-opacity">Opacity (0-100%):</label>
-                                <div style="display: flex; gap: var(--space-sm); align-items: center;">
+                                <div style="display: flex; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-lg);">
                                     <input type="range" id="background-opacity" min="0" max="100" value="20" style="flex: 1; margin-bottom: 0;">
                                     <span id="opacity-value" style="font-size: var(--font-size-sm); color: var(--text-tertiary); min-width: 40px;">20%</span>
                                 </div>
-                            </div>
-                            <div style="flex: 1;">
+                                
                                 <label for="background-blur">Blur Amount (0-20px):</label>
-                                <div style="display: flex; gap: var(--space-sm); align-items: center;">
+                                <div style="display: flex; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-lg);">
                                     <input type="range" id="background-blur" min="0" max="20" value="5" style="flex: 1; margin-bottom: 0;">
                                     <span id="blur-value" style="font-size: var(--font-size-sm); color: var(--text-tertiary); min-width: 40px;">5px</span>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-top: var(--space-lg);">
-                            <label for="css-template">CSS Template:</label>
-                            <select id="css-template" style="width: 100%; padding: 8px; margin-top: 4px;">
-                                <option value="generated.css">Default</option>
-                                <!-- Template options will be populated by JavaScript -->
-                            </select>
-                            <div class="helper-text">
-                                Choose a CSS template for styling your roleplay. Templates are loaded from the templates folder.
+                                
+                                <label for="css-template">CSS Template:</label>
+                                <select id="css-template" style="width: 100%; margin-bottom: var(--space-sm);">
+                                    <option value="generated.css">Default</option>
+                                    <!-- Template options will be populated by JavaScript -->
+                                </select>
+                                <div class="helper-text" style="margin-top: var(--space-xs);">
+                                    Choose a CSS template for styling your roleplay. Templates are loaded from the templates folder.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -520,6 +559,16 @@
         </div>
     </div>
 
+        <!-- Context Menu for Color Pickers -->
+    <div id="color-picker-context-menu" class="context-menu" style="display: none;">
+        <div class="context-menu-item">
+            <input type="text" id="color-hex-input" placeholder="#000000" maxlength="7">
+        </div>
+        <div class="context-menu-item" id="apply-hex-color">
+            <i class="fas fa-check"></i> Apply
+        </div>
+    </div>
+
     <!-- HTML Template Container (hidden) -->
     <div id="template-container" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
         <template id="html-template"><!DOCTYPE html>
@@ -651,7 +700,7 @@
         
         // Open image modal
         function openImageModal(imageSrc) {
-            console.log('Opening modal with image:', imageSrc); // Debug log
+            console.log('Opening modal with image:', imageSrc);
             const modal = document.getElementById('imageModal');
             const modalImage = document.getElementById('modalImage');
             const prevBtn = document.getElementById('prevBtn');
@@ -663,12 +712,7 @@
             }
             
             modalImage.src = imageSrc;
-            modal.style.display = 'flex';
-            
-            // Force reflow and then add show class
-            setTimeout(() => {
-                modal.classList.add('show');
-            }, 10);
+            modal.classList.add('show');
             
             // Update navigation buttons
             if (prevBtn && nextBtn) {
@@ -685,7 +729,7 @@
                 }
             }
             
-            // Prevent body scrolling when modal is open
+            // Prevent body scrolling
             document.body.style.overflow = 'hidden';
         }
         
@@ -987,6 +1031,7 @@
             document.body.removeChild(element);
         }
     </script>
+
 </body>
 </html></template>
     </div>
@@ -995,6 +1040,7 @@
     <script src="user/auth-ui.js"></script>
     <script src="user/user-session.js"></script>
     <script src="about/rp-archiver-about.js"></script>
+    <script src="modules/color-copy.js"></script>
     <script src="sidebar.js"></script>
     <script src="converter.js"></script>
     <script src="parser.js"></script>

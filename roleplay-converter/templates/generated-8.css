@@ -542,12 +542,34 @@ nav a:hover {
     align-items: center;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s ease;
     box-shadow: 1px 0 4px var(--shadow-medium);
 }
 
 .soundtrack-toggle:hover, .comments-toggle:hover {
     background: linear-gradient(180deg, var(--accent-burgundy) 0%, var(--accent-burgundy-dark) 100%);
+}
+
+/* When panels are open, move toggles to top-right corner inside the panel */
+.soundtrack-panel.open .soundtrack-toggle,
+.comments-panel.open .comments-toggle {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--accent-burgundy);
+    border-radius: 50%;
+    font-size: 14px;
+    background: linear-gradient(180deg, var(--parchment-main) 0%, var(--parchment-dark) 100%);
+    color: var(--accent-burgundy);
+    box-shadow: 0 2px 6px var(--shadow-dark);
+}
+
+.soundtrack-panel.open .soundtrack-toggle:hover,
+.comments-panel.open .comments-toggle:hover {
+    background: linear-gradient(180deg, var(--accent-burgundy) 0%, var(--accent-burgundy-dark) 100%);
+    color: var(--text-light);
+    transform: scale(1.1);
 }
 
 /* Panel interaction logic */
@@ -635,52 +657,65 @@ font[color=blue] { color: var(--accent-burgundy) !important; }
     display: none; 
     position: fixed; 
     z-index: 2000; 
-    left: 0; top: 0; 
-    width: 100%; height: 100%; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
     background-color: var(--overlay-dark); 
     backdrop-filter: blur(3px); 
-    opacity: 0; 
-    transition: opacity 0.3s ease; 
 }
+
 .image-modal.show { 
-    display: flex !important; 
-    justify-content: center; 
-    align-items: center; 
-    padding: 30px; 
-    box-sizing: border-box; 
-    opacity: 1; 
+    display: block !important; 
 }
+
 .image-modal-content { 
-    position: relative; 
-    max-width: 90%; 
-    max-height: 90%; 
-    animation: fadeInScale 0.3s ease; 
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
-.image-modal img { 
-    width: 100%; height: 100%; 
+
+.image-modal-content img { 
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
     object-fit: contain; 
     box-shadow: 0 0 25px var(--shadow-modal); 
     border: 2px solid var(--border-color); 
     border-radius: 2px;
 }
+
 .image-modal-close { 
     position: absolute; 
-    top: -12px; right: -12px; 
+    top: 20px; 
+    right: 30px; 
     background: linear-gradient(180deg, var(--accent-burgundy) 0%, var(--accent-burgundy-dark) 100%);
     color: var(--text-light); 
     border: 1px solid var(--accent-burgundy-darker); 
     border-radius: 50%;
-    width: 32px; height: 32px; 
-    font-size: 16px; font-weight: bold; 
+    width: 32px; 
+    height: 32px; 
+    font-size: 16px; 
+    font-weight: bold; 
     cursor: pointer; 
     display: flex; 
     justify-content: center; 
     align-items: center; 
     box-shadow: 0 2px 6px var(--shadow-modal); 
     transition: transform 0.2s ease; 
-    z-index: 2001; 
+    z-index: 2001;
+    padding: 0;
 }
-.image-modal-close:hover { transform: scale(1.1); }
+
+.image-modal-close:hover { 
+    transform: scale(1.1); 
+}
+
 .image-modal-nav { 
     position: absolute; 
     top: 50%; 
@@ -689,8 +724,10 @@ font[color=blue] { color: var(--accent-burgundy) !important; }
     color: var(--text-main); 
     border: 1px solid var(--border-color); 
     border-radius: 50%;
-    width: 40px; height: 40px; 
-    font-size: 18px; font-weight: bold; 
+    width: 40px; 
+    height: 40px; 
+    font-size: 18px; 
+    font-weight: bold; 
     cursor: pointer; 
     display: flex; 
     justify-content: center; 
@@ -699,27 +736,64 @@ font[color=blue] { color: var(--accent-burgundy) !important; }
     transition: all 0.2s ease; 
     z-index: 2001; 
 }
+
 .image-modal-nav:hover { 
     transform: translateY(-50%) scale(1.05); 
     background: linear-gradient(180deg, var(--accent-burgundy) 0%, var(--accent-burgundy-dark) 100%);
     color: var(--text-light); 
 }
-.image-modal-nav.prev { left: -25px; }
-.image-modal-nav.next { right: -25px; }
+
+.image-modal-nav.prev { 
+    left: 20px; 
+}
+
+.image-modal-nav.next { 
+    right: 20px; 
+}
+
 .image-modal-nav:disabled { 
     opacity: 0.3; 
     cursor: not-allowed; 
 }
+
 .image-modal-nav:disabled:hover { 
     transform: translateY(-50%); 
     background: linear-gradient(180deg, var(--parchment-main) 0%, var(--parchment-dark) 100%);
     color: var(--text-main); 
 }
 
+/* Hide nav buttons when only one image */
+.image-modal-nav[style*="display: none"] {
+    display: none !important;
+}
+
 /* Animations */
 @keyframes fadeInScale { 
     from { transform: scale(0.95); opacity: 0; } 
     to { transform: scale(1); opacity: 1; } 
+}
+
+/* For Webkit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+    background-color: var(--parchment-aged);
+}
+
+::-webkit-scrollbar-track {
+    background: var(--parchment-darker); /* Darker parchment for the recessed track */
+    box-shadow: inset 0 0 3px var(--shadow-medium); /* Inset shadow for depth */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--accent-brown); /* Thematic muted brown handle */
+    border-radius: 2px; /* Sharp corners consistent with the theme */
+    border: 1px solid var(--accent-brown-dark); /* Darker border for definition */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-burgundy); /* Use the main accent color on hover */
+    border-color: var(--accent-burgundy-dark);
 }
 
 /* Responsive design */

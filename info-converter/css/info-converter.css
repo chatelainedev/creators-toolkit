@@ -1,0 +1,768 @@
+/* ============================================
+   LORE CODEX - MAIN STYLESHEET
+   Core Variables, Base Styles, Navigation
+   ============================================ */
+
+/* ============================================
+   GOOGLE FONTS
+   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Quicksand:wght@300..700&display=swap');
+
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+:root {
+    /* Background Colors */
+    --bg-primary: #151515;
+    --bg-secondary: #252525;
+    --bg-tertiary: #353535;
+    --bg-quaternary: #454545;
+    --bg-hover: #303030;
+    --bg-active: #3a3a3a;
+    --bg-nav: rgba(53, 53, 53, 0.8);
+    
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #b5b5b5;
+    --text-tertiary: #858585;
+    --text-muted: #656565;
+    --text-labels: #F2E6E1;
+    --text-inputs: #F5EBE6;
+    
+    /* Accent Colors */
+    --accent-primary: #B8956B;
+    --accent-secondary: #8B6914;
+    --accent-success: #6B7D30;
+    --accent-warning: #f59e0b;
+    --accent-danger: #C05746;
+    --accent-edit: #917E53;
+    --checkbox-color: #6F80A3;
+    
+    /* Border Colors */
+    --border-primary: #3a3a3a;
+    --border-secondary: #4a4a4a;
+    --border-tertiary: #5a5a5a;
+    --border-accent: #B8956B;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.35);
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    
+    /* Spacing Scale */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 20px;
+    --space-2xl: 24px;
+    --space-3xl: 32px;
+    
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-primary: "Lato", sans-serif;
+    --font-secondary: "Lora", serif;
+    --font-nav: "Montserrat", sans-serif;
+    --font-btn: "Roboto Slab", serif;
+    
+    --font-size-xs: 11px;
+    --font-size-sm: 13px;
+    --font-size-base: 14px;
+    --font-size-lg: 16px;
+    --font-size-xl: 18px;
+    --font-size-2xl: 20px;
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.2s ease;
+    --transition-slow: 0.3s ease;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-y: scroll;
+}
+
+/* ============================================
+   MAIN CONTAINER
+   ============================================ */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    min-height: 650px;
+    margin-top: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+
+/* Top Navigation Bar */
+.main-tabs {
+    background: var(--bg-secondary);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-lg);
+    height: 52px;
+    gap: var(--space-sm);
+}
+
+/* Home Button */
+.nav-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-right: var(--space-xl);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    transition: all var(--transition-normal);
+}
+
+.nav-home-btn:hover {
+    color: var(--accent-primary);
+    border-color: var(--border-secondary);
+    background-color: var(--bg-hover);
+}
+
+.nav-home-btn i {
+    font-size: 16px;
+}
+
+/* Main Tab Buttons */
+.main-tab {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    font-family: "Quicksand", sans-serif;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    position: relative;
+    transition: all var(--transition-normal);
+}
+
+.main-tab:hover {
+    color: var(--text-primary);
+}
+
+.main-tab.active {
+    color: var(--accent-primary);
+}
+
+.main-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 2px;
+    background-color: var(--accent-primary);
+    border-radius: 1px;
+}
+
+/* Navigation Project Controls */
+.nav-project-controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.current-project-name {
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: rgba(48, 113, 97, 0.15);
+    color: var(--accent-success);
+    border: 1px solid var(--accent-success);
+    white-space: nowrap;
+}
+
+.nav-project-dropdown {
+    padding: var(--space-xs) var(--space-sm);
+    margin: 0;
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-quaternary);
+    color: var(--text-inputs);
+    font-size: var(--font-size-sm);
+    min-width: 250px;
+    height: 32px;
+    transition: border-color var(--transition-normal);
+}
+
+.nav-project-dropdown:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.nav-load-btn {
+    padding: var(--space-xs);
+    margin: 0;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-quaternary);
+    color: var(--accent-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-normal);
+}
+
+.nav-load-btn:hover:not(:disabled) {
+    border-color: var(--accent-primary);
+    background-color: var(--bg-hover);
+}
+
+.nav-load-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* User Avatar - Positioned on far right */
+.nav-user-avatar {
+    position: absolute !important;
+    right: calc(var(--space-lg) + 40px) !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 101 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center; /* Add this */
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--border-secondary);
+    transition: all var(--transition-normal);
+    cursor: pointer;
+}
+
+.nav-user-avatar:hover {
+    border-color: var(--accent-primary);
+}
+
+.user-avatar,
+#nav-avatar-img {
+    width: 32px !important; /* Force exact size */
+    height: 32px !important; /* Force exact size */
+    object-fit: cover;
+    display: block;
+    border-radius: 50%; /* Add this to ensure image itself is circular */
+    margin: 0; /* Remove any default margins */
+    padding: 0; /* Remove any default padding */
+}
+
+/* TOOLTIP FUNCTIONALITY */
+.nav-user-avatar {
+    position: relative; /* For tooltip positioning */
+}
+
+/* Tooltip container */
+.nav-user-avatar::after {
+    content: attr(data-username); /* Will be set dynamically */
+    position: absolute;
+    bottom: -35px;
+    right: 0;
+    background-color: var(--bg-quaternary);
+    color: var(--text-primary);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-family: "Nunito Sans", sans-serif;
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-secondary);
+    
+    /* Initially hidden */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-5px);
+    transition: all var(--transition-normal);
+    z-index: 102;
+}
+
+/* Tooltip arrow */
+.nav-user-avatar::before {
+    content: '';
+    position: absolute;
+    bottom: -25px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid var(--bg-quaternary);
+    
+    /* Initially hidden */
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+    z-index: 102;
+}
+
+/* Show tooltip on hover */
+.nav-user-avatar:hover::after,
+.nav-user-avatar:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Special styling when no username is set (guest mode) */
+.nav-user-avatar[data-username="Guest"]::after {
+    content: "Guest User";
+    color: var(--accent-primary);
+    font-style: italic;
+}
+
+/* About Button - Position just to the left of avatar */
+.nav-about-btn {
+    position: absolute;
+    right: var(--space-lg); /* Avatar is at +40px from right, this is at edge */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 101;
+    padding: var(--space-xs);
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-normal);
+}
+
+.nav-about-btn:hover {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+/* About Button */
+.nav-about-btn {
+    padding: var(--space-xs);
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-normal);
+}
+
+.nav-about-btn:hover {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+/* ============================================
+   GENERATE TAB - OUTPUT SECTION
+   ============================================ */
+.output-section {
+    background-color: var(--bg-secondary);
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 500px;
+}
+
+/* Sub-tabs within generate page */
+#generate-content .tab-content {
+    display: none;
+    flex: 1;
+    min-height: 0;
+}
+
+#generate-content .tab-content.active {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.generate-controls {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Sub-tabs (Generate/Preview) */
+.tabs {
+    display: flex;
+    margin-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.tab {
+    padding: var(--space-md) var(--space-lg);
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all var(--transition-normal);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.tab:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-hover);
+}
+
+.tab.active {
+    color: var(--accent-primary);
+    background-color: var(--bg-secondary);
+    border-bottom-color: var(--accent-primary);
+}
+
+/* Generic tab content (not generate specific) */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* HTML Output Textarea */
+#html-output {
+    flex: 1;
+    min-height: 400px;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-size: var(--font-size-sm);
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+    color: var(--text-inputs);
+    line-height: 1.5;
+    resize: none;
+}
+
+/* Preview Container */
+.preview-container {
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background-color: var(--bg-primary);
+    flex: 1;
+    min-height: 400px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-container::before {
+    content: 'Generate HTML first to see preview...';
+    color: var(--text-muted);
+    font-style: italic;
+    opacity: 0.6;
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.preview-container.has-content::before {
+    display: none;
+}
+
+#preview-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: transparent;
+    position: relative;
+    z-index: 2;
+}
+
+.save-status {
+    margin-top: var(--space-md);
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
+
+/* Global Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-secondary);
+    border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-quaternary);
+}
+
+/* Textarea Scrollbar */
+textarea::-webkit-scrollbar {
+    width: 6px;
+}
+
+textarea::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background: var(--border-secondary);
+    border-radius: var(--radius-sm);
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
+}
+
+/* ============================================
+   TAB CONTENT
+   ============================================ */
+.main-tab-content {
+    display: none;
+}
+
+.main-tab-content.active {
+    display: block;
+}
+
+/* Generate page specific layout */
+#generate-content.main-tab-content {
+    min-height: calc(100vh - 120px);
+    padding: var(--space-lg);
+}
+
+#generate-content.main-tab-content.active {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 120px);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--accent-primary);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Character import button in sidebar */
+.character-import-btn {
+    transition: all var(--transition-normal);
+}
+
+.character-import-btn:hover {
+    opacity: 1 !important;
+    color: var(--accent-primary);
+    transform: scale(1.1);
+}
+
+/* Fix spacing for helper text after color scheme controls */
+.color-scheme-controls + .helper-text {
+    margin-top: var(--space-xs); /* Override the negative margin for this specific case */
+}
+
+/* World Title Controls Styling */
+.world-title-controls {
+    display: flex;
+    gap: var(--space-xxl, 26px);
+    align-items: center;
+    margin: 12px 0 16px 0;
+    padding: 12px;
+    background-color: var(--bg-secondary, #f8f9fa);
+    border: 1px solid var(--border-primary, #e1e5e9);
+    border-radius: var(--radius-sm, 4px);
+}
+
+.world-title-controls .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.world-title-controls .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs, 4px);
+    flex: 0 1 auto; /* Changed from flex: 1 - allows natural sizing */
+    min-width: 0;
+}
+
+.world-title-controls .control-group label {
+    font-size: var(--font-size-xs, 12px);
+    font-weight: 500;
+    color: var(--text-secondary, #666);
+    margin: 0;
+    font-family: "Nunito Sans", sans-serif;
+    white-space: nowrap; /* Prevents label from wrapping */
+}
+
+.world-title-controls .control-group select {
+    padding: var(--space-xs, 4px);
+    border: 1px solid var(--border-primary, #e1e5e9);
+    border-radius: var(--radius-sm, 4px);
+    background-color: var(--bg-primary, #fff);
+    color: var(--text-primary, #333);
+    font-size: var(--font-size-xs, 12px);
+    font-family: "Nunito Sans", sans-serif;
+    height: 28px;
+    width: 180px; /* Add fixed width to keep dropdowns compact */
+}
+
+.world-title-controls .control-group select:focus {
+    outline: none;
+    border-color: var(--accent-primary, #007bff);
+    box-shadow: 0 0 0 2px var(--accent-primary, #007bff)33;
+}
+
+/* User Context Menu */
+.user-context-menu {
+    position: fixed;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+    min-width: 140px;
+    animation: contextMenuSlideIn 0.2s ease;
+}
+
+@keyframes contextMenuSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-context-menu .context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
+    font-family: "Nunito Sans", sans-serif;
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.user-context-menu .context-menu-item:last-child {
+    border-bottom: none;
+}
+
+.user-context-menu .context-menu-item:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.user-context-menu .context-menu-item i {
+    width: 14px;
+    text-align: center;
+    color: var(--accent-primary);
+}
+
+/* Make avatar cursor pointer */
+#nav-avatar-img {
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+#nav-avatar-img:hover {
+    border-color: var(--accent-primary);
+    transform: scale(1.05);
+}

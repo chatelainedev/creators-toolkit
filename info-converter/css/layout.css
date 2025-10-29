@@ -1,0 +1,469 @@
+/* ============================================
+   LORE CODEX - LAYOUT STYLES
+   Sections, Containers, Grids, Columns
+   ============================================ */
+
+/* ============================================
+   BANNERS
+   ============================================ */
+.info-banner {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: var(--space-md);
+    height: 120px;
+}
+
+.info-banner.short-banner {
+    height: 80px;
+    margin-bottom: var(--space-sm);
+}
+
+/* Content page banner - ensure it extends full width */
+#content-content .info-banner {
+    width: calc(100% + var(--space-md) + var(--space-md));
+    margin-left: calc(var(--space-md) * -1);
+    margin-right: calc(var(--space-md) * -1);
+    margin-top: calc(var(--space-md) * -1);
+}
+
+.banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner-overlay h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.info-banner.short-banner .banner-overlay h1 {
+    font-size: 24px;
+}
+
+/* Metal text styling */
+.metal-text.bronze {
+    background-image: linear-gradient(
+        145deg,
+        #D4AF7A 0%,
+        #B8956B 25%,
+        #A0673B 50%,
+        #8B5A2B 75%,
+        #704214 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   SECTIONS
+   ============================================ */
+.tab-section {
+    padding: var(--space-xl);
+}
+
+.section {
+    background-color: var(--bg-secondary);
+    margin-bottom: var(--space-xl);
+    overflow: hidden;
+    border-radius: 0; /* No rounding */
+}
+
+.section-header {
+    background-color: var(--bg-quaternary);
+    padding: var(--space-lg) var(--space-xl);
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-labels);
+    border-bottom: 2px solid var(--border-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-labels);
+    flex: 1;
+}
+
+.section-content {
+    padding: var(--space-xl);
+}
+
+.section-content > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Subsections */
+.subsection {
+    margin-top: var(--space-2xl);
+    padding-left: var(--space-lg);
+    border-left: 3px solid var(--accent-primary);
+}
+
+.subsection-header {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-md) 0;
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.subsection-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+/* Section Dividers */
+.section-divider {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: var(--space-lg) 0 var(--space-sm) 0;
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+/* ============================================
+   COLLAPSIBLE SECTIONS
+   ============================================ */
+.collapsible-section {
+    margin-bottom: var(--space-xl);
+}
+
+.collapsible-header {
+    background-color: transparent;
+    padding: var(--space-md) var(--space-lg);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-secondary);
+    transition: color var(--transition-normal);
+    border-bottom: 1px solid transparent;
+}
+
+.collapsible-header:hover {
+    color: var(--text-primary);
+}
+
+.collapsible-content {
+    padding: var(--space-xl);
+    display: block;
+}
+
+.collapsible-content.collapsed {
+    display: none;
+}
+
+.toggle-icon {
+    font-size: var(--font-size-base);
+    transition: transform var(--transition-slow);
+    opacity: 0.7;
+}
+
+.toggle-icon.collapsed {
+    transform: rotate(-90deg);
+}
+
+/* ============================================
+   GRID LAYOUTS
+   ============================================ */
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+/* ============================================
+   CONTENT LAYOUT (Sidebar + Main)
+   ============================================ */
+.content-layout {
+    display: flex;
+    gap: 0;
+    height: 580px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+#content-content {
+    padding: var(--space-md);
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Content Sidebar */
+.content-sidebar {
+    width: 240px;
+    min-width: 240px;
+    background-color: var(--bg-tertiary);
+    border-right: 1px solid var(--border-primary);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all var(--transition-slow);
+}
+
+.content-sidebar.collapsed {
+    width: 50px;
+    min-width: 50px;
+}
+
+.sidebar-sections-container {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.content-sidebar.collapsed .sidebar-sections-container {
+    display: none;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.sidebar-header #sidebar-collapse-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+}
+
+.sidebar-header #content-search {
+    flex: 1;
+    margin: 0;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-secondary);
+    color: var(--text-inputs);
+}
+
+/* Sidebar Sections */
+.sidebar-section {
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.section-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+}
+
+.sidebar-item:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.sidebar-item.active {
+    background-color: var(--bg-active);
+    color: var(--accent-primary);
+    border-color: var(--border-secondary);
+}
+
+.category-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.item-count {
+    background-color: var(--bg-quaternary);
+    color: var(--text-secondary);
+    border-radius: 5px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    width: 20px;
+    padding: 2px 4px;
+    text-align: center;
+    display: inline-block;
+}
+
+/* Content Main Area */
+.content-main {
+    flex: 1;
+    background-color: var(--bg-secondary);
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-header {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border-primary);
+    background-color: var(--bg-tertiary);
+}
+
+.content-header h3 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--text-labels);
+}
+
+.content-body {
+    flex: 1;
+    padding: var(--space-xl);
+    overflow-y: auto;
+}
+
+/* ============================================
+   CONTENT SECTION
+   ============================================ */
+.content-section {
+    display: none;
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+    flex: 1;
+    background-color: var(--bg-secondary);
+    border-radius: 0; /* No rounding */
+    margin-bottom: 0;
+}
+
+.content-section.active {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+}
+
+/* Content section header + body layout */
+.content-section .section-header {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg);
+    border-radius: 0;
+}
+
+.content-section .section-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: var(--space-md);
+    gap: var(--space-sm);
+    min-height: 0;
+}
+
+/* Custom Pages specific */
+#pages-content .section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 0;
+}
+
+/* ============================================
+   HELPER TEXT
+   ============================================ */
+/* Helper Text */
+.helper-text {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    margin-top: calc(var(--space-sm) * -1); /* Changed from calc(var(--space-xs) * -1) - pulls it closer */
+    margin-bottom: var(--space-lg);
+    line-height: 1.4;
+    cursor: default; /* Add this - prevents text selection cursor */
+    user-select: none; /* Add this - prevents text selection */
+}
+
+/* Content sections don't use helper text */
+.content-section .helper-text {
+    display: none;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+@media (max-width: 1024px) {
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+    
+    .content-sidebar {
+        width: 200px;
+        min-width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-layout {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .content-sidebar {
+        width: 100%;
+        min-width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-primary);
+    }
+}

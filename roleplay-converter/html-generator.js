@@ -742,6 +742,7 @@ async function downloadHTML() {
                 }
                 
                 showStatusMessage(message, 'success', 7000);
+                showToast('success', 'Saved to folder');
                 console.log('File saved to:', result.filepath);
                 console.log('CSS template used:', result.cssTemplate);
                 console.log('Images uploaded:', result.imagesUploaded);
@@ -763,6 +764,7 @@ async function downloadHTML() {
         // Fallback to regular download if no user session
         console.log('No user session available, falling back to download');
         fallbackDownload(html, title);
+        showStatusMessage('Downloaded to your computer');
         showStatusMessage('📥 Downloaded to your computer', 'info');
     }
 }
@@ -783,6 +785,7 @@ function fallbackDownload(html, title) {
 
 // Function to convert roleplay text to HTML
 function convertToHTML() {
+    showToast('info', 'Generating HTML...');
     showStatusMessage('🔄 Generating HTML...', 'info');
     
     // Get character data
@@ -824,6 +827,7 @@ function convertToHTML() {
     }
     
     showStatusMessage('✅ HTML generated successfully!', 'success');
+    showToast('success', 'HTML generated successfully!');
 }
 
 // BANNER stuff

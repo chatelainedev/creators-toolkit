@@ -6,6 +6,7 @@ function generateWorldContent(data) {
         { key: 'factions', title: 'Factions' },
         { key: 'culture', title: 'Culture' },
         { key: 'cultivation', title: 'Cultivation' },
+        { key: 'magic', title: 'Magic' },
         { key: 'concepts', title: 'Concepts' },
         { key: 'events', title: 'Events' },
         { key: 'creatures', title: 'Creatures' },
@@ -50,10 +51,17 @@ function generateWorldContent(data) {
                 <p>No world information has been added yet.</p>
             </div>`;
     } else {
-        // Header layout
+        // Header layout  
+        const lorebookDownloadButton = data.linkedLorebook ? 
+            `<i class="fas fa-download lorebook-download-btn" 
+                title="Download Linked Lorebook: ${data.linkedLorebook.filename}" 
+                onclick="downloadLinkedLorebook()"
+                style="font-size: 0.5em; margin-left: 8px; cursor: pointer; opacity: 0.8; vertical-align: middle;">
+            </i>` : '';
+
         worldHTML += `
             <div class="world-header">
-                <h2 class="section-title">World</h2>
+                <h2 class="section-title">World${lorebookDownloadButton}</h2>
                 <div class="world-tabs">`;
 
         availableCategories.forEach((category, index) => {
@@ -102,7 +110,15 @@ function generateWorldContent(data) {
         if (worldTagsArray.length > 0) {
             worldHTML += '<div class="world-tag-links">';
             worldTagsArray.forEach(tag => {
-                worldHTML += `<div class="world-tag-link" onclick="toggleWorldTag('${tag}')">${tag}</div>`;
+                const parsed = parseTagWithColor(tag);
+                let styleAttr = '';
+                if (parsed.bgColor) {
+                    const textColor = parsed.textColor || getContrastingTextColor(parsed.bgColor);
+                    const hoverColor = parsed.hoverColor || parsed.bgColor;
+                    styleAttr = ` style="background-color: ${parsed.bgColor}; color: ${textColor}; --hover-color: ${hoverColor};"`;
+                }
+                const escapedTag = tag.replace(/\\\\/g, '\\\\\\\\').replace(/'/g, "\\\\'");
+                worldHTML += `<div class="world-tag-link" onclick="toggleWorldTag('${escapedTag}')"${styleAttr}>${parsed.name}</div>`;
             });
             worldHTML += '</div>';
         }
@@ -271,10 +287,12 @@ function generateWorldFilteringJavascript () {
         }
             
         function toggleWorldTag(tag) {
-            if (selectedWorldTags.has(tag)) {
-                selectedWorldTags.delete(tag);
+            const strippedTag = stripHiddenPrefix(tag);
+            
+            if (selectedWorldTags.has(strippedTag)) {
+                selectedWorldTags.delete(strippedTag);
             } else {
-                selectedWorldTags.add(tag);
+                selectedWorldTags.add(strippedTag);
             }
             
             updateWorldTagStates();
@@ -284,8 +302,12 @@ function generateWorldFilteringJavascript () {
 
         function updateWorldTagStates() {
             document.querySelectorAll('.world-tag-link').forEach(link => {
-                const tag = link.textContent;
-                if (selectedWorldTags.has(tag)) {
+                const onclickAttr = link.getAttribute('onclick');
+                const tagMatch = onclickAttr.match(/toggleWorldTag\\('(.+?)'\\)/);
+                const fullTag = tagMatch ? tagMatch[1] : link.textContent;
+                const strippedTag = stripHiddenPrefix(fullTag);
+                
+                if (selectedWorldTags.has(strippedTag)) {
                     link.classList.add('selected');
                 } else {
                     link.classList.remove('selected');

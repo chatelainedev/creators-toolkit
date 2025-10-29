@@ -1,5 +1,5 @@
 /* CSS Variables for Color Scheme */
-/* Name: Sakura */ 
+/* Name: Cutiepie */ 
 :root {
     /* Primary colors - soft, dreamy pinks */
     --primary-pink: #f8e8f0;
@@ -578,13 +578,31 @@ nav a:hover {
     align-items: center;
     cursor: pointer;
     font-size: 20px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     box-shadow: 0 8px 25px var(--shadow-medium);
 }
 
 .soundtrack-toggle:hover, .comments-toggle:hover {
     background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
     transform: translateY(-1px);
+}
+
+/* When panels are open, move toggles to top-right corner inside panel */
+.soundtrack-panel.open .soundtrack-toggle,
+.comments-panel.open .comments-toggle {
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
+    box-shadow: 0 4px 15px var(--shadow-medium);
+}
+
+.soundtrack-panel.open .soundtrack-toggle:hover,
+.comments-panel.open .comments-toggle:hover {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, var(--accent-rose-dark) 0%, var(--accent-lavender-dark) 100%);
 }
 
 /* Panel interaction logic */
@@ -675,60 +693,71 @@ nav a:hover {
 /* Legacy font color override */
 font[color=blue] { color: var(--accent-lavender) !important; }
 
-/* Image Modal - dreamy modal */
+/* Image Modal - dreamy modal (fixed) */
 .image-modal { 
     display: none; 
     position: fixed; 
-    z-index: 2000; 
-    left: 0; top: 0; 
-    width: 100%; height: 100%; 
+    z-index: 100000; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
     background-color: var(--overlay-dark); 
     backdrop-filter: blur(8px); 
-    opacity: 0; 
-    transition: opacity 0.3s ease; 
 }
+
 .image-modal.show { 
-    display: flex !important; 
-    justify-content: center; 
-    align-items: center; 
-    padding: 40px; 
-    box-sizing: border-box; 
-    opacity: 1; 
+    display: block !important; 
 }
+
 .image-modal-content { 
     position: relative; 
-    max-width: 90%; 
-    max-height: 90%; 
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     animation: fadeInScale 0.3s ease; 
 }
-.image-modal img { 
-    width: 100%; height: 100%; 
-    object-fit: contain; 
+
+.image-modal-content img { 
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     box-shadow: 0 0 50px var(--shadow-modal); 
     border: 4px solid var(--accent-rose); 
     border-radius: 15px;
 }
+
 .image-modal-close { 
     position: absolute; 
-    top: -15px; right: -15px; 
+    top: 20px; 
+    right: 30px; 
     background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
     color: var(--text-light); 
     border: none; 
     border-radius: 50%;
-    width: 45px; height: 45px; 
-    font-size: 20px; font-weight: bold; 
+    width: 45px; 
+    height: 45px; 
+    font-size: 20px; 
+    font-weight: bold; 
     cursor: pointer; 
     display: flex; 
     justify-content: center; 
     align-items: center; 
     box-shadow: 0 4px 15px var(--shadow-modal); 
     transition: all 0.2s ease; 
-    z-index: 2001; 
+    z-index: 100001; 
 }
+
 .image-modal-close:hover { 
     transform: scale(1.05); 
     box-shadow: 0 6px 20px var(--shadow-modal); 
 }
+
 .image-modal-nav { 
     position: absolute; 
     top: 50%; 
@@ -737,37 +766,86 @@ font[color=blue] { color: var(--accent-lavender) !important; }
     color: var(--text-main); 
     border: 2px solid var(--accent-rose); 
     border-radius: 50%;
-    width: 50px; height: 50px; 
-    font-size: 20px; font-weight: bold; 
+    width: 45px; 
+    height: 45px; 
+    font-size: 18px; 
+    font-weight: bold; 
     cursor: pointer; 
     display: flex; 
     justify-content: center; 
     align-items: center; 
     box-shadow: 0 4px 15px var(--shadow-dark); 
     transition: all 0.2s ease; 
-    z-index: 2001; 
+    z-index: 100001; 
 }
+
 .image-modal-nav:hover { 
     transform: translateY(-50%) scale(1.05); 
     background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
     color: var(--text-light); 
 }
-.image-modal-nav.prev { left: -30px; }
-.image-modal-nav.next { right: -30px; }
+
+.image-modal-nav.prev { 
+    left: 20px; 
+}
+
+.image-modal-nav.next { 
+    right: 20px; 
+}
+
 .image-modal-nav:disabled { 
     opacity: 0.3; 
     cursor: not-allowed; 
 }
+
 .image-modal-nav:disabled:hover { 
     transform: translateY(-50%); 
     background: linear-gradient(135deg, var(--cloud-white) 0%, var(--primary-pink) 100%);
     color: var(--text-main); 
 }
 
+/* Hide nav buttons when only one image */
+.image-modal-nav[style*="display: none"] {
+    display: none !important;
+}
+
+@keyframes fadeInScale {
+    from { 
+        transform: scale(0.95); 
+        opacity: 0; 
+    }
+    to { 
+        transform: scale(1); 
+        opacity: 1; 
+    }
+}
+
 /* Simple animations */
 @keyframes fadeInScale { 
     from { transform: scale(0.95); opacity: 0; } 
     to { transform: scale(1); opacity: 1; } 
+}
+
+/* For Webkit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 12px; /* A slightly thicker, cuter width */
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary-pink); /* Soft pink track */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-lavender) 100%);
+    border-radius: 10px;
+    /* This border creates a nice "inset" look that matches the theme */
+    border: 3px solid var(--primary-pink);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--accent-rose-dark) 0%, var(--accent-lavender-dark) 100%);
 }
 
 /* Responsive design */

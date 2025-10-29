@@ -1,0 +1,151 @@
+{
+  "title": "Lorebook Manager Guide",
+  "sections": [
+    {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "content": "Lorebook Manager helps you organize, edit, and export lorebook entries for AI chat applications. You can import existing lorebooks (JSON format), create new entries from scratch, and manage them in organized projects with categories.",
+      "subsections": [
+        {
+          "id": "first-steps",
+          "title": "First Steps",
+          "content": "When you first open Lorebook Manager, you'll see an empty project with default categories. You can either import existing lorebooks or create new entries using the **+ Add Entry** button. All changes are saved to projects, which can be loaded and managed from the top navigation bar."
+        },
+        {
+          "id": "navigation",
+          "title": "Navigation",
+          "content": "The top navigation contains project controls, import button, and settings. The sidebar on the left shows your categories - click any category to view its entries. Use the search bar and filters to find specific entries quickly."
+        }
+      ]
+    },
+    {
+      "id": "importing",
+      "title": "Importing Lorebooks",
+      "content": "Lorebook Manager supports importing lorebook files in JSON format from various AI chat applications like SillyTavern.",
+      "subsections": [
+        {
+          "id": "import-process",
+          "title": "Import Process",
+          "content": "Click the **Import Lorebooks** button and select one or more JSON lorebook files. Lorebook Manager will process them and show a preview modal where you can select which entries to import. Each entry's name and keys are displayed for review before importing."
+        },
+        {
+          "id": "supported-formats",
+          "title": "Supported Formats",
+          "content": "Standard lorebook JSON format is supported, with fields for entry name, keys, content, priority, insertion order, and more. Entries can include scan depth, case sensitivity settings, and other metadata."
+        }
+      ]
+    },
+    {
+      "id": "creating-entries",
+      "title": "Creating & Editing Entries",
+      "content": "Click the **+ Add Entry** button to create a new lorebook entry. Fill in the entry name, keys (trigger words), and content. You can also set advanced options like priority, insertion order, and scan depth.",
+      "subsections": [
+        {
+          "id": "entry-fields",
+          "title": "Entry Fields",
+          "content": "**Name**: The entry's display name. **Keys**: Trigger words that activate this entry (comma-separated). **Content**: The lorebook information that gets injected when keys match. **Priority**: Higher priority entries inject first. **Insertion Order**: Controls where content appears in context."
+        },
+        {
+          "id": "editing-entries",
+          "title": "Editing Entries",
+          "content": "Click any entry card to open the edit modal. Make your changes and click **Save** to update the entry. You can also delete entries from the edit modal. Changes are saved to your current project."
+        },
+        {
+          "id": "categories",
+          "title": "Categories",
+          "content": "Organize entries into categories using the sidebar. Select a category from the dropdown when creating or editing an entry. You can create new categories, rename existing ones, or delete them from the category context menu (right-click the category)."
+        }
+      ]
+    },
+    {
+      "id": "exporting",
+      "title": "Exporting Lorebooks",
+      "content": "Export your entries as standard lorebook JSON files compatible with AI chat applications.",
+      "subsections": [
+        {
+          "id": "export-selected",
+          "title": "Export Selected",
+          "content": "Select multiple entries using the checkboxes, then click **Export Selected**. This creates a lorebook file containing only the selected entries. Useful for sharing specific sections of your lorebook."
+        },
+        {
+          "id": "export-all",
+          "title": "Export All",
+          "content": "Click **Export All** to export every entry in your project as a single lorebook JSON file. This includes all categories and their entries."
+        },
+        {
+          "id": "sillytavern",
+          "title": "SillyTavern Integration",
+          "content": "If you've configured your SillyTavern path in Settings, you can send lorebooks directly to SillyTavern. Select entries and click **Send to SillyTavern**, then choose the target location (characters folder or worlds folder). Remember to refresh SillyTavern to see the new lorebook."
+        }
+      ]
+    },
+    {
+      "id": "search-filter",
+      "title": "Search and Filtering",
+      "content": "The search bar and filters help you find specific entries quickly, especially in large lorebook collections.",
+      "subsections": [
+        {
+          "id": "search",
+          "title": "Search",
+          "content": "Type in the search bar to filter entries by name, keys, or content. The entry counter updates to show how many entries match your search. Click the **X** button to clear the search."
+        },
+        {
+          "id": "category-filter",
+          "title": "Category Filter",
+          "content": "Click any category in the sidebar to show only entries in that category. Click the category again to deselect it and show all entries. The category counter shows how many entries are in each category."
+        }
+      ]
+    },
+    {
+      "id": "projects",
+      "title": "Project Management",
+      "content": "Projects let you save and organize different lorebook collections. Each project is stored separately and can be loaded or saved independently.",
+      "subsections": [
+        {
+          "id": "saving-projects",
+          "title": "Saving Projects",
+          "content": "Click the **Save** button (💾) to save your current project. Give it a name when prompted. Your project includes all entries, categories, and settings. Projects are stored locally in your browser."
+        },
+        {
+          "id": "loading-projects",
+          "title": "Loading Projects",
+          "content": "Click the **Load** button (📁) to see your saved projects. Click **Load** next to any project to open it. You can also rename or delete projects from this modal. Use the project dropdown to quickly switch between recent projects."
+        }
+      ]
+    },
+    {
+      "id": "settings",
+      "title": "Settings",
+      "content": "Click the **Settings** button (⚙️) to configure Lorebook Manager options.",
+      "subsections": [
+        {
+          "id": "sillytavern-path",
+          "title": "SillyTavern Path",
+          "content": "Enter the full path to your SillyTavern installation folder (the one containing the `data` folder with characters, worlds, etc.). This enables the **Send to SillyTavern** feature. Example paths:\n\n**Windows**: `C:\\SillyTavern`\n**Linux/Mac**: `/home/username/SillyTavern`"
+        }
+      ]
+    },
+    {
+      "id": "tips",
+      "title": "Tips & Tricks",
+      "content": "Here are some helpful tips for getting the most out of Lorebook Manager.",
+      "subsections": [
+        {
+          "id": "key-management",
+          "title": "Key Management",
+          "content": "Use clear, specific keys that are unlikely to trigger accidentally. Consider using character names, unique place names, or specific terms. Separate multiple keys with commas. Use case-insensitive matching for more flexible triggering."
+        },
+        {
+          "id": "priority-usage",
+          "title": "Priority & Order",
+          "content": "Higher priority entries (larger numbers) inject first. Use priority to ensure important context appears before supplementary details. Insertion order controls where content appears relative to the chat - experiment to find what works best for your use case."
+        },
+        {
+          "id": "organization",
+          "title": "Organization",
+          "content": "Use categories to group related entries (Characters, Locations, Lore, etc.). This makes it easier to find and manage entries, especially in large lorebooks. You can quickly filter by category using the sidebar."
+        }
+      ]
+    }
+  ]
+}
