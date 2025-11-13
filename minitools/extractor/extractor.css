@@ -535,6 +535,53 @@ button:disabled {
     white-space: nowrap;
 }
 
+/* Entry Context Menu */
+.entry-context-menu {
+    position: fixed;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 9999;
+    padding: var(--space-xs) 0;
+    min-width: 140px;
+    display: none;
+    backdrop-filter: blur(4px);
+}
+
+.entry-context-menu .context-menu-item {
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    transition: all var(--transition-fast);
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.entry-context-menu .context-menu-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.entry-context-menu .context-menu-item.danger {
+    color: var(--accent-danger);
+}
+
+.entry-context-menu .context-menu-item.danger:hover {
+    background-color: rgba(192, 87, 70, 0.1);
+}
+
+.entry-context-menu .context-menu-separator {
+    height: 1px;
+    background-color: var(--border-primary);
+    margin: var(--space-xs) 0;
+}
+
 /* Icon Selection Modal */
 .icon-modal {
     max-width: 500px;
@@ -704,6 +751,46 @@ button:disabled {
     outline: none;
     border-color: var(--accent-primary);
     box-shadow: 0 0 0 2px rgba(184, 149, 107, 0.1);
+}
+
+/* Category Input Wrapper for inline button */
+.category-input-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.category-input-wrapper .category-input {
+    padding-right: 10px; /* Make room for the button */
+}
+
+.category-inline-btn {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-quaternary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.category-inline-btn:hover:not(:disabled) {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: var(--text-secondary);
+}
+
+.category-inline-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 .btn-icon {
@@ -1607,7 +1694,8 @@ button:disabled {
 }
 
 .form-group label {
-    display: block;
+    display: inline-flex;
+    align-items: center;
     margin-bottom: var(--space-xs);
     font-weight: 500;
     color: var(--text-labels);
@@ -2548,3 +2636,282 @@ button:disabled {
     transform: scale(1.05);
 }
 
+/* Find & Replace Modal Styles */
+.find-replace-modal {
+    max-width: 800px;
+    height: 80vh;
+    max-height: 700px;
+}
+
+.find-replace-modal .modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-md);
+    overflow: hidden; /* Prevent body from scrolling */
+}
+
+.fr-controls {
+    background-color: var(--bg-quaternary)33;
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-secondary);
+}
+
+.fr-controls .form-group {
+    margin-bottom: var(--space-md);
+}
+.fr-controls .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.fr-options-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-lg);
+}
+
+.fr-source-group {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 0 !important;
+}
+
+.fr-toggles {
+    display: flex;
+    gap: var(--space-md);
+    padding-bottom: 8px; /* Align with select box */
+}
+
+.fr-results-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-primary);
+}
+
+.fr-results-header {
+    background-color: var(--bg-tertiary);
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-secondary);
+    flex-shrink: 0;
+}
+
+.fr-results-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-sm);
+}
+
+.fr-result-item {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-xs);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all var(--transition-fast);
+}
+
+.fr-result-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.fr-result-item.selected {
+    background-color: var(--bg-active);
+    border-color: var(--accent-primary);
+}
+
+.fr-result-header {
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.fr-result-header .field-tag {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.fr-result-context {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+.fr-result-context mark {
+    background-color: var(--accent-secondary);
+    color: var(--text-primary);
+    border-radius: 2px;
+    padding: 1px 2px;
+}
+
+#fr-find-all-btn.btn-secondary,
+#fr-replace-btn.btn-secondary {
+    width: 68px;
+}
+
+/* Advanced Options Modal */
+.ao-row {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.ao-row > * {
+    flex: 1;
+}
+
+.ao-flags-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+    background-color: var(--bg-primary)33;
+    padding: var(--space-md) var(--space-sm);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-secondary);
+}
+
+.ao-probability-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.ao-prob-input {
+    width: 80px !important;
+    padding: var(--space-xs) var(--space-sm) !important;
+}
+
+/* Advanced Options Modal - New Layout */
+.ao-row > div {
+    flex: 1; /* Make the new wrapper divs flexible */
+}
+
+/* Add labels above the inputs/selects in the AO modal rows */
+.ao-row label {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xs);
+    font-weight: 500;
+}
+
+/* Target the new scan depth group to make it smaller */
+.ao-row .ao-scan-depth-group {
+    flex: 0 0 120px; /* Give it a fixed base width */
+}
+
+#ao-scan-depth.edit-input {
+    height: 38px;
+}
+
+/* Advanced Options - Character Filter Section */
+.ao-char-filter-controls {
+    background-color: var(--bg-primary)33;
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.ao-toggle-switch {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-quaternary);
+    border-radius: var(--radius-sm);
+    padding: var(--space-xs);
+    width: 150px;
+    height: 32px;
+    cursor: pointer;
+}
+
+.ao-toggle-checkbox {
+    display: none; /* Hide the actual checkbox */
+}
+
+.ao-toggle-label {
+    flex: 1;
+    text-align: center;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    z-index: 2;
+    transition: color var(--transition-normal);
+    user-select: none;
+    margin-left: 10px;
+}
+
+.ao-toggle-slider {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    background-color: var(--accent-primary);
+    border-radius: var(--radius-sm);
+    z-index: 1;
+    transition: transform var(--transition-normal);
+}
+
+/* Move slider when checkbox is checked */
+.ao-toggle-checkbox:checked + .ao-toggle-label.include + .ao-toggle-label.exclude + .ao-toggle-slider {
+    transform: translateX(100%);
+}
+
+/* Style active/inactive labels */
+.ao-toggle-checkbox:checked + .ao-toggle-label.include {
+    color: var(--text-secondary);
+}
+.ao-toggle-checkbox:checked + .ao-toggle-label.include + .ao-toggle-label.exclude {
+    color: var(--bg-primary);
+}
+
+.ao-toggle-checkbox:not(:checked) + .ao-toggle-label.include {
+    color: var(--bg-primary);
+}
+.ao-toggle-checkbox:not(:checked) + .ao-toggle-label.include + .ao-toggle-label.exclude {
+    color: var(--text-secondary);
+}
+
+#advanced-options-cancel.btn-secondary {
+    width: 62px;
+}
+
+/* Advanced Options Button in entry list */
+.advanced-options-btn {
+    width: 24px !important;
+    height: 24px !important;
+    padding: 0 !important;
+    font-size: 11px !important;
+    margin-right: var(--space-xs);
+    margin-top: 5px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-secondary);
+    color: var(--text-secondary);
+}
+
+.advanced-options-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+    background-color: var(--bg-hover);
+}

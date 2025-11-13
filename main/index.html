@@ -39,11 +39,11 @@
                         Managers <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="nav-dropdown-menu">
-                        <a href="http://localhost:3000/extractor" class="nav-dropdown-item">
+                        <a href="http://localhost:9000/extractor" class="nav-dropdown-item">
                             <i class="fas fa-book"></i>
                             <span>Lorebook Manager</span>
                         </a>
-                        <a href="http://localhost:3000/character-manager" class="nav-dropdown-item">
+                        <a href="http://localhost:9000/character-manager" class="nav-dropdown-item">
                             <i class="fas fa-user-friends"></i>
                             <span>Character Manager</span>
                         </a>
@@ -108,7 +108,7 @@
                         <h2 class="card-title metal-text bronze">Lore Codex</h2>
                         <div class="card-footer">
                             <p class="card-description">Create beautiful info pages for your writing projects and worlds</p>
-                            <button class="card-launch-btn" data-url="http://localhost:3000">
+                            <button class="card-launch-btn" data-url="http://localhost:9000">
                                 Launch <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
@@ -128,7 +128,7 @@
                         <h2 class="card-title metal-text bronze">RP Archiver</h2>
                         <div class="card-footer">
                             <p class="card-description">Transform roleplay text into styled HTML documents</p>
-                            <button class="card-launch-btn" data-url="http://localhost:3000/roleplay-converter">
+                            <button class="card-launch-btn" data-url="http://localhost:9000/roleplay-converter">
                                 Launch <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
@@ -1170,6 +1170,20 @@
                             <div class="dropdown-options" id="theme-options">
                                 <!-- Options will be populated by JavaScript -->
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Tools Section - ADD THIS ENTIRE SECTION -->
+                <div class="settings-section">
+                    <h3>AI Features</h3>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: var(--space-sm); cursor: pointer; font-weight: 400;">
+                            <input type="checkbox" id="ai-tools-enabled" style="width: auto; margin: 0;">
+                            <span>AI Tools Enabled</span>
+                        </label>
+                        <div class="helper-text">
+                            Shows optional AI-related features (CoWriter tab, Character Manager, Lorebook Manager). Core tools work without AI.
                         </div>
                     </div>
                 </div>

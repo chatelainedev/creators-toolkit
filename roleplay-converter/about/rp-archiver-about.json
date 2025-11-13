@@ -46,7 +46,7 @@
         {
           "id": "navigation",
           "title": "Navigation Links",
-          "content": "Customize the top navigation bar of your HTML. For Lore Codex integration, use \"../info.html\" as the homepage link when your story is in \"sites/projectName/roleplays\" folder. Regular URLs also work."
+          "content": "Customize the top navigation bar of your HTML. For Lore Codex integration, use \"../info.html\" (or whatever you've named your project HTML file) as the homepage link when your story is in \"sites/projectName/roleplays\" folder. Regular URLs also work."
         }
       ]
     },
@@ -74,8 +74,8 @@
       "subsections": [
         {
           "id": "generate",
-          "title": "Generate Your Story",
-          "content": "Click **Generate HTML** to create your story file. Preview the HTML, then copy or save it. Save creates folders: \"userID/roleplays/universeName/\" with an images folder for your assets.\n\nThe generated HTML includes all your content, styling, and interactive features."
+          "title": "Export Your Story",
+          "content": "Click **Create** to create your story file. Preview the HTML, then copy or save it. Save creates folders: \"userID/roleplays/universeName/\" with an images folder for your assets.\n\nThe generated HTML includes all your content, styling, and interactive features."
         },
         {
           "id": "loading",

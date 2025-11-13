@@ -80,6 +80,10 @@ function clearModalFields(modalId) {
     inputs.forEach(input => {
         if (input.type === 'checkbox') {
             input.checked = input.id === 'event-visible' || input.id === 'subarc-visible'; // Default visibility to true
+        } else if (input.type === 'radio') {
+            // Don't clear radio button values, just reset checked state
+            // The first radio with 'checked' attribute will remain selected
+            // Do nothing here - radio buttons keep their values
         } else {
             input.value = '';
         }
@@ -88,6 +92,17 @@ function clearModalFields(modalId) {
     // Reset select elements too
     const selects = modal.querySelectorAll('select');
     selects.forEach(select => select.selectedIndex = 0);
+
+    if (modalId === 'characterModal') {
+        // Reset stats to defaults
+        const defaultStats = ['Strength', 'Constitution', 'Agility', 'Technique', 'Defense', 'Charisma'];
+        document.getElementById('char-stat-range').value = 100;
+        
+        for (let i = 1; i <= 6; i++) {
+            document.getElementById(`char-stat-${i}-label`).value = defaultStats[i - 1];
+            document.getElementById(`char-stat-${i}-value`).value = 0;
+        }
+    }
     
     // Clear events list if it's the plan modal
     if (modalId === 'planModal') {
@@ -100,14 +115,10 @@ function clearModalFields(modalId) {
         if (subArcsContainer) {
             subArcsContainer.innerHTML = '<div class="empty-state">No sub-arcs added yet</div>';
         }
-    }
-    
-    // Clear sub-arc events list if it's the sub-arc modal
-    if (modalId === 'subArcModal') {
-        const subArcEventsContainer = document.getElementById('subarc-events-list-container');
-        if (subArcEventsContainer) {
-            subArcEventsContainer.innerHTML = '<div class="empty-state">No events added yet</div>';
-        }
+        
+        currentEditingEvents = [];
+        currentEditingSubArcs = [];
+        currentEditingSubArcEvents = [];
     }
 }
 
@@ -227,14 +238,222 @@ function populateFactionDropdown() {
     }
 }
 
+function populateLocationDropdown() {
+    const locationSelect = document.getElementById('char-location');
+    if (!locationSelect) return;
+    
+    // Clear existing options except "None"
+    locationSelect.innerHTML = '<option value="">None</option>';
+    
+    // Get locations from world building
+    if (infoData.world && infoData.world.locations) {
+        infoData.world.locations.forEach(location => {
+            const option = document.createElement('option');
+            option.value = location.name;
+            option.textContent = location.name;
+            locationSelect.appendChild(option);
+        });
+    }
+}
+
+function populateItemsDropdown() {
+    const dropdown = document.getElementById('char-items-dropdown');
+    if (!dropdown) return;
+    
+    // Clear existing options
+    dropdown.innerHTML = '';
+    
+    // Get items from world building that have icons
+    if (infoData.world && infoData.world.items) {
+        const itemsWithIcons = infoData.world.items.filter(item => {
+            return item.icon && (item.icon.type === 'custom' || item.icon.type === 'builder');
+        });
+        
+        if (itemsWithIcons.length === 0) {
+            dropdown.innerHTML = '<div style="padding: 8px 12px; color: var(--text-muted);">No items with icons available</div>';
+        } else {
+            itemsWithIcons.forEach(item => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'multiselect-option';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = item.name;
+                checkbox.id = `item-${item.name.replace(/\s+/g, '-')}`;
+                checkbox.onchange = updateItemsDisplay;
+                
+                const label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = item.name;
+                
+                optionDiv.appendChild(checkbox);
+                optionDiv.appendChild(label);
+                dropdown.appendChild(optionDiv);
+            });
+        }
+    }
+}
+
+function toggleItemsDropdown() {
+    const dropdown = document.getElementById('char-items-dropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function updateItemsDisplay() {
+    const dropdown = document.getElementById('char-items-dropdown');
+    const display = document.getElementById('char-items-display');
+    
+    if (!dropdown || !display) return;
+    
+    const checkedBoxes = dropdown.querySelectorAll('input[type="checkbox"]:checked');
+    
+    if (checkedBoxes.length === 0) {
+        display.textContent = 'Select items...';
+    } else if (checkedBoxes.length === 1) {
+        display.textContent = checkedBoxes[0].value;
+    } else {
+        display.textContent = `${checkedBoxes.length} items selected`;
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('char-items-dropdown');
+    const button = document.getElementById('char-items-button');
+    
+    if (dropdown && button && !dropdown.contains(e.target) && !button.contains(e.target)) {
+        dropdown.style.display = 'none';
+    }
+
+    // Skills
+    const skillsDropdown = document.getElementById('char-skills-dropdown');
+    const skillsButton = document.getElementById('char-skills-button');
+    
+    if (skillsDropdown && skillsButton && !skillsDropdown.contains(e.target) && !skillsButton.contains(e.target)) {
+        skillsDropdown.style.display = 'none';
+    }
+});
+
+function populateSkillsDropdown() {
+    const dropdown = document.getElementById('char-skills-dropdown');
+    if (!dropdown) return;
+    
+    dropdown.innerHTML = '';
+    
+    const skillsWithIcons = [];
+    
+    // Get Magic entries with icons
+    if (infoData.world && infoData.world.magic) {
+        infoData.world.magic.forEach(magicItem => {
+            if (magicItem.icon && (magicItem.icon.type === 'custom' || magicItem.icon.type === 'builder')) {
+                skillsWithIcons.push({
+                    name: magicItem.name,
+                    category: 'magic'
+                });
+            }
+        });
+    }
+    
+    // Get Cultivation entries with icons
+    if (infoData.world && infoData.world.cultivation) {
+        infoData.world.cultivation.forEach(cultivationItem => {
+            if (cultivationItem.icon && (cultivationItem.icon.type === 'custom' || cultivationItem.icon.type === 'builder')) {
+                skillsWithIcons.push({
+                    name: cultivationItem.name,
+                    category: 'cultivation'
+                });
+            }
+        });
+    }
+    
+    skillsWithIcons.sort((a, b) => a.name.localeCompare(b.name));
+    
+    if (skillsWithIcons.length === 0) {
+        dropdown.innerHTML = '<div style="padding: 8px 12px; color: var(--text-muted);">No magic/cultivation skills with icons available</div>';
+    } else {
+        skillsWithIcons.forEach(skill => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'multiselect-option';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = skill.name;
+            checkbox.id = `skill-${skill.name.replace(/\s+/g, '-')}`;
+            checkbox.dataset.category = skill.category;
+            checkbox.onchange = updateSkillsDisplay;
+            
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = skill.name;
+            
+            optionDiv.appendChild(checkbox);
+            optionDiv.appendChild(label);
+            dropdown.appendChild(optionDiv);
+        });
+    }
+}
+
+function toggleSkillsDropdown() {
+    const dropdown = document.getElementById('char-skills-dropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function updateSkillsDisplay() {
+    const dropdown = document.getElementById('char-skills-dropdown');
+    const display = document.getElementById('char-skills-display');
+    
+    if (!dropdown || !display) return;
+    
+    const checkedBoxes = dropdown.querySelectorAll('input[type="checkbox"]:checked');
+    
+    if (checkedBoxes.length === 0) {
+        display.textContent = 'Select skills...';
+    } else if (checkedBoxes.length === 1) {
+        display.textContent = checkedBoxes[0].value;
+    } else {
+        display.textContent = `${checkedBoxes.length} skills selected`;
+    }
+}
+
+// Update stat max values when range changes
+function updateStatRanges() {
+    const maxRange = document.getElementById('char-stat-range').value || 100;
+    
+    for (let i = 1; i <= 6; i++) {
+        const valueInput = document.getElementById(`char-stat-${i}-value`);
+        if (valueInput) {
+            valueInput.max = maxRange;
+            // If current value exceeds new max, adjust it
+            if (parseInt(valueInput.value) > parseInt(maxRange)) {
+                valueInput.value = maxRange;
+            }
+        }
+    }
+}
+
+// Initialize stat range listeners
+function initializeStatListeners() {
+    const rangeInput = document.getElementById('char-stat-range');
+    if (rangeInput) {
+        rangeInput.addEventListener('change', updateStatRanges);
+        rangeInput.addEventListener('input', updateStatRanges);
+    }
+}
+
 // Update openCharacterModal to set up color inputs
 function openCharacterModal(characterData = null) {
     const modalTitle = document.getElementById('character-modal-title');
     editingIndex = characterData ? infoData.characters.indexOf(characterData) : -1;
     editingType = 'character';
     
-    // Populate faction dropdown BEFORE populating the modal
-    populateFactionDropdown(); // ADD THIS LINE
+    populateFactionDropdown();
+    populateLocationDropdown();
+    populateItemsDropdown();
+    populateSkillsDropdown();
     
     if (characterData) {
         modalTitle.textContent = 'Edit Character';
@@ -242,24 +461,61 @@ function openCharacterModal(characterData = null) {
     } else {
         modalTitle.textContent = 'Add Character';
         clearModalFields('characterModal');
-        // Set default color for new characters
         document.getElementById('char-color').value = '#6c757d';
         document.getElementById('char-color-picker').value = '#6c757d';
+        // ADD THIS LINE - default to true for new characters:
+        document.getElementById('char-show-info-display').checked = true;
+    }
+    
+    // ADD THIS BLOCK - enable/disable based on global setting:
+    const globalShowInfoDisplay = infoData.charactersOptions?.showInfoDisplay ?? false;
+    const charInfoDisplayCheckbox = document.getElementById('char-show-info-display');
+    if (charInfoDisplayCheckbox) {
+        charInfoDisplayCheckbox.disabled = !globalShowInfoDisplay;
+        if (!globalShowInfoDisplay) {
+            charInfoDisplayCheckbox.checked = false;
+        }
     }
     
     openModal('characterModal');
-    
-    // Set up color input synchronization
     setupCharacterColorInputs();
+    initializeStatListeners();
 }
 
 function populateCharacterModal(character) {
     document.getElementById('char-name').value = character.name || '';
+    document.getElementById('char-full-name').value = character.fullName || '';
+    document.getElementById('char-title').value = character.title || '';
+    document.getElementById('char-age').value = character.age || '';
     document.getElementById('char-image').value = character.image || '';
     document.getElementById('char-tags').value = (character.tags || []).join(', ');
     document.getElementById('char-color').value = character.color || '#6c757d'; // NEW
     document.getElementById('char-color-picker').value = character.color || '#6c757d'; // NEW
+    document.getElementById('char-location').value = character.location || ''; 
     document.getElementById('char-faction').value = character.faction || '';
+    // Populate stats
+    const defaultStats = ['Strength', 'Constitution', 'Agility', 'Technique', 'Defense', 'Charisma'];
+    
+    if (character.stats) {
+        document.getElementById('char-stat-range').value = character.stats.range || 100;
+        
+        // Populate the 6 stat fields
+        for (let i = 1; i <= 6; i++) {
+            const stat = character.stats.entries && character.stats.entries[i - 1];
+            document.getElementById(`char-stat-${i}-label`).value = stat ? stat.label : defaultStats[i - 1];
+            document.getElementById(`char-stat-${i}-value`).value = stat ? stat.value : 0;
+        }
+    } else {
+        // Use defaults for new characters
+        document.getElementById('char-stat-range').value = 100;
+        for (let i = 1; i <= 6; i++) {
+            document.getElementById(`char-stat-${i}-label`).value = defaultStats[i - 1];
+            document.getElementById(`char-stat-${i}-value`).value = 0;
+        }
+    }
+    
+    // Update max ranges
+    updateStatRanges();
     document.getElementById('char-basic').value = character.basic || '';
     document.getElementById('char-physical').value = character.physical || '';
     document.getElementById('char-personality').value = character.personality || '';
@@ -267,6 +523,25 @@ function populateCharacterModal(character) {
     document.getElementById('char-fighting-style').value = character.fightingStyle || '';
     document.getElementById('char-background').value = character.background || '';
     document.getElementById('char-equipment').value = character.equipment || '';
+    // Populate items checkboxes
+    const itemsDropdown = document.getElementById('char-items-dropdown');
+    if (itemsDropdown) {
+        const checkboxes = itemsDropdown.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = character.items && character.items.includes(checkbox.value);
+        });
+        updateItemsDisplay();
+    }
+    // Populate skills checkboxes
+    const skillsDropdown = document.getElementById('char-skills-dropdown');
+    if (skillsDropdown) {
+        const checkboxes = skillsDropdown.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = character.skills && character.skills.includes(checkbox.value);
+        });
+        updateSkillsDisplay();
+    }
+    document.getElementById('char-show-info-display').checked = character.showInfoDisplay !== false; // default true
     document.getElementById('char-hobbies').value = character.hobbies || '';
     document.getElementById('char-quirks').value = character.quirks || '';
     document.getElementById('char-relationships').value = character.relationships || '';
@@ -278,15 +553,40 @@ function populateCharacterModal(character) {
 
 // MODIFY YOUR form-handlers.js file
 function saveCharacter() {
+    // Collect stats
+    const stats = {
+        range: parseInt(document.getElementById('char-stat-range').value) || 100,
+        entries: []
+    };
+    
+    // Collect all 6 stats
+    for (let i = 1; i <= 6; i++) {
+        const label = document.getElementById(`char-stat-${i}-label`).value.trim();
+        const value = document.getElementById(`char-stat-${i}-value`).value.trim();
+        
+        // Only add stat if it has a label (allows users to leave some empty)
+        if (label) {
+            stats.entries.push({
+                label: label,
+                value: parseInt(value) || 0
+            });
+        }
+    }
+    
     const characterData = {
         name: document.getElementById('char-name').value.trim(),
+        fullName: document.getElementById('char-full-name').value.trim(),
+        title: document.getElementById('char-title').value.trim(),
+        age: document.getElementById('char-age').value.trim(),
         image: document.getElementById('char-image').value.trim(),
         tags: document.getElementById('char-tags').value
             .split(',')
             .map(tag => tag.trim())
             .filter(tag => tag),
-        color: document.getElementById('char-color').value || '#6c757d', // NEW
-        faction: document.getElementById('char-faction').value.trim(), // ADD THIS LINE
+        color: document.getElementById('char-color').value || '#6c757d',
+        location: document.getElementById('char-location').value.trim(),
+        faction: document.getElementById('char-faction').value.trim(),
+        stats: stats, // ADD THIS
         basic: document.getElementById('char-basic').value.trim(),
         physical: document.getElementById('char-physical').value.trim(),
         personality: document.getElementById('char-personality').value.trim(),
@@ -294,6 +594,9 @@ function saveCharacter() {
         fightingStyle: document.getElementById('char-fighting-style').value.trim(),
         background: document.getElementById('char-background').value.trim(),
         equipment: document.getElementById('char-equipment').value.trim(),
+        items: Array.from(document.getElementById('char-items-dropdown').querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value),
+        skills: Array.from(document.getElementById('char-skills-dropdown').querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value),
+        showInfoDisplay: document.getElementById('char-show-info-display').checked,
         hobbies: document.getElementById('char-hobbies').value.trim(),
         quirks: document.getElementById('char-quirks').value.trim(),
         relationships: document.getElementById('char-relationships').value.trim(),
@@ -393,6 +696,35 @@ function openStorylineModal(storylineData = null) {
     });
     
     openModal('storylineModal');
+}
+
+// Generate unique ID for world items based on category
+function generateWorldItemId(category) {
+    // Get category prefix (e.g., 'locations' -> 'loc', 'items' -> 'item')
+    const prefixMap = {
+        'locations': 'loc',
+        'concepts': 'concept',
+        'events': 'event',
+        'creatures': 'creature',
+        'plants': 'plant',
+        'items': 'item',
+        'factions': 'faction',
+        'culture': 'culture',
+        'cultivation': 'cultivation',
+        'magic': 'magic',
+        'general': 'general'
+    };
+    
+    const prefix = prefixMap[category] || category;
+    
+    // Get existing IDs for this category
+    const existingIds = infoData.world[category]
+        ?.filter(item => item.id)
+        .map(item => parseInt(item.id.replace(`${prefix}_`, '')))
+        .filter(id => !isNaN(id)) || [];
+    
+    const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
+    return `${prefix}_${maxId + 1}`;
 }
 
 function populateSubsectionDatalist(sectionName) {
@@ -765,9 +1097,30 @@ function saveLocation() {
 // Generic world item modal functions
 function openWorldItemModal(itemData = null, category) {
     const modalTitle = document.getElementById('world-item-modal-title');
-    const categoryName = category === 'general' 
-    ? 'General' 
-    : category.charAt(0).toUpperCase() + category.slice(1, -1); // Capitalize and remove 's'
+    
+    // Get category name with custom labels support
+    let categoryName;
+    if (category === 'general') {
+        categoryName = 'General';
+    } else if (category === 'magic' && infoData.magicOptions?.customLabel) {
+        categoryName = infoData.magicOptions.customLabel;
+    } else if (category === 'cultivation' && infoData.cultivationOptions?.customLabel) {
+        categoryName = infoData.cultivationOptions.customLabel;
+    } else if (category === 'culture' && infoData.cultureOptions?.customLabel) {
+        categoryName = infoData.cultureOptions.customLabel;
+    } else if (category === 'events' && infoData.eventsOptions?.customLabel) {
+        categoryName = infoData.eventsOptions.customLabel;
+    } else {
+        // FIXED: Changed slice(1, -1) to slice(1) to prevent cutting off last letter
+        categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+    }
+    
+    // Show/hide icon section based on category
+    const iconSection = document.getElementById('world-item-icon-section');
+    if (iconSection) {
+        // Show icon section for items, magic, and cultivation
+        iconSection.style.display = (category === 'items' || category === 'magic' || category === 'cultivation') ? 'block' : 'none';
+    }
     
     if (itemData) {
         modalTitle.textContent = `Edit ${categoryName}`;
@@ -775,6 +1128,36 @@ function openWorldItemModal(itemData = null, category) {
     } else {
         modalTitle.textContent = `Add ${categoryName}`;
         clearModalFields('worldItemModal');
+        
+        // CRITICAL: Create a new item object with an ID for new entries
+        // This allows icons to be saved even before the entry is saved
+        if (category === 'items' || category === 'magic' || category === 'cultivation') {
+            window.currentEditingItem = {
+                id: generateWorldItemId(category),
+                name: '',
+                icon: null
+            };
+        } else {
+            window.currentEditingItem = null;
+        }
+        
+        // Reset icon fields (with safety checks) - for items, magic, and cultivation
+        if (category === 'items' || category === 'magic' || category === 'cultivation') {
+            const iconTypeNone = document.querySelector('input[name="icon-type"][value="none"]');
+            const customIconSection = document.getElementById('custom-icon-image-section');
+            const builderSection = document.getElementById('icon-builder-section');
+            const previewContainer = document.getElementById('icon-preview-container');
+            const iconImageInput = document.getElementById('item-icon-image');
+            const configureBtn = document.getElementById('configure-icon-btn');
+            
+            if (iconTypeNone) iconTypeNone.checked = true;
+            if (customIconSection) customIconSection.style.display = 'none';
+            if (builderSection) builderSection.style.display = 'none';
+            if (previewContainer) previewContainer.style.display = 'none';
+            if (iconImageInput) iconImageInput.value = '';
+            if (configureBtn) configureBtn.style.display = 'none';
+            currentIconConfig = null;
+        }
     }
     
     // Update labels based on category
@@ -793,6 +1176,8 @@ function openWorldItemModal(itemData = null, category) {
 }
 
 function populateWorldItemModal(item) {
+    // SET THIS FIRST, BEFORE ANYTHING ELSE
+    window.currentEditingItem = item;
     document.getElementById('item-name').value = item.name || '';
     document.getElementById('item-category').value = item.category || item.type || '';
     document.getElementById('item-status').value = item.status || '';
@@ -801,14 +1186,84 @@ function populateWorldItemModal(item) {
     document.getElementById('item-image').value = item.image || '';
     document.getElementById('item-description').value = item.description || '';
     
-    // Handle different field names for different categories
-    if (editingCategory === 'locations') {
+    // Handle properties/features field (different for locations)
+    if (item.features) {
         document.getElementById('item-properties').value = item.features || '';
-        document.getElementById('item-connections').value = item.connections || '';
     } else {
-        document.getElementById('item-properties').value = item.properties || item.characteristics || '';
-        document.getElementById('item-connections').value = item.connections || item.related || '';
+        document.getElementById('item-properties').value = item.properties || '';
     }
+    
+    // Handle connections field
+    document.getElementById('item-connections').value = item.connections || '';
+    
+    // Handle icon configuration
+    if (item.icon) {
+        if (item.icon.type === 'custom') {
+            document.querySelector('input[name="icon-type"][value="custom"]').checked = true;
+            document.getElementById('item-icon-image').value = item.icon.image || '';
+            document.getElementById('custom-icon-image-section').style.display = 'block';
+            document.getElementById('icon-builder-section').style.display = 'none';
+            document.getElementById('configure-icon-btn').style.display = 'none';
+            document.getElementById('icon-preview-container').style.display = 'none';
+        } else if (item.icon.type === 'builder') {
+            document.querySelector('input[name="icon-type"][value="builder"]').checked = true;
+            document.getElementById('custom-icon-image-section').style.display = 'none';
+            document.getElementById('icon-builder-section').style.display = 'block';
+            document.getElementById('configure-icon-btn').style.display = 'inline-block';
+            
+            window.currentEditingItem = item;
+            
+            // Show preview
+            const previewContainer = document.getElementById('icon-preview-container');
+            const previewDisplay = document.getElementById('icon-preview-display');
+            const iconPath = getIconPath(item.icon.category, item.icon.file);
+            let borderCSS = 'none';
+            if (item.icon.borderStyle === 'thin') {
+                borderCSS = `2px solid ${item.icon.borderColor}`;
+            } else if (item.icon.borderStyle === 'thick') {
+                borderCSS = `4px solid ${item.icon.borderColor}`;
+            }
+            const borderRadius = item.icon.shape === 'circle' ? '50%' : '4px';
+            
+            previewDisplay.innerHTML = `
+                <div style="
+                    width: 48px;
+                    height: 48px;
+                    background-color: ${item.icon.bgColor};
+                    border: ${borderCSS};
+                    border-radius: ${borderRadius};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 10px 0;
+                ">
+                    <img src="${iconPath}" alt="${item.icon.name}" 
+                        style="width: 28px; height: 28px; image-rendering: pixelated; opacity: ${item.icon.iconOpacity / 100};">
+                </div>
+            `;
+            
+            previewContainer.style.display = 'block';
+        }
+    } else {
+        // CRITICAL: Item has no icon - reset everything to "No Icon"
+        const iconTypeNone = document.querySelector('input[name="icon-type"][value="none"]');
+        const customIconSection = document.getElementById('custom-icon-image-section');
+        const builderSection = document.getElementById('icon-builder-section');
+        const previewContainer = document.getElementById('icon-preview-container');
+        const configureBtn = document.getElementById('configure-icon-btn');
+        const iconImageInput = document.getElementById('item-icon-image');
+        
+        if (iconTypeNone) iconTypeNone.checked = true;
+        if (customIconSection) customIconSection.style.display = 'none';
+        if (builderSection) builderSection.style.display = 'none';
+        if (previewContainer) previewContainer.style.display = 'none';
+        if (configureBtn) configureBtn.style.display = 'none';
+        if (iconImageInput) iconImageInput.value = '';
+    }
+}
+
+function getIconPath(category, file) {
+    return `images/item-icons/${category}/${file}`;
 }
 
 function saveWorldItem() {
@@ -821,10 +1276,31 @@ function saveWorldItem() {
         tags: document.getElementById('item-tags').value
             .split(',')
             .map(tag => tag.trim())
-            .filter(tag => tag)
+            .filter(tag => tag),
+        icon: null  // Will be set below
     };
-
-    // Handle different field names for different categories
+    
+    // Check which icon type is selected
+    const iconType = document.querySelector('input[name="icon-type"]:checked').value;
+    if (iconType === 'custom') {
+        const customImage = document.getElementById('item-icon-image').value.trim();
+        if (customImage) {
+            itemData.icon = {
+                type: 'custom',
+                image: customImage
+            };
+        }
+    } else if (iconType === 'builder') {
+        // Read from window.currentEditingItem if it exists
+        if (window.currentEditingItem && window.currentEditingItem.icon && window.currentEditingItem.icon.type === 'builder') {
+            itemData.icon = window.currentEditingItem.icon;
+            console.log('✅ Saving builder icon to item:', itemData.icon);
+        } else {
+            console.warn('⚠️ Builder icon selected but no icon config found');
+        }
+    }
+    
+    // Handle different property names for different categories
     if (editingCategory === 'locations') {
         itemData.type = document.getElementById('item-category').value.trim();
         itemData.features = document.getElementById('item-properties').value.trim();
@@ -835,19 +1311,23 @@ function saveWorldItem() {
         itemData.connections = document.getElementById('item-connections').value.trim();
     }
 
-    // Validation
+    // Generate or preserve ID
+    if (editingIndex >= 0) {
+        const existingItem = infoData.world[editingCategory][editingIndex];
+        itemData.id = existingItem.id || generateWorldItemId(editingCategory);
+    } else {
+        // Use the ID that was already generated when opening the modal
+        // This ensures icons can be saved before the entry is saved
+        itemData.id = window.currentEditingItem?.id || generateWorldItemId(editingCategory);
+    }
+
     // Validation
     if (!itemData.name) {
         alert('Item name is required!');
         return;
     }
 
-    // Ensure the category exists in the world data
-    if (!infoData.world[editingCategory]) {
-        infoData.world[editingCategory] = [];
-    }
-
-    if (editingIndex >= 0 && editingType === 'worldItem') {
+    if (editingIndex >= 0) {
         infoData.world[editingCategory][editingIndex] = itemData;
     } else {
         infoData.world[editingCategory].push(itemData);
@@ -1409,6 +1889,7 @@ window.collectFormData = function() {
             pageHeader: 'standard',
             containerStyle: 'left-border',
             subcontainerStyle: 'soft-bg',
+            infodisplayStyle: 'default',
             siteWidth: 'standard',
             buttonStyle: 'rounded',
             customNavButtonStyle: 'rounded',
@@ -1427,6 +1908,7 @@ window.collectFormData = function() {
     const cardSelect = document.getElementById('appearance-card-style');
     const containerSelect = document.getElementById('appearance-container-style');
     const subcontainerSelect = document.getElementById('appearance-subcontainer-style');
+    const infodisplaySelect = document.getElementById('appearance-infodisplay-style');
     const buttonSelect = document.getElementById('appearance-button-style');
     const backToTopSelect = document.getElementById('appearance-back-to-top-style');
     const customNavButtonSelect = document.getElementById('appearance-custom-nav-button-style');
@@ -1470,6 +1952,9 @@ window.collectFormData = function() {
     }
     if (subcontainerSelect) {
         infoData.appearance.subcontainerStyle = subcontainerSelect.value;
+    }
+    if (infodisplaySelect) {
+        infoData.appearance.infodisplayStyle = infodisplaySelect.value;
     }
     // Add after the subcontainerStyle line:
     if (document.getElementById('appearance-banner-size')) {
@@ -1515,9 +2000,24 @@ window.cleanupData = function() {
         // Ensure all expected character fields exist including notes and tags
         const defaultCharacter = {
             name: '',
+            fullName: '',
+            title: '',
+            age: '',
             image: '',
             tags: [],
+            location: '',
             faction: '',
+            stats: { 
+                range: 100, 
+                entries: [
+                    { label: 'Strength', value: 0 },
+                    { label: 'Constitution', value: 0 },
+                    { label: 'Agility', value: 0 },
+                    { label: 'Technique', value: 0 },
+                    { label: 'Defense', value: 0 },
+                    { label: 'Charisma', value: 0 }
+                ]
+            },
             basic: '',
             physical: '',
             personality: '',
@@ -1525,6 +2025,8 @@ window.cleanupData = function() {
             fightingStyle: '',
             background: '',
             equipment: '',
+            items: [], 
+            skills: [], 
             hobbies: '',
             quirks: '',
             relationships: '',
@@ -1705,6 +2207,7 @@ window.cleanupData = function() {
             cardStyle: 'current',
             containerStyle: 'left-border',
             subcontainerStyle: 'soft-bg',
+            infodisplayStyle: 'default',
             buttonStyle: 'rounded'
         };
     }
@@ -1738,10 +2241,230 @@ function saveStorylinesOptions() {
     }
 }
 
+// Magic Options functions
+function openMagicOptionsModal() {
+    // Populate input with current value
+    const customLabel = infoData.magicOptions?.customLabel || 'Magic';
+    document.getElementById('magic-custom-label').value = customLabel;
+    
+    openModal('magicOptionsModal');
+}
+
+function saveMagicOptions() {
+    // Ensure magicOptions exists
+    if (!infoData.magicOptions) {
+        infoData.magicOptions = {};
+    }
+    
+    infoData.magicOptions.customLabel = document.getElementById('magic-custom-label').value.trim() || 'Magic';
+    
+    closeModal('magicOptionsModal');
+    markDataAsModified();
+    
+    updateCategoryLabels(); // ADD THIS LINE
+    
+    if (typeof showStatus === 'function') {
+        showStatus('success', 'Magic display options saved!');
+    }
+}
+
+// Cultivation Options functions
+function openCultivationOptionsModal() {
+    // Populate input with current value
+    const customLabel = infoData.cultivationOptions?.customLabel || 'Cultivation';
+    document.getElementById('cultivation-custom-label').value = customLabel;
+    
+    openModal('cultivationOptionsModal');
+}
+
+function saveCultivationOptions() {
+    // Ensure cultivationOptions exists
+    if (!infoData.cultivationOptions) {
+        infoData.cultivationOptions = {};
+    }
+    
+    infoData.cultivationOptions.customLabel = document.getElementById('cultivation-custom-label').value.trim() || 'Cultivation';
+    
+    closeModal('cultivationOptionsModal');
+    markDataAsModified();
+    
+    updateCategoryLabels(); // ADD THIS LINE
+    
+    if (typeof showStatus === 'function') {
+        showStatus('success', 'Cultivation display options saved!');
+    }
+}
+
+// Culture Options functions
+function openCultureOptionsModal() {
+    // Populate input with current value
+    const customLabel = infoData.cultureOptions?.customLabel || 'Culture';
+    document.getElementById('culture-custom-label').value = customLabel;
+    
+    openModal('cultureOptionsModal');
+}
+
+function saveCultureOptions() {
+    // Ensure cultureOptions exists
+    if (!infoData.cultureOptions) {
+        infoData.cultureOptions = {};
+    }
+    
+    infoData.cultureOptions.customLabel = document.getElementById('culture-custom-label').value.trim() || 'Culture';
+    
+    closeModal('cultureOptionsModal');
+    markDataAsModified();
+    
+    updateCategoryLabels(); // ADD THIS LINE
+    
+    if (typeof showStatus === 'function') {
+        showStatus('success', 'Culture display options saved!');
+    }
+}
+
+// Events Options functions
+function openEventsOptionsModal() {
+    // Populate input with current value
+    const customLabel = infoData.eventsOptions?.customLabel || 'Events';
+    document.getElementById('events-custom-label').value = customLabel;
+    
+    openModal('eventsOptionsModal');
+}
+
+function saveEventsOptions() {
+    // Ensure eventsOptions exists
+    if (!infoData.eventsOptions) {
+        infoData.eventsOptions = {};
+    }
+    
+    infoData.eventsOptions.customLabel = document.getElementById('events-custom-label').value.trim() || 'Events';
+    
+    closeModal('eventsOptionsModal');
+    markDataAsModified();
+    
+    updateCategoryLabels(); // ADD THIS LINE
+    
+    if (typeof showStatus === 'function') {
+        showStatus('success', 'Events display options saved!');
+    }
+}
+
+// Update category display labels in the UI
+function updateCategoryLabels() {
+    // Update Magic labels
+    if (infoData.magicOptions?.customLabel) {
+        const magicLabel = infoData.magicOptions.customLabel;
+        
+        // Update section header
+        const magicSectionHeader = document.querySelector('#magic-section .section-header h3');
+        if (magicSectionHeader) {
+            magicSectionHeader.innerHTML = `<i class="fas fa-wand-magic-sparkles"></i> ${magicLabel}`;
+        }
+        
+        // Update sidebar
+        const magicSidebarItem = document.querySelector('.sidebar-item[data-category="magic"] .category-name');
+        if (magicSidebarItem) {
+            magicSidebarItem.textContent = magicLabel;
+        }
+        
+        // Update add button text
+        const magicAddBtn = document.getElementById('add-magic');
+        if (magicAddBtn) {
+            magicAddBtn.textContent = `+ Add ${magicLabel}`;
+        }
+    }
+
+    // Update Culture labels
+    if (infoData.cultureOptions?.customLabel) {
+        const cultureLabel = infoData.cultureOptions.customLabel;
+        
+        // Update section header
+        const cultureSectionHeader = document.querySelector('#culture-section .section-header h3');
+        if (cultureSectionHeader) {
+            cultureSectionHeader.innerHTML = `<i class="fas fa-theater-masks"></i> ${cultureLabel}`;
+        }
+        
+        // Update sidebar
+        const cultureSidebarItem = document.querySelector('.sidebar-item[data-category="culture"] .category-name');
+        if (cultureSidebarItem) {
+            cultureSidebarItem.textContent = cultureLabel;
+        }
+        
+        // Update add button text
+        const cultureAddBtn = document.getElementById('add-culture');
+        if (cultureAddBtn) {
+            cultureAddBtn.textContent = `+ Add ${cultureLabel}`;
+        }
+    }
+    
+    // Update Cultivation labels
+    if (infoData.cultivationOptions?.customLabel) {
+        const cultivationLabel = infoData.cultivationOptions.customLabel;
+        
+        // Update section header
+        const cultivationSectionHeader = document.querySelector('#cultivation-section .section-header h3');
+        if (cultivationSectionHeader) {
+            cultivationSectionHeader.innerHTML = `<i class="fas fa-leaf"></i> ${cultivationLabel}`;
+        }
+        
+        // Update sidebar
+        const cultivationSidebarItem = document.querySelector('.sidebar-item[data-category="cultivation"] .category-name');
+        if (cultivationSidebarItem) {
+            cultivationSidebarItem.textContent = cultivationLabel;
+        }
+        
+        // Update add button text
+        const cultivationAddBtn = document.getElementById('add-cultivation');
+        if (cultivationAddBtn) {
+            cultivationAddBtn.textContent = `+ Add ${cultivationLabel}`;
+        }
+    }
+
+    // Update Events labels
+    if (infoData.eventsOptions?.customLabel) {
+        const eventsLabel = infoData.eventsOptions.customLabel;
+        
+        // Update section header
+        const eventsSectionHeader = document.querySelector('#events-section .section-header h3');
+        if (eventsSectionHeader) {
+            eventsSectionHeader.innerHTML = `<i class="fas fa-calendar-alt"></i> ${eventsLabel}`;
+        }
+        
+        // Update sidebar
+        const eventsSidebarItem = document.querySelector('.sidebar-item[data-category="events"] .category-name');
+        if (eventsSidebarItem) {
+            eventsSidebarItem.textContent = eventsLabel;
+        }
+        
+        // Update add button text
+        const eventsAddBtn = document.getElementById('add-event');
+        if (eventsAddBtn) {
+            eventsAddBtn.textContent = `+ Add ${eventsLabel}`;
+        }
+    }
+}
+
 // Characters Options functions
 function openCharactersOptionsModal() {
-    // Populate checkbox with current value
-    document.getElementById('characters-show-by-faction').checked = infoData.charactersOptions?.showByFaction ?? true;
+    // Populate checkboxes with current values
+    const showByFactionCheckbox = document.getElementById('characters-show-by-faction');
+    const showInfoDisplayCheckbox = document.getElementById('characters-show-info-display'); // NEW
+    const manageFactionOrderBtn = document.getElementById('manage-faction-order-btn');
+    
+    showByFactionCheckbox.checked = infoData.charactersOptions?.showByFaction ?? true;
+    showInfoDisplayCheckbox.checked = infoData.charactersOptions?.showInfoDisplay ?? false; // NEW - default false
+    
+    // Enable/disable the order button based on checkbox
+    if (manageFactionOrderBtn) {
+        manageFactionOrderBtn.disabled = !showByFactionCheckbox.checked;
+    }
+    
+    // Add listener to checkbox to update button state
+    showByFactionCheckbox.addEventListener('change', function() {
+        if (manageFactionOrderBtn) {
+            manageFactionOrderBtn.disabled = !this.checked;
+        }
+    });
     
     openModal('charactersOptionsModal');
 }
@@ -1753,6 +2476,7 @@ function saveCharactersOptions() {
     }
     
     infoData.charactersOptions.showByFaction = document.getElementById('characters-show-by-faction').checked;
+    infoData.charactersOptions.showInfoDisplay = document.getElementById('characters-show-info-display').checked;
     
     closeModal('charactersOptionsModal');
     markDataAsModified();
@@ -1762,6 +2486,284 @@ function saveCharactersOptions() {
     }
 }
 
+// Faction Order functions
+function openFactionOrderModal() {
+    const container = document.getElementById('faction-order-list');
+    if (!container) return;
+    
+    // Get factions that are actually assigned to characters
+    const assignedFactions = new Set();
+    infoData.characters.forEach(character => {
+        if (character.faction && character.faction.trim()) {
+            assignedFactions.add(character.faction.trim());
+        }
+    });
+    
+    if (assignedFactions.size === 0) {
+        alert('No factions are currently assigned to characters.');
+        return;
+    }
+    
+    // Get faction indices from world.factions
+    const factionItems = [];
+    infoData.world.factions.forEach((faction, index) => {
+        if (assignedFactions.has(faction.name)) {
+            factionItems.push({ name: faction.name, index: index });
+        }
+    });
+    
+    // Sort based on saved order if it exists
+    if (infoData.charactersOptions?.factionOrder) {
+        factionItems.sort((a, b) => {
+            const aIndex = infoData.charactersOptions.factionOrder.indexOf(a.index);
+            const bIndex = infoData.charactersOptions.factionOrder.indexOf(b.index);
+            
+            // If both in saved order, use saved order
+            if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+            // If only a is in saved order, a comes first
+            if (aIndex !== -1) return -1;
+            // If only b is in saved order, b comes first
+            if (bIndex !== -1) return 1;
+            // Neither in saved order, sort alphabetically
+            return a.name.localeCompare(b.name);
+        });
+    } else {
+        // No saved order, sort alphabetically
+        factionItems.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    
+    // Populate the list
+    container.innerHTML = '';
+    factionItems.forEach((item, displayIndex) => {
+        const factionItem = document.createElement('div');
+        factionItem.className = 'event-item';
+        factionItem.draggable = true;
+        factionItem.setAttribute('data-index', displayIndex);
+        factionItem.setAttribute('data-faction-index', item.index);
+        
+        factionItem.innerHTML = `
+            <div class="event-item-header">
+                <i class="fas fa-grip-vertical drag-handle"></i>
+                <span class="event-item-title">${item.name}</span>
+            </div>
+        `;
+        
+        container.appendChild(factionItem);
+    });
+    
+    // Initialize drag and drop
+    initializeFactionOrderDragDrop(container);
+    
+    openModal('factionOrderModal');
+}
+
+function initializeFactionOrderDragDrop(container) {
+    const factionItems = container.querySelectorAll('.event-item');
+    let draggedElement = null;
+    
+    factionItems.forEach(item => {
+        item.addEventListener('dragstart', function(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            container.classList.add('dragging');
+            
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.outerHTML);
+        });
+
+        item.addEventListener('dragend', function(e) {
+            this.classList.remove('dragging');
+            container.classList.remove('dragging');
+            
+            const allItems = container.querySelectorAll('.event-item');
+            allItems.forEach(item => item.classList.remove('drag-over'));
+            
+            draggedElement = null;
+        });
+
+        item.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+
+            const siblings = container.querySelectorAll('.event-item');
+            siblings.forEach(sibling => sibling.classList.remove('drag-over'));
+
+            if (this !== draggedElement) {
+                this.classList.add('drag-over');
+            }
+        });
+
+        item.addEventListener('drop', function(e) {
+            e.preventDefault();
+            
+            if (this !== draggedElement && draggedElement) {
+                const rect = this.getBoundingClientRect();
+                const midpoint = rect.top + rect.height / 2;
+                
+                if (e.clientY < midpoint) {
+                    container.insertBefore(draggedElement, this);
+                } else {
+                    container.insertBefore(draggedElement, this.nextSibling);
+                }
+            }
+            
+            this.classList.remove('drag-over');
+        });
+    });
+
+    container.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    });
+
+    container.addEventListener('drop', function(e) {
+        e.preventDefault();
+        
+        if (e.target === container && draggedElement) {
+            container.appendChild(draggedElement);
+        }
+    });
+}
+
+function saveFactionOrder() {
+    const container = document.getElementById('faction-order-list');
+    if (!container) return;
+    
+    // Ensure charactersOptions exists
+    if (!infoData.charactersOptions) {
+        infoData.charactersOptions = {};
+    }
+    
+    // Get the current order from the DOM
+    const factionItems = container.querySelectorAll('.event-item');
+    const factionOrder = [];
+    
+    factionItems.forEach(item => {
+        const factionIndex = parseInt(item.getAttribute('data-faction-index'));
+        factionOrder.push(factionIndex);
+    });
+    
+    infoData.charactersOptions.factionOrder = factionOrder;
+    
+    closeModal('factionOrderModal');
+    markDataAsModified();
+    
+    if (typeof showStatus === 'function') {
+        showStatus('success', 'Faction order saved!');
+    }
+}
+
+// Info-Display Labels functions
+function openInfoDisplayLabelsModal() {
+    // Populate inputs with current values or defaults
+    const labels = infoData.charactersOptions?.infoDisplayLabels || {};
+    
+    document.getElementById('info-display-label-age').value = labels.age || 'Age';
+    document.getElementById('info-display-label-origin').value = labels.origin || 'Origin';
+    document.getElementById('info-display-label-faction').value = labels.faction || 'Faction';
+    document.getElementById('info-display-label-items').value = labels.items || 'Special Items';
+    
+    openModal('infoDisplayLabelsModal');
+}
+
+function saveInfoDisplayLabels() {
+    // Ensure charactersOptions exists
+    if (!infoData.charactersOptions) {
+        infoData.charactersOptions = {};
+    }
+    
+    // Save custom labels
+    infoData.charactersOptions.infoDisplayLabels = {
+        age: document.getElementById('info-display-label-age').value.trim() || 'Age',
+        origin: document.getElementById('info-display-label-origin').value.trim() || 'Origin',
+        faction: document.getElementById('info-display-label-faction').value.trim() || 'Faction',
+        items: document.getElementById('info-display-label-items').value.trim() || 'Special Items'
+    };
+    
+    closeModal('infoDisplayLabelsModal');
+    markDataAsModified();
+    
+    if (typeof showStatus === 'function') {
+        showStatus('success', 'Info-Display labels saved!');
+    }
+}
+
+// Icon Builder Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Icon type toggle handler
+    const iconTypeRadios = document.querySelectorAll('input[name="icon-type"]');
+    console.log('Found radio buttons:', iconTypeRadios.length);
+    iconTypeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Get the value from the checked radio button explicitly
+            const selectedValue = document.querySelector('input[name="icon-type"]:checked').value;
+            console.log('Radio changed to:', selectedValue);
+            
+            const customIconSection = document.getElementById('custom-icon-image-section');
+            const builderSection = document.getElementById('icon-builder-section');
+            
+            console.log('Custom section:', customIconSection);
+            console.log('Builder section:', builderSection);
+            
+            const configureBtn = document.getElementById('configure-icon-btn');
+
+            if (selectedValue === 'custom') {
+                customIconSection.style.display = 'block';
+                builderSection.style.display = 'none';
+                configureBtn.style.display = 'none';
+            } else if (selectedValue === 'builder') {
+                customIconSection.style.display = 'none';
+                builderSection.style.display = 'block';
+                configureBtn.style.display = 'inline-block';
+            } else {
+                customIconSection.style.display = 'none';
+                builderSection.style.display = 'none';
+                configureBtn.style.display = 'none';
+            }
+        });
+    });
+    
+    // Color picker sync for icon bg color
+    const iconBgColorPicker = document.getElementById('icon-bg-color-picker');
+    if (iconBgColorPicker) {
+        iconBgColorPicker.addEventListener('input', function() {
+            document.getElementById('icon-bg-color').value = this.value;
+            updateIconPreview();
+        });
+    }
+    
+    const iconBgColorText = document.getElementById('icon-bg-color');
+    if (iconBgColorText) {
+        iconBgColorText.addEventListener('input', function() {
+            if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+                document.getElementById('icon-bg-color-picker').value = this.value;
+            }
+        });
+    }
+    
+    // Color picker sync for icon border color
+    const iconBorderColorPicker = document.getElementById('icon-border-color-picker');
+    if (iconBorderColorPicker) {
+        iconBorderColorPicker.addEventListener('input', function() {
+            document.getElementById('icon-border-color').value = this.value;
+            updateIconPreview();
+        });
+    }
+    
+    const iconBorderColorText = document.getElementById('icon-border-color');
+    if (iconBorderColorText) {
+        iconBorderColorText.addEventListener('input', function() {
+            if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+                document.getElementById('icon-border-color-picker').value = this.value;
+            }
+        });
+    }
+});
+
+// Make functions globally available
+window.openFactionOrderModal = openFactionOrderModal;
+window.saveFactionOrder = saveFactionOrder;
+
 // Make functions globally available
 window.openCharactersOptionsModal = openCharactersOptionsModal;
 window.saveCharactersOptions = saveCharactersOptions;
@@ -1769,20 +2771,3 @@ window.saveCharactersOptions = saveCharactersOptions;
 // Make functions globally available
 window.openStorylinesOptionsModal = openStorylinesOptionsModal;
 window.saveStorylinesOptions = saveStorylinesOptions;
-
-// Make sub-arc-related functions globally available
-window.addSubArc = addSubArc;
-window.editSubArc = editSubArc;
-window.deleteSubArc = deleteSubArc;
-window.addEventToSubArc = addEventToSubArc;
-window.openSubArcModal = openSubArcModal;
-window.saveSubArc = saveSubArc;
-
-// Make plan-related functions globally available (updated)
-window.addEventToPlan = addEventToPlan;
-window.editEventInPlan = editEventInPlan;
-window.deleteEventFromPlan = deleteEventFromPlan;
-window.openPlanModal = openPlanModal;
-window.openEventModal = openEventModal;
-window.savePlan = savePlan;
-window.saveEvent = saveEvent;

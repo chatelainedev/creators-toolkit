@@ -32,21 +32,21 @@ call npm install --silent
 echo All dependencies installed!
 echo.
 echo Starting server...
-echo This will automatically open your browser to: http://localhost:3000
+echo This will automatically open your browser to: http://localhost:9000
 echo Press Ctrl+C to stop the server
 echo.
 
 REM Start the server in the background and open browser
 start /B npm start
 timeout /t 3 /nobreak >nul
-start http://localhost:3000
+start http://localhost:9000
 
 REM Keep the window open and wait for the background process
 echo.
 echo Server is running and browser opened!
 echo You can now use the Creator's Toolkit with file-based user system!
 echo.
-echo Manual link: http://localhost:3000
+echo Manual link: http://localhost:9000
 echo User accounts: File-based (no more localStorage dependency)
 echo Custom avatars: Supported (2MB max, jpg/png/gif/webp)
 echo Lore Codex projects: users/username/sites/project-name/

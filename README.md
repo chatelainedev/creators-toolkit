@@ -1,14 +1,19 @@
-# Creator's Toolkit v2.0
+# Creator's Toolkit v2.1.0
 
-A comprehensive writing suite featuring Lore Codex (worldbuilding organizer), RP Archiver (roleplay project manager), and CoWriter (AI writing assistant).
+A comprehensive writing suite for writers, roleplayers, and creatives of all types. 
 
-[![ct-main.png](https://i.postimg.cc/3NHymxMc/ct-main.png)](https://postimg.cc/MMdK8xp7)
+This is a personal project that was created for my own use. It's far from perfect, but I'm always tweaking and improving it! If you have any comments, suggestions, or issues, you can let me know by [e-mailing me](mailto:chatelainedev@gmail.com).
+
+[Creator's Toolkit Wiki](https://github.com/chatelainedev/creators-toolkit/wiki)
+
+[![ct-main.png](https://i.postimg.cc/vmZdmvfd/ct-main.png)](https://postimg.cc/tswcSWBr)
 
 ## Quick Start
 
 ### Prerequisites
 
-You need Node.js installed on your computer to run Creator's Toolkit.
+> [!WARNING]
+> You need Node.js installed on your computer to run Creator's Toolkit.
 
 **Download Node.js:** https://nodejs.org/
 - Choose the "LTS" (recommended) version
@@ -24,7 +29,7 @@ You need Node.js installed on your computer to run Creator's Toolkit.
    - Navigate to the `creators-toolkit/server/` folder
    - Double-click `start-server.bat` (Windows) or `start-server.sh` (Mac/Linux)
    - Wait for automatic setup (this may take 1-2 minutes the first time)
-   - Your browser will automatically open to `http://localhost:3000`
+   - Your browser will automatically open to `http://localhost:9000`
 
 3. **Create Your Account**
    - Click "Register" to create your account
@@ -38,10 +43,11 @@ You need Node.js installed on your computer to run Creator's Toolkit.
 ## What's Included
 
 ### Lore Codex
+[![characters-example.png](https://i.postimg.cc/vmZdmvfH/characters-example.png)](https://postimg.cc/cv2z9wFV)
 [![lc-main.png](https://i.postimg.cc/L8GbzcX5/lc-main.png)](https://postimg.cc/bZHgPF1f)
-- Organize characters, locations, cultures, religions, and more
+- Organize characters, locations, factions, items, and more
 - Multiple templates (Basic, Detailed, Fantasy, Sci-Fi, etc.)
-- Auto-generates beautiful HTML websites from your data
+- Creates HTML websites from your data
 - Custom styling and themes
 - Project management with favorites and tags
 
@@ -53,14 +59,6 @@ You need Node.js installed on your computer to run Creator's Toolkit.
 - Image galleries and media organization
 - Export to clean HTML formats
 
-### CoWriter
-[![cw-example.png](https://i.postimg.cc/mZ0jpY4q/cw-example.png)](https://postimg.cc/Lh3jnZnB)
-[![cw-styles.png](https://i.postimg.cc/2jPG9QYH/cw-styles.png)](https://postimg.cc/DmP18b8s)
-- AI-powered writing suggestions
-- Custom prompts and templates
-- Context-aware assistance
-- Create Snippets to use with Notebook
-
 ### Notebook
 [![nt-example.png](https://i.postimg.cc/9fjDwfGC/nt-example.png)](https://postimg.cc/212kPrcK)
 - Built-in notebook for ideas and snippets
@@ -68,15 +66,31 @@ You need Node.js installed on your computer to run Creator's Toolkit.
 - Write and view as markdown
 - Save multiple notebooks for different note collections
 
+> [!NOTE]
+> The AI-enabled tools below are completely optional and disabled by default.
+
+### CoWriter
+[![cw-styles.png](https://i.postimg.cc/2jPG9QYH/cw-styles.png)](https://postimg.cc/DmP18b8s)
+[![cw-example.png](https://i.postimg.cc/mZ0jpY4q/cw-example.png)](https://postimg.cc/Lh3jnZnB)
+- AI-powered writing suggestions
+- Custom prompts and templates
+- Context-aware assistance
+- Create Snippets to use with Notebook
+
+> [!IMPORTANT] 
+> CoWriter is disabled by default; to enable, select the AI Tools Enabled checkbox in Settings (accessed by clicking on user avatar)
+
 ### Managers
 #### Character Manager
-[![cm-folders.png](https://i.postimg.cc/TPVjsFdx/cm-folders.png)](https://postimg.cc/JyhBDTHY)
-[![cm-chara.png](https://i.postimg.cc/1zG0d2m1/cm-chara.png)](https://postimg.cc/5HtFYPQs)
-[![cm-charaedit.png](https://i.postimg.cc/7L31RdH8/cm-charaedit.png)](https://postimg.cc/McGjMsfd)
+[![cm-charaedit.png](https://i.postimg.cc/2yLx73Lb/cm-charaedit.png)](https://postimg.cc/jnKNsxXt)
+[![cm-chara.png](https://i.postimg.cc/BbPCBtP8/cm-chara.png)](https://postimg.cc/JHmJ1rqm)
 - Import or create character cards for popular AI roleplay platforms
 - Add alternate fields or alternate avatars
 - Card Management: organize cards into folders
 - Export in a variety of formats
+
+> [!IMPORTANT]
+> Character Manager is disabled by default; to enable, select the AI Tools Enabled checkbox in Settings (accessed by clicking on user avatar)
 
 #### Lorebook Manager
 [![lm-main.png](https://i.postimg.cc/DwFqtFzp/lm-main.png)](https://postimg.cc/ppGhFwzK)
@@ -85,6 +99,9 @@ You need Node.js installed on your computer to run Creator's Toolkit.
 - Organize entries into categories that can be hidden, only export visible entries
 - Bulk Edit entries
 - AI Helper for entry suggestions
+
+> [!IMPORTANT]
+> Lorebook Manager is disabled by default; to enable, select the AI Tools Enabled checkbox in Settings (accessed by clicking on user avatar)
 
 ## File Organization
 
@@ -108,6 +125,11 @@ creators-toolkit/
 
 ## Troubleshooting
 
+### "Site can't be reached" Error in browser
+- Node.js isn't installed or not in system PATH
+- Download and install Node.js from https://nodejs.org/
+- Restart your computer after installation
+
 ### "npm is not recognized" Error
 - Node.js isn't installed or not in system PATH
 - Download and install Node.js from https://nodejs.org/
@@ -115,11 +137,11 @@ creators-toolkit/
 
 ### Server Won't Start
 - Make sure you're running from the `server` folder
-- Check that port 3000 isn't being used by another program
+- Check that port 9000 isn't being used by another program
 - Try running as Administrator if on Windows
 
 ### Can't Access Projects
-- Make sure the server is running (you should see it in your browser at localhost:3000)
+- Make sure the server is running (you should see it in your browser at localhost:9000)
 - Check that your user folder exists in `users/userID/`
 - Try refreshing the browser page
 

@@ -199,6 +199,95 @@
     transform: rotate(-90deg);
 }
 
+/* Add this to components.css or info-converter.css */
+/* Make sure it's AFTER any other collapsible styles */
+
+/* Specific styles for collapsible sections in modals */
+#characterModal .collapsible-section {
+    margin-bottom: var(--space-lg);
+}
+
+#characterModal .collapsible-header {
+    background-color: var(--bg-tertiary);
+    padding: var(--space-md) var(--space-lg);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    user-select: none;
+    transition: background-color var(--transition-normal);
+}
+
+#characterModal .collapsible-header:hover {
+    background-color: var(--bg-hover);
+}
+
+/* Show content when NOT collapsed */
+#characterModal .collapsible-content {
+    padding: var(--space-md) 0;
+    display: block !important;
+    opacity: 1;
+    max-height: 2000px;
+    overflow: visible;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hide content when collapsed */
+#characterModal .collapsible-content.collapsed {
+    display: none !important;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+}
+
+#characterModal .toggle-icon {
+    font-size: var(--font-size-base);
+    transition: transform var(--transition-normal);
+    opacity: 0.7;
+}
+
+#characterModal .toggle-icon.collapsed {
+    transform: rotate(-90deg);
+}
+
+/* Compact Stats Grid - 2 per row */
+.compact-stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: var(--space-sm);
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.stat-pair {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.stat-pair input[type="text"] {
+    flex: 1;
+    font-size: 0.9em;
+    padding: 6px 8px;
+    font-weight: 500;
+    min-width: 0; /* Allow shrinking */
+}
+
+.stat-pair input[type="number"] {
+    width: 60px;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 0.9em;
+    padding: 6px 4px;
+    font-weight: 600;
+}
 /* ============================================
    GRID LAYOUTS
    ============================================ */

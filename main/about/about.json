@@ -11,17 +11,17 @@
     {
       "id": "tools",
       "title": "Tools & Features",
-      "content": "Creator's Toolkit includes four powerful applications, each designed to handle different aspects of your creative workflow:",
+      "content": "Creator's Toolkit includes several applications, each designed to handle different aspects of your creative workflow:",
       "subsections": [
         {
           "id": "lore-codex",
           "title": "Lore Codex",
-          "content": "Transform your worldbuilding notes into professional, navigable websites. Organize characters, locations, storylines, and lore into beautiful HTML sites that you can browse, share, or use as reference. Perfect for complex fantasy worlds, sci-fi universes, or any creative project with deep worldbuilding."
+          "content": "Transform your worldbuilding notes into websites. Organize characters, locations, storylines, and lore into beautiful HTML sites that you can browse, share, or use as reference. Perfect for complex fantasy worlds, sci-fi universes, or any creative project with deep worldbuilding."
         },
         {
           "id": "rp-archiver", 
           "title": "RP Archiver",
-          "content": "Convert raw roleplay text into clean, styled documents. Whether you're preserving collaborative stories, organizing character interactions, or creating readable archives of your creative writing sessions, RP Archiver transforms messy chat logs into professional-looking stories."
+          "content": "Convert raw roleplay text into clean, styled documents. Whether you're preserving collaborative stories, organizing character interactions, or creating readable archives of your creative writing sessions, RP Archiver transforms messy chat logs into stories."
         },
         {
           "id": "cowriter",

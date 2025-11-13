@@ -121,8 +121,40 @@ function generateCharactersContent(data) {
                 }
             });
 
+            // Determine faction render order
+            let factionNames = Object.keys(factionGroups);
+            
+            if (data.charactersOptions?.factionOrder && data.world?.factions) {
+                // Build ordered list based on saved faction indices
+                const orderedFactions = [];
+                const unorderedFactions = [];
+                
+                data.charactersOptions.factionOrder.forEach(factionIndex => {
+                    if (data.world.factions[factionIndex]) {
+                        const factionName = data.world.factions[factionIndex].name;
+                        if (factionGroups[factionName]) {
+                            orderedFactions.push(factionName);
+                        }
+                    }
+                });
+                
+                // Find any factions not in the saved order (new factions)
+                factionNames.forEach(name => {
+                    if (!orderedFactions.includes(name)) {
+                        unorderedFactions.push(name);
+                    }
+                });
+                
+                // Sort unordered alphabetically and append
+                unorderedFactions.sort();
+                factionNames = [...orderedFactions, ...unorderedFactions];
+            } else {
+                // No saved order, sort alphabetically
+                factionNames.sort();
+            }
+
             // Render each faction group with headers
-            Object.keys(factionGroups).sort().forEach(factionName => {
+            factionNames.forEach(factionName => {
                 // Faction header (using same style as storyline sections)
                 charactersHTML += `<div class="storyline-section-header">
                     <h3 class="storyline-section-title">${factionName}</h3>

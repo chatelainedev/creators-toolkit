@@ -3,7 +3,8 @@ import navigationStyles from './templates/navigation-styles.js';
 import buttonStyles from './templates/button-styles.js';
 import cardStyles from './templates/card-styles.js';
 import { containerStyles, subcontainerStyles } from './templates/container-styles.js';
-import colorSchemes from './templates/color-schemes.js';
+import infodisplayStyles from './templates/infodisplay-styles.js';
+import colorSchemes from './templates/colorSchemes/index.js'; 
 import backToTopStyles from './templates/backtotop-styles.js';
 import fontSets from './templates/font-sets.js';
 import bannerStyles from './templates/banner-styles.js';
@@ -23,6 +24,7 @@ const defaultAppearance = {
     storylineStyle: 'default',
     containerStyle: 'left-border',
     subcontainerStyle: 'soft-bg',
+    infodisplayStyle: 'default',
     bannerSize: 'large',
     bannerStyle: 'none',
     backgroundStyle: 'none',
@@ -301,6 +303,19 @@ function populateAppearanceControls() {
         subcontainerSelect.value = appearance.subcontainerStyle || 'soft-bg';
     }
 
+    // Info-Display style dropdown
+    const infodisplaySelect = document.getElementById('appearance-infodisplay-style');
+    if (infodisplaySelect) {
+        infodisplaySelect.innerHTML = '';
+        Object.entries(infodisplayStyles).forEach(([key, style]) => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = style.name;
+            infodisplaySelect.appendChild(option);
+        });
+        infodisplaySelect.value = appearance.infodisplayStyle || 'default';
+    }
+
     // Banner size dropdown
     const bannerSelect = document.getElementById('appearance-banner-size');
     if (bannerSelect) {
@@ -379,6 +394,9 @@ function populateAppearanceControls() {
         }
         if (subcontainerSelect && currentAppearance.subcontainerStyle) {
             subcontainerSelect.value = currentAppearance.subcontainerStyle;
+        }
+        if (infodisplaySelect && currentAppearance.infodisplayStyle) {
+            infodisplaySelect.value = currentAppearance.infodisplayStyle;
         }
         if (bannerSelect && currentAppearance.bannerSize) {
             bannerSelect.value = currentAppearance.bannerSize;
@@ -482,6 +500,9 @@ function handleAppearanceChange(event) {
             break;
         case 'appearance-subcontainer-style':
             window.infoData.appearance.subcontainerStyle = value;
+            break;
+        case 'appearance-infodisplay-style':
+            window.infoData.appearance.infodisplayStyle = value;
             break;
         case 'appearance-banner-size':
             window.infoData.appearance.bannerSize = value;
@@ -638,6 +659,13 @@ function updateAppearanceDescriptions() {
     if (subcontainerDesc) {
         const style = appearance.subcontainerStyle;
         subcontainerDesc.textContent = subcontainerStyles[style]?.description || '';
+    }
+
+    // Info-Display style description
+    const infodisplayDesc = document.getElementById('infodisplay-style-description');
+    if (infodisplayDesc) {
+        const style = appearance.infodisplayStyle;
+        infodisplayDesc.textContent = infodisplayStyles[style]?.description || '';
     }
 
     // Banner size description

@@ -113,9 +113,50 @@ function parseImportedHTML(htmlContent) {
                     } else {
                         // Set defaults if not present
                         infoData.charactersOptions = {
-                            showByFaction: true
+                            showByFaction: true,
+                            showInfoDisplay: false  // ADD THIS LINE
                         };
                         console.log('⚠ No characters options found, using defaults');
+                    }
+                    if (fullData.cultureOptions) {
+                        infoData.cultureOptions = fullData.cultureOptions;
+                        console.log('✓ Loaded culture options:', fullData.cultureOptions);
+                    } else {
+                        // Set defaults if not present
+                        infoData.cultureOptions = {
+                            customLabel: 'Culture'
+                        };
+                        console.log('⚠ No culture options found, using defaults');
+                    }
+                    if (fullData.cultivationOptions) {
+                        infoData.cultivationOptions = fullData.cultivationOptions;
+                        console.log('✓ Loaded cultivation options:', fullData.cultivationOptions);
+                    } else {
+                        // Set defaults if not present
+                        infoData.cultivationOptions = {
+                            customLabel: 'Cultivation'
+                        };
+                        console.log('⚠ No cultivation options found, using defaults');
+                    }
+                    if (fullData.magicOptions) {
+                        infoData.magicOptions = fullData.magicOptions;
+                        console.log('✓ Loaded magic options:', fullData.magicOptions);
+                    } else {
+                        // Set defaults if not present
+                        infoData.magicOptions = {
+                            customLabel: 'Magic'
+                        };
+                        console.log('⚠ No magic options found, using defaults');
+                    }
+                    if (fullData.eventsOptions) {
+                        infoData.eventsOptions = fullData.eventsOptions;
+                        console.log('✓ Loaded events options:', fullData.eventsOptions);
+                    } else {
+                        // Set defaults if not present
+                        infoData.eventsOptions = {
+                            customLabel: 'Events'
+                        };
+                        console.log('⚠ No events options found, using defaults');
                     }
                     if (fullData.plans) {
                         infoData.plans = fullData.plans;
@@ -513,6 +554,7 @@ function extractAppearanceInfo(doc) {
             storylineStyle: 'default',
             containerStyle: 'left-border',
             subcontainerStyle: 'soft-bg',
+            infodisplayStyle: 'default',
             bannerSize: 'large',
             buttonStyle: 'rounded',
             siteWidth: 'standard' 
@@ -806,6 +848,9 @@ function extractCharacters(doc) {
 function extractCharacterFromCard(card, doc, index) {
     const character = {
         name: '',
+        fullName: '',
+        title: '',
+        age: '',
         image: '',
         tags: [], // NEW: Initialize tags array
         faction: '',
@@ -1126,6 +1171,7 @@ function extractWorldInfo(doc) {
         creatures: [],
         plants: [],
         items: [],
+        skills: [], 
         factions: [],
         culture: [],
         cultivation: [],
@@ -1432,6 +1478,7 @@ function importData() {
                         storylineStyle: 'default',
                         containerStyle: 'left-border',
                         subcontainerStyle: 'soft-bg',
+                        infodisplayStyle: 'default',
                         bannerSize: 'large',
                         buttonStyle: 'rounded',
                         siteWidth: 'standard' 
@@ -1470,6 +1517,15 @@ function importData() {
                 // Ensure characters have all required fields including notes and tags
                 if (data.characters && Array.isArray(data.characters)) {
                     data.characters.forEach(character => {
+                        if (!character.hasOwnProperty('fullName')) {
+                            character.fullName = ''; 
+                        }
+                        if (!character.hasOwnProperty('age')) {
+                            character.age = ''; 
+                        }
+                        if (!character.hasOwnProperty('title')) {
+                            character.title = ''; 
+                        }
                         if (!character.hasOwnProperty('fightingStyle')) {
                             character.fightingStyle = '';
                         }
@@ -1563,7 +1619,7 @@ function importData() {
                     });
                 }
                 
-                // Ensure all world items have hidden field and tags
+                // Ensure all world items have hidden field, tags, and IDs
                 Object.keys(data.world).forEach(category => {
                     if (Array.isArray(data.world[category])) {
                         data.world[category].forEach(item => {
@@ -1572,6 +1628,13 @@ function importData() {
                             }
                             if (!item.hasOwnProperty('tags')) {
                                 item.tags = [];
+                            }
+                            // **ADD THIS: Ensure all items have IDs**
+                            if (!item.hasOwnProperty('id') || !item.id) {
+                                item.id = generateWorldItemIdForImport(category, data.world[category]);
+                            }
+                            if (!character.hasOwnProperty('skills')) {
+                                character.skills = [];
                             }
                         });
                     }
@@ -1606,6 +1669,33 @@ function importData() {
     };
     
     fileInput.click();
+}
+
+// Helper to generate IDs during import
+function generateWorldItemIdForImport(category, items) {
+    const prefixMap = {
+        'locations': 'loc',
+        'concepts': 'concept',
+        'events': 'event',
+        'creatures': 'creature',
+        'plants': 'plant',
+        'items': 'item',
+        'factions': 'faction',
+        'culture': 'culture',
+        'cultivation': 'cultivation',
+        'magic': 'magic',
+        'general': 'general'
+    };
+    
+    const prefix = prefixMap[category] || category;
+    
+    const existingIds = items
+        .filter(item => item.id)
+        .map(item => parseInt(item.id.replace(`${prefix}_`, '')))
+        .filter(id => !isNaN(id));
+    
+    const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
+    return `${prefix}_${maxId + 1}`;
 }
 
 // Make functions globally available

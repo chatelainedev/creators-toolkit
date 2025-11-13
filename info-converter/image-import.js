@@ -99,6 +99,13 @@ function getSmartDefaultPath(context) {
                 return `assets/world/${editingCategory}/`;
             }
             return 'assets/world/';
+        case 'item-icon':
+            // Use editingCategory to determine which folder (items/magic/cultivation)
+            if (editingCategory && (editingCategory === 'items' || editingCategory === 'magic' || editingCategory === 'cultivation')) {
+                return `assets/world/${editingCategory}/icons/`;
+            }
+            // Fallback to items for backward compatibility
+            return 'assets/world/items/icons/';
         case 'custom-page':
         // Get the current page ID from editing context
             const currentPageId = getCurrentCustomPageId();
@@ -161,7 +168,10 @@ function handleFileSelection(e) {
             const safeName = itemName.toLowerCase().replace(/[^a-z0-9]/g, '');
             suggestedName = `${safeName}.${extension}`;
         }
-    }
+    } else if (context === 'item-icon') {
+        // PRESERVE the original extension for icons
+        suggestedName = originalName;
+    } 
     
     document.getElementById('import-image-name').value = suggestedName;
     updateImportPreview();

@@ -18,6 +18,7 @@ class ExtractorApp {
         this.nextCategoryId = 1;
         this.nextLocalCategoryId = 1; // ADD THIS LINE
         this.currentTab = 'bulk-actions';
+        this.findReplace = null; 
         this.entryHelper = null;
         this.entryListListenersSetup = false;
         this.categoryListenersSetup = false; 
@@ -25,6 +26,7 @@ class ExtractorApp {
         this.lastSelectedIndex = -1; // For shift+click range selection
         this.draggedElement = null;
         this.draggedIndex = -1;
+        this.currentAdvancedEditEntry = null;
         this.autoScrollTimer = null;
         this.scrollSpeed = 0;
         // Add search debounce timer
@@ -78,6 +80,8 @@ class ExtractorApp {
 
             // Initialize bulk actions
             this.bulkActions = new BulkActions(this);
+
+            this.findReplace = new FindReplace(this);
 
             this.entryHelper = new EntryHelper(this);
 
@@ -164,6 +168,7 @@ class ExtractorApp {
             searchInput: document.getElementById('search-input'),
             clearSearch: document.getElementById('clear-search'),
             sortSelect: document.getElementById('sort-select'),
+            findReplaceBtn: document.getElementById('find-replace-btn'),
             // Add this line to the elements object:
             addEntryBtn: document.getElementById('add-entry-btn'),
             entryCounterText: document.getElementById('entry-counter-text'),
@@ -198,6 +203,30 @@ class ExtractorApp {
             editSecondaryKeys: document.getElementById('edit-secondary-keys'),
             editLogic: document.getElementById('edit-logic'),
 
+            // Advanced Options Modal
+            advancedOptionsModal: document.getElementById('advanced-options-modal'),
+            advancedOptionsModalClose: document.getElementById('advanced-options-modal-close'),
+            advancedOptionsCancel: document.getElementById('advanced-options-cancel'),
+            advancedOptionsSave: document.getElementById('advanced-options-save'),
+            aoScanDepth: document.getElementById('ao-scan-depth'),
+            aoCaseSensitive: document.getElementById('ao-case-sensitive'),
+            aoMatchWholeWords: document.getElementById('ao-match-whole-words'),
+            aoUseGroupScoring: document.getElementById('ao-use-group-scoring'),
+            aoExcludeRecursion: document.getElementById('ao-exclude-recursion'),
+            aoDelayUntilRecursion: document.getElementById('ao-delay-until-recursion'),
+            aoIgnoreBudget: document.getElementById('ao-ignore-budget'),
+            aoUseProbability: document.getElementById('ao-use-probability'),
+            aoProbability: document.getElementById('ao-probability'),
+            aoSticky: document.getElementById('ao-sticky'),
+            aoCooldown: document.getElementById('ao-cooldown'),
+            aoDelay: document.getElementById('ao-delay'),
+            aoGroup: document.getElementById('ao-group'),
+            aoGroupWeight: document.getElementById('ao-group-weight'),
+            aoAutomationId: document.getElementById('ao-automation-id'),
+            aoCharFilterToggle: document.getElementById('ao-char-filter-toggle'),
+            aoCharNames: document.getElementById('ao-char-names'),
+            aoCharTags: document.getElementById('ao-char-tags'),
+
             // Settings modal (add this section)
             settingsBtn: document.getElementById('settings-btn'),
             settingsModal: document.getElementById('settings-modal'),
@@ -222,6 +251,7 @@ class ExtractorApp {
         this.elements.searchInput.addEventListener('input', () => this.handleSearch());
         this.elements.clearSearch.addEventListener('click', () => this.clearSearch());
         this.elements.sortSelect.addEventListener('change', () => this.handleSort());
+        this.elements.findReplaceBtn.addEventListener('click', () => this.findReplace.openModal()); 
 
         // Add entry functionality
         this.elements.addEntryBtn.addEventListener('click', () => this.addNewEntry());
@@ -248,6 +278,21 @@ class ExtractorApp {
         this.elements.editSave.addEventListener('click', () => this.saveEntryEdit());
         this.elements.editDelete.addEventListener('click', () => this.deleteEntry());
 
+        // Advanced Options modal
+        this.elements.advancedOptionsModalClose.addEventListener('click', () => this.closeAdvancedOptionsModal());
+        this.elements.advancedOptionsCancel.addEventListener('click', () => this.closeAdvancedOptionsModal());
+        this.elements.advancedOptionsSave.addEventListener('click', () => this.saveAdvancedOptions());
+        this.elements.advancedOptionsModal.addEventListener('click', (e) => {
+            if (e.target === this.elements.advancedOptionsModal) {
+                this.closeAdvancedOptionsModal();
+            }
+        });
+
+        // Add a listener to enable/disable probability input
+        this.elements.aoUseProbability.addEventListener('change', (e) => {
+            this.elements.aoProbability.disabled = !e.target.checked;
+        });
+
         // Settings modal (add this section)
         this.elements.settingsBtn.addEventListener('click', () => this.openSettingsModal());
         this.elements.settingsModalClose.addEventListener('click', () => this.closeSettingsModal());
@@ -269,6 +314,9 @@ class ExtractorApp {
         // Category management
         this.elements.newCategoryName.addEventListener('input', () => this.validateCategoryName());
         this.elements.addCategoryBtn.addEventListener('click', () => this.addCategory());
+        // Add inline button click handler (does same thing as Enter key)
+        this.elements.addCategoryInlineBtn = document.getElementById('add-category-inline-btn');
+        this.elements.addCategoryInlineBtn.addEventListener('click', () => this.addCategory());
         this.elements.newCategoryName.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !this.elements.addCategoryBtn.disabled) {
                 this.addCategory();
@@ -323,6 +371,28 @@ class ExtractorApp {
             }
         });
 
+        // Close entry context menu on click outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#entry-context-menu')) {
+                this.hideEntryContextMenu();
+            }
+        });
+
+        // Handle entry context menu clicks
+        document.addEventListener('click', (e) => {
+            const contextMenu = document.getElementById('entry-context-menu');
+            if (contextMenu && contextMenu.style.display === 'block') {
+                const menuItem = e.target.closest('.context-menu-item');
+                if (menuItem) {
+                    const action = menuItem.dataset.action;
+                    const entryId = parseInt(contextMenu.dataset.entryId);
+                    if (action && entryId) {
+                        this.handleEntryContextAction(action, entryId);
+                    }
+                }
+            }
+        });
+
         // Icon modal
         this.elements.iconModalClose.addEventListener('click', () => this.closeIconModal());
         this.elements.iconModal.addEventListener('click', (e) => {
@@ -356,6 +426,15 @@ class ExtractorApp {
     // UPDATED: Entry list event listeners with simple category select
     setupEntryListListeners() {
         if (this.entryListListenersSetup) return; // Prevent multiple setups
+
+        // Right-click context menu for entries
+        this.elements.entryList.addEventListener('contextmenu', (e) => {
+            const entryItem = e.target.closest('.entry-item');
+            if (entryItem) {
+                const entryId = parseInt(entryItem.dataset.entryId);
+                this.showEntryContextMenu(e, entryId);
+            }
+        });
         
         // Click handler for entry list (for non-edit interactions)
         this.elements.entryList.addEventListener('click', (e) => {
@@ -369,6 +448,16 @@ class ExtractorApp {
                 return;
             }
             
+            // PRIORITY 1.5: Handle advanced options button
+            if (e.target.closest('.advanced-options-btn')) {
+                e.stopPropagation();
+                e.preventDefault();
+                const advancedBtn = e.target.closest('.advanced-options-btn');
+                const entryId = parseInt(advancedBtn.dataset.entryId);
+                this.openAdvancedOptionsModal(entryId);
+                return;
+            }
+
             // PRIORITY 2: Handle checkbox selection
             if (e.target.closest('.entry-select-checkbox')) {
                 const checkbox = e.target.closest('.entry-select-checkbox').querySelector('input[type="checkbox"]');
@@ -456,7 +545,10 @@ class ExtractorApp {
             // Handle category selection - SIMPLE!
             if (e.target.classList.contains('entry-category-select')) {
                 const entryId = parseInt(e.target.dataset.entryId);
-                const categoryId = e.target.value ? parseInt(e.target.value) : null;
+                const categoryValue = e.target.value;
+                // Keep local category IDs as strings, parse global IDs as integers
+                const categoryId = categoryValue ? 
+                    (categoryValue.startsWith('local_') ? categoryValue : parseInt(categoryValue)) : null;
                 this.updateEntryCategory(entryId, categoryId);
             }
         });
@@ -1018,8 +1110,12 @@ class ExtractorApp {
 
     activateSelectedCategories() {
         const optionsContainer = this.elements.categoryActivationOptions;
-        const checkedBoxes = optionsContainer.querySelectorAll('input[type="checkbox"]:checked');
-        const selectedIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+        const checkedBoxes = optionsContainer.querySelectorAll('input[type="checkbox"]:checked:not(:disabled)');
+        const selectedIds = Array.from(checkedBoxes).map(cb => {
+            // Keep local category IDs as strings, convert global IDs to integers
+            const value = cb.value;
+            return value.startsWith('local_') ? value : parseInt(value);
+        });
         
         this.activeCategories.clear();
         selectedIds.forEach(id => this.activeCategories.add(id));
@@ -1038,12 +1134,15 @@ class ExtractorApp {
 
     // Populate bulk category dropdown
     populateBulkCategoryDropdown() {
+        // Guard against calling before elements are set up
+        if (!this.elements || !this.elements.bulkCategorySelect) return;
+        
         const select = this.elements.bulkCategorySelect;
         if (!select) return;
         
-        // Clear existing options except the first two
-        while (select.options.length > 2) {
-            select.remove(2);
+        // Clear all children except the first two options (including optgroups)
+        while (select.children.length > 2) {
+            select.removeChild(select.children[2]);
         }
         
         // Get display categories (active globals + all locals)
@@ -1438,28 +1537,12 @@ class ExtractorApp {
                             <option value="">—</option>
                             ${(() => {
                                 const displayCategories = this.getDisplayCategories();
-                                const globalCats = displayCategories.filter(cat => cat.isGlobal);
-                                const localCats = displayCategories.filter(cat => !cat.isGlobal);
                                 
                                 let html = '';
-                                
-                                if (globalCats.length > 0) {
-                                    html += '<optgroup label="Global">';
-                                    globalCats.forEach(cat => {
-                                        const isAssigned = entry._categoryId === cat.id;
-                                        html += `<option value="${cat.id}" ${isAssigned ? 'selected' : ''}>${cat.icon}</option>`;
-                                    });
-                                    html += '</optgroup>';
-                                }
-                                
-                                if (localCats.length > 0) {
-                                    html += '<optgroup label="Project">';
-                                    localCats.forEach(cat => {
-                                        const isAssigned = entry._categoryId === cat.id;
-                                        html += `<option value="${cat.id}" ${isAssigned ? 'selected' : ''}>${cat.icon}</option>`;
-                                    });
-                                    html += '</optgroup>';
-                                }
+                                displayCategories.forEach(cat => {
+                                    const isAssigned = entry._categoryId === cat.id;
+                                    html += `<option value="${cat.id}" ${isAssigned ? 'selected' : ''}>${cat.icon}</option>`;
+                                });
                                 
                                 return html;
                             })()}
@@ -1472,6 +1555,9 @@ class ExtractorApp {
                         </div>
                     </div>
                     <div class="entry-actions">
+                        <button class="btn-secondary advanced-options-btn" title="Advanced Options" data-entry-id="${entry._internalId}">
+                            <i class="fas fa-sliders-h"></i>
+                        </button>
                         <select class="role-select" title="Role" data-entry-id="${entry._internalId}" 
                                 ${(entry.position || 0) !== 4 ? 'disabled' : ''}>
                             <option value="0" ${(entry.role || 0) === 0 ? 'selected' : ''}>⚙️</option>
@@ -1537,8 +1623,9 @@ class ExtractorApp {
     // Category validation
     validateCategoryName() {
         const name = this.elements.newCategoryName.value.trim();
-        const isValid = name.length > 0 && !this.categories.some(cat => cat.name.toLowerCase() === name.toLowerCase());
+        const isValid = name.length > 0;
         this.elements.addCategoryBtn.disabled = !isValid;
+        this.elements.addCategoryInlineBtn.disabled = !isValid; 
     }
 
     // Add category
@@ -1861,6 +1948,85 @@ class ExtractorApp {
             this.refreshEntryList();
             this.updateButtonStates();
             showToast('success', 'Entry deleted');
+        }
+    }
+
+    // Copy entry
+    copyEntry(entryId) {
+        const entry = this.entries.find(e => e._internalId === entryId);
+        if (!entry) return;
+        
+        // Create a deep copy of the entry
+        const copiedEntry = {
+            ...entry,
+            _internalId: this.nextEntryId++,
+            comment: (entry.comment || 'Untitled Entry') + ' (Copy)'
+        };
+        
+        // Add the copied entry to the list
+        this.entries.push(copiedEntry);
+        this.refreshEntryList();
+        this.updateButtonStates();
+        showToast('success', `Entry "${copiedEntry.comment}" copied`);
+    }
+
+    // Show entry context menu
+    showEntryContextMenu(e, entryId) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const entry = this.entries.find(e => e._internalId === entryId);
+        if (!entry) return;
+        
+        // Hide any existing context menu
+        this.hideEntryContextMenu();
+        
+        const contextMenu = document.getElementById('entry-context-menu');
+        if (!contextMenu) return;
+        
+        // Position the menu
+        contextMenu.style.left = e.clientX + 'px';
+        contextMenu.style.top = e.clientY + 'px';
+        contextMenu.style.display = 'block';
+        
+        // Store entry ID for actions
+        contextMenu.dataset.entryId = entryId;
+        
+        // Adjust position if menu would go off screen
+        setTimeout(() => {
+            const rect = contextMenu.getBoundingClientRect();
+            let x = e.clientX;
+            let y = e.clientY;
+            
+            if (x + rect.width > window.innerWidth) {
+                x = window.innerWidth - rect.width - 10;
+            }
+            if (y + rect.height > window.innerHeight) {
+                y = window.innerHeight - rect.height - 10;
+            }
+            
+            contextMenu.style.left = x + 'px';
+            contextMenu.style.top = y + 'px';
+        }, 0);
+    }
+
+    // Hide entry context menu
+    hideEntryContextMenu() {
+        const contextMenu = document.getElementById('entry-context-menu');
+        if (contextMenu) {
+            contextMenu.style.display = 'none';
+            delete contextMenu.dataset.entryId;
+        }
+    }
+
+    // Handle entry context menu action
+    handleEntryContextAction(action, entryId) {
+        this.hideEntryContextMenu();
+        
+        if (action === 'copy') {
+            this.copyEntry(entryId);
+        } else if (action === 'delete') {
+            this.deleteEntryFromList(entryId);
         }
     }
 
@@ -2399,7 +2565,14 @@ class ExtractorApp {
             
             // Load local categories for this project
             this.localCategories = data.localCategories || [];
-            
+
+            // FIX: Ensure loaded local categories have isGlobal property
+            this.localCategories.forEach(cat => {
+                if (cat.isGlobal === undefined) {
+                    cat.isGlobal = false;
+                }
+            });
+
             // Update next local category ID
             if (this.localCategories.length > 0) {
                 const maxLocalId = Math.max(...this.localCategories
@@ -2548,13 +2721,19 @@ class ExtractorApp {
                 const data = await response.json();
                 this.categories = data.categories || [];
                 
+                // FIX: Ensure loaded global categories have isGlobal property
+                this.categories.forEach(cat => {
+                    if (cat.isGlobal === undefined) {
+                        cat.isGlobal = true;
+                    }
+                });
+                
                 // Ensure we have proper IDs
                 if (this.categories.length > 0) {
                     this.nextCategoryId = Math.max(...this.categories.map(cat => cat.id)) + 1;
                 }
                 
                 this.renderCategories();
-                this.populateBulkCategoryDropdown();
                 console.log('📂 Loaded', this.categories.length, 'user categories');
             } else {
                 console.warn('Failed to load user categories');
@@ -2829,6 +3008,107 @@ class ExtractorApp {
             console.error('Error renaming project:', error);
             showToast('error', `Failed to rename project: ${error.message}`);
         }
+    }
+
+    // Advanced Options (entries)
+    openAdvancedOptionsModal(entryId) {
+        const entry = this.entries.find(e => e._internalId === entryId);
+        if (!entry) return;
+
+        this.currentAdvancedEditEntry = entry;
+        
+        // --- Populate Modal ---
+        const toSelectValue = (val) => {
+            if (val === true) return 'true';
+            if (val === false) return 'false';
+            return 'null'; // 'null' string for global/default
+        };
+
+        this.elements.aoScanDepth.value = entry.scanDepth ?? '';
+        this.elements.aoCaseSensitive.value = toSelectValue(entry.caseSensitive);
+        this.elements.aoMatchWholeWords.value = toSelectValue(entry.matchWholeWords);
+        this.elements.aoUseGroupScoring.value = toSelectValue(entry.useGroupScoring);
+
+        this.elements.aoExcludeRecursion.checked = entry.excludeRecursion || false;
+        this.elements.aoDelayUntilRecursion.checked = entry.delayUntilRecursion || false;
+        this.elements.aoIgnoreBudget.checked = entry.ignoreBudget || false;
+        
+        this.elements.aoUseProbability.checked = entry.useProbability !== false; // Default true
+        this.elements.aoProbability.value = entry.probability ?? 100;
+        this.elements.aoProbability.disabled = !this.elements.aoUseProbability.checked;
+
+        this.elements.aoSticky.value = entry.sticky || 0;
+        this.elements.aoCooldown.value = entry.cooldown || 0;
+        this.elements.aoDelay.value = entry.delay || 0;
+
+        this.elements.aoGroup.value = entry.group || '';
+        this.elements.aoGroupWeight.value = entry.groupWeight ?? 100;
+        this.elements.aoAutomationId.value = entry.automationId || '';
+
+        const charFilter = entry.characterFilter || { isExclude: false, names: [], tags: [] };
+        this.elements.aoCharFilterToggle.checked = charFilter.isExclude || false;
+        this.elements.aoCharNames.value = (charFilter.names || []).join(', ');
+        this.elements.aoCharTags.value = (charFilter.tags || []).join(', ');
+        
+        this.elements.advancedOptionsModal.style.display = 'flex';
+    }
+
+    closeAdvancedOptionsModal() {
+        this.elements.advancedOptionsModal.style.display = 'none';
+        this.currentAdvancedEditEntry = null;
+    }
+
+    saveAdvancedOptions() {
+        if (!this.currentAdvancedEditEntry) return;
+
+        const entry = this.currentAdvancedEditEntry;
+
+        const fromSelectValue = (val) => {
+            if (val === 'true') return true;
+            if (val === 'false') return false;
+            return null;
+        };
+
+        const scanDepth = this.elements.aoScanDepth.value;
+        entry.scanDepth = scanDepth === '' ? null : parseInt(scanDepth, 10);
+
+        entry.caseSensitive = fromSelectValue(this.elements.aoCaseSensitive.value);
+        entry.matchWholeWords = fromSelectValue(this.elements.aoMatchWholeWords.value);
+        entry.useGroupScoring = fromSelectValue(this.elements.aoUseGroupScoring.value);
+
+        entry.excludeRecursion = this.elements.aoExcludeRecursion.checked;
+        entry.delayUntilRecursion = this.elements.aoDelayUntilRecursion.checked;
+        entry.ignoreBudget = this.elements.aoIgnoreBudget.checked;
+        
+        entry.useProbability = this.elements.aoUseProbability.checked;
+        entry.probability = parseInt(this.elements.aoProbability.value, 10) || 100;
+        
+        entry.sticky = parseInt(this.elements.aoSticky.value, 10) || 0;
+        entry.cooldown = parseInt(this.elements.aoCooldown.value, 10) || 0;
+        entry.delay = parseInt(this.elements.aoDelay.value, 10) || 0;
+
+        entry.group = this.elements.aoGroup.value.trim();
+        entry.groupWeight = parseInt(this.elements.aoGroupWeight.value, 10) || 100;
+        entry.automationId = this.elements.aoAutomationId.value.trim();
+
+        const names = this.elements.aoCharNames.value.trim()
+            .split(',')
+            .map(n => n.trim())
+            .filter(n => n); // Removes empty strings
+
+        const tags = this.elements.aoCharTags.value.trim()
+            .split(',')
+            .map(t => t.trim())
+            .filter(t => t); // Removes empty strings
+
+        entry.characterFilter = {
+            isExclude: this.elements.aoCharFilterToggle.checked,
+            names: names,
+            tags: tags,
+        };
+
+        showToast('success', `Advanced options for "${entry.comment}" saved`);
+        this.closeAdvancedOptionsModal();
     }
 }  // <-- This is the closing brace of the ExtractorApp class
 

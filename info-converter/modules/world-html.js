@@ -4,11 +4,11 @@ function generateWorldContent(data) {
         { key: 'general', title: 'General' },     // ADD THIS LINE
         { key: 'locations', title: 'Locations' },
         { key: 'factions', title: 'Factions' },
-        { key: 'culture', title: 'Culture' },
-        { key: 'cultivation', title: 'Cultivation' },
-        { key: 'magic', title: 'Magic' },
+        { key: 'culture', title: data.cultureOptions?.customLabel || 'Culture' },
+        { key: 'cultivation', title: data.cultivationOptions?.customLabel || 'Cultivation' },
+        { key: 'magic', title: data.magicOptions?.customLabel || 'Magic' },
         { key: 'concepts', title: 'Concepts' },
-        { key: 'events', title: 'Events' },
+        { key: 'events', title: data.eventsOptions?.customLabel || 'Events' },
         { key: 'creatures', title: 'Creatures' },
         { key: 'plants', title: 'Plants' },
         { key: 'items', title: 'Items' }
@@ -160,7 +160,10 @@ function generateWorldItem(item, category) {
     // Use ALL tags (stripped of "!") for filtering data attributes
     const allTagsStripped = item.tags ? item.tags.map(stripHiddenPrefix).join(',') : '';
     
-    let itemHTML = `<div class="${itemClass}" data-category="${category}" data-status="${item.status || ''}" data-tags="${allTagsStripped}">`;    
+    // **ADD THIS: Generate unique ID for the item**
+    const itemId = item.id || `${category}_${item.name.toLowerCase().replace(/\s+/g, '-')}`;
+    
+    let itemHTML = `<div id="${itemId}" class="${itemClass}" data-category="${category}" data-status="${item.status || ''}" data-tags="${allTagsStripped}">`;   
     
     // IMAGE REMOVED - No longer directly display the image
     

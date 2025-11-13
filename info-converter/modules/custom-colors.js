@@ -1,3 +1,4 @@
+
 // Color Customization System
 // Add this to your main JavaScript file
 

@@ -45,7 +45,7 @@
     <nav class="main-tabs">
         <div class="nav-container">
             <!-- Add Home Icon Button -->
-            <a href="http://localhost:3000/" class="nav-home-btn" title="Home">
+            <a href="http://localhost:9000/" class="nav-home-btn" title="Home">
                 <i class="fas fa-home"></i>
             </a>
 
@@ -53,7 +53,7 @@
             <div class="main-tab" data-tab="content">Content</div>
             <div class="main-tab" data-tab="appearance">Appearance</div>
             <div class="main-tab" data-tab="pages">Custom Pages</div>
-            <div class="main-tab" data-tab="generate">Generate</div>
+            <div class="main-tab" data-tab="generate">Export</div>
             
             <!-- UPDATED: Project management controls (only show in local mode) -->
             <div class="nav-project-controls" style="display: none;">
@@ -166,7 +166,7 @@
                                     <i class="fas fa-upload"></i>
                                 </button>
                             </div>                            
-                            <div class="helper-text">Path relative to the generated info.html file</div>
+                            <div class="helper-text">Path relative to the .html file</div>
 
                             <label for="appearance-banner-style">Banner Style:</label>
                             <select id="appearance-banner-style">
@@ -618,7 +618,12 @@
                     <div id="culture-section" class="content-section">
                         <div class="section-header">
                             <h3><i class="fas fa-theater-masks"></i> Culture</h3>
-                            <button id="add-culture" class="btn-add">+ Add Culture</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button id="culture-options" class="btn-secondary" title="Culture Display Options">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button id="add-culture" class="btn-add">+ Add Culture</button>
+                            </div>                           
                         </div>
                         <div id="culture-list" class="content-list compact">
                             <div class="empty-state">No culture entries added yet</div>
@@ -629,7 +634,12 @@
                     <div id="cultivation-section" class="content-section">
                         <div class="section-header">
                             <h3><i class="fas fa-leaf"></i> Cultivation</h3>
-                            <button id="add-cultivation" class="btn-add">+ Add Cultivation</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button id="cultivation-options" class="btn-secondary" title="Cultivation Display Options">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button id="add-cultivation" class="btn-add">+ Add Cultivation</button>
+                            </div>
                         </div>
                         <div id="cultivation-list" class="content-list compact">
                             <div class="empty-state">No cultivation entries added yet</div>
@@ -640,7 +650,12 @@
                     <div id="magic-section" class="content-section">
                         <div class="section-header">
                             <h3><i class="fas fa-wand-magic-sparkles"></i> Magic</h3>
-                            <button id="add-magic" class="btn-add">+ Add Magic</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button id="magic-options" class="btn-secondary" title="Magic Display Options">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button id="add-magic" class="btn-add">+ Add Magic</button>
+                            </div>
                         </div>
                         <div id="magic-list" class="content-list compact">
                             <div class="empty-state">No magic entries added yet</div>
@@ -662,7 +677,12 @@
                     <div id="events-section" class="content-section">
                         <div class="section-header">
                             <h3><i class="fas fa-calendar-alt"></i> Events</h3>
-                            <button id="add-event" class="btn-add">+ Add Event</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button id="events-options" class="btn-secondary" title="Events Display Options">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button id="add-event" class="btn-add">+ Add Event</button>
+                            </div>
                         </div>
                         <div id="events-list" class="content-list compact">
                             <div class="empty-state">No events added yet</div>
@@ -759,7 +779,7 @@
                                 <option value="wide">Wide (1000px)</option>
                             </select>
                             <div class="helper-text" id="site-width-description">
-                                Controls the maximum width of the generated info page
+                                Controls the maximum width of the page
                             </div>
                         </div>
 
@@ -810,11 +830,18 @@
                                     Colored border on the left side
                                 </div>
                                 
-                                <label for="appearance-subcontainer-style">Info Section Style:</label>
+                                <label for="appearance-subcontainer-style">World/Character Subsection Style:</label>
                                 <select id="appearance-subcontainer-style">
                                 </select>
                                 <div class="helper-text" id="subcontainer-style-description">
                                     Light background with subtle borders
+                                </div>
+
+                                <label for="appearance-infodisplay-style">Info Display Style:</label>
+                                <select id="appearance-infodisplay-style">
+                                </select>
+                                <div class="helper-text" id="infodisplay-style-description">
+                                    Modern RPG style
                                 </div>
                             </div>
                         </div>
@@ -1019,12 +1046,12 @@ Color picker syncs with text input.</div>
 
                 <div id="generate-content-inner" class="tab-content active">
                     <div class="generate-controls">
-                        <button id="generate-btn" class="btn-main-action">Generate HTML</button>
+                        <button id="generate-btn" class="btn-main-action">Create</button>
                         <button id="save-to-sites-btn" class="btn-main-action" style="display: none;">Save to Folder</button>
                         <button id="download-btn" class="btn-main-action">Download HTML</button>
                     </div>
                     
-                    <textarea id="html-output" readonly placeholder="Generated HTML will appear here..."></textarea>
+                    <textarea id="html-output" readonly placeholder="HTML will appear here..."></textarea>
                     
                     <div id="save-status" class="save-status"></div>
                 </div>
@@ -1078,71 +1105,202 @@ Color picker syncs with text input.</div>
                 </div>
                 <div class="helper-text">Color for this character in timeline views</div>
 
-                <label for="char-faction">Faction:</label>
-                <select id="char-faction">
-                    <option value="">None</option>
-                </select>
-                <div class="helper-text">Select a faction from World Building > Factions</div>
-
-                <label for="char-basic">Basic Information:</label>
-                <div class="textarea-container">
-                    <textarea id="char-basic" rows="3" placeholder="Age, species, occupation, etc."></textarea>
-                    <button type="button" class="expand-text-btn" data-field="char-basic" title="Expand text editor"><i class="fas fa-expand"></i></button>
-                </div>  
-
-                <label for="char-physical">Physical Description:</label>
-                <div class="textarea-container">
-                    <textarea id="char-physical" rows="3" placeholder="Appearance, height, build, distinguishing features, etc."></textarea>
-                    <button type="button" class="expand-text-btn" data-field="char-physical" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                <div class="checkbox-item" style="margin-top: var(--space-md);">
+                    <input type="checkbox" id="char-show-info-display" checked>
+                    <label for="char-show-info-display">Enable Info-Display for this Character</label>
                 </div>
+                <div class="helper-text">Show info-display section in generated HTML (requires global setting to be enabled)</div>
 
-                <label for="char-personality">Personality:</label>
-                <div class="textarea-container">
-                    <textarea id="char-personality" rows="3" placeholder="Traits, quirks, fears, motivations, etc."></textarea>
-                    <button type="button" class="expand-text-btn" data-field="char-personality" title="Expand text editor"><i class="fas fa-expand"></i></button>
-                </div>
+                <!-- DETAILS SECTION - Collapsible -->
+                <div class="collapsible-section">
+                    <div class="collapsible-header">
+                        <span>Details</span>
+                        <span class="toggle-icon collapsed">▼</span>
+                    </div>
+                    <div class="collapsible-content collapsed">
+                        <label for="char-basic">Basic Information:</label>
+                        <div class="textarea-container">
+                            <textarea id="char-basic" rows="3" placeholder="Age, species, occupation, etc."></textarea>
+                            <button type="button" class="expand-text-btn" data-field="char-basic" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        </div>  
 
-                <label for="char-sexuality">Sexuality:</label>
-                <div class="textarea-container">
-                    <textarea id="char-sexuality" rows="2" placeholder="Sexual orientation, romantic preferences, etc."></textarea>
-                    <button type="button" class="expand-text-btn" data-field="char-sexuality" title="Expand text editor"><i class="fas fa-expand"></i></button>
-                </div>
+                        <label for="char-physical">Physical Description:</label>
+                        <div class="textarea-container">
+                            <textarea id="char-physical" rows="3" placeholder="Appearance, height, build, distinguishing features, etc."></textarea>
+                            <button type="button" class="expand-text-btn" data-field="char-physical" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        </div>
 
-                <label for="char-fighting-style">Fighting Style:</label>
-                <div class="textarea-container">
-                    <textarea id="char-fighting-style" rows="3" placeholder="Combat preferences, fighting techniques, martial arts, weapon specializations, etc."></textarea>
-                    <button type="button" class="expand-text-btn" data-field="char-fighting-style" title="Expand text editor"><i class="fas fa-expand"></i></button>
-                </div>
+                        <label for="char-personality">Personality:</label>
+                        <div class="textarea-container">
+                            <textarea id="char-personality" rows="3" placeholder="Traits, quirks, fears, motivations, etc."></textarea>
+                            <button type="button" class="expand-text-btn" data-field="char-personality" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        </div>
 
-                <label for="char-background">Background:</label>
-                <div class="textarea-container">
-                    <textarea id="char-background" rows="4" placeholder="History, relationships, important events, etc."></textarea>
-                    <button type="button" class="expand-text-btn" data-field="char-background" title="Expand text editor"><i class="fas fa-expand"></i></button>
-                </div>
+                        <label for="char-sexuality">Sexuality:</label>
+                        <div class="textarea-container">
+                            <textarea id="char-sexuality" rows="2" placeholder="Sexual orientation, romantic preferences, etc."></textarea>
+                            <button type="button" class="expand-text-btn" data-field="char-sexuality" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        </div>
 
-                <label for="char-equipment">Weapons/Armor/Equipment:</label>
-                <div class="textarea-container">
-                    <textarea id="char-equipment" rows="3" placeholder="Weapons, armor, special items, tools, etc."></textarea>
-                    <button type="button" class="expand-text-btn" data-field="char-equipment" title="Expand text editor"><i class="fas fa-expand"></i></button>
-                </div>
+                        <label for="char-fighting-style">Fighting Style:</label>
+                        <div class="textarea-container">
+                            <textarea id="char-fighting-style" rows="3" placeholder="Combat preferences, fighting techniques, martial arts, weapon specializations, etc."></textarea>
+                            <button type="button" class="expand-text-btn" data-field="char-fighting-style" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        </div>
 
-                <label for="char-hobbies">Hobbies/Pastimes:</label>
-                <div class="textarea-container">
-                    <textarea id="char-hobbies" rows="3" placeholder="Interests, hobbies, activities, skills, etc."></textarea>
-                    <button type="button" class="expand-text-btn" data-field="char-hobbies" title="Expand text editor"><i class="fas fa-expand"></i></button>
-                </div>
+                        <label for="char-background">Background:</label>
+                        <div class="textarea-container">
+                            <textarea id="char-background" rows="4" placeholder="History, relationships, important events, etc."></textarea>
+                            <button type="button" class="expand-text-btn" data-field="char-background" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        </div>
 
-                <label for="char-quirks">Quirks:</label>
-                <div class="textarea-container">
-                    <textarea id="char-quirks" rows="3" placeholder="Unusual habits, mannerisms, speech patterns, etc."></textarea>
-                    <button type="button" class="expand-text-btn" data-field="char-quirksd" title="Expand text editor"><i class="fas fa-expand"></i></button>
-                </div>
+                        <label for="char-equipment">Weapons/Armor/Equipment:</label>
+                        <div class="textarea-container">
+                            <textarea id="char-equipment" rows="3" placeholder="Weapons, armor, special items, tools, etc."></textarea>
+                            <button type="button" class="expand-text-btn" data-field="char-equipment" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        </div>
 
-                <label for="char-relationships">Relationships:</label>
-                <div class="textarea-container">
-                    <textarea id="char-relationships" rows="3" placeholder="Family, friends, enemies, romantic interests, etc."></textarea>
-                    <button type="button" class="expand-text-btn" data-field="char-relationships" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        <label for="char-hobbies">Hobbies/Pastimes:</label>
+                        <div class="textarea-container">
+                            <textarea id="char-hobbies" rows="3" placeholder="Interests, hobbies, activities, skills, etc."></textarea>
+                            <button type="button" class="expand-text-btn" data-field="char-hobbies" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        </div>
+
+                        <label for="char-quirks">Quirks:</label>
+                        <div class="textarea-container">
+                            <textarea id="char-quirks" rows="3" placeholder="Unusual habits, mannerisms, speech patterns, etc."></textarea>
+                            <button type="button" class="expand-text-btn" data-field="char-quirksd" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        </div>
+
+                        <label for="char-relationships">Relationships:</label>
+                        <div class="textarea-container">
+                            <textarea id="char-relationships" rows="3" placeholder="Family, friends, enemies, romantic interests, etc."></textarea>
+                            <button type="button" class="expand-text-btn" data-field="char-relationships" title="Expand text editor"><i class="fas fa-expand"></i></button>
+                        </div>
+                    </div>
                 </div>
+                <!-- End Details Section -->
+
+                <!-- INFO DISPLAY - Collapsible Section -->
+                <div class="collapsible-section">
+                    <div class="collapsible-header">
+                        <span>Info-Display Fields</span>
+                        <span class="toggle-icon collapsed">▼</span>
+                    </div>
+                    <div class="collapsible-content collapsed">
+                        <!-- Row 1: Full Name (full width) -->
+                        <label for="char-full-name">Full Name:</label>
+                        <input type="text" id="char-full-name" placeholder="Full character name (if different)">
+                        <div class="helper-text" style="margin-bottom: var(--space-md);">Complete formal name used in the info-display</div>
+
+                        <!-- Row 2: Title and Age (side by side) -->
+                        <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-sm);">
+                            <div style="flex: 1;">
+                                <label for="char-title">Title:</label>
+                                <input type="text" id="char-title" placeholder="e.g., King, Captain, Professor, etc.">
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="char-age">Age:</label>
+                                <input type="text" id="char-age" placeholder="e.g., 25, Ancient, Unknown">
+                            </div>
+                        </div>
+                        <div class="helper-text" style="margin-bottom: var(--space-md);">Title/honorific and age for info-display</div>
+
+                        <!-- Row 3: Location and Faction -->
+                        <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-sm);">
+                            <div style="flex: 1;">
+                                <label for="char-location">Location:</label>
+                                <select id="char-location">
+                                    <option value="">None</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="char-faction">Faction:</label>
+                                <select id="char-faction">
+                                    <option value="">None</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="helper-text" style="margin-bottom: var(--space-md);">Select location and faction from World Building</div>
+
+                        <!-- Row 4: Skills and Items -->
+                        <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-sm);">
+                            <div style="flex: 1;">
+                                <label for="char-skills">Skills:</label>
+                                <div class="multiselect-dropdown">
+                                    <button type="button" class="multiselect-button" id="char-skills-button" onclick="toggleSkillsDropdown()">
+                                        <span id="char-skills-display">Select skills...</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    <div class="multiselect-options" id="char-skills-dropdown" style="display: none;">
+                                        <!-- Options will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="char-items">Items:</label>
+                                <div class="multiselect-dropdown">
+                                    <button type="button" class="multiselect-button" id="char-items-button" onclick="toggleItemsDropdown()">
+                                        <span id="char-items-display">Select items...</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    <div class="multiselect-options" id="char-items-dropdown" style="display: none;">
+                                        <!-- Options will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="helper-text" style="margin-bottom: var(--space-md);">Select magic/cultivation skills and items with icons</div>
+                        <!-- STATS SECTION -->
+                        <label class="section-divider">Stats</label>
+
+                        <label for="char-stat-range">Stat Range (Max Value):</label>
+                        <input type="number" id="char-stat-range" placeholder="100" value="100" min="1">
+                        <div class="helper-text" style="margin-bottom: var(--space-md);">Maximum value for all stats (e.g., 0-100)</div>
+
+                        <!-- Compact Stats Grid - 2 per row -->
+                        <div class="compact-stats-grid">
+                            <!-- Row 1: Stats 1 & 2 -->
+                            <div class="stats-row">
+                                <div class="stat-pair">
+                                    <input type="text" id="char-stat-1-label" placeholder="Stat name" value="Strength">
+                                    <input type="number" id="char-stat-1-value" placeholder="0" value="0" min="0" max="100">
+                                </div>
+                                <div class="stat-pair">
+                                    <input type="text" id="char-stat-2-label" placeholder="Stat name" value="Constitution">
+                                    <input type="number" id="char-stat-2-value" placeholder="0" value="0" min="0" max="100">
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Stats 3 & 4 -->
+                            <div class="stats-row">
+                                <div class="stat-pair">
+                                    <input type="text" id="char-stat-3-label" placeholder="Stat name" value="Agility">
+                                    <input type="number" id="char-stat-3-value" placeholder="0" value="0" min="0" max="100">
+                                </div>
+                                <div class="stat-pair">
+                                    <input type="text" id="char-stat-4-label" placeholder="Stat name" value="Technique">
+                                    <input type="number" id="char-stat-4-value" placeholder="0" value="0" min="0" max="100">
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Stats 5 & 6 -->
+                            <div class="stats-row">
+                                <div class="stat-pair">
+                                    <input type="text" id="char-stat-5-label" placeholder="Stat name" value="Defense">
+                                    <input type="number" id="char-stat-5-value" placeholder="0" value="0" min="0" max="100">
+                                </div>
+                                <div class="stat-pair">
+                                    <input type="text" id="char-stat-6-label" placeholder="Stat name" value="Charisma">
+                                    <input type="number" id="char-stat-6-value" placeholder="0" value="0" min="0" max="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="helper-text" style="margin-top: var(--space-sm);">Customize stat names and values. Empty stats will not be displayed in the generated HTML.</div>
+                    </div>
+                </div>
+                <!-- end Info-Display section -->
 
                 <!-- Character Card Field -->
                 <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-xs);">
@@ -1165,10 +1323,10 @@ Color picker syncs with text input.</div>
 
                 <label for="char-notes">Notes (Development Only):</label>
                 <div class="textarea-container">
-                    <textarea id="char-notes" rows="4" placeholder="Development notes, todo items, reminders, etc. These will not appear in the generated HTML."></textarea>
+                    <textarea id="char-notes" rows="4" placeholder="Development notes, todo items, reminders, etc. These will not appear in the HTML."></textarea>
                     <button type="button" class="expand-text-btn" data-field="char-notes" title="Expand text editor"><i class="fas fa-expand"></i></button>
                 </div>
-                <div class="helper-text">These notes are for development purposes only and will not appear in the generated info page</div>
+                <div class="helper-text">These notes are for development purposes only and will not appear in the page</div>
                 
                 <label for="char-gallery">Gallery Images (one per line):</label>
                 <textarea id="char-gallery" rows="3" placeholder="assets/characters/charactername/portrait.jpg
@@ -1183,7 +1341,7 @@ assets/characters/charactername/action.jpg"></textarea>
         </div>
     </div>
 
-    <!-- Characters Options Modal -->
+    <!-- Characters Options Modal - UPDATED VERSION -->
     <div id="charactersOptionsModal" class="modal">
         <div class="modal-content small-modal">
             <div class="modal-header">
@@ -1192,18 +1350,85 @@ assets/characters/charactername/action.jpg"></textarea>
             </div>
             <div class="modal-body">
                 <div class="helper-text" style="margin-bottom: var(--space-md);">
-                    These settings control what appears in the generated HTML for Characters.
+                    These settings control what appears in the HTML for Characters.
                 </div>
 
                 <div class="checkbox-item">
                     <input type="checkbox" id="characters-show-by-faction" checked>
                     <label for="characters-show-by-faction">Show Characters Organized by Faction</label>
+                    <button id="manage-faction-order-btn" class="btn-secondary" style="margin-left: var(--space-sm); padding: 4px 8px; font-size: 0.9em;" title="Manage faction display order">
+                        <i class="fas fa-sort"></i>
+                    </button>
                 </div>
                 <div class="helper-text">Group characters by their assigned factions</div>
+
+                <!-- NEW: Info-Display Section Option -->
+                <div class="checkbox-item" style="margin-top: var(--space-md);">
+                    <input type="checkbox" id="characters-show-info-display">
+                    <label for="characters-show-info-display">Show Character Info-Display Section</label>
+                    <button id="customize-info-display-labels-btn" class="btn-secondary" style="margin-left: var(--space-sm); padding: 4px 8px; font-size: 0.9em;" title="Customize Info-Display labels">
+                        <i class="fas fa-tag"></i>
+                    </button>
+                </div>
+                <div class="helper-text">Display items and equipment icons in character profiles (in development)</div>
 
                 <div class="modal-actions">
                     <button id="save-characters-options" class="btn-main-action">Save Options</button>
                     <button class="btn-cancel" data-modal="charactersOptionsModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info-Display Labels Modal -->
+    <div id="infoDisplayLabelsModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Customize Info-Display Labels</h3>
+                <span class="close" data-modal="infoDisplayLabelsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="helper-text" style="margin-bottom: var(--space-md);">
+                    Customize the label names shown in character Info-Display sections.
+                </div>
+
+                <label for="info-display-label-age">Age Label:</label>
+                <input type="text" id="info-display-label-age" placeholder="Age" maxlength="30">
+                
+                <label for="info-display-label-origin">Origin Label:</label>
+                <input type="text" id="info-display-label-origin" placeholder="Origin" maxlength="30">
+                
+                <label for="info-display-label-faction">Faction Label:</label>
+                <input type="text" id="info-display-label-faction" placeholder="Faction" maxlength="30">
+                
+                <label for="info-display-label-items">Special Items Label:</label>
+                <input type="text" id="info-display-label-items" placeholder="Special Items" maxlength="30">
+
+                <div class="modal-actions">
+                    <button id="save-info-display-labels" class="btn-main-action">Save Labels</button>
+                    <button class="btn-cancel" data-modal="infoDisplayLabelsModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Faction Order Modal -->
+    <div id="factionOrderModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Faction Display Order</h3>
+                <span class="close" data-modal="factionOrderModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="helper-text" style="margin-bottom: var(--space-md);">
+                    Drag to reorder factions. Only factions assigned to characters are shown. New factions will appear alphabetically at the end.
+                </div>
+                <div id="faction-order-list" class="event-list">
+                    <!-- Faction items will be added here dynamically -->
+                </div>
+                <div class="modal-actions">
+                    <button id="save-faction-order" class="btn-main-action">Save Order</button>
+                    <button class="btn-cancel" data-modal="factionOrderModal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -1291,7 +1516,7 @@ assets/characters/charactername/action.jpg"></textarea>
             </div>
             <div class="modal-body">
                 <div class="helper-text" style="margin-bottom: var(--space-md);">
-                    These settings control what appears in the generated HTML for Storylines.
+                    These settings control what appears in the HTML for Storylines.
                 </div>
 
                 <div class="checkbox-item">
@@ -1496,13 +1721,13 @@ assets/characters/charactername/action.jpg"></textarea>
                     <textarea id="event-notes" rows="3" placeholder="Additional notes, ideas, or reminders about this event"></textarea>
                     <button type="button" class="expand-text-btn" data-field="event-notes" title="Expand text editor"><i class="fas fa-expand"></i></button>
                 </div>
-                <div class="helper-text">Notes will be collapsible in the generated HTML to keep the display clean</div>
+                <div class="helper-text">Notes will be collapsible in the HTML to keep the display clean</div>
                 
                 <div class="checkbox-container">
                     <input type="checkbox" id="event-visible" checked>
-                    <label for="event-visible" class="checkbox-label">Visible in generated page</label>
+                    <label for="event-visible" class="checkbox-label">Visible in page</label>
                 </div>
-                <div class="helper-text">Uncheck to hide this event from the generated HTML (useful for spoilers or uncertain plot points)</div>
+                <div class="helper-text">Uncheck to hide this event from the HTML (useful for spoilers or uncertain plot points)</div>
                 
                 <div class="modal-actions">
                     <button id="save-event" class="btn-main-action">Save Event</button>
@@ -1559,9 +1784,9 @@ assets/characters/charactername/action.jpg"></textarea>
                     
                     <div class="checkbox-container">
                         <input type="checkbox" id="subarc-visible" checked>
-                        <label for="subarc-visible" class="checkbox-label">Visible in generated page</label>
+                        <label for="subarc-visible" class="checkbox-label">Visible in page</label>
                     </div>
-                    <div class="helper-text">Uncheck to hide this entire sub-arc from the generated HTML</div>
+                    <div class="helper-text">Uncheck to hide this entire sub-arc from the HTML</div>
                 </div>
 
                 <div class="subarc-events-section">
@@ -1653,9 +1878,9 @@ assets/characters/charactername/action.jpg"></textarea>
                 
                 <div class="checkbox-container">
                     <input type="checkbox" id="loc-hidden">
-                    <label for="loc-hidden" class="checkbox-label">Hidden (won't appear in generated page)</label>
+                    <label for="loc-hidden" class="checkbox-label">Hidden (won't appear in page)</label>
                 </div>
-                <div class="helper-text">Check this to hide from the generated HTML page</div>
+                <div class="helper-text">Check this to hide from the HTML page</div>
                 
                 <label for="loc-image">Image Path:</label>
                 <div style="display: flex; gap: var(--space-xs); align-items: center;">
@@ -1736,10 +1961,10 @@ assets/characters/charactername/action.jpg"></textarea>
                 <div class="checkbox-item">
                     <input type="checkbox" id="item-hidden">
                     <div>
-                        <label for="item-hidden" class="checkbox-label">Hidden (won't appear in generated page)</label>
+                        <label for="item-hidden" class="checkbox-label">Hidden (won't appear in page)</label>
                     </div>
                 </div>
-                <div class="helper-text" style="margin: 0;">Check this to hide from the generated HTML page</div>
+                <div class="helper-text" style="margin: 0;">Check this to hide from the HTML page</div>
                 
                 <label for="item-image">Image Path:</label>
                 <div style="display: flex; gap: var(--space-xs); align-items: center;">
@@ -1752,6 +1977,53 @@ assets/characters/charactername/action.jpg"></textarea>
                     </button>
                 </div>
                 <div class="helper-text">Optional image for this item</div>
+
+                <!-- Icon section - only for 'items' category -->
+                <div id="world-item-icon-section">
+                    <label>Icon (for character display):</label>
+                    <div class="icon-type-selection" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                        <label class="radio-option">
+                            <input type="radio" name="icon-type" value="none" checked>
+                            <span>No Icon</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="icon-type" value="custom">
+                            <span>Custom Image</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="icon-type" value="builder">
+                            <span>Build Icon</span>
+                        </label>
+                        <button type="button" class="btn-secondary" id="configure-icon-btn" onclick="openIconBuilderModal()" style="display: none; padding: 4px 10px; font-size: 13px; opacity: 0.75;">
+                            <i class="fas fa-palette"></i> Configure Icon
+                        </button>
+                    </div>
+
+                    <!-- Custom Icon Image Section -->
+                    <div id="custom-icon-image-section" style="display: none;">
+                        <label for="item-icon-image">Custom Icon Image:</label>
+                        <div style="display: flex; gap: 4px;">
+                            <input type="text" id="item-icon-image" placeholder="Path to custom icon image (e.g., assets/world/items/icons/sword.png)" style="flex: 1;">
+                            <button class="nav-load-btn image-import-trigger" 
+                                    title="Import image from computer" 
+                                    data-target-field="item-icon-image" 
+                                    data-context="item-icon">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Icon Builder Preview Section (shown after building icon) -->
+                    <div id="icon-builder-section" style="display: none; margin-top: 10px;">
+                        <div class="helper-text">Click "Configure Icon" to customize your icon</div>
+                    </div>
+
+                    <!-- Icon Preview Container (shown after saving icon) -->
+                    <div id="icon-preview-container" style="display: none; margin-top: 10px;">
+                        <label>Current Icon Preview:</label>
+                        <div id="icon-preview-display"></div>
+                    </div>
+                </div>
                 
                 <label for="item-description">Description:</label>
                 <div class="textarea-container">
@@ -1774,6 +2046,213 @@ assets/characters/charactername/action.jpg"></textarea>
                 <div class="modal-actions">
                     <button id="save-world-item" class="btn-main-action">Save Item</button>
                     <button class="btn-cancel" data-modal="worldItemModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Magic Options Modal -->
+    <div id="magicOptionsModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Magic Display Options</h3>
+                <span class="close" data-modal="magicOptionsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="helper-text" style="margin-bottom: var(--space-md);">
+                    Customize how the Magic category appears in the generated HTML.
+                </div>
+
+                <label for="magic-custom-label">Category Label:</label>
+                <input type="text" id="magic-custom-label" placeholder="Magic" maxlength="50">
+                <div class="helper-text">Enter a custom name for this category (e.g., "Techniques", "Abilities", "Skills", "Powers")</div>
+
+                <div class="modal-actions">
+                    <button id="save-magic-options" class="btn-main-action">Save Options</button>
+                    <button class="btn-cancel" data-modal="magicOptionsModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cultivation Options Modal -->
+    <div id="cultivationOptionsModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Cultivation Display Options</h3>
+                <span class="close" data-modal="cultivationOptionsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="helper-text" style="margin-bottom: var(--space-md);">
+                    Customize how the Cultivation category appears in the generated HTML.
+                </div>
+
+                <label for="cultivation-custom-label">Category Label:</label>
+                <input type="text" id="cultivation-custom-label" placeholder="Cultivation" maxlength="50">
+                <div class="helper-text">Enter a custom name for this category (e.g., "Training", "Levels", "Progression", "Ranks")</div>
+
+                <div class="modal-actions">
+                    <button id="save-cultivation-options" class="btn-main-action">Save Options</button>
+                    <button class="btn-cancel" data-modal="cultivationOptionsModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Culture Options Modal -->
+    <div id="cultureOptionsModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Culture Display Options</h3>
+                <span class="close" data-modal="cultureOptionsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="helper-text" style="margin-bottom: var(--space-md);">
+                    Customize how the Culture category appears in the generated HTML.
+                </div>
+
+                <label for="culture-custom-label">Category Label:</label>
+                <input type="text" id="culture-custom-label" placeholder="Culture" maxlength="50">
+                <div class="helper-text">Enter a custom name for this category (e.g., "Society", "Kingdom", "Lifestyle", "Folklore")</div>
+
+                <div class="modal-actions">
+                    <button id="save-culture-options" class="btn-main-action">Save Options</button>
+                    <button class="btn-cancel" data-modal="cultureOptionsModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Events Options Modal -->
+    <div id="eventsOptionsModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Events Display Options</h3>
+                <span class="close" data-modal="eventsOptionsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="helper-text" style="margin-bottom: var(--space-md);">
+                    Customize how the Events category appears in the generated HTML.
+                </div>
+
+                <label for="events-custom-label">Category Label:</label>
+                <input type="text" id="events-custom-label" placeholder="Events" maxlength="50">
+                <div class="helper-text">Enter a custom name for this category (e.g., "History", "Lore", "Past")</div>
+
+                <div class="modal-actions">
+                    <button id="save-events-options" class="btn-main-action">Save Options</button>
+                    <button class="btn-cancel" data-modal="eventsOptionsModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Icon Builder Modal -->
+    <div id="iconBuilderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Build Item Icon</h3>
+                <span class="close" data-modal="iconBuilderModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-end;">
+                    <div style="flex: 1;">
+                        <label for="icon-category-select" style="display: block; margin-bottom: 5px;">Icon Category:</label>
+                        <select id="icon-category-select" onchange="loadIconCategory()" style="width: 100%;">
+                            <option value="">Select category...</option>
+                            <!-- Categories will be populated dynamically -->
+                        </select>
+                    </div>
+                    
+                    <div style="flex: 1;">
+                        <label for="icon-saved-styles" style="display: block; margin-bottom: 5px;">Saved Styles:</label>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="icon-saved-styles" onchange="applyIconStyle()" style="flex: 1;">
+                                <option value="">New</option>
+                            </select>
+                            <button id="save-icon-style-btn" class="btn-secondary" onclick="saveIconStyle()" title="Save current style" style="margin: 0; padding: 6px 10px; height: 34px;">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button id="delete-icon-style-btn" class="btn-secondary" onclick="deleteIconStyle()" disabled title="Delete selected style" style="margin: 0; padding: 6px 10px; height: 34px;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <label>Select Icon:</label>
+                <div id="icon-grid" class="icon-selection-grid">
+                    <div class="helper-text">Select a category to see available icons</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: rgba(0, 0, 0, 0.1); padding: 12px; border-radius: 6px;">
+                        <label>Shape:</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="icon-shape" value="square" checked onchange="updateIconPreview()">
+                                <span>Square</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="icon-shape" value="circle" onchange="updateIconPreview()">
+                                <span>Circle</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(0, 0, 0, 0.1); padding: 12px; border-radius: 6px;">
+                        <label>Border:</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="icon-border" value="none" onchange="updateIconPreview(); toggleBorderColor()">
+                                <span>None</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="icon-border" value="thin" checked onchange="updateIconPreview(); toggleBorderColor()">
+                                <span>Thin</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="icon-border" value="thick" onchange="updateIconPreview(); toggleBorderColor()">
+                                <span>Thick</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label for="icon-bg-color">Background Color:</label>
+                        <div class="color-input-row">
+                            <input type="text" id="icon-bg-color" placeholder="#4a90e2" value="#4a90e2" oninput="updateIconPreview()">
+                            <input type="color" id="icon-bg-color-picker" value="#4a90e2" onchange="syncColorInputs('icon-bg-color', this.value)">
+                        </div>
+                    </div>
+                    
+                    <div id="border-color-section">
+                        <label for="icon-border-color">Border Color:</label>
+                        <div class="color-input-row">
+                            <input type="text" id="icon-border-color" placeholder="#2c5aa0" value="#2c5aa0" oninput="updateIconPreview()">
+                            <input type="color" id="icon-border-color-picker" value="#2c5aa0" onchange="syncColorInputs('icon-border-color', this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="icon-builder-preview" class="icon-builder-preview">
+                    <div class="helper-text">Select an icon to preview</div>
+                </div>
+
+                <input 
+                    type="range" 
+                    id="icon-opacity" 
+                    min="30" 
+                    max="100" 
+                    value="100" 
+                    style="width: 100%; margin-top: 10px;"
+                    oninput="updateIconPreview()">
+
+                <div class="modal-actions">
+                    <button id="save-icon-config" class="btn-main-action" onclick="saveIconConfig()">Save Icon</button>
+                    <button class="btn-cancel" data-modal="iconBuilderModal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -2955,6 +3434,7 @@ assets/characters/charactername/action.jpg"></textarea>
     <script src="modules/characters-html.js"></script>
     <script type="module" src="info-converter.js"></script>
     <script src="form-handlers.js"></script>
+    <script src="modules/icon-builder.js"></script>
     <script type="module" src="html-generator.js"></script>
     <script src="import-export.js"></script>
     <script src="image-import.js"></script> 

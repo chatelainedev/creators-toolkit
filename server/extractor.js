@@ -401,24 +401,26 @@ router.post('/extractor/export-txt', async (req, res) => {
             return res.status(400).json({ error: 'Entries array is required' });
         }
 
-        // Generate plain text format
+        // Generate plain text format with new separator
         const textContent = entries.map(entry => {
             const name = entry.comment || 'Untitled Entry';
             const content = entry.content || '';
-            const separator = '='.repeat(name.length);
+            const separator = '---'; // Use Markdown-style separator
             
+            // Format each entry
             return `${name}\n${separator}\n\n${content}\n\n`;
-        }).join('\n');
+        }).join(''); // Use an empty join to avoid extra newlines between entries
         
-        // Add header
-        const timestamp = new Date().toISOString().split('T')[0];
-        const header = `Lorebook Export - Plain Text\nProject: ${projectName || 'Untitled'}\nExported: ${timestamp}\nEntries: ${entries.length}\n\n${'='.repeat(50)}\n\n`;
+        // Create the simplified header
+        const header = `Project: ${projectName || 'Untitled'}\n\n`;
         
         const finalContent = header + textContent;
         
+        // Prepare file for download
+        const timestamp = new Date().toISOString().split('T')[0];
         res.setHeader('Content-Type', 'text/plain');
         res.setHeader('Content-Disposition', `attachment; filename="${projectName || 'extractor_export'}_${timestamp}.txt"`);
-        res.send(finalContent);
+        res.send(finalContent.trim()); // Trim any trailing whitespace
         
         console.log(`📄 Exported ${entries.length} entries as plain text for ${userContext.isGuest ? 'guest' : userContext.username}`);
         
@@ -519,6 +521,20 @@ router.post('/extractor/export-json', async (req, res) => {
             if (typeof cleanEntry.probability === 'undefined') cleanEntry.probability = 100;
             if (typeof cleanEntry.useProbability === 'undefined') cleanEntry.useProbability = true;
             if (typeof cleanEntry.depth === 'undefined') cleanEntry.depth = 4;
+            if (typeof cleanEntry.scanDepth === 'undefined') cleanEntry.scanDepth = null;
+            if (typeof cleanEntry.caseSensitive === 'undefined') cleanEntry.caseSensitive = null;
+            if (typeof cleanEntry.matchWholeWords === 'undefined') cleanEntry.matchWholeWords = null;
+            if (typeof cleanEntry.useGroupScoring === 'undefined') cleanEntry.useGroupScoring = null;
+            if (typeof cleanEntry.ignoreBudget === 'undefined') cleanEntry.ignoreBudget = false;
+            if (typeof cleanEntry.sticky === 'undefined') cleanEntry.sticky = 0;
+            if (typeof cleanEntry.cooldown === 'undefined') cleanEntry.cooldown = 0;
+            if (typeof cleanEntry.delay === 'undefined') cleanEntry.delay = 0;
+            if (typeof cleanEntry.group === 'undefined') cleanEntry.group = '';
+            if (typeof cleanEntry.groupWeight === 'undefined') cleanEntry.groupWeight = 100;
+            if (typeof cleanEntry.automationId === 'undefined') cleanEntry.automationId = '';
+            if (typeof cleanEntry.characterFilter === 'undefined') {
+                cleanEntry.characterFilter = { isExclude: false, names: [], tags: [] };
+            }
             
             lorebookEntries[id] = cleanEntry;
         });
@@ -750,7 +766,19 @@ router.post('/extractor/send-to-st', async (req, res) => {
                 probability: entry.probability || 100,
                 useProbability: entry.useProbability !== false,
                 depth: entry.depth || 4,
-                selectiveLogic: entry.selectiveLogic || 0
+                selectiveLogic: entry.selectiveLogic || 0,
+                scanDepth: entry.scanDepth ?? null,
+                caseSensitive: entry.caseSensitive ?? null,
+                matchWholeWords: entry.matchWholeWords ?? null,
+                useGroupScoring: entry.useGroupScoring ?? null,
+                ignoreBudget: entry.ignoreBudget || false,
+                sticky: entry.sticky || 0,
+                cooldown: entry.cooldown || 0,
+                delay: entry.delay || 0,
+                group: entry.group || '',
+                groupWeight: entry.groupWeight ?? 100,
+                automationId: entry.automationId || '',
+                characterFilter: entry.characterFilter ?? { isExclude: false, names: [], tags: [] },
             };
             
             lorebookEntries[id] = cleanEntry;

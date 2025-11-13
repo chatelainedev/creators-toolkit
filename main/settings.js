@@ -383,7 +383,7 @@ class SettingsManager {
     }
 
     // Populate settings with current user data
-    populateSettings() {
+    async populateSettings() {
         const user = this.authManager.getCurrentUser();
         if (!user) return;
 
@@ -395,7 +395,7 @@ class SettingsManager {
         const avatarPreview = document.getElementById('settings-avatar-preview');
         avatarPreview.src = user.avatar || 'images/default-avatar.png';
 
-        // ADD THIS: Set user ID badge
+        // Set user ID badge
         const userIdBadge = document.getElementById('user-id-badge');
         if (user.isGuest) {
             userIdBadge.textContent = 'GUEST';
@@ -406,6 +406,25 @@ class SettingsManager {
         }
         
         this.loadSavedTheme();
+
+        // Load AI tools setting - ensure it exists with default
+        try {
+            const preferences = await this.authManager.loadUserPreferences();
+            
+            // Ensure aiToolsEnabled exists with default value
+            if (!preferences.hasOwnProperty('aiToolsEnabled')) {
+                preferences.aiToolsEnabled = false;
+                await this.authManager.saveUserPreferences(preferences);
+            }
+            
+            const aiToolsCheckbox = document.getElementById('ai-tools-enabled');
+            if (aiToolsCheckbox) {
+                aiToolsCheckbox.checked = preferences.aiToolsEnabled || false; // Add || false for safety
+                console.log('📋 Loaded AI tools setting:', preferences.aiToolsEnabled);
+            }
+        } catch (error) {
+            console.error('Error loading AI tools setting:', error);
+        }
 
         // Guest mode adjustments
         if (user.isGuest) {
@@ -425,7 +444,7 @@ class SettingsManager {
                 deleteSection.style.display = 'none';
             }
             
-            // Maybe make username read-only or show as "Guest"
+            // Make username read-only
             const usernameField = document.getElementById('settings-username');
             usernameField.value = 'Guest';
             usernameField.disabled = true;
@@ -436,29 +455,23 @@ class SettingsManager {
             avatarPreview.style.opacity = '0.6';
             avatarPreview.title = 'Avatar upload available with account';
         } else {
-            // ADD THIS ELSE BLOCK - Re-enable fields for real users
-            
-            // Enable email field
+            // Enable fields for real users
             const emailField = document.getElementById('settings-email');
             emailField.disabled = false;
             emailField.placeholder = 'Email address';
             
-            // Enable password field
             const passwordField = document.getElementById('settings-new-password');
             passwordField.disabled = false;
             passwordField.placeholder = 'New password (leave blank to keep current)';
             
-            // Show delete account section
             const deleteSection = document.querySelector('.delete-account-section');
             if (deleteSection) {
                 deleteSection.style.display = 'block';
             }
             
-            // Enable username field
             const usernameField = document.getElementById('settings-username');
             usernameField.disabled = false;
 
-            // Enable avatar upload
             const avatarPreview = document.getElementById('settings-avatar-preview');
             avatarPreview.style.cursor = 'pointer';
             avatarPreview.style.opacity = '1';
@@ -473,6 +486,9 @@ class SettingsManager {
             this.showFormError('settings-username', 'Cannot update guest account');
             return;
         }
+
+        // Load preferences once at the top
+        const preferences = await this.authManager.loadUserPreferences();
 
         const section = document.querySelector('.settings-section');
         const username = document.getElementById('settings-username').value.trim();
@@ -508,47 +524,77 @@ class SettingsManager {
             return;
         }
 
-        // Check if anything actually changed
-        const hasChanges = username !== user.username || 
-                        email !== user.email || 
-                        newPassword;
+        // Check if account details changed
+        const hasAccountChanges = username !== user.username || 
+                                email !== user.email || 
+                                newPassword;
 
-        if (!hasChanges) {
+        // Check AI tools preference
+        const aiToolsCheckbox = document.getElementById('ai-tools-enabled');
+        const currentAIToolsValue = preferences.aiToolsEnabled || false;
+        const newAIToolsValue = aiToolsCheckbox ? aiToolsCheckbox.checked : false;
+        const aiToolsChanged = newAIToolsValue !== currentAIToolsValue;
+
+        if (!hasAccountChanges && !aiToolsChanged) {
             this.showToast('No changes to save', 'info');
             return;
         }
 
-        // Show password confirmation popup for any changes
-        const currentPassword = await this.showPasswordConfirmation();
-        if (!currentPassword) {
-            return; // User cancelled
+        // Show password confirmation popup only if account details changed
+        let currentPassword = null;
+        if (hasAccountChanges) {
+            currentPassword = await this.showPasswordConfirmation();
+            if (!currentPassword) {
+                return; // User cancelled
+            }
         }
 
         // Add loading state
         section.classList.add('loading');
 
         try {
-            // Prepare updates object
-            const updates = { username, email, currentPassword };
-            if (newPassword) {
-                updates.password = newPassword;
-            }
-            
-            // Call the auth manager's update method
-            const result = await this.authManager.updateUser(updates);
+            // Update account details if they changed
+            if (hasAccountChanges) {
+                const updates = { username, email, currentPassword };
+                if (newPassword) {
+                    updates.password = newPassword;
+                }
+                
+                const result = await this.authManager.updateUser(updates);
 
-            if (result.success) {
-                // Clear password fields
-                document.getElementById('settings-new-password').value = '';
-
-                let message = 'Account updated successfully!';
-                if (username !== user.username) {
-                    message = `Account updated! Welcome, ${username}!`;
+                if (!result.success) {
+                    this.showFormError('settings-username', result.error || 'Update failed');
+                    section.classList.remove('loading');
+                    return;
                 }
 
-                this.showToast(message, 'success');
-            } else {
-                this.showFormError('settings-username', result.error || 'Update failed');
+                // Clear password field
+                document.getElementById('settings-new-password').value = '';
+            }
+
+            // Save AI tools preference if changed
+            if (aiToolsChanged) {
+                preferences.aiToolsEnabled = newAIToolsValue;
+                await this.authManager.saveUserPreferences(preferences);
+            }
+
+            // Show success message
+            let message = 'Settings updated successfully!';
+            if (hasAccountChanges && username !== user.username) {
+                message = `Account updated! Welcome, ${username}!`;
+            } else if (hasAccountChanges) {
+                message = 'Account updated successfully!';
+            } else if (aiToolsChanged) {
+                message = 'AI tools setting updated!';
+            }
+
+            this.showToast(message, 'success');
+
+            // Refresh page if AI tools setting changed
+            if (aiToolsChanged) {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             }
 
         } catch (error) {

@@ -49,7 +49,7 @@ function displayLorebookPreview() {
     // Get world categories for dropdown
     const worldCategories = [
         'general', 'locations', 'concepts', 'events', 'creatures', 
-        'plants', 'items', 'factions', 'culture', 'cultivation'
+        'plants', 'items', 'factions', 'culture', 'cultivation', 'magic'
     ];
     
     // Generate entries container
@@ -79,16 +79,25 @@ function displayLorebookPreview() {
             <div class="entry-category">
                 <label for="entry-category-${index}">Category</label>
                 <select id="entry-category-${index}" onchange="updateEntryCategory(${index}, this.value)">
-                    ${worldCategories.map(cat => 
-                        `<option value="${cat}" ${cat === entry.category ? 'selected' : ''}>
-                            ${cat.charAt(0).toUpperCase() + cat.slice(1)}
-                        </option>`
-                    ).join('')}
+                    ${worldCategories.map(cat => {
+                        // Get display name with custom labels
+                        let displayName;
+                        if (cat === 'magic' && infoData.magicOptions?.customLabel) {
+                            displayName = infoData.magicOptions.customLabel;
+                        } else if (cat === 'cultivation' && infoData.cultivationOptions?.customLabel) {
+                            displayName = infoData.cultivationOptions.customLabel;
+                        } else {
+                            displayName = cat.charAt(0).toUpperCase() + cat.slice(1);
+                        }
+                        
+                        return `<option value="${cat}" ${cat === entry.category ? 'selected' : ''}>
+                            ${displayName}
+                        </option>`;
+                    }).join('')}
                 </select>
             </div>
             
             <div class="entry-content">
-                <label for="entry-content-${index}">Content</label>
                 <textarea id="entry-content-${index}"
                           onchange="updateEntryContent(${index}, this.value)" 
                           placeholder="Entry content...">${escapeHtml(entry.content)}</textarea>

@@ -77,8 +77,8 @@
     },
     {
       "id": "generate",
-      "title": "Generate",
-      "content": "When your project is ready, the Generate tab creates the HTML for your site. It provides both an HTML preview and a visual preview (without images). You can either download the HTML directly or save it to your \"sites\" folder. Files are saved in \"sites/projectname\", which is created automatically if it doesn’t already exist. Each generation produces a fresh version of your site."
+      "title": "Export",
+      "content": "When your project is ready, the Export tab creates the HTML for your site. It provides both an HTML preview and a visual preview (without images). You can either download the HTML directly or save it to your \"sites\" folder. Files are saved in \"sites/projectname\", which is created automatically if it doesn’t already exist. Each generation produces a fresh version of your site."
     },
     {
       "id": "rename",
@@ -88,7 +88,7 @@
     {
       "id": "quick-access",
       "title": "Quick Access",
-      "content": "Quick Access buttons streamline loading and generating.\n\nIf you’ve previously loaded a project, right-clicking the project dropdown lets you **Quick Load** your last project. Once a project is open, right-clicking the Generate tab allows you to **Quick Generate and Save** without visiting the Generate tab directly. After using Quick Gen, you can also **Quick Open**, which launches your project in a new tab for immediate viewing.\n\n**Color pickers** also have a form of quick access: by double-clicking them, you can copy the current color's HEX code to the clipboard; right click shows an input field where you can directly paste or type a HEX code."
+      "content": "Quick Access buttons streamline loading and generating.\n\nIf you’ve previously loaded a project, right-clicking the project dropdown lets you **Quick Load** your last project. Once a project is open, right-clicking the Export tab allows you to **Quick Generate and Save** without visiting the Export tab directly. After using Quick Gen, you can also **Quick Open**, which launches your project in a new tab for immediate viewing.\n\n**Color pickers** also have a form of quick access: by double-clicking them, you can copy the current color's HEX code to the clipboard; right click shows an input field where you can directly paste or type a HEX code."
     }
   ]
 }

@@ -59,11 +59,11 @@ const cardStyles = {
     },
     'playersHandbook': {
         name: 'Player\'s Handbook',
-        description: 'Ornate medieval manuscript cards with illuminated portraits, quest descriptions, battle maps, and bardic song sheets'
+        description: 'Ornate medieval manuscript cards with illuminated portraits'
     },
     'adventurersTome': {
         name: 'Adventurer\'s Tome',
-        description: ''
+        description: 'Well-worn for the discerning adventurer'
     },
     'horrific': {
         name: 'Horrific',
@@ -2573,9 +2573,6 @@ case 'magicalGirl':
                     background: ${colors.navHover}; /* Use the parchment color from the nav */
                     border-radius: 4px;
                     border: 1px solid ${colors.textSecondary}; /* Dark, wood-like border */
-                    box-shadow: 
-                        inset 0 0 15px rgba(0,0,0,0.3), /* Inner shadow for depth */
-                        0 2px 5px rgba(0,0,0,0.2);      /* Outer shadow to lift it off the page */
                     cursor: pointer;
                     transition: all 0.2s ease-in-out;
                     display: flex;
@@ -2586,9 +2583,6 @@ case 'magicalGirl':
                 .character-card:hover, .storyline-card:hover, .plan-card:hover, .playlist-card:hover {
                     transform: translateY(-3px) scale(1.01);
                     border-color: ${colors.textPrimary}; /* A darker, more prominent border on hover */
-                    box-shadow: 
-                        inset 0 0 10px rgba(0,0,0,0.2), 
-                        0 4px 12px rgba(0,0,0,0.3);
                 }
                 
                 /* Character Card Specifics */

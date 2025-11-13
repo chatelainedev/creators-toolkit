@@ -248,11 +248,11 @@ REM Start the server and browser
 cd server
 echo.
 echo Server is starting...
-echo Browser will open automatically at http://localhost:3000
+echo Browser will open automatically at http://localhost:9000
 echo.
 start /B npm start
 timeout /t 3 /nobreak >nul
-start http://localhost:3000
+start http://localhost:9000
 
 echo.
 echo ✅ Server started! 

@@ -270,7 +270,12 @@
                             </div>
                             
                             <div class="new-category-row">
-                                <input type="text" id="new-category-name" class="category-input" placeholder="New category name...">
+                                <div class="category-input-wrapper">
+                                    <input type="text" id="new-category-name" class="category-input" placeholder="New category name...">
+                                    <button id="add-category-inline-btn" class="category-inline-btn" disabled title="Add Category">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                                 <label class="category-scope-toggle" title="Global categories are available in all projects">
                                     <input type="checkbox" id="category-is-global" checked>
                                     <span class="toggle-text">Global</span>
@@ -447,6 +452,10 @@
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
+
+                        <button id="find-replace-btn" class="btn-secondary view-btn" title="Find & Replace">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
                         
                         <div id="entry-counter" class="entry-counter">
                             <span id="entry-counter-text">0/0</span>
@@ -593,6 +602,135 @@
         </div>
     </div>
 
+    <!-- Advanced Options Modal -->
+    <div id="advanced-options-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content edit-modal"> <!-- re-using edit-modal class for similar styling -->
+            <div class="modal-header">
+                <h3>Advanced Entry Options</h3>
+                <button id="advanced-options-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+
+                <!-- Overrides & Scan Depth Row -->
+                <div class="form-group">
+                     <div class="ao-row">
+                        <div class="ao-scan-depth-group">
+                            <label for="ao-scan-depth">Scan Depth</label>
+                            <input type="number" id="ao-scan-depth" class="edit-input" placeholder="Global">
+                        </div>
+                        <div>
+                            <label for="ao-case-sensitive">Case Sensitive</label>
+                            <select id="ao-case-sensitive" class="edit-select">
+                                <option value="null">Global</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="ao-match-whole-words">Whole Words</label>
+                            <select id="ao-match-whole-words" class="edit-select">
+                                <option value="null">Global</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="ao-use-group-scoring">Group Scoring</label>
+                            <select id="ao-use-group-scoring" class="edit-select">
+                                <option value="null">Global</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkboxes Section -->
+                <div class="form-group">
+                    <!-- Change the class on this div -->
+                    <div class="ao-flags-row"> 
+                        <label class="checkbox-label"><input type="checkbox" id="ao-exclude-recursion"> Exclude Recursion</label>
+                        <label class="checkbox-label"><input type="checkbox" id="ao-delay-until-recursion"> Delay Until Recursion</label>
+                        <label class="checkbox-label"><input type="checkbox" id="ao-ignore-budget"> Ignore Budget</label>
+                        <div class="ao-probability-group">
+                             <label class="checkbox-label"><input type="checkbox" id="ao-use-probability"> Use Probability</label>
+                             <input type="number" id="ao-probability" class="edit-input ao-prob-input" min="0" max="100" placeholder="100" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timing Section -->
+                <div class="form-group">
+                    <div class="ao-row">
+                        <div>
+                            <label for="ao-sticky">Sticky</label>
+                            <input type="number" id="ao-sticky" class="edit-input" value="0" min="0">
+                        </div>
+                        <div>
+                            <label for="ao-cooldown">Cooldown</label>
+                            <input type="number" id="ao-cooldown" class="edit-input" value="0" min="0">
+                        </div>
+                        <div>
+                            <label for="ao-delay">Delay</label>
+                            <input type="number" id="ao-delay" class="edit-input" value="0" min="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grouping Section -->
+                <div class="form-group">
+                    <div class="ao-row">
+                        <div style="flex: 2;">
+                            <label for="ao-group">Group</label>
+                            <input type="text" id="ao-group" class="edit-input" placeholder="Group name">
+                        </div>
+                        <div>
+                            <label for="ao-group-weight">Weight</label>
+                            <input type="number" id="ao-group-weight" class="edit-input" value="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- START of new Character Filter section -->
+                <div class="form-group">
+                    <label>Character Filter:</label>
+                    <div class="ao-char-filter-controls">
+                        <div class="ao-toggle-switch">
+                            <input type="checkbox" id="ao-char-filter-toggle" class="ao-toggle-checkbox">
+                            <label for="ao-char-filter-toggle" class="ao-toggle-label include">Include</label>
+                            <label for="ao-char-filter-toggle" class="ao-toggle-label exclude">Exclude</label>
+                            <div class="ao-toggle-slider"></div>
+                        </div>
+                        <div class="ao-row">
+                            <div>
+                                <label for="ao-char-names">Character Names (comma-separated)</label>
+                                <input type="text" id="ao-char-names" class="edit-input" placeholder="Alice, Bob...">
+                            </div>
+                            <div>
+                                <label for="ao-char-tags">Character Tags (comma-separated)</label>
+                                <input type="text" id="ao-char-tags" class="edit-input" placeholder="protagonist, antagonist...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automation ID -->
+                <div class="form-group">
+                    <label for="ao-automation-id">Automation ID:</label>
+                    <input type="text" id="ao-automation-id" class="edit-input" placeholder="ID for automation scripts">
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="advanced-options-cancel" class="btn-secondary">Cancel</button>
+                <button id="advanced-options-save" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Category Icon Selection Modal -->
     <div id="icon-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content icon-modal">
@@ -668,14 +806,86 @@
         </div>
     </div>
 
+    <!-- Find & Replace Modal -->
+    <div id="find-replace-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content find-replace-modal">
+            <div class="modal-header">
+                <h3>Find & Replace</h3>
+                <button id="find-replace-modal-close" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="fr-controls">
+                    <div class="form-group">
+                        <label for="fr-find-input">Find:</label>
+                        <input type="text" id="fr-find-input" class="edit-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="fr-replace-input">Replace with:</label>
+                        <input type="text" id="fr-replace-input" class="edit-input">
+                    </div>
+                    <div class="fr-options-row">
+                        <div class="form-group fr-source-group">
+                            <label for="fr-source-select">Search in:</label>
+                            <select id="fr-source-select" class="edit-select">
+                                <option value="content">Content Only</option>
+                                <option value="keys">Keywords Only</option>
+                                <option value="names">Entry Names Only</option>
+                                <option value="all">All Fields</option>
+                            </select>
+                        </div>
+                        <div class="fr-toggles">
+                            <label class="checkbox-label" title="Match case sensitive">
+                                <input type="checkbox" id="fr-match-case"> Match Case
+                            </label>
+                            <label class="checkbox-label" title="Match whole words only">
+                                <input type="checkbox" id="fr-whole-words"> Whole Words
+                            </label>
+                            <label class="checkbox-label" title="Use regular expressions">
+                                <input type="checkbox" id="fr-use-regex"> Regex
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-results-container">
+                    <div class="fr-results-header">
+                        <span id="fr-results-count">0 matches found</span>
+                    </div>
+                    <div id="fr-results-list" class="fr-results-list">
+                        <!-- Search results will be populated here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="fr-find-all-btn" class="btn-secondary">Find All</button>
+                <button id="fr-replace-btn" class="btn-secondary" disabled>Replace</button>
+                <button id="fr-replace-all-btn" class="btn-primary" disabled>Replace All</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Context Menu for Project Dropdown -->
-<div id="project-context-menu" class="project-context-menu" style="display: none;">
+    <div id="project-context-menu" class="project-context-menu" style="display: none;">
         <div class="context-menu-item" id="quick-load-option">
             <i class="fas fa-bolt"></i> Quick Load
         </div>
         <div class="context-menu-item" id="rename-project-option" style="display: none;">
             <i class="fas fa-edit"></i> Rename
         </div>
+    </div>
+
+    <!-- Entry Context Menu -->
+    <div id="entry-context-menu" class="entry-context-menu" style="display: none;">
+        <button class="context-menu-item" data-action="copy">
+            <i class="fas fa-copy"></i>
+            Copy
+        </button>
+        <div class="context-menu-separator"></div>
+        <button class="context-menu-item danger" data-action="delete">
+            <i class="fas fa-trash"></i>
+            Delete
+        </button>
     </div>
 
     <!-- Toast Container -->
@@ -688,6 +898,7 @@
     <script src="modules/bulk-actions.js"></script>
     <script src="extractor.js"></script>
     <script src="modules/sillytavern-integration.js"></script>
+    <script src="modules/find-replace.js"></script>
     <script src="modules/entry-helper.js"></script>
     <script src="about/lorebook-manager-about.js"></script>
 </body>

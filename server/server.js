@@ -49,7 +49,7 @@ const entryHelperRoutes = require('./entry-helper');
 const packageJson = require('./package.json');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 9000;
 
 // Generate a unique server session ID when server starts
 const SERVER_SESSION_ID = 'server_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);

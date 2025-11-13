@@ -93,6 +93,7 @@ async function createUserSession(userId, username, password) {
 
 async function validateSessionToken(token) {
     try {
+        await fs.ensureDir(SESSIONS_FOLDER); // ADD THIS LINE
         const files = await fs.readdir(SESSIONS_FOLDER);
         
         for (const file of files) {

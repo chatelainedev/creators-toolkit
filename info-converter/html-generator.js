@@ -80,6 +80,17 @@ function generateGoogleFontLinks() {
     }
 }
 
+// Helper function to find which category an item belongs to
+function getCategoryForItem(itemName, worldData) {
+    for (const category in worldData) {
+        if (Array.isArray(worldData[category])) {
+            const found = worldData[category].find(item => item.name === itemName);
+            if (found) return category;
+        }
+    }
+    return 'items'; // fallback
+}
+
 // Main HTML generation function - now uses external CSS generator
 function generateHTML() {
     console.log('🔄 Starting HTML generation...');
@@ -462,7 +473,7 @@ function generateModals(data) {
     // Character modals - EXCLUDE NOTES FROM VISIBLE HTML but INCLUDE TAGS
     if (data.characters && data.characters.length > 0) {
         data.characters.forEach((character, index) => {
-            modalsHTML += generateCharacterModal(character, index);
+            modalsHTML += generateCharacterModal(character, index, data);
         });
     }
     
@@ -488,13 +499,306 @@ function generateModals(data) {
     return modalsHTML;
 }
 
-function generateCharacterModal(character, index) {
+function generateCharacterModal(character, index, data = {}) {
     const mainImage = character.image 
         ? `<div class="character-main-image">
                <img src="${character.image}" alt="${character.name}">
            </div>`
         : `<div class="character-main-image">No Image</div>`;
+
+    // Check if Info-Display should be shown (default false)- Check both global AND per-character settings
+    const globalShowInfoDisplay = data.charactersOptions?.showInfoDisplay ?? false;
+    const characterShowInfoDisplay = character.showInfoDisplay !== false; // default true
+    const showInfoDisplay = globalShowInfoDisplay && characterShowInfoDisplay; // BOTH must be true
+
+    // Determine if this character should use Info-Display
+    // (must have at least location, faction, or items with icons, in addition to the option being enabled)
+    let useInfoDisplay = false;
+    let itemsWithIcons = [];
+    let hasFaction = false;
+    let hasLocation = false; // ADD THIS LINE
+    let skillsWithIcons = [];
+
+    if (showInfoDisplay) {
+        // Check for location
+        hasLocation = character.location && character.location.trim() !== ''; // ADD THIS LINE
+        
+        // Check for faction
+        hasFaction = character.faction && character.faction.trim() !== '';
+        
+        // Check for items with icons
+        if (character.items && character.items.length > 0 && data.world) {
+            character.items.forEach(itemName => {
+                Object.values(data.world).forEach(categoryArray => {
+                    if (Array.isArray(categoryArray)) {
+                        const foundItem = categoryArray.find(item => item.name === itemName);
+                        if (foundItem && foundItem.icon) {
+                            itemsWithIcons.push(foundItem);
+                        }
+                    }
+                });
+            });
+        }
+
+        if (character.skills && character.skills.length > 0 && data.world) {
+            character.skills.forEach(skillName => {
+                if (data.world.magic && Array.isArray(data.world.magic)) {
+                    const foundMagic = data.world.magic.find(item => item.name === skillName);
+                    if (foundMagic && foundMagic.icon) {
+                        skillsWithIcons.push({ ...foundMagic, category: 'magic' });
+                    }
+                }
+                
+                if (data.world.cultivation && Array.isArray(data.world.cultivation)) {
+                    const foundCultivation = data.world.cultivation.find(item => item.name === skillName);
+                    if (foundCultivation && foundCultivation.icon) {
+                        skillsWithIcons.push({ ...foundCultivation, category: 'cultivation' });
+                    }
+                }
+            });
+        }
+        
+        // Use Info-Display if character has location, faction, OR items with icons
+        useInfoDisplay = hasLocation || hasFaction || itemsWithIcons.length > 0 || skillsWithIcons.length > 0;
+    }
     
+    // Generate Info-Display section
+    let infoDisplayHTML = '';
+    if (useInfoDisplay) {
+        infoDisplayHTML = '<div class="character-info-display">';
+        // Name (use fullName if available, otherwise use name)
+        const displayName = character.fullName || character.name;
+        infoDisplayHTML += `<div class="info-display-header"><span class="character-display-name">${displayName}</span></div>`;
+        
+        // Two-column layout for content
+        infoDisplayHTML += '<div class="info-display-content-grid">';
+        
+        // LEFT COLUMN - Basic info
+        infoDisplayHTML += '<div class="info-display-left">';
+        
+        // Title (only if it exists)
+        if (character.title && character.title.trim()) {
+            infoDisplayHTML += `
+                <div class="info-display-row">
+                    <span class="info-display-value character-display-name">${character.title}</span>
+                </div>`;
+        }
+
+        // Get custom labels or use defaults
+        const labels = data.charactersOptions?.infoDisplayLabels || {};
+        const ageLabel = labels.age || 'Age';
+        const originLabel = labels.origin || 'Origin';
+        const factionLabel = labels.faction || 'Faction';
+        const itemsLabel = labels.items || 'Special Items';
+        
+        // Age (only if it exists)
+        if (character.age && character.age.trim()) {
+            infoDisplayHTML += `
+                <div class="info-display-row">
+                    <span class="info-display-label">${ageLabel}:</span>
+                    <span class="info-display-value">${character.age}</span>
+                </div>`;
+        }
+        
+        // Origin/Location (only if assigned)
+        if (hasLocation) {
+            let locationId = '';
+            if (data.world && data.world.locations) {
+                const locationEntry = data.world.locations.find(l => l.name === character.location);
+                if (locationEntry) {
+                    locationId = locationEntry.id || `locations_${character.location.toLowerCase().replace(/\s+/g, '-')}`;
+                }
+            }
+            
+            infoDisplayHTML += `
+                <div class="info-display-row">
+                    <span class="info-display-label">${originLabel}:</span>
+                    <span class="info-display-value">
+                        <a href="#" class="info-display-link" onclick="scrollToWorldItem('${locationId}'); return false;">${character.location}</a>
+                    </span>
+                </div>`;
+        }
+        
+        // Faction (only if assigned)
+        if (hasFaction) {
+            let factionId = '';
+            if (data.world && data.world.factions) {
+                const factionEntry = data.world.factions.find(f => f.name === character.faction);
+                if (factionEntry) {
+                    factionId = factionEntry.id || `factions_${character.faction.toLowerCase().replace(/\s+/g, '-')}`;
+                }
+            }
+            
+            infoDisplayHTML += `
+                <div class="info-display-row">
+                    <span class="info-display-label">${factionLabel}:</span>
+                    <span class="info-display-value">
+                        <a href="#" class="info-display-link" onclick="scrollToWorldItem('${factionId}'); return false;">${character.faction}</a>
+                    </span>
+                </div>`;
+        }
+        
+// Special Items section (if exist)
+        if (itemsWithIcons.length > 0) {
+            infoDisplayHTML += `
+                <div class="info-display-row info-display-items">
+                    <span class="info-display-label">${itemsLabel}:</span>
+                    <button class="icons-carousel-nav prev ${itemsWithIcons.length > 4 ? 'visible' : ''}" 
+                            onclick="scrollIcons(this, 'prev', 'items', ${index})" 
+                            type="button">‹</button>
+                    <div class="info-display-icons" data-carousel-id="items-${index}">`;
+            
+            // Show ALL items, no slicing
+            itemsWithIcons.forEach(item => {
+                let iconHTML = '';
+                let outerBorderRadius = '0';
+                
+                if (item.icon.type === 'custom') {
+                    iconHTML = `<img src="${item.icon.image}" alt="${item.name}" style="width: 28px; height: 28px; object-fit: contain;">`;
+                } else if (item.icon.type === 'builder') {
+                    const iconPath = `assets/world/items/icons/${item.id}.png`;
+                    let borderCSS = 'none';
+                    if (item.icon.borderStyle === 'thin') {
+                        borderCSS = `2px solid ${item.icon.borderColor}`;
+                    } else if (item.icon.borderStyle === 'thick') {
+                        borderCSS = `4px solid ${item.icon.borderColor}`;
+                    }
+                    const borderRadius = item.icon.shape === 'circle' ? '50%' : '0';
+                    outerBorderRadius = borderRadius;
+                    
+                    iconHTML = `
+                        <div style="
+                            width: 100%;
+                            height: 100%;
+                            background-color: ${item.icon.bgColor};
+                            border: ${borderCSS};
+                            border-radius: ${borderRadius};
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            box-sizing: border-box;
+                        ">
+                            <img src="${iconPath}" alt="${item.name}" style="width: 26px; height: 26px; image-rendering: pixelated;">
+                        </div>`;
+                }
+                
+                const itemDomId = item.id || `${getCategoryForItem(item.name, data.world)}_${item.name.toLowerCase().replace(/\s+/g, '-')}`;
+                
+                infoDisplayHTML += `
+                    <div class="item-tooltip-container" data-tooltip="${item.name}">
+                        <div class="info-display-icon" 
+                            style="border-radius: ${outerBorderRadius};"
+                            data-item-id="${itemDomId}" 
+                            onclick="scrollToWorldItem('${itemDomId}')">
+                            ${iconHTML}
+                        </div>
+                    </div>`;
+            });
+            
+            infoDisplayHTML += `
+                    </div>
+                    <button class="icons-carousel-nav next ${itemsWithIcons.length > 4 ? 'visible' : ''}" 
+                            onclick="scrollIcons(this, 'next', 'items', ${index})" 
+                            type="button">›</button>
+                </div>`;
+        }
+        
+        infoDisplayHTML += '</div>'; // Close left column
+        
+        // RIGHT COLUMN - Stats and Skills container
+        infoDisplayHTML += '<div class="info-display-right">';
+        
+        // Stats display (if stats exist)
+        if (character.stats && character.stats.entries && character.stats.entries.length > 0) {
+            infoDisplayHTML += '<div class="info-display-stats">';
+            
+            character.stats.entries.forEach(stat => {
+                const percentage = (stat.value / character.stats.range) * 100;
+                infoDisplayHTML += `
+                    <div class="stat-display-row">
+                        <div class="stat-label">${stat.label}</div>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>`;
+            });
+            
+            infoDisplayHTML += '</div>'; // Close stats
+        }
+        
+        // Skills section at bottom (if exist)
+        if (skillsWithIcons.length > 0) {
+            const maxVisibleIcons = 5;
+            const visibleSkills = skillsWithIcons.slice(0, maxVisibleIcons);
+            const remainingCount = skillsWithIcons.length - maxVisibleIcons;
+            
+            infoDisplayHTML += '<div class="info-display-skills-container">';
+            infoDisplayHTML += '<div class="info-display-skills-icons">';
+            
+            visibleSkills.forEach(skill => {
+                let iconHTML = '';
+                let outerBorderRadius = '0';
+                
+                if (skill.icon.type === 'custom') {
+                    iconHTML = `
+                        <div style="
+                            width: 100%;
+                            height: 100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">
+                            <img src="${skill.icon.image}" alt="${skill.name}" style="width: 34px; height: 34px; object-fit: contain;">
+                        </div>`;
+                } else if (skill.icon.type === 'builder') {
+                    const iconPath = `assets/world/${skill.category}/icons/${skill.id}.png`;
+                    let borderCSS = 'none';
+                    if (skill.icon.borderStyle === 'thin') {
+                        borderCSS = `2px solid ${skill.icon.borderColor}`;
+                    } else if (skill.icon.borderStyle === 'thick') {
+                        borderCSS = `4px solid ${skill.icon.borderColor}`;
+                    }
+                    const borderRadius = skill.icon.shape === 'circle' ? '50%' : '0';
+                    outerBorderRadius = borderRadius;
+                    
+                    iconHTML = `
+                        <div style="
+                            width: 100%;
+                            height: 100%;
+                            background-color: ${skill.icon.bgColor};
+                            border: ${borderCSS};
+                            border-radius: ${borderRadius};
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            box-sizing: border-box;
+                        ">
+                            <img src="${iconPath}" alt="${skill.name}" style="width: 30px; height: 30px; image-rendering: pixelated;">
+                        </div>`;
+                }
+                
+                const skillDomId = skill.id || `${skill.category}_${skill.name.toLowerCase().replace(/\s+/g, '-')}`;
+                
+                infoDisplayHTML += `
+                    <div class="skills-tooltip-container" data-tooltip="${skill.name}">
+                        <div class="info-display-skills-icon" 
+                            style="border-radius: ${outerBorderRadius};"
+                            data-item-id="${skillDomId}" 
+                            onclick="scrollToWorldItem('${skillDomId}')">
+                            <span class="icon-corners-wrapper">${iconHTML}</span>
+                        </div>
+                    </div>`;
+            });
+            
+            infoDisplayHTML += '</div>'; // Close icons
+            infoDisplayHTML += '</div>'; // Close skills container
+        }
+        
+        infoDisplayHTML += '</div>'; // Close right column
+        infoDisplayHTML += '</div>'; // Close content grid
+        infoDisplayHTML += '</div>'; // Close character-info-display
+    }
+    // Build the modal HTML
     let modalHTML = `
         <div id="characterModal${index}" class="modal">
             <div class="modal-content">
@@ -505,10 +809,36 @@ function generateCharacterModal(character, index) {
                 <div class="modal-body">
                     <div class="character-modal-grid">
                         <div class="character-header-section">
-                            ${mainImage}
+                            <div class="character-image-area">
+                                ${mainImage}
+                            </div>`;
+    
+    // Add either Info-Display or Basic Info in header
+    if (useInfoDisplay) {
+        modalHTML += `
+                            ${infoDisplayHTML}`;
+    } else {
+        // Default: Basic Info in header
+        modalHTML += `
                             <div class="character-basic-info">`;
-
-    if (character.basic) {
+        if (character.basic) {
+            modalHTML += `
+                                <div class="info-section">
+                                    <div class="info-title">Basic Information</div>
+                                    <div class="info-content">${parseMarkdown(character.basic)}</div>
+                                </div>`;
+        }
+        modalHTML += `
+                            </div>`;
+    }
+    
+    modalHTML += `
+                        </div>
+                        <div class="character-detailed-sections">
+                            <div class="character-info">`;
+    
+    // If using Info-Display, Basic Info goes here in detailed sections
+    if (useInfoDisplay && character.basic) {
         modalHTML += `
                                 <div class="info-section">
                                     <div class="info-title">Basic Information</div>
@@ -516,12 +846,7 @@ function generateCharacterModal(character, index) {
                                 </div>`;
     }
     
-    modalHTML += `
-                            </div>
-                        </div>
-                        <div class="character-detailed-sections">
-                            <div class="character-info">`;
-    
+    // Rest of the sections (same as before)
     if (character.physical) {
         modalHTML += `
                                 <div class="info-section">
@@ -593,9 +918,6 @@ function generateCharacterModal(character, index) {
                                     <div class="info-content">${parseMarkdown(character.relationships)}</div>
                                 </div>`;
     }
-    
-    // NOTE: We intentionally exclude the notes field from the generated HTML
-    // The notes are only for development purposes and should not appear in the final page
     
     modalHTML += `
                             </div>
@@ -941,7 +1263,8 @@ function generateJavaScript() {
         colorScheme: 'current',
         fontSet: 'serif',
         containerStyle: 'left-border',
-        subcontainerStyle: 'soft-bg'
+        subcontainerStyle: 'soft-bg',
+        infodisplayStyle: 'default'
     };
     
     // Embed ALL data including hidden items, notes, plans with sub-arcs, tags, AND new overview fields AND subtitle for import purposes
@@ -952,6 +1275,10 @@ function generateJavaScript() {
         storylines: infoData.storylines,
         storylinesOptions: infoData.storylinesOptions,  // ADD THIS LINE
         charactersOptions: infoData.charactersOptions, 
+        cultureOptions: infoData.cultureOptions,
+        cultivationOptions: infoData.cultivationOptions, 
+        magicOptions: infoData.magicOptions,
+        eventsOptions: infoData.eventsOptions,
         plans: infoData.plans,
         playlists: infoData.playlists,
         customPages: infoData.customPages || [],
@@ -1239,6 +1566,55 @@ function generateJavaScript() {
                     modal.classList.remove('active');
                     document.body.style.overflow = '';
                 }
+            }
+
+            function scrollToWorldItem(itemId) {
+                // Close any open character modal first
+                const openModals = document.querySelectorAll('.modal.active');
+                openModals.forEach(modal => {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                
+                // Switch to world tab
+                showTab('world');
+                
+                // Wait for tab switch, then find and scroll to the item
+                setTimeout(() => {
+                    const itemElement = document.getElementById(itemId);
+                    if (itemElement) {
+                        // Find which category section this item is in
+                        const categorySection = itemElement.closest('.world-section');
+                        if (categorySection) {
+                            // Make sure the category is visible
+                            categorySection.style.display = 'block';
+                            
+                            // If there's a tab system, activate the correct tab
+                            const categoryId = categorySection.id;
+                            if (categoryId) {
+                                const categoryTab = document.getElementById(\`\${categoryId}-tab\`);
+                                if (categoryTab) {
+                                    // Remove active from all tabs
+                                    document.querySelectorAll('.world-tab').forEach(tab => tab.classList.remove('active'));
+                                    // Activate this tab
+                                    categoryTab.classList.add('active');
+                                }
+                            }
+                        }
+                        
+                        // Scroll to the item
+                        itemElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Add highlight effect
+                        itemElement.style.transition = 'box-shadow 0.3s ease';
+                        const highlightColor = getComputedStyle(document.documentElement).getPropertyValue('--link-color').trim();
+                        itemElement.style.boxShadow = \`0 0 20px \${highlightColor}\`;
+                        
+                        setTimeout(() => {
+                            itemElement.style.boxShadow = '';
+                        }, 2000);
+                    }
+                }, 300);
             }
             
             // NEW: Toggle sub-arc expansion
@@ -1569,6 +1945,46 @@ function generateJavaScript() {
             
             // Ensure Overview tab is active by default
             document.addEventListener('DOMContentLoaded', function() {
+                const itemContainers = document.querySelectorAll('.item-tooltip-container[data-tooltip]');
+    
+                itemContainers.forEach(container => {
+                    let tooltip = null;
+                    
+                    container.addEventListener('mouseenter', function(e) {
+                        const tooltipText = this.getAttribute('data-tooltip');
+                        if (!tooltipText) return;
+                        
+                        // Create tooltip element
+                        tooltip = document.createElement('div');
+                        tooltip.className = 'item-tooltip-fixed';
+                        tooltip.textContent = tooltipText;
+                        tooltip.style.cssText = \`
+                            position: fixed;
+                            background: transparent;
+                            color: rgba(0, 0, 0, 0.5);
+                            padding: 4px 8px;
+                            border-radius: 4px;
+                            font-size: 0.75em;
+                            white-space: nowrap;
+                            z-index: 100000;
+                            pointer-events: none;
+                        \`;
+                        document.body.appendChild(tooltip);
+                        
+                        // Position tooltip
+                        const rect = this.getBoundingClientRect();
+                        const tooltipRect = tooltip.getBoundingClientRect();
+                        tooltip.style.left = (rect.left + rect.width / 2 - tooltipRect.width / 2) + 'px';
+                        tooltip.style.top = (rect.bottom + 5) + 'px';
+                    });
+                    
+                    container.addEventListener('mouseleave', function() {
+                        if (tooltip) {
+                            tooltip.remove();
+                            tooltip = null;
+                        }
+                    });
+                });
                 // showTab('overview'); 
 
                 // Handle direct tab linking via URL hash
@@ -1729,6 +2145,23 @@ function generateJavaScript() {
                 div.textContent = text;
                 return div.innerHTML;
             }
+
+            // Icon carousel navigation
+            function scrollIcons(button, direction, type, characterIndex) {
+                const container = button.parentElement.querySelector(\`[data-carousel-id="\${type}-\${characterIndex}"]\`);
+                if (!container) return;
+                
+                const iconWidth = type === 'items' ? 38 : 54; // icon width + gap
+                const scrollAmount = iconWidth * 2; // Scroll 2 icons at a time
+                
+                if (direction === 'next') {
+                    container.scrollLeft += scrollAmount;
+                } else {
+                    container.scrollLeft -= scrollAmount;
+                }
+            }
+
+            window.scrollIcons = scrollIcons;
 
             // Make storylines functions globally available
             window.switchStorylinesView = switchStorylinesView;

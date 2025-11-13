@@ -5,6 +5,7 @@ class MainPageManager {
         this.currentTab = 'tools'; // Track current tab
         this.isNavigating = false; // Track if we're intentionally navigating
         this.initializeMainPage();
+        this.hideAIFeaturesIfNeeded();
     }
 
     // Initialize main page functionality
@@ -13,6 +14,62 @@ class MainPageManager {
         this.setupKeyboardShortcuts();
         this.handleImageErrors();
         this.initializeTabSystem();
+    }
+
+    // Hide AI features if setting is disabled
+    async hideAIFeaturesIfNeeded() {
+        try {
+            // Wait for auth manager to be ready
+            while (!window.authManager) {
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            
+            const preferences = await window.authManager.loadUserPreferences();
+            const aiToolsEnabled = preferences.aiToolsEnabled || false;
+            
+            // Get the elements
+            const cowriterTab = document.querySelector('[data-tab="cowriter"]');
+            const managersDropdown = document.querySelector('.nav-dropdown');
+            
+            if (!aiToolsEnabled) {
+                // Hide features
+                if (cowriterTab) {
+                    cowriterTab.style.display = 'none';
+                }
+                if (managersDropdown) {
+                    managersDropdown.style.display = 'none';
+                }
+                console.log('🚫 AI features hidden (user preference)');
+            } else {
+                // Actively SHOW features (in case they were hidden by previous user)
+                if (cowriterTab) {
+                    cowriterTab.style.display = '';
+                }
+                if (managersDropdown) {
+                    managersDropdown.style.display = '';
+                }
+                console.log('✅ AI features shown (user preference)');
+            }
+        } catch (error) {
+            console.error('Error checking AI tools setting:', error);
+        }
+    }
+
+    // Show AI features (called when logging out or when setting is enabled)
+    showAIFeatures() {
+        // Show CoWriter tab
+        const cowriterTab = document.querySelector('[data-tab="cowriter"]');
+        if (cowriterTab) {
+            cowriterTab.style.display = '';
+        }
+        
+        // Show Managers dropdown
+        const managersDropdown = document.querySelector('.nav-dropdown');
+        if (managersDropdown) {
+            managersDropdown.style.display = '';
+        }
+        
+        console.log('✅ AI features shown');
     }
 
     // Initialize tab system
@@ -231,7 +288,7 @@ class MainPageManager {
 
         try {
             // Check if the server is already running
-            const infoConverterUrl = 'http://localhost:3000/info-converter';
+            const infoConverterUrl = 'http://localhost:9000/info-converter';
             const isServerRunning = await this.checkServerStatus(infoConverterUrl);
             
             if (isServerRunning) {
@@ -353,7 +410,7 @@ class MainPageManager {
         connectBtn.disabled = true;
 
         try {
-            const isRunning = await this.checkServerStatus('http://localhost:3000');
+            const isRunning = await this.checkServerStatus('http://localhost:9000');
             
             if (isRunning) {
                 // Success! Set navigation flag and show loading
@@ -370,7 +427,7 @@ class MainPageManager {
                 // Wait a bit for the loading to show, then navigate
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 console.log('🔗 Navigating to Lore Codex server...');
-                window.location.href = 'http://localhost:3000';
+                window.location.href = 'http://localhost:9000';
             } else {
                 // Still not running
                 this.showToast('Server not found. Make sure start-server.bat is running.', 'warning');
@@ -663,6 +720,9 @@ class MainPageManager {
 
     // Method to refresh My Sites when user logs in
     onUserLoggedIn() {
+        // Re-check AI features for the new user
+        this.hideAIFeaturesIfNeeded();
+        
         // If currently on My Sites tab, refresh it
         if (this.currentTab === 'my-sites' && window.mySitesManager) {
             window.mySitesManager.refresh();
@@ -675,15 +735,12 @@ class MainPageManager {
         if (this.currentTab === 'notebook' && window.notebookManager) {
             window.notebookManager.onUserLoggedIn();
         }
-        // ADD THIS LINE:
         if (window.notebookWorkspaceManager) {
             window.notebookWorkspaceManager.onUserLoggedIn();
         }
-        // In onUserLoggedIn method, add this line:
         if (window.notebookThemeManager) {
             window.notebookThemeManager.onUserLoggedIn();
         }
-        // ADD THIS NEW LINE:
         if (window.settingsManager) {
             window.settingsManager.onUserLoggedIn();
         }
@@ -694,7 +751,6 @@ class MainPageManager {
         console.log('🚪 MainPageManager.onUserLoggedOut called');
         
         // ADDED: Double-check that user is actually logged out
-        // Sometimes this gets called due to timing issues during page loads
         setTimeout(() => {
             const user = window.authManager?.getCurrentUser();
             if (user && !user.isGuest) {
@@ -704,6 +760,9 @@ class MainPageManager {
             }
             
             console.log('✅ Confirmed user logout, clearing data');
+            
+            // Show AI features by default when logged out (reset to visible state)
+            this.showAIFeatures();
             
             // Clear My Sites if manager exists
             if (window.mySitesManager) {
@@ -721,14 +780,13 @@ class MainPageManager {
             if (window.notebookThemeManager) {
                 window.notebookThemeManager.onUserLoggedOut();
             }
-            // ADD THIS NEW LINE:
             if (window.settingsManager) {
                 window.settingsManager.onUserLoggedOut();
             }
             
             // Switch back to tools tab
             this.switchTab('tools');
-        }, 100); // Small delay to let auth state settle
+        }, 100);
     }
 }
 

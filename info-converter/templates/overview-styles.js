@@ -668,28 +668,6 @@ function generateOverviewStyles(overviewStyle, colors, fonts, generateOverviewMa
                     min-height: 500px;
                 }
 
-                /* Illuminated corner decorations */
-                .overview-content::before {
-                    content: '❦';
-                    position: absolute;
-                    top: 20px; left: 20px;
-                    color: ${colors.journalAccent}77;
-                    font-size: 24px;
-                    pointer-events: none;
-                    z-index: 1;
-                }
-
-                .overview-content::after {
-                    content: '❦';
-                    position: absolute;
-                    bottom: 20px; right: 20px;
-                    color: ${colors.journalAccent}77;
-                    font-size: 24px;
-                    transform: rotate(180deg);
-                    pointer-events: none;
-                    z-index: 1;
-                }
-
                 .overview-content p {
                     font-family: ${fonts.primary}, serif;
                     font-size: 16px;
@@ -1415,14 +1393,15 @@ function generateOverviewStyles(overviewStyle, colors, fonts, generateOverviewMa
 
                 /* Ribbon at the top */
                 .overview-content::before {
-                    content: '🎀';
+                    content: '𓆩༺✧༻𓆪';
                     position: absolute;
-                    top: -25px;
+                    top: 5px;
                     left: 50%;
                     transform: translateX(-50%);
                     font-size: 40px;
                     text-shadow: 0 2px 5px rgba(0,0,0,0.1);
                     z-index: 3;
+                    color: ${colors.kawaiiPink}99;
                 }
 
                 /* Floating sparkles */
@@ -1524,19 +1503,6 @@ function generateOverviewStyles(overviewStyle, colors, fonts, generateOverviewMa
                     right: 25px;
                     font-size: 24px;
                     animation: crystalPulse 4s ease-in-out infinite;
-                    z-index: 1;
-                }
-                
-                /* Dripping potion effect */
-                .overview-content::after {
-                    content: '';
-                    position: absolute;
-                    top: -6px;
-                    left: 30%;
-                    width: 2px;
-                    height: 50px;
-                    background: linear-gradient(${colors.kawaiiGreen}99, transparent);
-                    border-radius: 50%;
                     z-index: 1;
                 }
 
@@ -2161,7 +2127,7 @@ function generateOverviewStyles(overviewStyle, colors, fonts, generateOverviewMa
                         0 6px 25px rgba(0,0,0,0.7),
                         inset 0 0 15px rgba(0,0,0,0.3) !important;
                     filter: saturate(0.8) contrast(1.2) brightness(0.9);
-                    transition: all 0.4s ease;
+                    transition: opacity 0.2s ease, transform 0.2s ease;
                 }
 
                 .overview-content .overview-image-container .overview-image:hover {

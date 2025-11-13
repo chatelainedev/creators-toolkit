@@ -423,18 +423,26 @@ router.post('/save', async (req, res) => {
         // Save the new HTML file
         await fs.writeFile(filePath, html, 'utf8');
         
-        // Save/update config file
-        const config = {
-            projectName: cleanProjectName,
-            htmlFilename: htmlFilename,
-            created: new Date().toISOString(),
-            modified: new Date().toISOString()
-        };
-        
-        // Preserve creation date if config already exists
-        if (await fs.pathExists(configPath)) {
-            try {
-                const existingConfig = await fs.readJson(configPath);
+            // Save/update config file
+            let config = {
+                projectName: cleanProjectName,
+                htmlFilename: htmlFilename,
+                created: new Date().toISOString(),
+                modified: new Date().toISOString()
+            };
+
+            // Preserve existing config data if it exists
+            if (await fs.pathExists(configPath)) {
+                try {
+                    const existingConfig = await fs.readJson(configPath);
+                    // Preserve creation date
+                    if (existingConfig.created) {
+                        config.created = existingConfig.created;
+                    }
+                    // Preserve icon styles
+                    if (existingConfig.iconStyles) {
+                        config.iconStyles = existingConfig.iconStyles;
+                    }
                 config.created = existingConfig.created || config.created;
             } catch (e) {}
         }
@@ -455,21 +463,41 @@ router.post('/save', async (req, res) => {
         if (styleAssets && styleAssets.length > 0) {
             for (const asset of styleAssets) {
                 try {
-                    const sourcePath = path.join(__dirname, '..', 'info-converter', asset.source);
-                    const destPath = path.join(projectFolder, asset.destination);
-                    
-                    // Ensure destination directory exists
-                    await fs.ensureDir(path.dirname(destPath));
-                    
-                    // Copy the asset file
-                    if (await fs.pathExists(sourcePath)) {
-                        await fs.copy(sourcePath, destPath);
-                        assetsCopied.push(asset.destination);
+                    // Handle icon-builder type assets specially
+                    if (asset.type === 'icon-builder') {
+                        // For builder icons, we need to render them to PNG
+                        const sourcePath = path.join(__dirname, '..', 'info-converter', asset.source);
+                        const destPath = path.join(projectFolder, asset.destination);
+                        
+                        // Ensure destination directory exists
+                        await fs.ensureDir(path.dirname(destPath));
+                        
+                        // Simply copy the source icon PNG directly
+                        if (await fs.pathExists(sourcePath)) {
+                            await fs.copy(sourcePath, destPath);
+                            assetsCopied.push(asset.destination);
+                            console.log(`✅ Copied icon: ${asset.source} -> ${asset.destination}`);
+                        } else {
+                            console.warn(`⚠️ Icon source not found: ${asset.source}`);
+                        }
                     } else {
-                        console.warn(`⚠️ Style asset not found: ${asset.source}`);
+                        // Handle regular style assets
+                        const sourcePath = path.join(__dirname, '..', 'info-converter', asset.source);
+                        const destPath = path.join(projectFolder, asset.destination);
+                        
+                        // Ensure destination directory exists
+                        await fs.ensureDir(path.dirname(destPath));
+                        
+                        // Copy the asset file
+                        if (await fs.pathExists(sourcePath)) {
+                            await fs.copy(sourcePath, destPath);
+                            assetsCopied.push(asset.destination);
+                        } else {
+                            console.warn(`⚠️ Style asset not found: ${asset.source}`);
+                        }
                     }
                 } catch (error) {
-                    console.error(`❌ Failed to copy style asset ${asset.source}:`, error);
+                    console.error(`❌ Failed to copy asset ${asset.source}:`, error);
                 }
             }
         }
@@ -499,6 +527,136 @@ router.post('/save', async (req, res) => {
     } catch (error) {
         console.error('Error saving file:', error);
         res.status(500).json({ error: 'Failed to save file' });
+    }
+});
+
+// Get available item icons by scanning the folder structure
+router.get('/icons/scan', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'File system access not available in hosted environment' });
+    }
+
+    try {
+        const iconsBasePath = path.join(__dirname, '..', 'info-converter', 'images', 'item-icons');
+        
+        console.log('🔍 Scanning for item icons at:', iconsBasePath);
+
+        // Check if the base icons folder exists
+        if (!await fs.pathExists(iconsBasePath)) {
+            console.log('📁 Item icons folder does not exist yet');
+            return res.json({ categories: {} });
+        }
+
+        // Read all subdirectories (these are the categories)
+        const entries = await fs.readdir(iconsBasePath, { withFileTypes: true });
+        const categories = {};
+
+        for (const entry of entries) {
+            if (entry.isDirectory()) {
+                const categoryName = entry.name;
+                const categoryPath = path.join(iconsBasePath, categoryName);
+                
+                // Read all image files in this category
+                const files = await fs.readdir(categoryPath);
+                const imageFiles = files.filter(file => 
+                    /\.(png|jpg|jpeg|gif|svg)$/i.test(file)
+                );
+
+                if (imageFiles.length > 0) {
+                    categories[categoryName] = imageFiles.map(file => ({
+                        name: file.replace(/\.(png|jpg|jpeg|gif|svg)$/i, ''), // Remove extension for display name
+                        file: file
+                    }));
+                    
+                    console.log(`  📂 ${categoryName}: ${imageFiles.length} icons`);
+                }
+            }
+        }
+
+        console.log(`✅ Found ${Object.keys(categories).length} icon categories`);
+        res.json({ categories });
+
+    } catch (error) {
+        console.error('❌ Error scanning icon folders:', error);
+        res.status(500).json({ error: 'Failed to scan icon folders' });
+    }
+});
+
+// Save built icon PNG to project assets folder
+router.post('/save-built-icon', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'File system access not available in hosted environment' });
+    }
+
+    try {
+        const { projectName, itemId, category, pngData, userContext } = req.body;
+        
+        if (!projectName || !itemId || !pngData) {
+            return res.status(400).json({ error: 'Missing required parameters' });
+        }
+
+        const validation = validateUserContext(userContext);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
+        // Determine folder based on category (default to items for backward compatibility)
+        const categoryFolder = category || 'items';
+        
+        const sitesFolder = getUserSitesFolder(userContext);
+        const projectFolder = path.join(sitesFolder, projectName);
+        const iconsFolder = path.join(projectFolder, 'assets', 'world', categoryFolder, 'icons');
+        
+        // Create icons folder if it doesn't exist
+        await fs.ensureDir(iconsFolder);
+        
+        // Save PNG (remove data:image/png;base64, prefix)
+        const base64Data = pngData.replace(/^data:image\/png;base64,/, '');
+        const iconPath = path.join(iconsFolder, `${itemId}.png`);
+        
+        await fs.writeFile(iconPath, base64Data, 'base64');
+        
+        res.json({ 
+            success: true,
+            iconPath: `assets/world/${categoryFolder}/icons/${itemId}.png`
+        });
+    } catch (error) {
+        console.error('Error saving built icon:', error);
+        res.status(500).json({ error: 'Failed to save built icon' });
+    }
+});
+
+// Save project config (for icon styles, etc.)
+router.post('/save-project-config', async (req, res) => {
+    if (!IS_LOCAL) {
+        return res.status(403).json({ error: 'File system access not available in hosted environment' });
+    }
+
+    try {
+        const { projectName, config, userContext } = req.body;
+        
+        if (!projectName || !config) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Missing projectName or config' 
+            });
+        }
+
+        const validation = validateUserContext(userContext);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
+        const sitesFolder = getUserSitesFolder(userContext);
+        const projectFolder = path.join(sitesFolder, projectName);
+        const configPath = path.join(projectFolder, 'project-config.json');
+        
+        await fs.writeFile(configPath, JSON.stringify(config, null, 2), 'utf8');
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error saving project config:', error);
+        res.json({ success: false, error: error.message });
     }
 });
 
@@ -975,9 +1133,22 @@ router.post('/assets/import-image', async (req, res) => {
             // Create directory if it doesn't exist
             await fs.ensureDir(destinationPath);
             
+            // Check if this is an icon (should preserve PNG transparency)
+            const isIconPath = folderPath.includes('/icons') || folderPath.includes('\\icons');
+            const isOriginalPNG = req.file.mimetype === 'image/png';
+
             // Write the file manually
             const finalPath = path.join(destinationPath, filename);
-            await fs.writeFile(finalPath, req.file.buffer);
+
+            // For icons that are PNG, preserve transparency - no processing
+            if (isIconPath && isOriginalPNG && filename.toLowerCase().endsWith('.png')) {
+                console.log('📌 Preserving PNG transparency for icon');
+                await fs.writeFile(finalPath, req.file.buffer);
+            } else {
+                // For all other images, write as-is (you can add JPG conversion here if needed)
+                console.log('💾 Saving image without processing');
+                await fs.writeFile(finalPath, req.file.buffer);
+            }
 
             console.log(`📷 Asset Import Success:`);
             console.log(`  - Project: ${projectName}`);
@@ -1097,7 +1268,8 @@ router.post('/assets/create', async (req, res) => {
             'assets/world/concepts',
             'assets/world/creatures',
             'assets/world/plants',
-            'assets/world/items'
+            'assets/world/items',
+            'assets/world/items/icons' 
         ];
 
         for (const folder of folders) {

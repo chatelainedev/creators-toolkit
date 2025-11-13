@@ -49,6 +49,7 @@ let infoData = {
         cardStyle: 'current',
         containerStyle: 'left-border',
         subcontainerStyle: 'soft-bg',
+        infodisplayStyle: 'default',
         siteWidth: 'standard'
     },
     characters: [],
@@ -57,6 +58,22 @@ let infoData = {
         showTOC: true,
         showSections: true,
         showSubsections: true
+    },
+    charactersOptions: {              // ADD THIS if it's not there
+        showByFaction: true,
+        showInfoDisplay: false
+    },
+    eventsOptions: {       // ADD THIS
+        customLabel: 'Events'
+    },
+    cultureOptions: {       // ADD THIS
+        customLabel: 'Culture'
+    },
+    cultivationOptions: {       // ADD THIS
+        customLabel: 'Cultivation'
+    },
+    magicOptions: {                   // ADD THIS ENTIRE BLOCK
+        customLabel: 'Magic'
     },
     plans: [], // NEW: Story arcs/plans with sub-arcs
     playlists: [], // ADD THIS LINE
@@ -127,6 +144,65 @@ function switchMainTab(tabName) {
         activeContent.classList.add('active');
     } else {
         console.error(`Could not find main tab or content for: ${tabName}`);
+    }
+}
+
+// Save all built icons to project folder
+async function saveBuiltIcons(projectName, data) {
+    if (!data.world) return;
+    
+    const userContext = userSessionManager.getUserContext();
+    const savePromises = [];
+    
+    console.log('🔍 Checking for built icons to save...');
+    
+    // Go through all world items
+    for (const category in data.world) {
+        if (Array.isArray(data.world[category])) {
+            for (const item of data.world[category]) {
+                console.log(`  - ${item.name}: icon type = ${item.icon?.type}, has PNG = ${!!item.icon?.generatedPNG}`);
+                
+                // Only save if it has a builder icon with generated PNG data
+                if (item.icon && item.icon.type === 'builder' && item.icon.generatedPNG) {
+                    console.log(`    ✅ Will save icon for ${item.name} (ID: ${item.id})`);
+                    
+                    const promise = fetch('/api/save-built-icon', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            projectName: projectName,
+                            itemId: item.id,
+                            category: category,  // ADD THIS LINE
+                            pngData: item.icon.generatedPNG,
+                            userContext: userContext
+                        })
+                    }).then(response => response.json())
+                      .then(result => {
+                          if (result.success) {
+                              console.log(`    ✅ Saved icon: ${result.iconPath}`);
+                          } else {
+                              console.error(`    ❌ Failed to save icon for ${item.name}`);
+                          }
+                          return result;
+                      })
+                      .catch(err => {
+                          console.error(`    ❌ Error saving icon for ${item.name}:`, err);
+                          return { success: false };
+                      });
+                    
+                    savePromises.push(promise);
+                }
+            }
+        }
+    }
+    
+    if (savePromises.length > 0) {
+        console.log(`💾 Saving ${savePromises.length} built icon(s)...`);
+        const results = await Promise.all(savePromises);
+        const successCount = results.filter(r => r.success).length;
+        console.log(`✅ Saved ${successCount}/${savePromises.length} icon(s)`);
+    } else {
+        console.log('ℹ️ No built icons found to save');
     }
 }
 
@@ -780,7 +856,7 @@ async function saveToSitesFolder() {
     
     // Enhanced checks
     if (!window.htmlGenerated) {
-        showStatus('error', 'Please generate HTML first using the "Generate HTML" button');
+        showStatus('error', 'Please generate HTML first using the "Create" button');
         return;
     }
     
@@ -875,6 +951,13 @@ async function continueSaveToFolder(projectName, hasError, html) {
         const userContext = userSessionManager.getUserContext();
         let result; // Declare this at the top
         
+        // Get the collected data (needed for saving built icons and style assets)
+        const data = collectFormData();
+        
+        // Save built icons FIRST (before either path)
+        showStatus('info', 'Saving built icons...');
+        await saveBuiltIcons(projectName, data);
+        
         if (hasError) {
             showStatus('info', 'Detected generation error, restoring backup and retrying...');
             
@@ -909,7 +992,7 @@ async function continueSaveToFolder(projectName, hasError, html) {
                     filename: window.projectFilename || 'info',
                     userContext,
                     skipBackup: backupMadeThisSession,
-                    styleAssets: getRequiredStyleAssets(collectFormData())
+                    styleAssets: getRequiredStyleAssets(data)
                 })
             });
             
@@ -935,7 +1018,7 @@ async function continueSaveToFolder(projectName, hasError, html) {
                     filename: window.projectFilename || 'info',
                     userContext,
                     skipBackup: backupMadeThisSession,
-                    styleAssets: getRequiredStyleAssets(collectFormData())
+                    styleAssets: getRequiredStyleAssets(data)
                 })
             });
             
@@ -1280,7 +1363,8 @@ window.debugAppearance = function() {
         colorScheme: document.getElementById('appearance-color-scheme')?.value,
         fontSet: document.getElementById('appearance-font-set')?.value,
         containerStyle: document.getElementById('appearance-container-style')?.value,
-        subcontainerStyle: document.getElementById('appearance-subcontainer-style')?.value
+        subcontainerStyle: document.getElementById('appearance-subcontainer-style')?.value,
+        infodisplayStyle: document.getElementById('appearance-infodisplay-style')?.value
     };
     
     console.log('UI control values:', controls);
@@ -2109,6 +2193,26 @@ function initializeButtons() {
     if (charactersOptionsBtn) {
         charactersOptionsBtn.addEventListener('click', openCharactersOptionsModal);
     }
+
+    const cultivationOptionsBtn = document.getElementById('cultivation-options');
+    if (cultivationOptionsBtn) {
+        cultivationOptionsBtn.addEventListener('click', openCultivationOptionsModal);
+    }
+
+    const magicOptionsBtn = document.getElementById('magic-options');
+    if (magicOptionsBtn) {
+        magicOptionsBtn.addEventListener('click', openMagicOptionsModal);
+    }
+
+    const cultureOptionsBtn = document.getElementById('culture-options');
+    if (cultureOptionsBtn) {
+        cultureOptionsBtn.addEventListener('click', openCultureOptionsModal);
+    }
+
+    const eventsOptionsBtn = document.getElementById('events-options');
+    if (eventsOptionsBtn) {
+        eventsOptionsBtn.addEventListener('click', openEventsOptionsModal);
+    }
     
     // Plan buttons
     const addPlanBtn = document.getElementById('add-plan');
@@ -2213,6 +2317,46 @@ function initializeButtons() {
     const saveCharactersOptionsBtn = document.getElementById('save-characters-options');
     if (saveCharactersOptionsBtn) {
         saveCharactersOptionsBtn.addEventListener('click', saveCharactersOptions);
+    }
+
+    const saveCultivationOptionsBtn = document.getElementById('save-cultivation-options');
+    if (saveCultivationOptionsBtn) {
+        saveCultivationOptionsBtn.addEventListener('click', saveCultivationOptions);
+    }
+
+    const saveMagicOptionsBtn = document.getElementById('save-magic-options');
+    if (saveMagicOptionsBtn) {
+        saveMagicOptionsBtn.addEventListener('click', saveMagicOptions);
+    }
+
+    const saveCultureOptionsBtn = document.getElementById('save-culture-options');
+    if (saveCultureOptionsBtn) {
+        saveCultureOptionsBtn.addEventListener('click', saveCultureOptions);
+    }
+
+    const saveEventsOptionsBtn = document.getElementById('save-events-options');
+    if (saveEventsOptionsBtn) {
+        saveEventsOptionsBtn.addEventListener('click', saveEventsOptions);
+    }
+
+    const manageFactionOrderBtn = document.getElementById('manage-faction-order-btn');
+    if (manageFactionOrderBtn) {
+        manageFactionOrderBtn.addEventListener('click', openFactionOrderModal);
+    }
+
+    const saveFactionOrderBtn = document.getElementById('save-faction-order');
+    if (saveFactionOrderBtn) {
+        saveFactionOrderBtn.addEventListener('click', saveFactionOrder);
+    }
+
+    const customizeInfoDisplayLabelsBtn = document.getElementById('customize-info-display-labels-btn');
+    if (customizeInfoDisplayLabelsBtn) {
+        customizeInfoDisplayLabelsBtn.addEventListener('click', openInfoDisplayLabelsModal);
+    }
+
+    const saveInfoDisplayLabelsBtn = document.getElementById('save-info-display-labels');
+    if (saveInfoDisplayLabelsBtn) {
+        saveInfoDisplayLabelsBtn.addEventListener('click', saveInfoDisplayLabels);
     }
     
     // Plan/event save buttons
@@ -2597,7 +2741,8 @@ function resetForm() {
                 bannerSize: 'large',
                 cardStyle: 'current',
                 containerStyle: 'left-border',
-                subcontainerStyle: 'soft-bg'
+                subcontainerStyle: 'soft-bg',
+                infodisplayStyle: 'default'
             },
             characters: [],
             storylines: [],
@@ -2607,7 +2752,20 @@ function resetForm() {
                 showSubsections: true
             },
             charactersOptions: {
-                showByFaction: true
+                showByFaction: true,
+                showInfoDisplay: false  // ADD THIS LINE
+            },
+            eventsOptions: {       // ADD THIS
+                customLabel: 'Events'
+            },
+            cultureOptions: {       // ADD THIS
+                customLabel: 'Culture'
+            },
+            cultivationOptions: {       // ADD THIS
+                customLabel: 'Cultivation'
+            },
+            magicOptions: {
+                customLabel: 'Magic'
             },
             plans: [], // Reset plans
             world: {
@@ -3199,6 +3357,42 @@ window.updateAllContentLists = function() {
             showByFactionCheckbox.checked = infoData.charactersOptions.showByFaction ?? true;
         }
     }
+
+    // Load events options input field
+    if (infoData.eventsOptions) {
+        const eventsLabelInput = document.getElementById('events-custom-label');
+        
+        if (eventsLabelInput) {
+            eventsLabelInput.value = infoData.eventsOptions.customLabel || 'Events';
+        }
+    }
+
+    // Load culture options input field
+    if (infoData.cultureOptions) {
+        const cultureLabelInput = document.getElementById('culture-custom-label');
+        
+        if (cultureLabelInput) {
+            cultureLabelInput.value = infoData.cultureOptions.customLabel || 'Culture';
+        }
+    }
+
+    // Load cultivation options input field
+    if (infoData.cultivationOptions) {
+        const cultivationLabelInput = document.getElementById('cultivation-custom-label');
+        
+        if (cultivationLabelInput) {
+            cultivationLabelInput.value = infoData.cultivationOptions.customLabel || 'Cultivation';
+        }
+    }
+
+    // Load magic options input field
+    if (infoData.magicOptions) {
+        const magicLabelInput = document.getElementById('magic-custom-label');
+        
+        if (magicLabelInput) {
+            magicLabelInput.value = infoData.magicOptions.customLabel || 'Magic';
+        }
+    }
     
     // Update all content lists
     updateContentList('characters');
@@ -3219,6 +3413,9 @@ window.updateAllContentLists = function() {
     
     // Update all item counts
     updateAllItemCounts();
+
+    // Update category labels with custom names
+    updateCategoryLabels(); 
 }
 
 // Keyboard navigation for sidebar
@@ -3765,13 +3962,18 @@ function getDefaultImagePath(context) {
             // Use the current editing category
             const category = editingCategory || 'items';
             return `assets/world/${category}/`;
+        case 'item-icon':
+            // Use the current editing category
+            const iconcategory = editingCategory || 'items';
+            return `assets/world/${iconcategory}/icons/`;
         default:
             return 'assets/';
     }
 }
 
 // Add this compression utility function
-async function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) {
+// CHANGE THIS FUNCTION:
+async function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.85, outputFormat = 'image/jpeg') {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -3795,8 +3997,9 @@ async function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 
             canvas.height = height;
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Convert to blob (compressed)
-            canvas.toBlob(resolve, 'image/jpeg', quality);
+            // Convert to blob with specified format
+            // For PNG, quality parameter is ignored
+            canvas.toBlob(resolve, outputFormat, quality);
         };
         
         img.src = URL.createObjectURL(file);
@@ -3816,11 +4019,84 @@ async function handleImageFileSelection() {
         
         // Skip compression for character cards - they must stay PNG
         if (context === 'character-card') {
-            // Just use the suggested name from handleFileSelection, don't compress
+            updateFinalImagePath();
+            return;
+        }
+        if (context === 'item-icon') {
             updateFinalImagePath();
             return;
         }
         
+        // ADD THIS BLOCK: Handle banner and background images (resize only, keep PNG)
+        if (context === 'banner' || context === 'background' || context === 'modal-bg') {
+            // Only resize if image is very large (over 2000px)
+            const img = new Image();
+            img.onload = async function() {
+                if (img.width > 2000 || img.height > 2000) {
+                    // Show resizing status
+                    const status = document.createElement('div');
+                    status.textContent = 'Resizing image...';
+                    status.style.color = '#007bff';
+                    fileInput.parentNode.appendChild(status);
+                    
+                    try {
+                        // Resize but keep as PNG
+                        const maxDim = context === 'banner' ? 2000 : 1920;
+                        const resizedBlob = await compressImage(file, maxDim, maxDim, 1.0, 'image/png');
+                        
+                        // Get original extension or default to png
+                        const originalExt = file.name.split('.').pop().toLowerCase();
+                        const ext = originalExt === 'png' || originalExt === 'jpg' || originalExt === 'jpeg' ? originalExt : 'png';
+                        const baseName = file.name.replace(/\.[^/.]+$/, '');
+                        
+                        // Create new file with resized data (keep original extension)
+                        const resizedFile = new File([resizedBlob], `${baseName}.${ext}`, {
+                            type: `image/${ext === 'jpg' || ext === 'jpeg' ? 'jpeg' : 'png'}`,
+                            lastModified: Date.now()
+                        });
+                        
+                        // Replace the file in the input
+                        const dt = new DataTransfer();
+                        dt.items.add(resizedFile);
+                        fileInput.files = dt.files;
+                        
+                        // Keep original extension in filename
+                        nameInput.value = `${baseName}.${ext}`;
+                        
+                        const originalSize = (file.size / 1024).toFixed(1);
+                        const resizedSize = (resizedFile.size / 1024).toFixed(1);
+                        
+                        status.textContent = `✓ Resized: ${originalSize}KB → ${resizedSize}KB (kept as ${ext.toUpperCase()})`;
+                        status.style.color = '#28a745';
+                        
+                        // Remove status after 3 seconds
+                        setTimeout(() => {
+                            if (status.parentNode) {
+                                status.parentNode.removeChild(status);
+                            }
+                        }, 3000);
+                        
+                    } catch (error) {
+                        status.textContent = '⚠ Resize failed, using original';
+                        status.style.color = '#dc3545';
+                        nameInput.value = file.name;
+                        setTimeout(() => {
+                            if (status.parentNode) {
+                                status.parentNode.removeChild(status);
+                            }
+                        }, 3000);
+                    }
+                } else {
+                    // Image is not too large, use as-is
+                    nameInput.value = file.name;
+                }
+                updateFinalImagePath();
+            };
+            img.src = URL.createObjectURL(file);
+            return;
+        }
+        
+        // REST OF THE FUNCTION CONTINUES AS BEFORE (for JPG compression)
         // Show compression status for other contexts
         const status = document.createElement('div');
         status.textContent = 'Compressing image...';
@@ -4331,6 +4607,7 @@ function toggleCollapsible(header) {
 document.addEventListener('keydown', handleSidebarKeyboard);
 
 // Make functions globally available
+window.toggleCollapsible = toggleCollapsible;
 window.initializeSidebar = initializeSidebar;
 window.switchToCategory = switchToCategory;
 window.updateItemCount = updateItemCount;

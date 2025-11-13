@@ -303,7 +303,7 @@ function updateGenerateButtonState() {
         generateBtn.textContent = 'Loading Project...';
     } else {
         generateBtn.disabled = false;
-        generateBtn.textContent = 'Generate HTML';
+        generateBtn.textContent = 'Create';
     }
 }
 

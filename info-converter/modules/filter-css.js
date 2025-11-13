@@ -20,7 +20,7 @@ function generateUnifiedFilterCSS(colors, fonts, appearance) {
             headerStyles = `
                 background: ${colors.containerBg};
                 border-radius: 12px;
-                transition: all 0.3s ease;
+                transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
             `;
             break;
             
@@ -34,7 +34,7 @@ function generateUnifiedFilterCSS(colors, fonts, appearance) {
             headerStyles = `
                 background: transparent;
                 border-radius: 0;
-                transition: all 0.2s ease;
+                transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
             `;
             break;
             
@@ -48,7 +48,7 @@ function generateUnifiedFilterCSS(colors, fonts, appearance) {
             headerStyles = `
                 background: linear-gradient(135deg, ${colors.headerBg}, ${colors.containerBg});
                 border-radius: 8px;
-                transition: all 0.3s ease;
+                transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
             `;
             break;
             
@@ -80,7 +80,7 @@ function generateUnifiedFilterCSS(colors, fonts, appearance) {
             headerStyles = `
                 background: ${colors.headerBg};
                 border-radius: 0;
-                transition: all 0.2s ease;
+                transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
                 position: relative;
             `;
             break;
@@ -120,7 +120,7 @@ function generateUnifiedFilterCSS(colors, fonts, appearance) {
             headerStyles = `
                 background: ${colors.navHover} !important;
                 border-radius: 4px;
-                transition: all 0.2s ease-in-out;
+                transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
                 border-bottom: 1px solid #3d2a1c;
             `;
             break;
@@ -143,7 +143,7 @@ function generateUnifiedFilterCSS(colors, fonts, appearance) {
                     ${colors.headerBg} 0%, 
                     rgba(139,21,56,0.08) 100%);
                 border-radius: 0;
-                transition: all 0.4s ease;
+                transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
                 border-bottom: 1px solid rgba(139,21,56,0.3);
             `;
             break;
@@ -166,7 +166,7 @@ function generateUnifiedFilterCSS(colors, fonts, appearance) {
                     rgba(245,245,220,0.4) 0%, 
                     rgba(250,240,230,0.2) 100%);
                 border-radius: 8px;
-                transition: all 0.2s ease;
+                transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
                 border-bottom: 1px solid rgba(139,69,19,0.15);
             `;
             break;
@@ -441,7 +441,7 @@ function generateUnifiedFilterCSS(colors, fonts, appearance) {
             cursor: pointer;
             font-size: 0.85em;
             font-weight: 500;
-            transition: all 0.2s ease;
+            transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
             background: transparent;
             border: none;
             color: ${colors.textSecondary};

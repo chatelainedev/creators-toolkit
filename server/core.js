@@ -174,7 +174,8 @@ function getDefaultSettings(settingType) {
             theme: 'dark',
             autoSave: true,
             defaultTemplate: 'generated.css',
-            notifications: true
+            notifications: true,
+            aiToolsEnabled: false 
         },
         usage: {
             toolsUsed: {},

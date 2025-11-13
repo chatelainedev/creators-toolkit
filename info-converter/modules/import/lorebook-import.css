@@ -123,8 +123,8 @@
 .lorebook-entry {
     display: grid;
     grid-template-columns: auto 1fr 1fr;
-    grid-template-rows: auto auto auto;
-    gap: 4px var(--space-sm);  /* CHANGED: use explicit 4px for row gap instead of var(--space-xs) */
+    grid-template-rows: auto auto;
+    gap: var(--space-sm) var(--space-sm);
     padding: var(--space-sm);
     margin-bottom: var(--space-md);
     background-color: var(--bg-secondary);
@@ -160,6 +160,8 @@
 .entry-name {
     grid-column: 2;
     grid-row: 1;
+    position: relative;  /* ADD THIS */
+    z-index: 2;          /* ADD THIS - keeps it above content */
 }
 
 .entry-name label {
@@ -192,6 +194,8 @@
 .entry-category {
     grid-column: 3;
     grid-row: 1;
+    position: relative;  /* ADD THIS */
+    z-index: 2;          /* ADD THIS - keeps it above content */
 }
 
 .entry-category label {
@@ -220,26 +224,18 @@
 }
 
 /* ===== ENTRY CONTENT - Spans both columns, row 2 ===== */
-/* Line ~118 - ADD/UPDATE: */
 .entry-content {
     grid-column: 2 / -1;
     grid-row: 2;
-    margin-top: -25px;  /* ADD THIS - pulls content section up slightly */
+    margin-top: calc(var(--space-sm) * -3.5);
+    position: relative;  /* ADD THIS */
+    z-index: 1;          /* ADD THIS - keeps it below name/category */
 }
 
-.entry-content label {
-    display: block;
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin: 0 0 -25px;
-}
-
-/* Line ~125 - ADD margin: 0 if not already there: */
 .entry-content textarea {
     width: 100%;
-    min-height: 80px;
-    max-height: 150px;
+    min-height: 130px;
+    max-height: 200px;
     padding: var(--space-sm);
     border: 1px solid var(--border-primary);
     border-radius: var(--radius-sm);
@@ -248,7 +244,7 @@
     font-size: var(--font-size-sm);
     line-height: 1.4;
     resize: vertical;
-    margin: 0 0 -15px 0;  /* MAKE SURE THIS IS 0 */
+    margin: 0;
     font-family: inherit;
 }
 

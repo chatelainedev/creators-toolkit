@@ -59,7 +59,7 @@ const containerStyles = {
     },
     'adventurersTome': {
         name: 'Adventurer\'s Tome',
-        description: ''
+        description: 'In the style of classic fantasy, tavern-inspired, leather and wood.'
     },
     'horrific': {
         name: 'Horrific',
@@ -131,7 +131,7 @@ const subcontainerStyles = {
     },
     'adventurersTome': {
         name: 'Adventurer\'s Tome',
-        description: ''
+        description: 'Stitched leather effect'
     },
     'horrific': {
         name: 'Horrific', 
@@ -419,17 +419,17 @@ function generateContainerStyles(containerStyle, colors) {
                     border: 1px solid ${colors.textMuted}33;
                     border-radius: 0 6px 6px 6px;
                     position: relative;
-                    margin-top: 8px;
+                    margin-top: 12px;        
+                    overflow: visible;
                 }
-
-                 .world-item .world-item-content .item-name .image-indicator { background: ${colors.statusDraft} !important; }
 
                 /* Tab at the top */
                 .world-item::before {
                     content: '';
                     position: absolute;
-                    top: -8px; left: 15px;
-                    width: 80px; height: 8px;
+                    top: -10px; left: 15px;
+                    width: 80px; height: 10px;
+                    background: ${colors.containerBg};
                     border-radius: 4px 4px 0 0;
                     border: 1px solid ${colors.textMuted}33;
                     border-bottom: none;
@@ -721,7 +721,7 @@ function generateContainerStyles(containerStyle, colors) {
                     box-shadow: 
                         0 2px 12px rgba(0,0,0,0.05),
                         0 1px 3px rgba(0,0,0,0.08);
-                    transition: all 0.3s ease;
+                    transition: opacity 0.2s ease, transform 0.2s ease;
                 }
 
                 /* Chinese cloud pattern overlay */
@@ -735,20 +735,6 @@ function generateContainerStyles(containerStyle, colors) {
                     pointer-events: none;
                     z-index: 1;
                     background-blend-mode: soft-light;
-                }
-
-                /* Gentle hover enhancement */
-                .world-item:hover {
-                    box-shadow: 
-                        0 4px 20px rgba(0,0,0,0.08),
-                        0 2px 6px rgba(0,0,0,0.1);
-                    background: linear-gradient(135deg, 
-                        ${colors.containerBg} 0%, 
-                        ${colors.wuxiaAccentLight}80 100%);
-                }
-
-                .world-item:hover::before {
-                    opacity: 0.15;
                 }
 
                 /* Ensure content stays above overlay */
@@ -952,7 +938,7 @@ function generateContainerStyles(containerStyle, colors) {
                     box-shadow: 
                         0 4px 20px rgba(0,0,0,0.6),
                         inset 0 1px 3px ${colors.journalAccent}33;
-                    transition: all 0.3s ease;
+                    transition: opacity 0.2s ease, transform 0.2s ease;
                 }
 
                 /* Ominous texture overlay on each container */
@@ -2102,7 +2088,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                     border-radius: 12px !important;
                     border: none;
                     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-                    margin: 15px 0;
+                    margin: 5px 0;
                 }
 
                 .character-info .info-section:first-child {
@@ -2144,7 +2130,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                     border-radius: 30px;
                     box-shadow: 0 4px 12px ${colors.bodyBg === '#1a1a1a' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
                     border: 2px solid ${colors.textMuted}33;
-                    margin: 12px 0;
+                    margin: 5px 0;
                 }
 
                 .character-info .info-section:nth-child(1) { border-color: ${colors.physical}66; }
@@ -2225,7 +2211,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                 .character-basic-info .info-section {
                     background: ${colors.headerBg};
                     padding: 18px 20px;
-                    margin: 12px 0;
+                    margin: 5px 0;
                     border: 1px solid ${colors.textMuted}33;
                     border-radius: 8px;
                     box-shadow: 0 2px 6px rgba(0,0,0,${colors.bodyBg === '#1a1a1a' ? '0.1' : '0.05'});
@@ -2237,7 +2223,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                 .character-basic-info .info-section {
                     background: ${colors.containerBg};
                     padding: 0;
-                    margin: 15px 0;
+                    margin: 5px 0;
                     border: 1px solid ${colors.textMuted}33;
                     border-radius: 8px;
                     overflow: hidden;
@@ -2262,7 +2248,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                 .character-basic-info .info-section {
                     background: linear-gradient(135deg, ${colors.headerBg} 0%, ${colors.containerBg} 100%);
                     padding: 20px 22px;
-                    margin: 18px 0;
+                    margin: 8px 0;
                     border: 1px solid ${colors.textMuted}20;
                     border-radius: 15px;
                     box-shadow: 0 3px 10px rgba(0,0,0,${colors.bodyBg === '#1a1a1a' ? '0.1' : '0.05'});
@@ -2276,11 +2262,18 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                     background: transparent;
                     padding: 18px 0;
                     border-radius: 0;
+                    margin: 8px 0;
                     border-bottom: 1px dotted ${colors.textMuted};
                 }
                 
                 .character-info .info-section:last-child {
                     border-bottom: none;
+                }
+                    
+                .character-info .info-section .info-title,
+                .character-basic-info .info-section .info-title {
+                    background: transparent;
+                    border: none;
                 }`;
 
         case 'kawaii':
@@ -2292,7 +2285,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                         ${colors.softBg} 0%, 
                         ${colors.headerBg} 100%);
                     padding: 18px 22px;
-                    margin: 15px 0;
+                    margin: 5px 0;
                     border: 2px solid ${colors.textMuted}30;
                     border-radius: 20px;
                     box-shadow: 0 4px 15px rgba(0,0,0,0.06);
@@ -2335,7 +2328,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                         ${colors.containerBg} 0%, 
                         ${colors.softBg} 60%);
                     padding: 20px 24px;
-                    margin: 18px 0;
+                    margin: 5px 0;
                     border: 3px solid;
                     border-radius: 25px;
                     box-shadow: 
@@ -2413,7 +2406,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                         ${colors.headerBg} 50%, 
                         ${colors.containerBg} 100%);
                     padding: 20px 22px;
-                    margin: 18px 0;
+                    margin: 3px 0;
                     border: 2px solid ${colors.textMuted}40;
                     border-radius: 15px;
                     position: relative;
@@ -2470,7 +2463,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                 .character-basic-info .info-section {
                     background: ${colors.headerBg};
                     padding: 18px 22px !important;
-                    margin: 12px 0;
+                    margin: 2px 0;
                     border-radius: 0 !important;
                     position: relative;
                     /* Thick left border for section categorization */
@@ -2529,8 +2522,8 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                     background: linear-gradient(135deg, 
                         ${colors.containerBg} 0%, 
                         ${colors.wuxiaGlow}60 100%);
-                    padding: 20px 22px;
-                    margin: 15px 0;
+                    padding: 15px 22px;
+                    margin: 5px 0;
                     border-radius: 8px;
                     border: 1px solid ${colors.bannerBorder};
                     position: relative;
@@ -2737,7 +2730,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                     
                     /* Spacing and Shape */
                     padding: 18px 22px;
-                    margin: 15px 0;
+                    margin: 5px 0;
                     border-radius: 6px; /* Soft leather corners */
                     
                     /* The "stitching" effect will be applied with color below */
@@ -2781,7 +2774,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                         ${colors.journalAccent}15 50%, 
                         ${colors.headerBg} 100%);
                     padding: 20px 22px !important;
-                    margin: 18px 0;
+                    margin: 8px 0;
                     border: 1px solid ${colors.headerBg};
                     border-radius: 0 !important;
                     position: relative;
@@ -2904,7 +2897,7 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
                         #faf7f2 70%, 
                         #f5f2ed 100%);
                     padding: 20px 22px !important;
-                    margin: 18px 0;
+                    margin: 8px 0;
                     border: 1px solid rgba(139,69,19,0.15);
                     border-radius: 8px !important;
                     position: relative;
@@ -3034,4 +3027,5 @@ function generateCharacterSubcontainerStyles(subcontainerStyle, colors) {
 }
 
 // Make globally available
-export { generateCharacterSubcontainerStyles, generateContainerStyles, generateSubcontainerStyles, containerStyles, subcontainerStyles };
+export default generateCharacterSubcontainerStyles;
+export { generateContainerStyles, generateSubcontainerStyles, containerStyles, subcontainerStyles };

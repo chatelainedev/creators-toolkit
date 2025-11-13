@@ -13,7 +13,8 @@ import { generateStorylineStyles } from './templates/storyline-styles.js';
 import navigationStyles, { generateNavigationStyles } from './templates/navigation-styles.js';
 import bannerStyles, { generateBannerStyleCSS } from './templates/banner-styles.js';
 import backgroundStyles, { generateBackgroundStyleCSS, backgroundColorOverlays, generateBackgroundColorOverlayCSS } from './templates/background-styles.js';
-import { generateCharacterSubcontainerStyles, generateContainerStyles, generateSubcontainerStyles, containerStyles, subcontainerStyles } from './templates/container-styles.js';
+import generateCharacterSubcontainerStyles, { generateContainerStyles, generateSubcontainerStyles, containerStyles, subcontainerStyles } from './templates/container-styles.js';
+import { generateInfodisplayStyles } from './templates/infodisplay-styles.js';
 // CSS Generation Functions
 // Split from html-generator.js to reduce file size
 // At the top of css-generator.js, after other dependencies
@@ -240,6 +241,9 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
     // Generate subcontainer-specific styles
     const subcontainerStyles = generateSubcontainerStyles(appearance.subcontainerStyle, colors);
 
+    // Generate infodisplay-specific styles
+    const infodisplayStyles = generateInfodisplayStyles(appearance.infodisplayStyle, colors, fonts);
+
     const storylineStyles = generateStorylineStyles(appearance.storylineStyle || 'default', colors, fonts);
 
     const cardStyleCSS = (typeof generateCardStyleCSS === 'function') ? 
@@ -275,7 +279,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             min-height: ${containerMinHeight}px;
             ${generateMainContainerBackgroundStyle(basic, colors)}
             box-shadow: 2px 2px 10px rgba(0,0,0,0.1), -2px 2px 10px rgba(0,0,0,0.1);
-            transition: min-height 0.2s ease, background 0.1s ease;
+            /* transition: min-height 0.2s ease; */
         }
 
         /* Section Titles (Characters, World, Storylines, Plans, etc.) */
@@ -557,7 +561,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             background: none;
             font-family: ${fonts.ui};
             font-size: 14px;
-            transition: all 0.2s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
 
         .nav-tab:last-child {
@@ -741,18 +745,18 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
 
         /* Spoiler tag styling */
         .spoiler {
-            background: #888;
-            color: #888;
+            background: ${colors.navBg};
+            color: ${colors.navBg};
             padding: 2px 4px;
             border-radius: 3px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease;
             user-select: none;
         }
 
         .spoiler:hover {
-            background: #666;
-            color: #666;
+            background: ${colors.textMuted};
+            color: ${colors.textMuted};
         }
 
         .spoiler.revealed {
@@ -803,7 +807,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             cursor: pointer;
             border: 1px solid ${colors.textMuted}33;
-            transition: all 0.2s ease; 
+            transition: opacity 0.2s ease, transform 0.2s ease;
             display: flex;
             flex-direction: column;
             min-height: 200px;
@@ -1014,7 +1018,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         .character-modal-grid {
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 5px;  /* ← Reduced from 25px */
             margin-bottom: 25px;
         }
 
@@ -1052,13 +1056,103 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             left: 0;
         }
 
+/* =============================================
+           CHARACTER MODAL - DEFAULT MODE STYLES
+           (Basic Info in header, items below image)
+           ============================================= */
+
+        /* Character Item Icons - DEFAULT MODE ONLY */
+        .character-item-icons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px 14px;
+            background: ${colors.headerBg}88;  /* ~53% opacity */
+            border: 1px solid ${colors.textMuted}33;
+            border-radius: 8px;
+            margin-top: 15px;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        /* Empty state for item icons */
+        .character-item-icons.empty {
+            background: ${colors.headerBg}40;  /* More transparent */
+            border-color: ${colors.textMuted}20;  /* Lighter border */
+            opacity: 0.6;
+            justify-content: center;
+            min-height: 30px;
+            align-items: center;
+        }
+
+        .no-items-text {
+            color: ${colors.textMuted};
+            font-size: 0.85em;
+            font-style: italic;
+            font-family: ${fonts.ui};
+        }
+
+        .character-item-icon {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .character-item-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .character-item-icon:hover {
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        .character-item-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 10px;
+            background: ${colors.textPrimary};
+            color: ${colors.containerBg};
+            border-radius: 4px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            margin-bottom: 8px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .character-item-more {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: ${colors.textSecondary};
+        }
+
+        .character-item-more:hover::after {
+            content: attr(data-tooltip);
+        }
+
+        /* Basic Info container - DEFAULT MODE */
         .character-basic-info {
             flex: 1;
             min-width: 0;
         }
 
         .character-basic-info .info-section {
-            height: 280px !important;
+            height: 285px !important;
+            margin-top: -2px !important;
             display: flex;
             flex-direction: column;
         }
@@ -1197,7 +1291,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             display: none;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease;
             z-index: 100001 !important;
         }
 
@@ -1294,7 +1388,6 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             gap: 8px;
             color: ${colors.textPrimary};
             font-size: 14px;
-            transition: all 0.2s ease;
         }
 
         .context-menu-item:hover {
@@ -1372,6 +1465,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
                 const styles = generateBackToTopStyleCSS(appearance.backToTopStyle || 'circular', colors);
                 return styles.containerCss;
             })()}
+            will-change: opacity, visibility, transform;
         }
 
         /* Add content via pseudo-element */
@@ -1428,7 +1522,10 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         #playlists {
             min-height: ${containerMinHeight}px !important;
         }
+
         ${subcontainerStyles}
+
+        ${infodisplayStyles}
 
         ${cardStyleCSS}
 
@@ -1567,7 +1664,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             border-radius: 2px;
             margin-left: 5px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background 0.2s ease, transform 0.2s ease;
             position: relative;
             vertical-align: middle;
             flex-shrink: 0;
@@ -1587,7 +1684,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             border-radius: 2px;
             margin-left: 5px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background 0.2s ease, transform 0.2s ease;
             position: relative;
             vertical-align: middle;
             flex-shrink: 0;
@@ -1610,7 +1707,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             pointer-events: none;
             opacity: 0;
             transform: scale(0.8);
-            transition: all 0.2s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease;
             display: none;
         }
 

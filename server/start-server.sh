@@ -24,7 +24,7 @@ npm install --silent
 echo "All dependencies installed!"
 echo
 echo "Starting server..."
-echo "This will automatically open your browser to: http://localhost:3000"
+echo "This will automatically open your browser to: http://localhost:9000"
 echo "Press Ctrl+C to stop the server"
 echo
 
@@ -37,20 +37,20 @@ sleep 3
 
 # Try to open browser (different commands for different systems)
 if command -v xdg-open > /dev/null; then
-    xdg-open http://localhost:3000
+    xdg-open http://localhost:9000
 elif command -v open > /dev/null; then
-    open http://localhost:3000
+    open http://localhost:9000
 elif command -v start > /dev/null; then
-    start http://localhost:3000
+    start http://localhost:9000
 else
-    echo "Could not automatically open browser. Please navigate to: http://localhost:3000"
+    echo "Could not automatically open browser. Please navigate to: http://localhost:9000"
 fi
 
 echo
 echo "Server is running and browser opened!"
 echo "You can now use the Creator's Toolkit with file-based user system!"
 echo
-echo "Manual link: http://localhost:3000"
+echo "Manual link: http://localhost:9000"
 echo "User accounts: File-based (no more localStorage dependency)"
 echo "Custom avatars: Supported (2MB max, jpg/png/gif/webp)"
 echo "Lore Codex projects: users/username/sites/project-name/"

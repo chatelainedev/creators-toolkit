@@ -1625,7 +1625,7 @@ function generateStorylineStyles(style, colors, fonts) {
         /* Section headers - prominent dividers between major sections */
         .storyline-section-header {
             text-align: center;
-            margin: 30px 0 -25px 0;
+            margin: 30px 0 -10px 0;
             padding-top: 0;
         }
 
