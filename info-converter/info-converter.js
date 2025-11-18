@@ -76,6 +76,9 @@ let infoData = {
         customLabel: 'Magic'
     },
     plans: [], // NEW: Story arcs/plans with sub-arcs
+    plansOptions: {  // ADD THIS
+        selectedTimeSystemId: 'default'
+    },
     playlists: [], // ADD THIS LINE
     world: {
         locations: [],
@@ -101,12 +104,13 @@ let hasFileAccess = false;
 let sitesFolder = null;
 let currentProject = null;
 
-// Current editing state
-let editingIndex = -1;
-let editingType = '';
-let editingCategory = '';
-let editingEventIndex = -1; // For editing events within arcs
-let editingEventContext = 'main'; // NEW: Track context (main vs subarc)
+// Current editing state - make globally accessible
+// Current editing state - make globally accessible
+window.editingIndex = -1;
+window.editingType = '';
+window.editingCategory = '';
+window.editingEventIndex = -1;
+window.editingEventContext = 'main';
 
 // Drag and Drop functionality
 let draggedElement = null;
@@ -154,17 +158,13 @@ async function saveBuiltIcons(projectName, data) {
     const userContext = userSessionManager.getUserContext();
     const savePromises = [];
     
-    console.log('🔍 Checking for built icons to save...');
-    
     // Go through all world items
     for (const category in data.world) {
         if (Array.isArray(data.world[category])) {
             for (const item of data.world[category]) {
-                console.log(`  - ${item.name}: icon type = ${item.icon?.type}, has PNG = ${!!item.icon?.generatedPNG}`);
                 
                 // Only save if it has a builder icon with generated PNG data
                 if (item.icon && item.icon.type === 'builder' && item.icon.generatedPNG) {
-                    console.log(`    ✅ Will save icon for ${item.name} (ID: ${item.id})`);
                     
                     const promise = fetch('/api/save-built-icon', {
                         method: 'POST',
@@ -197,10 +197,8 @@ async function saveBuiltIcons(projectName, data) {
     }
     
     if (savePromises.length > 0) {
-        console.log(`💾 Saving ${savePromises.length} built icon(s)...`);
         const results = await Promise.all(savePromises);
         const successCount = results.filter(r => r.success).length;
-        console.log(`✅ Saved ${successCount}/${savePromises.length} icon(s)`);
     } else {
         console.log('ℹ️ No built icons found to save');
     }
@@ -290,6 +288,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Add this where other initialization happens
     if (typeof initializeLinkedLorebook === 'function') {
         initializeLinkedLorebook();
+    }
+
+    // Initialize time systems
+    if (typeof initializeTimeSystems === 'function') {
+        await initializeTimeSystems();
     }
     
     // Ensure first main tab is active by default
@@ -2189,6 +2192,11 @@ function initializeButtons() {
         storylinesOptionsBtn.addEventListener('click', openStorylinesOptionsModal);
     }
 
+    const plansOptionsBtn = document.getElementById('plans-options');
+    if (plansOptionsBtn) {
+        plansOptionsBtn.addEventListener('click', openPlansOptionsModal);
+    }
+
     const charactersOptionsBtn = document.getElementById('characters-options');
     if (charactersOptionsBtn) {
         charactersOptionsBtn.addEventListener('click', openCharactersOptionsModal);
@@ -2312,6 +2320,11 @@ function initializeButtons() {
     const saveStorylinesOptionsBtn = document.getElementById('save-storylines-options');
     if (saveStorylinesOptionsBtn) {
         saveStorylinesOptionsBtn.addEventListener('click', saveStorylinesOptions);
+    }
+
+    const savePlansOptionsBtn = document.getElementById('save-plans-options');
+    if (savePlansOptionsBtn) {
+        savePlansOptionsBtn.addEventListener('click', savePlansOptions);
     }
 
     const saveCharactersOptionsBtn = document.getElementById('save-characters-options');
@@ -2768,6 +2781,9 @@ function resetForm() {
                 customLabel: 'Magic'
             },
             plans: [], // Reset plans
+            plansOptions: {  // ADD THIS
+                selectedTimeSystemId: 'default'
+            },
             world: {
                 general: [],
                 locations: [],
@@ -3866,6 +3882,21 @@ async function handleStorylineImport() {
         if (result.success) {
             statusSpan.textContent = '✓ Imported';
             statusSpan.style.color = '#28a745';
+            
+            // Open the storyline modal with extracted data
+            // Create a storyline object with the imported data
+            const importedStoryline = {
+                title: result.storylineData?.title || '',
+                pairing: result.storylineData?.pairing || '',
+                wordcount: result.storylineData?.wordcount || '',
+                lastUpdated: result.storylineData?.lastUpdated || '',
+                description: result.storylineData?.description || '',
+                link: filename, // Set the filename as the link
+                isProjectLink: true // Mark as project link
+            };
+            
+            // Open modal and populate with imported data
+            openStorylineModal(importedStoryline);
             
             setTimeout(() => {
                 statusSpan.textContent = '';

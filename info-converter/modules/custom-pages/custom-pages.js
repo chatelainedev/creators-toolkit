@@ -422,15 +422,11 @@ function migrateExistingPagesToUniversal() {
 }
 
 // Set up all event listeners
-function initializeCustomPagesEventListeners() {
-    console.log('Setting up Custom Pages event listeners...');
-    
+function initializeCustomPagesEventListeners() {   
     // Create page button
     const createPageBtn = document.getElementById('create-page-btn');
-    console.log('Create page button found:', createPageBtn);
     if (createPageBtn) {
         createPageBtn.addEventListener('click', openCreatePageModal);
-        console.log('Create page button event listener added');
     } else {
         console.error('Create page button not found!');
     }

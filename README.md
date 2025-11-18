@@ -1,4 +1,4 @@
-# Creator's Toolkit v2.1.0
+# Creator's Toolkit v3.0.0
 
 A comprehensive writing suite for writers, roleplayers, and creatives of all types. 
 
@@ -43,7 +43,8 @@ This is a personal project that was created for my own use. It's far from perfec
 ## What's Included
 
 ### Lore Codex
-[![characters-example.png](https://i.postimg.cc/vmZdmvfH/characters-example.png)](https://postimg.cc/cv2z9wFV)
+[![characters_example.png](https://i.postimg.cc/vHyCfdxZ/characters_example.png)](https://postimg.cc/SjZZb3GB)
+[![characters_example2.png](https://i.postimg.cc/28YghfLz/characters_example2.png)](https://postimg.cc/qgmmHSGY)
 [![lc-main.png](https://i.postimg.cc/L8GbzcX5/lc-main.png)](https://postimg.cc/bZHgPF1f)
 - Organize characters, locations, factions, items, and more
 - Multiple templates (Basic, Detailed, Fantasy, Sci-Fi, etc.)
@@ -55,7 +56,6 @@ This is a personal project that was created for my own use. It's far from perfec
 [![rpa-main.png](https://i.postimg.cc/sg0RbHgH/rpa-main.png)](https://postimg.cc/yD95ZP90)
 - Create "universes" to organize roleplay projects
 - Story management with chapters and scenes
-- Character profiles and relationships
 - Image galleries and media organization
 - Export to clean HTML formats
 
@@ -148,6 +148,7 @@ creators-toolkit/
 ### Lost Data
 - Check the `users/userID/` folder for your projects
 - Look for `.backup.json` files in your settings folder
+- **Always keep a backup of your `users/userID` folder.** This is where all of your project information is located.
 
 ### Batch/Shell Script Issues
 - If you downloaded from GitHub and get script errors, the line endings may be corrupted
@@ -159,6 +160,5 @@ creators-toolkit/
 
 - All data stays on your computer - nothing is sent to external servers
 - No internet required after initial Node.js setup
-- Your projects remain private unless you choose to export/share them
+- Your projects remain private unless you choose to share them
 - User passwords are securely hashed with bcrypt
-- File-based storage means no dependency on browser localStorage

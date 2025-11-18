@@ -579,6 +579,14 @@ function generatePlansCSS(colors, fonts, appearance) {
             font-family: 'Arial', sans-serif;
         }
 
+        .plan-event-type.none {
+            background-color: ${colors.textMuted};
+        }
+
+        .plan-event-type.exposition {
+            background-color: ${colors.physical};
+        }
+
         .plan-event-type.rising {
             background-color: ${colors.statusCanon};
         }
@@ -590,6 +598,25 @@ function generatePlansCSS(colors, fonts, appearance) {
         .plan-event-type.climax {
             background-color: ${colors.statusDraft};
             color: ${colors.statusDraft === '#ffc107' ? '#212529' : 'white'};
+        }
+
+        .plan-event-type.resolution {
+            background-color: ${colors.hobbies};
+        }
+
+        /* Arc/SubArc Type Badges */
+        .arc-type-badge, .subarc-type-badge {
+            display: inline-block;
+            font-size: 10px;
+            color: white;
+            padding: 3px 8px;
+            border-radius: ${cardStyle === 'modern' ? '10px' : cardStyle === 'minimal' ? '0' : '4px'};
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-family: 'Arial', sans-serif;
+            margin-left: 10px;
+            vertical-align: middle;
         }
 
         .plan-event-title {

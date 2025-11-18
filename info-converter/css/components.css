@@ -576,7 +576,7 @@ button {
 /* Category Options Button - smaller icon button */
 #characters-options, #storylines-options,
 #magic-options, #cultivation-options,
-#culture-options, #events-options {
+#culture-options, #events-options, #plans-options {
     padding: var(--space-xs);
     width: 28px;
     height: 28px;
@@ -591,7 +591,7 @@ button {
 
 #characters-options:hover, #storylines-options:hover,
 #magic-options:hover, #cultivation-options:hover,
-#culture-options:hover, #events-options:hover {
+#culture-options:hover, #events-options:hover, #plans-options:hover {
     color: var(--accent-primary);
     border-color: var(--accent-primary);
     background-color: var(--bg-hover);
@@ -1447,4 +1447,519 @@ button {
     margin: 0;
     flex: 1;
     color: var(--text-inputs);
+}
+
+/* PLANS TIME SYSTEM UI */
+/* Time Systems Styles */
+.time-systems-nav-item {
+    padding: var(--space-sm);
+    margin-bottom: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+.time-systems-nav-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.time-systems-nav-item.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.time-systems-nav-item i {
+    width: 16px;
+    text-align: center;
+}
+
+.time-section {
+    display: none;
+}
+
+.time-section.active {
+    display: block;
+}
+
+.time-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.time-item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    cursor: move;
+}
+
+.time-item.dragging {
+    opacity: 0.5;
+}
+
+.time-item-drag-handle {
+    cursor: move;
+    color: var(--text-muted);
+}
+
+.time-item-content {
+    flex: 1;
+    display: flex;
+    gap: var(--space-sm);
+    align-items: baseline;
+}
+
+.time-item-delete {
+    color: var(--danger-color);
+    cursor: pointer;
+    padding: 4px;
+}
+
+.time-item-delete:hover {
+    opacity: 0.7;
+}
+
+.calendar-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm);
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    margin-bottom: var(--space-xs);
+}
+
+.calendar-list-item.default {
+    border: 1px solid var(--primary-color);
+}
+
+.calendar-list-item-name {
+    flex: 1;
+}
+
+.calendar-list-item-actions {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.calendar-list-item-actions button {
+    padding: 4px 8px;
+    font-size: 0.85em;
+}
+
+#manage-calendars-btn.btn-icon {
+    margin-bottom: 10px;
+    border: none;
+}
+
+/* Enhanced Time Systems Overview */
+.time-overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+}
+
+.time-overview-item {
+    background: var(--bg-tertiary);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-secondary);
+}
+
+.time-overview-item strong {
+    display: block;
+    color: var(--accent-primary);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-xs);
+}
+
+.time-overview-item div {
+    font-size: 1.1em;
+    color: var(--text-primary);
+}
+
+/* Calendar Name Display */
+.calendar-name-display {
+    font-size: 1.1em;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-style: italic;
+    margin-bottom: var(--space-lg);
+    text-align: right;
+}
+
+/* Prominent Stats Row */
+.overview-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-color);
+}
+
+.stat-card {
+    text-align: center;
+    padding: var(--space-md);
+    background: var(--bg-primary);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: var(--accent-primary);
+    line-height: 1;
+    margin-bottom: var(--space-xs);
+}
+
+.stat-label {
+    font-size: 0.9em;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Regular Info Blocks */
+.overview-blocks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.overview-block {
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.block-label {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-xs);
+    font-weight: 500;
+}
+
+.block-value {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Date Range Display at Bottom */
+.date-range-display {
+    text-align: center;
+    padding: var(--space-md);
+    margin-top: var(--space-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.date-range-text {
+    font-size: 0.95em;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.date-range-separator {
+    margin: 0 var(--space-sm);
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .overview-stats-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-value {
+        font-size: 2em;
+    }
+}
+
+/* Era Start Date Container */
+.era-start-date-container {
+    background: var(--bg-secondary);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-secondary);
+    margin-top: var(--space-sm);
+    color: var(--text-muted);
+}
+
+/* Enhanced Settings Preview Areas */
+.settings-preview-container {
+    background: var(--bg-tertiary);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-tertiary);
+    margin-top: var(--space-sm);
+    font-family: monospace;
+    font-size: 1.05em;
+    color: var(--accent-primary);
+    text-align: center;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   MINI CALENDAR DATE PICKER
+   ============================================ */
+.mini-calendar-grid {
+    display: grid;
+    /* Remove: grid-template-columns: repeat(7, 1fr); */
+    gap: 4px;
+    margin-top: var(--space-sm);
+}
+
+.mini-cal-weekday-header {
+    text-align: center;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    padding: var(--space-xs);
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+}
+
+.mini-cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid transparent;
+}
+
+.mini-cal-day:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-secondary);
+}
+
+.mini-cal-day.selected {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    font-weight: 600;
+}
+
+.mini-cal-day.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.mini-cal-day.empty {
+    cursor: default;
+    pointer-events: none;
+}
+
+.era-date-display.clickable {
+    transition: all var(--transition-fast);
+    border: 1px solid !important; /* Always have border, just transparent */
+    border-color: var(--border-secondary) !important;
+}
+
+.era-date-display.clickable:hover {
+    background: var(--bg-quaternary) !important;
+    border-color: var(--accent-primary) !important; /* Just change color, not add border */
+}
+
+/* Era Timeline Visualization */
+.era-timeline-display {
+    margin-bottom: var(--space-xl);
+    padding: 0 var(--space-md); /* ADD horizontal padding for tooltip space */
+    background: transparent;
+    border-radius: 0;
+    border: none;
+}
+
+.era-timeline-bar {
+    display: flex;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    overflow: visible;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    position: relative;
+    margin-top: 32px; /* CHANGED from 60px - less space needed */
+    margin-bottom: var(--space-md); /* CHANGED from var(--space-sm) */
+}
+
+.era-segment {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all var(--transition-normal);
+    cursor: pointer;
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 var(--space-xs);
+}
+
+.era-segment:first-child {
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.era-segment:last-child {
+    border-right: none;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.era-segment.backward {
+    background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+}
+
+.era-segment.forward {
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+}
+
+.era-segment:hover {
+    filter: brightness(1.15);
+    z-index: 10;
+}
+
+/* Year markers above timeline */
+.era-year-marker {
+    position: absolute;
+    top: -24px;
+    transform: translateX(-50%);
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Tooltip for era segments */
+.era-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: var(--bg-quaternary);
+    color: var(--text-primary);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-secondary);
+    z-index: 1000;
+    line-height: 1.4;
+}
+
+/* Tooltip positioning for edge segments */
+.era-segment:first-child .era-tooltip {
+    left: 0;
+    transform: translateX(0) translateY(-8px);
+}
+
+.era-segment:first-child .era-tooltip::after {
+    left: 20px; /* Move arrow to align with segment start */
+}
+
+.era-segment:last-child .era-tooltip {
+    left: auto;
+    right: 0; /* Align right edge of tooltip with right edge of segment */
+    transform: translateX(0) translateY(-8px);
+}
+
+.era-segment:last-child .era-tooltip::after {
+    left: auto;
+    right: 20px; /* Move arrow to align with segment end */
+}
+
+.era-segment:hover .era-tooltip {
+    opacity: 1;
+}
+
+/* Arrow for tooltip */
+.era-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--bg-quaternary);
+}
+
+/* Year markers above timeline */
+.era-year-marker {
+    position: absolute;
+    top: -24px;
+    transform: translateX(-50%);
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Adjust positioning for edge markers */
+.era-year-marker.start {
+    left: 0 !important;
+    transform: translateX(0);
+}
+
+.era-year-marker.end {
+    left: auto !important;
+    right: 0;
+    transform: translateX(0);
+}
+
+/* Ensure mini calendar appears above other modals */
+#miniCalendarModal {
+    z-index: 5000 !important;
+}
+
+.moon-phase-icon {
+    font-size: 8px;
+    margin-left: 4px;          
+    color: (var(--text-muted), #888); 
+    opacity: 0.2;
+}
+
+/* yearly checkbox */
+input#event-yearly {
+    position: relative;
+    top: 5px;
+}
+
+input#event-yearly-perennial {
+    position: relative;
+    top: 15px;
+}
+
+input#event-yearly-duration {
+    position: relative;
+    top: 10px;
 }

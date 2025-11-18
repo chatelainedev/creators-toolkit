@@ -3,6 +3,99 @@ import titleFonts from './templates/titlefonts.js';
 
 // Main HTML Generation Functions - Reduced size version
 // CSS generation moved to css-generator.js
+// Helper to format event timing for display
+function formatEventTiming(timing) {
+    // Handle legacy string format
+    if (typeof timing === 'string') {
+        return timing;
+    }
+    
+    // Handle new object format
+    if (timing && timing.date) {
+        const timeSystemId = timing.timeSystemId || 'default';
+        
+        const timeSystem = getTimeSystemById(timeSystemId);
+
+        if (!timeSystem) {
+            console.error('Time system not found:', timeSystemId);
+            return 'Time system not loaded';
+        }
+
+        // Validate the date
+        if (!validateEventDate(timing.date, timeSystem)) {
+            return 'Invalid date';
+        }
+
+        // Format the start date
+        let formatted = formatDateWithFormat(timing.date, timeSystem.settings.dateFormat, timeSystem);
+        
+        // Add start time if present
+        if (timing.time) {
+            const timeFormat = timeSystem.settings.timeFormat;
+            let timeStr = '';
+            
+            if (timeFormat === '12') {
+                timeStr = ` ${timing.time.hour}:${String(timing.time.minute).padStart(2, '0')} ${timing.time.period}`;
+            } else if (timeFormat === '24') {
+                timeStr = ` ${String(timing.time.hour).padStart(2, '0')}:${String(timing.time.minute).padStart(2, '0')}`;
+            } else if (timeFormat === 'custom') {
+                const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.time.division]
+                    ? timeSystem.timeDivisions.divisionNames[timing.time.division]
+                    : `Division ${timing.time.division + 1}`;
+                const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
+                timeStr = `, ${divName} ${timing.time.subdivision} ${subdivisionName}`;
+            }
+            
+            formatted += timeStr;
+        }
+
+        // Add end date if present
+        if (timing.endDate && validateEventDate(timing.endDate, timeSystem)) {
+            let endFormatted = formatDateWithFormat(timing.endDate, timeSystem.settings.dateFormat, timeSystem);
+            
+            // Add end time if present
+            if (timing.endTime) {
+                const timeFormat = timeSystem.settings.timeFormat;
+                let endTimeStr = '';
+                
+                if (timeFormat === '12') {
+                    endTimeStr = ` ${timing.endTime.hour}:${String(timing.endTime.minute).padStart(2, '0')} ${timing.endTime.period}`;
+                } else if (timeFormat === '24') {
+                    endTimeStr = ` ${String(timing.endTime.hour).padStart(2, '0')}:${String(timing.endTime.minute).padStart(2, '0')}`;
+                } else if (timeFormat === 'custom') {
+                    const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.endTime.division]
+                        ? timeSystem.timeDivisions.divisionNames[timing.endTime.division]
+                        : `Division ${timing.endTime.division + 1}`;
+                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
+                    endTimeStr = `, ${divName} ${timing.endTime.subdivision} ${subdivisionName}`;
+                }
+                
+                endFormatted += endTimeStr;
+            }
+            
+            formatted = `${formatted} → ${endFormatted}`;
+        }
+        
+        return formatted;
+    }
+    
+    return '';
+}
+
+// Helper function to get time system by ID
+function getTimeSystemById(id) {
+    if (id === 'default') {
+        return DEFAULT_CALENDAR;
+    }
+    
+    // Add this check
+    if (id === 'preset-chinese') {
+        return PRESET_CHINESE_CALENDAR;
+    }
+    
+    return userTimeSystems.find(ts => ts.id === id) || null;
+}
+
 // Add this function to check if we need to copy style assets
 function getRequiredStyleAssets(data) {
     const assets = [];
@@ -959,7 +1052,7 @@ function generatePlanModal(plan, index, data = {}) {
         <div id="planModal${index}" class="modal">
             <div class="modal-content plan-modal-content">
                 <div class="modal-header">
-                    <h2 class="modal-title">${plan.title}</h2>
+                    <h2 class="modal-title">${plan.title}${plan.type && plan.type !== '' ? `<span class="arc-type-badge" style="background-color: ${plan.color || '#3498db'}">${getArcTypeDisplay(plan.type)}</span>` : ''}</h2>
                     <span class="close" onclick="closePlanModal(${index})">&times;</span>
                 </div>
                 <div class="modal-body">
@@ -1029,7 +1122,7 @@ function generatePlanSubArc(subArc, subArcIndex, planIndex, data) {
         <div class="plan-subarc ${subArc.visible === false ? 'hidden-subarc' : ''}">
             <div class="plan-subarc-header" onclick="toggleSubArc(${planIndex}, ${subArcIndex})">
                 <div class="plan-subarc-header-left">
-                    <div class="plan-subarc-title">${subArc.title || 'Untitled Sub-Arc'}</div>
+                    <div class="plan-subarc-title">${subArc.title || 'Untitled Sub-Arc'}${subArc.type && subArc.type !== '' ? `<span class="subarc-type-badge" style="background-color: ${subArc.color}">${getArcTypeDisplay(subArc.type)}</span>` : ''}</div>
                     <div class="plan-subarc-description">${subArc.description || ''}</div>
                     <div class="plan-subarc-character-tags">${characterTagsDisplay}</div>
                 </div>
@@ -1067,7 +1160,7 @@ function generatePlanSubArc(subArc, subArcIndex, planIndex, data) {
 function generatePlanEvent(event, eventIndex, storylinesData = [], context = 'main', planIndex = 0) {
     const eventClass = event.visible === false ? 'plan-event hidden-event' : 'plan-event';
     const hasNotes = event.notes && event.notes.trim();
-    const hasTiming = event.timing && event.timing.trim();
+    const hasTiming = event.timing && (typeof event.timing === 'string' ? event.timing.trim() : event.timing.date);
     const hasSubevents = event.subevents && event.subevents.length > 0;
     
     // Character tags display - show only visible tags
@@ -1152,7 +1245,7 @@ function generatePlanEvent(event, eventIndex, storylinesData = [], context = 'ma
     return `
         <div class="${eventClass}" ${seasonalBg}>
             <div class="plan-event-header">
-                <span class="plan-event-type ${event.type || 'rising'}">${event.type || 'rising'}</span>
+                <span class="plan-event-type ${event.type || 'none'}">${event.type || 'none'}</span>
                 <div class="plan-event-title">${event.title || 'Untitled Event'}</div>
             </div>
             ${characterTagsDisplay}
@@ -1165,7 +1258,7 @@ function generatePlanEvent(event, eventIndex, storylinesData = [], context = 'ma
                         Notes
                     </div>
                 ` : ''}
-                ${hasTiming ? `<div class="plan-event-timing">${event.timing}</div>` : ''}
+                ${hasTiming ? `<div class="plan-event-timing">${formatEventTiming(event.timing)}</div>` : ''}
             </div>
             ${hasNotes ? `
                 <div class="plan-event-notes collapsed">
@@ -1197,63 +1290,102 @@ if (typeof window !== 'undefined') {
 }
 
 function setSeasonalBackgroundForPlanEvent(event) {
-    const timing = event.timing || event.parsedTiming?.originalText || '';
-    
-    // Try to extract month from various timing formats
+    // Try to extract date from various timing formats
     let month = null;
+    let day = null;
+    let timeSystemId = 'default';
     
-    if (event.parsedTiming?.month) {
+    // Check if event has parsedTiming (from timeline)
+    if (event.parsedTiming?.month !== undefined && event.parsedTiming?.month !== null) {
         month = event.parsedTiming.month;
-    } else if (timing) {
-        // Simple regex patterns to extract month from timing text
-        const monthNames = {
-            'january': 1, 'jan': 1,
-            'february': 2, 'feb': 2,
-            'march': 3, 'mar': 3,
-            'april': 4, 'apr': 4,
-            'may': 5,
-            'june': 6, 'jun': 6,
-            'july': 7, 'jul': 7,
-            'august': 8, 'aug': 8,
-            'september': 9, 'sep': 9, 'sept': 9,
-            'october': 10, 'oct': 10,
-            'november': 11, 'nov': 11,
-            'december': 12, 'dec': 12
-        };
+        day = event.parsedTiming.day || 1;
+    } 
+    // Check if event has new structured timing format
+    else if (event.timing && typeof event.timing === 'object' && event.timing.date) {
+        month = event.timing.date.month;
+        day = event.timing.date.day || 1;
+        timeSystemId = event.timing.timeSystemId || 'default';
+    }
+    // Check if event has legacy string timing
+    else if (event.timing && typeof event.timing === 'string') {
+        const timing = event.timing;
         
-        const timingLower = timing.toLowerCase();
-        for (const [monthName, monthNum] of Object.entries(monthNames)) {
-            if (timingLower.includes(monthName)) {
-                month = monthNum;
+        // Try to match number patterns like "Month 3" or "Day 15 Month 3"
+        const monthMatch = timing.match(/month\s+(\d+)|(\d+)\s*(?:st|nd|rd|th)?\s*month/i);
+        if (monthMatch) {
+            month = parseInt(monthMatch[1] || monthMatch[2]) - 1; // Convert to 0-indexed
+        }
+        
+        const dayMatch = timing.match(/day\s+(\d+)|(\d+)\s*(?:st|nd|rd|th)?\s*day/i);
+        if (dayMatch) {
+            day = parseInt(dayMatch[1] || dayMatch[2]);
+        }
+    }
+    
+    // If we have a month, find which season it belongs to
+    if (month !== null) {
+        const timeSystem = getTimeSystemById(timeSystemId);
+        
+        if (timeSystem && timeSystem.seasons && timeSystem.seasons.length > 0) {
+            const seasonColor = getSeasonColorForDate(month, day || 1, timeSystem);
+            if (seasonColor) {
+                return `style="--seasonal-bg: ${seasonColor}"`;
+            }
+        }
+    }
+    
+    // Fallback to default container background
+    const colors = getColorScheme();
+    return `style="--seasonal-bg: ${colors.containerBg}"`;
+}
+
+// Helper function to determine which season a date falls into
+function getSeasonColorForDate(month, day, timeSystem) {
+    if (!timeSystem.seasons || timeSystem.seasons.length === 0) {
+        return null;
+    }
+    
+    // Sort seasons by start date
+    const sortedSeasons = [...timeSystem.seasons].sort((a, b) => {
+        if (a.startDate.month !== b.startDate.month) {
+            return a.startDate.month - b.startDate.month;
+        }
+        return a.startDate.day - b.startDate.day;
+    });
+    
+    // Find which season the date falls into
+    let currentSeason = sortedSeasons[sortedSeasons.length - 1]; // Default to last season
+    
+    for (let i = 0; i < sortedSeasons.length; i++) {
+        const season = sortedSeasons[i];
+        const nextSeason = sortedSeasons[(i + 1) % sortedSeasons.length];
+        
+        // Check if date is after this season's start
+        const isAfterStart = (month > season.startDate.month) || 
+                            (month === season.startDate.month && day >= season.startDate.day);
+        
+        // Check if date is before next season's start
+        const isBeforeNext = (month < nextSeason.startDate.month) || 
+                             (month === nextSeason.startDate.month && day < nextSeason.startDate.day);
+        
+        // Handle year wrap-around (e.g., Winter from Dec to Feb)
+        if (nextSeason.startDate.month < season.startDate.month) {
+            // Next season wraps to next year
+            if (isAfterStart || (month < nextSeason.startDate.month) || 
+                (month === nextSeason.startDate.month && day < nextSeason.startDate.day)) {
+                currentSeason = season;
+                break;
+            }
+        } else {
+            // Normal case: seasons don't wrap
+            if (isAfterStart && isBeforeNext) {
+                currentSeason = season;
                 break;
             }
         }
-        
-        // Also try to match number patterns like "Month 3" or "3rd month"
-        const monthMatch = timingLower.match(/month\s+(\d+)|(\d+)\s*(?:st|nd|rd|th)?\s*month/);
-        if (monthMatch) {
-            month = parseInt(monthMatch[1] || monthMatch[2]);
-        }
     }
     
-    if (month && month >= 1 && month <= 12) {
-        const colors = getColorScheme();
-        const seasonalColor = getSeasonalColor(month, colors);
-        return `style="--seasonal-bg: ${seasonalColor}"`;
-    } else {
-        // For events without a month, keep the current background (containerBg)
-        const colors = getColorScheme();
-        return `style="--seasonal-bg: ${colors.containerBg}"`;
-    }
-}
-
-function getEventTypeDisplay(type) {
-    const typeMap = {
-        'rising': 'Rising',
-        'setback': 'Setback',
-        'climax': 'Climax'
-    };
-    return typeMap[type] || 'Rising';
+    return currentSeason.color || null;
 }
 
 function generateJavaScript() {
@@ -1280,10 +1412,12 @@ function generateJavaScript() {
         magicOptions: infoData.magicOptions,
         eventsOptions: infoData.eventsOptions,
         plans: infoData.plans,
+        plansOptions: infoData.plansOptions,
         playlists: infoData.playlists,
         customPages: infoData.customPages || [],
         world: infoData.world,
-        linkedLorebook: infoData.linkedLorebook
+        linkedLorebook: infoData.linkedLorebook,
+ 
     };
     
     console.log('Embedding appearance data in HTML:', appearanceToEmbed);
@@ -1295,9 +1429,6 @@ function generateJavaScript() {
             var plansData = ${JSON.stringify(infoData.plans)}; // NEW: Embed plans data with sub-arcs
             var appearanceData = ${JSON.stringify(appearanceToEmbed)};
             var fullInfoData = ${JSON.stringify(fullDataToEmbed)};
-            console.log('Embedded appearance data:', appearanceData);
-            console.log('Embedded full data (including hidden items, notes, plans with sub-arcs, tags, subtitle, and overview fields):', fullInfoData);
-            console.log('Embedded appearance in fullInfoData:', fullInfoData.appearance);
             
             // Image modal cycling functionality
             let currentImages = [];
@@ -1481,8 +1612,6 @@ function generateJavaScript() {
 
             // Lorebook download functionality  
             function downloadLinkedLorebook() {
-                console.log('Download function called');
-                console.log('fullInfoData:', fullInfoData);
                 
                 if (fullInfoData && fullInfoData.linkedLorebook) {
                     try {

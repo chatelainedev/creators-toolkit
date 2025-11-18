@@ -372,7 +372,7 @@ function switchToSection(sectionName) {
 }
 
 // Switch tabs (HTML/Preview)
-function switchTab(tabName) {
+async function switchTab(tabName) {
     // Update tab buttons - scope to just the .tabs container
     document.querySelectorAll('.tabs .tab').forEach(tab => {
         tab.classList.remove('active');
@@ -392,7 +392,7 @@ function switchTab(tabName) {
         const html = document.getElementById('html-output').value;
         if (html) {
             console.log('Updating preview with HTML content');
-            updatePreview(html);
+            await updatePreview(html);
         } else {
             console.log('No HTML content to preview - run Convert first');
             // Optional: show a message in the preview
@@ -611,6 +611,25 @@ function initializeFormHandlers() {
     if (titleFontSizeBannerSlider && titleFontSizeBannerValue) {
         titleFontSizeBannerSlider.addEventListener('input', function() {
             titleFontSizeBannerValue.textContent = this.value + 'px';
+        });
+    }
+
+    // Chat file upload for roleplay text
+    const chatUploadBtn = document.getElementById('chat-upload-btn');
+    const chatFileUpload = document.getElementById('chat-file-upload');
+
+    if (chatUploadBtn && chatFileUpload) {
+        chatUploadBtn.addEventListener('click', () => {
+            chatFileUpload.click();
+        });
+        
+        chatFileUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleChatFileUpload(file);
+            }
+            // Clear the input
+            e.target.value = '';
         });
     }
 

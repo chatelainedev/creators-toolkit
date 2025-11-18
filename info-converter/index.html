@@ -557,7 +557,12 @@
                     <div id="plans-section" class="content-section">
                         <div class="section-header">
                             <h3><i class="fas fa-route"></i> Plans</h3>
-                            <button id="add-plan" class="btn-add">+ Add Story Arc</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button id="plans-options" class="btn-secondary" title="Plans Options">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button id="add-plan" class="btn-add">+ Add Story Arc</button>
+                            </div>
                         </div>
                         <div id="plans-list" class="content-list compact">
                             <div class="empty-state">No story arcs added yet</div>
@@ -1581,16 +1586,20 @@ assets/characters/charactername/action.jpg"></textarea>
                     <div class="color-control-group">
                         <label for="plan-type">Arc Type:</label>
                         <select id="plan-type">
+                            <option value="">No specific type</option>
                             <option value="main-plot">Main Plot</option>
                             <option value="romance">Romance</option>
                             <option value="side-quest">Side Quest</option>
                             <option value="backstory">Backstory</option>
                             <option value="worldbuilding">Worldbuilding</option>
                             <option value="character-dev">Character Development</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="conflict">Conflict</option>
+                            <option value="mystery">Mystery</option>
                         </select>
                     </div>
                 </div>
-                <div class="helper-text">Arc color will be used in timeline views. Sub-arcs will use variations of this color.</div>
+                <div class="helper-text">Arc color will be used in plans modal.</div>
 
                 <div class="plan-events-section">
                     <div class="events-header">
@@ -1624,6 +1633,353 @@ assets/characters/charactername/action.jpg"></textarea>
         </div>
     </div>
 
+    <!-- Plans Options Modal -->
+    <div id="plansOptionsModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Plans Options</h3>
+                <span class="close" data-modal="plansOptionsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="plans-time-system">Time System:</label>
+                <select id="plans-time-system">
+                    <option value="default">Default (Gregorian)</option>
+                    <option value="preset-chinese">Traditional Chinese</option>
+                </select>
+                <div class="helper-text">Choose which calendar/time system to use for your story events.</div>
+
+                <button id="open-time-systems-editor" class="btn-secondary" style="margin-top: var(--space-md); width: 100%;">
+                    <i class="fas fa-calendar-alt"></i> Manage Time Systems
+                </button>
+
+                <div class="modal-actions">
+                    <button id="save-plans-options" class="btn-main-action">Save Options</button>
+                    <button class="btn-cancel" data-modal="plansOptionsModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Systems Editor Modal -->
+    <div id="timeSystemsEditorModal" class="modal">
+        <div class="modal-content large-modal" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 id="time-systems-editor-title">Time Systems Editor</h3>
+                <span class="close" data-modal="timeSystemsEditorModal">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 0; display: flex; height: 600px;">
+                <!-- Left Sidebar -->
+                <div class="time-systems-sidebar" style="width: 200px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column;">
+                    <div style="flex: 1; padding: var(--space-md); overflow-y: auto;">
+                        <div style="margin-bottom: var(--space-md);">
+                            <label for="calendar-selector" style="font-size: 0.9em; margin-bottom: 4px;">Calendar:</label>
+                            <div style="display: flex; gap: 4px; align-items: center;">
+                                <select id="calendar-selector" style="flex: 1; font-size: 0.9em;">
+                                    <option value="default">Default</option>
+                                </select>
+                                <button id="manage-calendars-btn" class="btn-icon" title="Manage Calendars">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="time-systems-nav">
+                            <div class="time-systems-nav-item active" data-section="overview">
+                                <i class="fas fa-info-circle"></i> Overview
+                            </div>
+                            <div style="height: 1px; background: var(--border-tertiary); margin: var(--space-sm) 0; opacity: 0.5;"></div>
+                            <div class="time-systems-nav-item" data-section="months">
+                                <i class="fas fa-calendar"></i> Months
+                            </div>
+                            <div class="time-systems-nav-item" data-section="weeks">
+                                <i class="fas fa-calendar-week"></i> Weeks
+                            </div>
+                            <div class="time-systems-nav-item" data-section="days">
+                                <i class="fas fa-clock"></i> Days
+                            </div>
+                            <div class="time-systems-nav-item" data-section="eras">
+                                <i class="fas fa-hourglass-half"></i> Years/Eras
+                            </div>
+                            <div class="time-systems-nav-item" data-section="seasons">
+                                <i class="fas fa-leaf"></i> Seasons
+                            </div>
+                            <div class="time-systems-nav-item" data-section="moon-phases">
+                                <i class="fas fa-moon"></i> Moon Phases
+                            </div>
+                            <div style="height: 1px; background: var(--border-tertiary); margin: var(--space-sm) 0; opacity: 0.5;"></div>
+                            <div class="time-systems-nav-item" data-section="settings">
+                                <i class="fas fa-cog"></i> Settings
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Buttons at bottom of sidebar -->
+                    <div style="padding: var(--space-md); border-top: 1px solid var(--border-color);">
+                        <button id="save-time-system" class="btn-main-action" style="width: 100%; margin-bottom: 8px;">Save Changes</button>
+                        <button class="btn-cancel" data-modal="timeSystemsEditorModal" style="width: 100%;">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Right Content Area -->
+                <div class="time-systems-content" style="flex: 1; padding: var(--space-lg); overflow-y: auto;">
+                    <!-- Overview Section -->
+                    <div id="time-section-overview" class="time-section active">
+                        <h4>Calendar Overview</h4>
+                        <div id="time-overview-display" style="margin-top: var(--space-md);">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Months Section -->
+                    <div id="time-section-months" class="time-section" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md);">
+                            <h4>Months</h4>
+                            <button id="add-month-btn" class="btn-add">+ Add Month</button>
+                        </div>
+                        <div id="months-list" class="time-items-list">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Weeks Section -->
+                    <div id="time-section-weeks" class="time-section" style="display: none;">
+                        <div id="weekdays-list" class="time-items-list">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Days Section -->
+                    <div id="time-section-days" class="time-section" style="display: none;">
+                        <h4>Time Divisions</h4>
+                        <div style="margin-top: var(--space-md);">
+                            <label for="divisions-per-day">Divisions per Day:</label>
+                            <input type="number" id="divisions-per-day" min="1" max="100" value="24">
+                            <div class="helper-text">Standard: 24 hours | Chinese: 12 double-hours | Fantasy: Your choice!</div>
+
+                            <label for="minutes-per-division">Minutes per Division:</label>
+                            <input type="number" id="minutes-per-division" min="1" max="1000" value="60">
+                            <div class="helper-text">Standard: 60 minutes | Chinese double-hours: 120 | Fantasy: Your choice!</div>
+
+                            <label for="subdivision-name">Subdivision Name (optional):</label>
+                            <input type="text" id="subdivision-name" placeholder="minutes, moments, 刻, etc.">
+                            <div class="helper-text">What to call the smaller time units (leave blank for "minutes")</div>
+
+                            <div style="margin-top: var(--space-md);">
+                                <label>
+                                    <input type="checkbox" id="use-division-names">
+                                    Use custom names for divisions
+                                </label>
+                                <div class="helper-text">Enable to name your divisions (like 子时, 丑时 for Chinese, or Dawn Watch, Morning Watch for fantasy)</div>
+                            </div>
+
+                            <div id="division-names-section" style="display: none; margin-top: var(--space-md);">
+                                <label>Division Names:</label>
+                                <div id="division-names-list">
+                                    <!-- Will be populated dynamically based on divisions-per-day -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Years/Eras Section -->
+                    <div id="time-section-eras" class="time-section" style="display: none;">
+                        <h4>Eras</h4>
+                        <div style="margin-top: var(--space-md);">
+                            <div id="eras-list">
+                                <!-- Will be populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seasons Section -->
+                    <div id="time-section-seasons" class="time-section" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md);">
+                            <h4>Seasons</h4>
+                            <button id="add-season-btn" class="btn-add">+ Add Season</button>
+                        </div>
+                        <div class="helper-text" style="margin-bottom: var(--space-md);">
+                            Define the seasons in your calendar year. Seasons can overlap or have gaps depending on your world's climate.
+                        </div>
+                        <div id="seasons-list" class="time-items-list">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Moon Phases Section -->
+                    <div id="time-section-moon-phases" class="time-section" style="display: none;">
+                        <h4>Moon Phases</h4>
+                        <div id="moon-phases-display" class="time-items-list">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Settings Section -->
+                    <div id="time-section-settings" class="time-section" style="display: none;">
+                        <h4>Display Settings</h4>
+                        <div style="margin-top: var(--space-md);">
+                            <label for="date-format">Date Format:</label>
+                            <select id="date-format">
+                                <!-- Slash Formats -->
+                                <optgroup label="───── Slash (/) ─────">
+                                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                    <option value="YYYY/MM/DD">YYYY/MM/DD</option>
+                                    <option value="MM/DD/YYYY E">MM/DD/YYYY E (with era)</option>
+                                    <option value="DD/MM/YYYY E">DD/MM/YYYY E (with era)</option>
+                                    <option value="YYYY/MM/DD E">YYYY/MM/DD E (with era)</option>
+                                </optgroup>
+                                
+                                <!-- Dash Formats -->
+                                <optgroup label="───── Dash (-) ─────">
+                                    <option value="MM-DD-YYYY">MM-DD-YYYY</option>
+                                    <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+                                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                    <option value="MM-DD-YYYY E">MM-DD-YYYY E (with era)</option>
+                                    <option value="DD-MM-YYYY E">DD-MM-YYYY E (with era)</option>
+                                    <option value="YYYY-MM-DD E">YYYY-MM-DD E (with era)</option>
+                                </optgroup>
+                                
+                                <!-- Dot Formats -->
+                                <optgroup label="───── Dot (.) ─────">
+                                    <option value="MM.DD.YYYY">MM.DD.YYYY</option>
+                                    <option value="DD.MM.YYYY">DD.MM.YYYY</option>
+                                    <option value="YYYY.MM.DD">YYYY.MM.DD</option>
+                                    <option value="D.M.YYYY">D.M.YYYY (no leading zeros)</option>
+                                    <option value="MM.DD.YYYY E">MM.DD.YYYY E (with era)</option>
+                                    <option value="DD.MM.YYYY E">DD.MM.YYYY E (with era)</option>
+                                </optgroup>
+                                
+                                <!-- Long Form -->
+                                <optgroup label="───── Long Form ─────">
+                                    <option value="MMMM D, YYYY">MMMM D, YYYY (e.g., January 15, 2025)</option>
+                                    <option value="D MMMM YYYY">D MMMM YYYY (e.g., 15 January 2025)</option>
+                                    <option value="MMMM D YYYY">MMMM D YYYY (no comma)</option>
+                                </optgroup>
+                                
+                                <!-- Long Form with Era -->
+                                <optgroup label="───── Long Form with Era ─────">
+                                    <option value="MMMM D, YYYY E">MMMM D, YYYY E (e.g., January 15, 2025 CE)</option>
+                                    <option value="D MMMM YYYY E">D MMMM YYYY E (e.g., 15 January 2025 CE)</option>
+                                    <option value="MMMM D YYYY E">MMMM D YYYY E (no comma)</option>
+                                </optgroup>
+                                
+                                <!-- Full Date with Weekday -->
+                                <optgroup label="───── With Weekday ─────">
+                                    <option value="DDDD, MMMM D, YYYY">DDDD, MMMM D, YYYY (e.g., Monday, January 15, 2025)</option>
+                                    <option value="DDDD, D MMMM YYYY">DDDD, D MMMM YYYY (e.g., Monday, 15 January 2025)</option>
+                                    <option value="DDDD, MMMM D, YYYY E">DDDD, MMMM D, YYYY E (with era)</option>
+                                </optgroup>
+                            </select>
+
+                            <div style="margin-top: var(--space-md);">
+                                <strong>Preview:</strong>
+                                <div id="date-format-preview" class="settings-preview-container">
+                                    <!-- Will be populated dynamically -->
+                                </div>
+                            </div>
+
+                            <label for="time-format" style="margin-top: var(--space-lg);">Time Format:</label>
+                            <select id="time-format">
+                                <option value="12">12-hour (AM/PM)</option>
+                                <option value="24">24-hour</option>
+                                <option value="custom">Custom divisions</option>
+                            </select>
+                            <div style="margin-top: var(--space-md);">
+                                <strong>Preview:</strong>
+                                <div id="time-format-preview" class="settings-preview-container">
+                                    <!-- Will be populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Calendars Modal -->
+    <div id="manageCalendarsModal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3>Manage Calendars</h3>
+                <span class="close" data-modal="manageCalendarsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="helper-text" style="margin-bottom: var(--space-md);">
+                    Create and manage your custom calendar systems. The Default calendar cannot be edited or deleted.
+                </div>
+
+                <div id="calendars-list-container" style="max-height: 300px; overflow-y: auto; margin-bottom: var(--space-md);">
+                    <!-- Will be populated dynamically -->
+                </div>
+
+                <button id="create-new-calendar-btn" class="btn-add" style="width: 100%;">+ Create New Calendar</button>
+
+                <div class="modal-actions">
+                    <button class="btn-cancel" data-modal="manageCalendarsModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mini Calendar Date Picker Modal -->
+    <div id="miniCalendarModal" class="modal">
+        <div class="modal-content small-modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 id="mini-calendar-title">Select Date</h3>
+                <span class="close" data-modal="miniCalendarModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Month/Year Navigation -->
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--space-xs);">
+                    <button id="mini-cal-prev-month" class="btn-icon" style="padding: 4px 8px;">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div style="display: flex; gap: var(--space-sm); align-items: center;">
+                        <select id="mini-cal-month" style="width: 140px;"></select>
+                        <input type="number" id="mini-cal-year" style="width: 80px;" placeholder="Year">
+                    </div>
+                    <button id="mini-cal-next-month" class="btn-icon" style="padding: 4px 8px;">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <!-- Era Selector (if needed) -->
+                <div id="mini-cal-era-selector" style="margin-bottom: var(--space-md); display: none;">
+                    <select id="mini-cal-era"></select>
+                </div>
+                
+                <!-- Calendar Grid -->
+                <div id="mini-calendar-grid" style="margin-bottom: var(--space-md);">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Selected Date Display -->
+                <div style="padding: var(--space-sm); background: var(--bg-tertiary); border-radius: var(--radius-sm); text-align: center; margin-bottom: var(--space-md);">
+                    <strong>Selected:</strong> <span id="mini-cal-selected-display">None</span>
+                </div>
+
+                <!-- NEW: Optional Time of Day Selection -->
+                <div id="mini-cal-time-section" style="margin-bottom: var(--space-md);">
+                    <div style="display: flex; gap: var(--space-sm); align-items: baseline;">
+                        <label style="flex-shrink: 0; font-weight: 500;">Time:</label>
+                        <select id="mini-cal-time-division" style="flex: 1;">
+                            <option value="">No specific time</option>
+                            <!-- Will be populated dynamically based on time system -->
+                        </select>
+                        <input type="number" id="mini-cal-time-subdivision" placeholder="0" min="0" style="width: 70px;" disabled>
+                        <span id="mini-cal-subdivision-label" style="font-size: 0.9em; color: var(--text-muted);"></span>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="mini-cal-confirm" class="btn-main-action">Confirm</button>
+                    <button class="btn-cancel" data-modal="miniCalendarModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Updated Event Modal with Character Tags -->
     <!-- This replaces the existing eventModal section in your index.html -->
 
@@ -1651,11 +2007,14 @@ assets/characters/charactername/action.jpg"></textarea>
 
                 <label for="event-type">Event Type:</label>
                 <select id="event-type">
+                    <option value="none">None</option>
+                    <option value="exposition">Exposition</option>
                     <option value="rising">Rising Action</option>
                     <option value="setback">Setback</option>
                     <option value="climax">Climax</option>
+                    <option value="resolution">Resolution</option>
                 </select>
-                <div class="helper-text">Type of story event - affects color coding in display</div>
+                <div class="helper-text">Type of story event</div>
                 
                 <!-- NEW: Character Tags for Events -->
                 <label for="event-character-tags">Character Tags:</label>
@@ -1674,9 +2033,44 @@ assets/characters/charactername/action.jpg"></textarea>
                 </div>
                 <div class="helper-text">Click to open dropdown, then click storylines to toggle selection</div>
 
-                <label for="event-timing">Timing:</label>
-                <input type="text" id="event-timing" placeholder="Month 3, Year 1 / Early Spring / etc.">
-                <div class="helper-text">When this event occurs in your timeline (optional)</div>
+                <label>Timing:</label>
+                    <div class="event-timing-picker">
+                        <div style="display: flex; gap: var(--space-xs); align-items: baseline; margin-bottom: 15px;">
+                            <button type="button" id="select-event-date-btn" class="btn-icon" onclick="openEventDatePicker(false)" title="Start date" style="padding: 8px 12px; flex-shrink: 0; color: var(--primary-color);">
+                                <i class="fas fa-calendar"></i>
+                            </button>
+                            <button type="button" id="select-event-end-date-btn" class="btn-icon" onclick="openEventDatePicker(true)" title="End date" style="padding: 8px 12px; flex-shrink: 0; color: var(--accent-color); opacity: 0.5;" disabled>
+                                <i class="fas fa-calendar-check"></i>
+                            </button>
+                            
+                            <!-- Yearly event controls -->
+                            <div style="display: flex; gap: 8px; align-items: center; margin-left: 8px;">
+                                <div class="checkbox-item" style="align-items: center;" title="Mark this event as recurring yearly">
+                                    <input type="checkbox" id="event-yearly">
+                                    <label for="event-yearly"></label>
+                                </div>
+                                
+                                <div id="yearly-controls" style="display: none; gap: 8px; align-items: baseline;">
+                                    <input type="number" id="event-yearly-duration" min="1" max="9999" placeholder="Years" 
+                                        style="width: 70px; padding: 4px 8px; font-size: 0.9em;" 
+                                        title="Number of consecutive years this event repeats">
+                                    <div class="checkbox-item" style="align-items: center;" title="Event repeats indefinitely">
+                                        <input type="checkbox" id="event-yearly-perennial">
+                                        <label for="event-yearly-perennial" style="opacity: 0.4">∞</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END yearly controls -->
+                            
+                            <div id="selected-event-date-display" class="selected-date-display" style="padding: var(--space-sm); background: var(--bg-tertiary); border-radius: 4px; flex-grow: 1; min-height: 38px; display: flex; align-items: baseline; font-size: 0.95em;">
+                                No date selected
+                            </div>
+                            <button type="button" id="clear-event-date-btn" class="btn-icon" onclick="clearEventDate()" title="Clear dates" style="padding: 8px 12px; flex-shrink: 0; color: var(--danger-color);">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                <div class="helper-text">When this event occurs in your timeline (optional). Add an end date to show event duration.</div>
 
                 <!-- Add this section in your event modal after timing but before notes -->
                 <div class="event-subevents-section">
@@ -1780,7 +2174,7 @@ assets/characters/charactername/action.jpg"></textarea>
                             </select>
                         </div>
                     </div>
-                    <div class="helper-text">Sub-arc color and type will be used in timeline views. Color defaults to lighter parent arc if not set.</div>
+                    <div class="helper-text">Sub-arc color and type will be used in plans modal.</div>
                     
                     <div class="checkbox-container">
                         <input type="checkbox" id="subarc-visible" checked>
@@ -1831,7 +2225,7 @@ assets/characters/charactername/action.jpg"></textarea>
                 <textarea id="playlist-description" rows="3" placeholder="What role does this playlist play in your story/world?"></textarea>
                 
                 <div class="modal-actions">
-                    <button class="btn-primary" onclick="savePlaylist()">Save</button>
+                    <button id= "save-playlist" class="btn-main-action" onclick="savePlaylist()">Save</button>
                     <button class="btn-secondary" onclick="closeModal('playlistModal')">Cancel</button>
                 </div>
             </div>
@@ -3421,7 +3815,8 @@ assets/characters/charactername/action.jpg"></textarea>
     <script type="module" src="templates/custom-pages/universal-template.js"></script>
     <script type="module" src="templates/custom-pages/template-registry.js"></script>
     <script src="modules/custom-pages/custom-pages.js"></script>
-    <script src="modules/custom-pages/custom-navigation.js"></script>        
+    <script src="modules/custom-pages/custom-navigation.js"></script>  
+    <script src="modules/time-systems.js"></script>      
     <script src="modules/storylines-html.js"></script>  
     <script src="modules/plans-html.js"></script> 
     <script src="modules/filter-management.js"></script>    

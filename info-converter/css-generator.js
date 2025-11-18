@@ -1449,6 +1449,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         #plans-back-to-top,
         #storylines-back-to-top,
         #playlists-back-to-top,
+        #timeline-back-to-top,
         [id^="custom-page-back-to-top-"] {
             position: fixed !important;
             bottom: 30px !important;
@@ -1475,6 +1476,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         #plans-back-to-top::after,
         #storylines-back-to-top::after,
         #playlists-back-to-top::after,
+        #timeline-back-to-top::after,
         [id^="custom-page-back-to-top-"]::after {
             ${(() => {
                 const styles = generateBackToTopStyleCSS(appearance.backToTopStyle || 'circular', colors);
@@ -1498,6 +1500,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         #plans-back-to-top.visible,
         #storylines-back-to-top.visible,
         #playlists-back-to-top.visible,
+        #timeline-back-to-top.visible,
         [id^="custom-page-back-to-top-"].visible {
             opacity: 1 !important;
             visibility: visible !important;
@@ -1509,6 +1512,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         #plans-back-to-top:hover,
         #storylines-back-to-top:hover,
         #playlists-back-to-top:hover,
+        #timeline-back-to-top:hover,
         [id^="custom-page-back-to-top-"]:hover {
             filter: brightness(1.15);
             transform: translateY(-2px);

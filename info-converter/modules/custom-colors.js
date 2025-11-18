@@ -226,7 +226,6 @@ function applyColorCustomizations() {
     // Only store overrides if there are actually custom colors
     if (Object.keys(customColors).length > 0) {
         window.infoData.appearance.customColorOverrides = customColors;
-        console.log('Applied color overrides:', customColors);
     } else {
         // Remove overrides if no custom colors
         delete window.infoData.appearance.customColorOverrides;

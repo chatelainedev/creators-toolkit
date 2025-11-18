@@ -121,10 +121,8 @@ function generateGlobalFilterJavaScript() {
 
         // Apply global filter to Characters tab with hidden tag support
         function applyGlobalFilterToCharacters() {
-            console.log('👥 Applying global filter to characters...', globalState.activeFilter);
             
             if (!globalState.activeFilter) {
-                console.log('👥 Clearing all character filters');
                 if (typeof clearAllCharacterTags === 'function') {
                     clearAllCharacterTags();
                 }
@@ -138,7 +136,6 @@ function generateGlobalFilterJavaScript() {
                 return;
             }
             
-            console.log('👥 Setting character filter to:', globalState.activeFilter);
             if (typeof selectedCharacterTags !== 'undefined') {
                 selectedCharacterTags.clear();
                 selectedCharacterTags.add(globalState.activeFilter);
@@ -174,10 +171,8 @@ function generateGlobalFilterJavaScript() {
 
         // Apply global filter to World tab with hidden tag support
         function applyGlobalFilterToWorld() {
-            console.log('🌍 Applying global filter to world...', globalState.activeFilter);
             
             if (!globalState.activeFilter) {
-                console.log('🌍 Clearing all world filters');
                 if (typeof clearAllWorldTags === 'function') {
                     clearAllWorldTags();
                 }
@@ -200,7 +195,6 @@ function generateGlobalFilterJavaScript() {
                 return;
             }
             
-            console.log('🌍 Setting world filter to:', globalState.activeFilter);
             
             // Set the regular world tag filter
             if (typeof selectedWorldTags !== 'undefined') {
@@ -253,10 +247,8 @@ function generateGlobalFilterJavaScript() {
 
         // Apply global filter to Storylines tab with hidden tag support
         function applyGlobalFilterToStorylines() {
-            console.log('📖 Applying global filter to storylines...', globalState.activeFilter);
             
             if (!globalState.activeFilter) {
-                console.log('📖 Clearing all storyline filters');
                 if (typeof clearAllStorylinesTags === 'function') {
                     clearAllStorylinesTags('roleplay');
                     clearAllStorylinesTags('solo');
@@ -278,7 +270,6 @@ function generateGlobalFilterJavaScript() {
                 return;
             }
             
-            console.log('📖 Setting storyline filters to:', globalState.activeFilter, 'for both views');
             
             // Apply to BOTH view types, not just the active one
             if (typeof selectedRoleplayTags !== 'undefined') {
@@ -378,7 +369,6 @@ function generateGlobalFilterJavaScript() {
 
         // Apply global filter to Plans tab with hidden tag support
         function applyGlobalFilterToPlans() {
-            console.log('📋 Applying global filter to plans...', globalState.activeFilter);
             
             // Check which view is actually visible (not just CSS classes)
             const cardsView = document.getElementById('cards-view');
@@ -396,10 +386,8 @@ function generateGlobalFilterJavaScript() {
             });
             
             if (timelineVisible && !cardsVisible) {
-                console.log('📋 Applying global filter to Timeline view');
                 applyGlobalFilterToTimeline();
             } else {
-                console.log('📋 Applying global filter to Cards view');
                 applyGlobalFilterToCardsView();
             }
         }
@@ -407,7 +395,6 @@ function generateGlobalFilterJavaScript() {
         // NEW: Separate function for Cards view filtering
         function applyGlobalFilterToCardsView() {
             if (!globalState.activeFilter) {
-                console.log('📋 Clearing all plan filters');
                 if (typeof clearAllPlanTags === 'function') {
                     clearAllPlanTags();
                 }
@@ -420,7 +407,6 @@ function generateGlobalFilterJavaScript() {
                 return;
             }
             
-            console.log('📋 Setting plan filter to:', globalState.activeFilter);
             if (typeof selectedPlanTags !== 'undefined') {
                 selectedPlanTags.clear();
                 selectedPlanTags.add(globalState.activeFilter);
@@ -457,7 +443,6 @@ function generateGlobalFilterJavaScript() {
         // NEW: Function for Timeline view filtering
         function applyGlobalFilterToTimelineView() {
             if (!globalState.activeFilter) {
-                console.log('📋 Clearing timeline global filter');
                 // Clear timeline filters
                 if (typeof selectedTimelineTags !== 'undefined') {
                     selectedTimelineTags.clear();
@@ -470,7 +455,6 @@ function generateGlobalFilterJavaScript() {
                 return;
             }
             
-            console.log('📋 Setting timeline global filter to:', globalState.activeFilter);
             // Set the timeline filtering system to use the global filter
             if (typeof selectedTimelineTags !== 'undefined') {
                 selectedTimelineTags.clear();
@@ -492,7 +476,6 @@ function generateGlobalFilterJavaScript() {
 
         // Apply global filter to Playlists tab with hidden tag support
         function applyGlobalFilterToPlaylists() {
-            console.log('🎵 Applying global filter to playlists...', globalState.activeFilter);
             
             if (!globalState.activeFilter) {
                 console.log('🎵 Clearing all playlist filters');
@@ -508,7 +491,6 @@ function generateGlobalFilterJavaScript() {
                 return;
             }
             
-            console.log('🎵 Setting playlist filter to:', globalState.activeFilter);
             if (typeof selectedPlaylistTags !== 'undefined') {
                 selectedPlaylistTags.clear();
                 selectedPlaylistTags.add(globalState.activeFilter);
@@ -545,7 +527,6 @@ function generateGlobalFilterJavaScript() {
         // Apply global filter to Timeline tab with hidden tag support
         // Apply global filter to Timeline tab with hidden tag support
         function applyGlobalFilterToTimeline() {
-            console.log('⏰ Applying global filter to timeline...', globalState.activeFilter);
             
             // Detect which timeline view is currently active
             const chronoContainer = document.getElementById('tl-chronological-container');

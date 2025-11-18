@@ -1008,6 +1008,60 @@ router.post('/roleplay/import', async (req, res) => {
             console.log(`ℹ️ No images folder found in source`);
         }
 
+        // Extract storyline metadata from the imported HTML
+        let storylineData = null;
+        try {
+            const htmlContent = await fs.readFile(destHtmlPath, 'utf8');
+            
+            // Initialize storyline data object
+            storylineData = {
+                title: '',
+                pairing: '',
+                wordcount: 0,
+                lastUpdated: '',
+                description: ''
+            };
+            
+            // Extract title from <title> tag
+            const titleMatch = htmlContent.match(/<title>([^<]+?)\s*-\s*[^<]*<\/title>/i);
+            if (titleMatch) {
+                storylineData.title = titleMatch[1].trim();
+            } else {
+                const simpleTitleMatch = htmlContent.match(/<title>([^<]+)<\/title>/i);
+                if (simpleTitleMatch) {
+                    storylineData.title = simpleTitleMatch[1].trim();
+                }
+            }
+            
+            // Extract pairing from story-info section
+            const pairingMatch = htmlContent.match(/<strong>Pairing:<\/strong>\s*([^<]+)/i);
+            if (pairingMatch) {
+                storylineData.pairing = pairingMatch[1].trim();
+            }
+            
+            // Extract last updated from story-info section
+            const updatedMatch = htmlContent.match(/<strong>Last Updated:<\/strong>\s*([^<]+)/i);
+            if (updatedMatch) {
+                storylineData.lastUpdated = updatedMatch[1].trim();
+            }
+            
+            // Extract description from story-description div
+            const descMatch = htmlContent.match(/<div class=["']story-description["']>[\s\S]*?<strong>Description:<\/strong>\s*([^<]+)/i);
+            if (descMatch) {
+                storylineData.description = descMatch[1].trim();
+            }
+            
+            // Extract word count from story-stats
+            const wordcountMatch = htmlContent.match(/<div class=["']stat-item["']>(\d+(?:,\d+)*)\s*words?<\/div>/i);
+            if (wordcountMatch) {
+                storylineData.wordcount = parseInt(wordcountMatch[1].replace(/,/g, '')) || 0;
+            }
+            
+            console.log('📋 Extracted storyline metadata:', storylineData);
+        } catch (error) {
+            console.error('Error extracting storyline metadata:', error);
+        }
+
         // Prepare response
         const userDisplay = userContext.isGuest ? 'guest' : userContext.username;
         
@@ -1018,7 +1072,8 @@ router.post('/roleplay/import', async (req, res) => {
                 message: `Successfully imported ${filename}`,
                 copiedFiles,
                 projectName,
-                userContext
+                userContext,
+                storylineData
             });
         } else if (copiedFiles.length > 0) {
             console.log(`⚠️ Partial import success for ${filename}:`, { copiedFiles, errors });
@@ -1028,7 +1083,8 @@ router.post('/roleplay/import', async (req, res) => {
                 copiedFiles,
                 errors,
                 projectName,
-                userContext
+                userContext,
+                storylineData
             });
         } else {
             console.log(`❌ Import failed completely for ${filename}:`, errors);
@@ -1047,7 +1103,6 @@ router.post('/roleplay/import', async (req, res) => {
     }
 });
 
-// Import image to assets folder
 // Import image to assets folder - FIXED VERSION
 router.post('/assets/import-image', async (req, res) => {
     if (!IS_LOCAL) {
@@ -1705,6 +1760,43 @@ router.get('/roleplay/templates', async (req, res) => {
     } catch (error) {
         console.error('Error reading CSS templates:', error);
         res.status(500).json({ error: 'Failed to read templates' });
+    }
+});
+
+// Serve CSS template files for preview
+router.get('/templates/:templateName', async (req, res) => {
+    try {
+        const { templateName } = req.params;
+        
+        // Validate that it's a CSS file
+        if (!templateName.endsWith('.css')) {
+            return res.status(400).send('Invalid template file');
+        }
+        
+        // Check templates folder first
+        const templatesFolder = path.join(__dirname, '..', 'roleplay-converter', 'templates');
+        const templatePath = path.join(templatesFolder, templateName);
+        
+        if (await fs.pathExists(templatePath)) {
+            const cssContent = await fs.readFile(templatePath, 'utf8');
+            res.setHeader('Content-Type', 'text/css');
+            return res.send(cssContent);
+        }
+        
+        // Fallback to main folder
+        const mainPath = path.join(__dirname, '..', 'roleplay-converter', templateName);
+        
+        if (await fs.pathExists(mainPath)) {
+            const cssContent = await fs.readFile(mainPath, 'utf8');
+            res.setHeader('Content-Type', 'text/css');
+            return res.send(cssContent);
+        }
+        
+        res.status(404).send('Template not found');
+        
+    } catch (error) {
+        console.error('Error serving template:', error);
+        res.status(500).send('Error loading template');
     }
 });
 
@@ -2586,6 +2678,85 @@ router.get('/debug/html-template', (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+// =============================================================================
+// TIME SYSTEMS ENDPOINTS (for Plans time/calendar management)
+// =============================================================================
+
+// Load user's time systems - GET with userContext in header
+router.post('/time-systems/load', async (req, res) => {
+    try {
+        const { userContext } = req.body;
+        
+        const validation = validateUserContext(userContext);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
+        const settingsFolder = getUserSettingsFolder(userContext);
+        const timeSystemsPath = path.join(settingsFolder, 'time-systems.json');
+        
+        // Create settings folder if it doesn't exist
+        await fs.ensureDir(settingsFolder);
+        
+        // Load time systems if file exists, otherwise return empty array
+        let timeSystems = [];
+        if (await fs.pathExists(timeSystemsPath)) {
+            try {
+                timeSystems = await fs.readJson(timeSystemsPath);
+                console.log(`📅 Loaded ${timeSystems.length} time systems for ${userContext.isGuest ? 'guest' : userContext.username}`);
+            } catch (error) {
+                console.error('Error reading time systems file:', error);
+                timeSystems = [];
+            }
+        } else {
+            console.log(`📅 No time systems file found for ${userContext.isGuest ? 'guest' : userContext.username}, starting fresh`);
+        }
+        
+        res.json({ timeSystems });
+        
+    } catch (error) {
+        console.error('Error loading time systems:', error);
+        res.status(500).json({ error: 'Failed to load time systems' });
+    }
+});
+
+// Save user's time systems
+router.post('/time-systems/save', async (req, res) => {
+    try {
+        const { timeSystems, userContext } = req.body;
+        
+        if (!timeSystems || !Array.isArray(timeSystems)) {
+            return res.status(400).json({ error: 'Invalid time systems data' });
+        }
+        
+        const validation = validateUserContext(userContext);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+
+        const settingsFolder = getUserSettingsFolder(userContext);
+        const timeSystemsPath = path.join(settingsFolder, 'time-systems.json');
+        
+        // Create settings folder if it doesn't exist
+        await fs.ensureDir(settingsFolder);
+        
+        // Save time systems to file
+        await fs.writeJson(timeSystemsPath, timeSystems, { spaces: 2 });
+        
+        console.log(`💾 Saved ${timeSystems.length} time systems for ${userContext.isGuest ? 'guest' : userContext.username}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'Time systems saved successfully',
+            count: timeSystems.length 
+        });
+        
+    } catch (error) {
+        console.error('Error saving time systems:', error);
+        res.status(500).json({ error: 'Failed to save time systems' });
     }
 });
 

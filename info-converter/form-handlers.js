@@ -749,17 +749,44 @@ function populateSubsectionDatalist(sectionName) {
 }
 
 function populateStorylineModal(storyline) {
-    document.getElementById('story-title').value = storyline.title || '';
-    document.getElementById('story-pairing').value = storyline.pairing || '';
-    document.getElementById('story-type').value = storyline.type || 'roleplay';
-    document.getElementById('story-section').value = storyline.section || '';
-    document.getElementById('story-subsection').value = storyline.subsection || ''; // ADD THIS LINE
-    document.getElementById('story-tags').value = (storyline.tags || []).join(', ');
-    document.getElementById('story-wordcount').value = storyline.wordcount || '';
-    document.getElementById('story-last-updated').value = storyline.lastUpdated || '';
-    document.getElementById('story-description').value = storyline.description || '';
+    // Helper function to set value only if current field is empty
+    const setIfEmpty = (fieldId, value) => {
+        const field = document.getElementById(fieldId);
+        if (field && !field.value.trim()) {
+            field.value = value || '';
+        }
+    };
     
-    // NEW: Handle project link checkbox and link processing
+    // Always set these fields (for edit mode)
+    if (!document.getElementById('story-title').value) {
+        document.getElementById('story-title').value = storyline.title || '';
+    }
+    if (!document.getElementById('story-pairing').value) {
+        document.getElementById('story-pairing').value = storyline.pairing || '';
+    }
+    if (!document.getElementById('story-type').value || document.getElementById('story-type').value === 'roleplay') {
+        document.getElementById('story-type').value = storyline.type || 'roleplay';
+    }
+    if (!document.getElementById('story-section').value) {
+        document.getElementById('story-section').value = storyline.section || '';
+    }
+    if (!document.getElementById('story-subsection').value) {
+        document.getElementById('story-subsection').value = storyline.subsection || '';
+    }
+    if (!document.getElementById('story-tags').value) {
+        document.getElementById('story-tags').value = (storyline.tags || []).join(', ');
+    }
+    if (!document.getElementById('story-wordcount').value) {
+        document.getElementById('story-wordcount').value = storyline.wordcount || '';
+    }
+    if (!document.getElementById('story-last-updated').value) {
+        document.getElementById('story-last-updated').value = storyline.lastUpdated || '';
+    }
+    if (!document.getElementById('story-description').value) {
+        document.getElementById('story-description').value = storyline.description || '';
+    }
+    
+    // Handle project link checkbox and link processing
     const isProjectLink = storyline.isProjectLink || false;
     const linkInput = document.getElementById('story-link');
     const projectCheckbox = document.getElementById('story-is-project-link');
@@ -768,11 +795,15 @@ function populateStorylineModal(storyline) {
     
     if (isProjectLink) {
         // Show just the filename if it's a project link
-        linkInput.value = storyline.link ? storyline.link.replace('roleplays/', '') : '';
+        if (!linkInput.value) {
+            linkInput.value = storyline.link ? storyline.link.replace('roleplays/', '') : '';
+        }
         linkInput.placeholder = 'story-title.html';
     } else {
         // Show full URL for external links
-        linkInput.value = storyline.link || '';
+        if (!linkInput.value) {
+            linkInput.value = storyline.link || '';
+        }
         linkInput.placeholder = 'https://archiveofourown.org/works/123456';
     }
 }
@@ -1975,6 +2006,8 @@ window.collectFormData = function() {
 
     // Ensure linked lorebook data is preserved
     infoData.linkedLorebook = infoData.linkedLorebook || null;
+
+// DON'T store userTimeSystems in projects - they should only store the selectedTimeSystemId
     
     // Clean up data before processing
     cleanupData();
@@ -2238,6 +2271,36 @@ function saveStorylinesOptions() {
     
     if (typeof showStatus === 'function') {
         showStatus('success', 'Storylines display options saved!');
+    }
+}
+
+// Plans Options functions
+function openPlansOptionsModal() {
+    // Populate time system dropdown
+    if (typeof populateTimeSystemsDropdown === 'function') {
+        populateTimeSystemsDropdown();
+    }
+    
+    // Set current selection
+    const selectedSystem = infoData.plansOptions?.selectedTimeSystemId || 'default';
+    document.getElementById('plans-time-system').value = selectedSystem;
+    
+    openModal('plansOptionsModal');
+}
+
+function savePlansOptions() {
+    // Ensure plansOptions exists
+    if (!infoData.plansOptions) {
+        infoData.plansOptions = {};
+    }
+    
+    infoData.plansOptions.selectedTimeSystemId = document.getElementById('plans-time-system').value;
+    
+    closeModal('plansOptionsModal');
+    markDataAsModified();
+    
+    if (typeof showStatus === 'function') {
+        showStatus('success', 'Plans options saved!');
     }
 }
 
@@ -2692,18 +2755,13 @@ function saveInfoDisplayLabels() {
 document.addEventListener('DOMContentLoaded', function() {
     // Icon type toggle handler
     const iconTypeRadios = document.querySelectorAll('input[name="icon-type"]');
-    console.log('Found radio buttons:', iconTypeRadios.length);
     iconTypeRadios.forEach(radio => {
         radio.addEventListener('change', function() {
             // Get the value from the checked radio button explicitly
             const selectedValue = document.querySelector('input[name="icon-type"]:checked').value;
-            console.log('Radio changed to:', selectedValue);
             
             const customIconSection = document.getElementById('custom-icon-image-section');
             const builderSection = document.getElementById('icon-builder-section');
-            
-            console.log('Custom section:', customIconSection);
-            console.log('Builder section:', builderSection);
             
             const configureBtn = document.getElementById('configure-icon-btn');
 
@@ -2759,6 +2817,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Make savePlaylist globally accessible
+window.savePlaylist = savePlaylist;
 
 // Make functions globally available
 window.openFactionOrderModal = openFactionOrderModal;

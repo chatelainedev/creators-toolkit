@@ -214,9 +214,13 @@ router.post('/auth/register', async (req, res) => {
             username: username,
             email: email || null,
             passwordHash: passwordHash,
-            isPremium: false, // Add this line
+            isPremium: false,
             createdAt: Date.now(),
-            lastLogin: Date.now()
+            lastLogin: Date.now(),
+            settings: {
+                aiToolsEnabled: false,
+                theme: 'default'
+            }
         };
 
         // Save to accounts
@@ -478,18 +482,16 @@ router.post('/user/profile', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Load user settings
-        const preferences = await loadUserSettings(userContext, 'preferences');
-        const usage = await loadUserSettings(userContext, 'usage');
-
-        // Ensure premium status is synced between accounts file and user settings
-        if (user.isPremium !== preferences.isPremium) {
-            // Sync the status (accounts file takes precedence)
-            preferences.isPremium = user.isPremium;
-            await saveUserSettings(userContext, 'preferences', preferences);
+        // Ensure settings object exists (for older accounts)
+        if (!user.settings) {
+            user.settings = {
+                aiToolsEnabled: false,
+                theme: 'default'
+            };
+            accounts[user.id] = user;
+            await saveAccounts(accounts);
         }
 
-        // Update the response to include premium status from preferences
         res.json({
             id: user.id,
             username: user.username,
@@ -497,10 +499,9 @@ router.post('/user/profile', async (req, res) => {
             createdAt: user.createdAt,
             lastLogin: user.lastLogin,
             isGuest: false,
-            isPremium: preferences.isPremium, // Use from preferences instead of accounts
+            isPremium: user.isPremium,
             avatar: `/api/user/avatar?userContext=${encodeURIComponent(JSON.stringify(userContext))}`,
-            preferences: preferences,
-            usage: usage
+            settings: user.settings
         });
 
     } catch (error) {
@@ -568,6 +569,14 @@ router.put('/user/profile', async (req, res) => {
 
         if (updates.password) {
             user.passwordHash = await bcrypt.hash(updates.password, 10);
+        }
+
+        // Update settings if provided
+        if (updates.settings) {
+            user.settings = {
+                ...user.settings,
+                ...updates.settings
+            };
         }
 
         // Save updated account
@@ -731,7 +740,7 @@ router.get('/user/avatar', async (req, res) => {
 // USER PREFERENCES & SETTINGS
 // =============================================================================
 
-// Save user preferences
+// Save user preferences (now stored in accounts.json)
 router.post('/user/preferences', async (req, res) => {
     if (!IS_LOCAL) {
         return res.status(403).json({ error: 'User preferences not available in hosted environment' });
@@ -745,13 +754,32 @@ router.post('/user/preferences', async (req, res) => {
             return res.status(400).json({ error: validation.error });
         }
 
-        const saved = await saveUserSettings(userContext, 'preferences', preferences);
+        if (userContext.isGuest) {
+            return res.status(400).json({ error: 'Cannot save preferences for guest' });
+        }
+
+        // Load accounts
+        const accounts = await loadAccounts();
+        const user = accounts[userContext.userId];
+        
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Update settings in accounts
+        user.settings = {
+            ...user.settings,
+            ...preferences
+        };
+
+        accounts[user.id] = user;
+        const saved = await saveAccounts(accounts);
         
         if (!saved) {
             return res.status(500).json({ error: 'Failed to save preferences' });
         }
 
-        res.json({ success: true, preferences });
+        res.json({ success: true, preferences: user.settings });
 
     } catch (error) {
         console.error('Error saving preferences:', error);
@@ -759,7 +787,7 @@ router.post('/user/preferences', async (req, res) => {
     }
 });
 
-// Get user preferences
+// Get user preferences (now from accounts.json)
 router.post('/user/preferences/get', async (req, res) => {
     if (!IS_LOCAL) {
         return res.status(403).json({ error: 'User preferences not available in hosted environment' });
@@ -773,8 +801,27 @@ router.post('/user/preferences/get', async (req, res) => {
             return res.status(400).json({ error: validation.error });
         }
 
-        const preferences = await loadUserSettings(userContext, 'preferences');
-        res.json({ preferences });
+        if (userContext.isGuest) {
+            return res.json({ preferences: { aiToolsEnabled: false, theme: 'default' } });
+        }
+
+        // Load accounts
+        const accounts = await loadAccounts();
+        const user = accounts[userContext.userId];
+        
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Ensure settings exist
+        if (!user.settings) {
+            user.settings = {
+                aiToolsEnabled: false,
+                theme: 'default'
+            };
+        }
+
+        res.json({ preferences: user.settings });
 
     } catch (error) {
         console.error('Error loading preferences:', error);

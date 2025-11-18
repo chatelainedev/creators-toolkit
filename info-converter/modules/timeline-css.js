@@ -112,11 +112,53 @@ function generateTimelineCSS(colors, fonts) {
             z-index: 2;
         }
 
+        /* Month labels - Option 1: Line from center */
+        .tl-month-label {
+            font-size: 0.75em;
+            font-variant: small-caps;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            color: ${colors.textMuted};
+            font-family: ${fonts.ui};
+            text-align: center;
+            margin: 20px 130px 15px 0;
+            position: relative;
+        }
+
+        .tl-month-label::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 25px;
+            height: 1px;
+            background: ${colors.textMuted}66;
+            margin-left: -65px;
+        }
+
+        .tl-month-label::after {
+            content: '';
+            position: absolute;
+            right: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 25px;
+            height: 1px;
+            background: ${colors.textMuted}66;
+            margin-right: -65px;
+        }
+
+        .tl-month-label.tl-no-month {
+            opacity: 0;
+            font-style: italic;
+        }
+
         .tl-timeline-events {
             position: relative;
         }
 
-        /* FLEXBOX POSITIONING */
+/* FLEXBOX POSITIONING */
         .tl-timeline-event {
             position: relative;
             margin-bottom: 30px;
@@ -125,13 +167,13 @@ function generateTimelineCSS(colors, fonts) {
             align-items: flex-start;
         }
 
-        /* Left side events (odd) */
-        .tl-timeline-event:nth-child(odd) {
+        /* Left side events */
+        .tl-timeline-event.tl-left-side {
             justify-content: flex-start;
         }
 
-        /* Right side events (even) */
-        .tl-timeline-event:nth-child(even) {
+        /* Right side events */
+        .tl-timeline-event.tl-right-side {
             justify-content: flex-end;
         }
 
@@ -165,36 +207,13 @@ function generateTimelineCSS(colors, fonts) {
             gap: 0;
         }
 
-        .tl-timeline-marker {
-            width: 16px;
-            height: 16px;
-            position: absolute;
-            left: 50%;
-            top: 20px;
-            transform: translateX(-50%) rotate(45deg);
-            z-index: 2;
-            border: 2px solid ${colors.containerBg};
-        }
-
-        .tl-timeline-marker.rising {
-            background: ${colors.statusCanon || '#28a745'};
-        }
-
-        .tl-timeline-marker.setback {
-            background: ${colors.statusIdea || '#dc3545'};
-        }
-
-        .tl-timeline-marker.climax {
-            background: ${colors.statusDraft || '#ffc107'};
-        }
-
         /* Small event images in card corner */
         .tl-event-image {
             width: 60px;
             height: 60px;
             position: absolute;
-            top: -30px;
-            right: 5px;
+            top: 0px;
+            right: 500px;
             border-radius: 50%;
             overflow: hidden;
             border: 2px solid;
@@ -214,37 +233,64 @@ function generateTimelineCSS(colors, fonts) {
         }
 
         /* MIRROR EFFECT: Right-align content in left-side events */
-        .tl-timeline-event:nth-child(odd) .tl-event-card,
-        .tl-timeline-event:nth-child(odd) .tl-stacked-events {
+        .tl-timeline-event.tl-left-side .tl-event-card,
+        .tl-timeline-event.tl-left-side .tl-stacked-events {
             text-align: right;
         }
 
-        .tl-timeline-event:nth-child(odd) .tl-event-card .tl-event-arc-title,
-        .tl-timeline-event:nth-child(odd) .tl-event-card .tl-event-title,
-        .tl-timeline-event:nth-child(odd) .tl-event-card .tl-event-timing {
+        .tl-timeline-event.tl-left-side .tl-event-card .tl-event-arc-title,
+        .tl-timeline-event.tl-left-side .tl-event-card .tl-event-title,
+        .tl-timeline-event.tl-left-side .tl-event-card .tl-event-timing {
             text-align: right;
         }
 
         /* MIRROR EFFECT: Move images to left side for left-side events */
-        .tl-timeline-event:nth-child(odd) .tl-event-image {
+        .tl-timeline-event.tl-left-side .tl-event-image {
             right: auto;
-            left: 5px;
+            left: 500px;
+            top: 0px;
         }
 
-        .tl-timeline-event:nth-child(odd) .tl-stacked-events .tl-event-image {
+        .tl-timeline-event.tl-left-side .tl-stacked-events .tl-event-image {
             right: auto;
-            left: -9px;
+            left: 500px;
+            top: 0px;
         }
+
+        /* Connecting line for left-side images - on parent to avoid clipping */
+        .tl-timeline-event.tl-left-side.has-image::after {
+            content: '';
+            position: absolute;
+            left: 430px;
+            top: 30px;
+            width: 75px;
+            height: 3px;
+            background: ${colors.textMuted}60;
+            z-index: 1;
+        }
+
+        /* Connecting line for right-side images - only show when image exists */
+        .tl-timeline-event.tl-right-side.has-image::after {
+            content: '';
+            position: absolute;
+            right: 430px;
+            top: 30px;
+            width: 75px;
+            height: 3px;
+            background: ${colors.textMuted}60;
+            z-index: 1;
+        }
+
 
         /* Ensure right-side events stay left-aligned */
-        .tl-timeline-event:nth-child(even) .tl-event-card,
-        .tl-timeline-event:nth-child(even) .tl-stacked-events {
+        .tl-timeline-event.tl-right-side .tl-event-card,
+        .tl-timeline-event.tl-right-side .tl-stacked-events {
             text-align: left;
         }
 
-        .tl-timeline-event:nth-child(even) .tl-event-card .tl-event-arc-title,
-        .tl-timeline-event:nth-child(even) .tl-event-card .tl-event-title,
-        .tl-timeline-event:nth-child(even) .tl-event-card .tl-event-timing {
+        .tl-timeline-event.tl-right-side .tl-event-card .tl-event-arc-title,
+        .tl-timeline-event.tl-right-side .tl-event-card .tl-event-title,
+        .tl-timeline-event.tl-right-side .tl-event-card .tl-event-timing {
             text-align: left;
         }
 
@@ -261,13 +307,13 @@ function generateTimelineCSS(colors, fonts) {
             transition: all 0.15s ease;
         }
 
-        /* Left side events (odd) - diamond in bottom-left */
-        .tl-timeline-event:nth-child(odd) .tl-chrono-notes-indicator {
+        /* Left side events - diamond in bottom-left */
+        .tl-timeline-event.tl-left-side .tl-chrono-notes-indicator {
             left: 8px;
         }
 
-        /* Right side events (even) - diamond in bottom-right */
-        .tl-timeline-event:nth-child(even) .tl-chrono-notes-indicator {
+        /* Right side events - diamond in bottom-right */
+        .tl-timeline-event.tl-right-side .tl-chrono-notes-indicator {
             right: 8px;
         }
 
@@ -316,68 +362,6 @@ function generateTimelineCSS(colors, fonts) {
             font-weight: 400;
         }
 
-        /* TOOLTIP STYLING */
-        .tooltip {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-size: 0.85em;
-            width: 300px;
-            max-width: 90vw;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease;
-            z-index: 10;
-            margin-bottom: 8px;
-            line-height: 1.5;
-            text-align: left;
-            font-family: ${fonts.ui};
-            max-height: 9em;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 6;
-            line-clamp: 6;
-            -webkit-box-orient: vertical;
-            word-wrap: break-word;
-        }
-
-        .tooltip::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 1.4em;
-            background: linear-gradient(transparent, #333);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid transparent;
-            border-top-color: #333;
-        }
-
-        .tl-tooltip-timing {
-            margin-top: 3px;
-            padding-top: 3px;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            font-size: 0.85em;
-            line-height: 1.0;
-            font-style: italic;
-            opacity: 0.9;
-        }
-
         .tl-event-card:hover .tooltip {
             opacity: 1;
             visibility: visible;
@@ -386,6 +370,96 @@ function generateTimelineCSS(colors, fonts) {
         .tl-stacked-events .tl-event-card:hover .tooltip {
             opacity: 1;
             visibility: visible;
+        }
+
+        .tl-timeline-marker {
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            transform: translateX(-50%) rotate(45deg);
+            z-index: 2;
+            border: 2px solid ${colors.containerBg};
+            /* background-color will be set inline via style attribute */
+        }
+
+        /* Rich node tooltip styling */
+        .tl-node-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(33, 37, 41, 0.96);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            min-width: 200px;
+            max-width: 300px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            margin-bottom: 8px;
+            line-height: 1.5;
+            text-align: left;
+            font-family: ${fonts.ui};
+            pointer-events: none;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        .tl-event-card:hover .tl-node-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tl-node-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: rgba(33, 37, 41, 0.96);
+            z-index: 1001;
+        }
+
+        /* Tooltip sections */
+        .tl-tooltip-timing {
+            margin-top: 4px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .tl-tooltip-duration {
+            margin-top: 2px;
+            font-style: italic;
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+
+        .tl-tooltip-characters {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.85em;
+        }
+
+        .tl-tooltip-character-tag {
+            font-weight: 600;
+            margin-right: 4px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .tl-tooltip-notes {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.85em;
+            font-style: italic;
+            opacity: 0.8;
         }
 
         /* STACKED EVENTS: Internal layout */
@@ -410,36 +484,6 @@ function generateTimelineCSS(colors, fonts) {
 
         .tl-stacked-events .tl-event-card:not(:first-of-type) {
             padding-top: 12px !important;
-        }
-
-        /* Back to top button */
-        #timeline-back-to-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: ${colors.textSecondary};
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 18px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-            opacity: 0;
-            visibility: hidden;
-            z-index: 1000;
-        }
-
-        #timeline-back-to-top.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        #timeline-back-to-top:hover {
-            background: ${colors.textMuted};
-            transform: translateY(-2px);
         }
 
         /* Event Notes Modal */
@@ -562,521 +606,48 @@ function generateTimelineCSS(colors, fonts) {
             margin: 0 auto;
         }
 
-        /* ARC TIMELINE STYLES */
-        .tl-arc-timeline-container {
-            position: relative;
-            width: 100%;
-            margin: 0 auto;
-            padding: 20px 0;
-            overflow-x: auto;
-            overflow-y: visible;
-            z-index: 1;
-        }
-
-        .tl-arc-timeline-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: ${colors.containerBg};
-            opacity: 0.3;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Header structure */
-        .tl-arc-header {
-            display: flex;
-            align-items: center;
-            border-bottom: 2px solid ${colors.textMuted}44;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            min-width: fit-content;
-            white-space: nowrap;
-        }
-
-        .tl-arc-label-column {
-            width: 250px;
-            min-width: 250px;
-            max-width: 250px;
-            padding: 15px;
-            font-weight: bold;
-            color: ${colors.textSecondary};
-            font-family: ${fonts.ui};
-            background: ${colors.headerBg};
-            border-radius: 6px 0 0 6px;
-            text-align: center;
-            flex-shrink: 0;
-            box-sizing: border-box;
-        }
-
-        .tl-arc-years-header {
-            display: flex;
-            min-width: fit-content;
-            align-items: stretch;
-            flex-shrink: 0;
-            margin-left: 0;
-            border-left: none;
-        }
-
-        .tl-arc-years-header .tl-arc-year-column {
-            min-width: 100px;
-            width: 100px;
-            max-width: 175px;
-            padding: 10px;
-            text-align: center;
-            font-weight: bold;
-            color: ${colors.textSecondary};
-            font-family: ${fonts.ui};
-            background: ${colors.headerBg};
-            border-left: 1px solid ${colors.textMuted}33;
-            flex-shrink: 0;
-            flex-grow: 0;
-            box-sizing: border-box;
-        }
-
-        /* Swimlane structure */
-        .tl-arc-swimlane {
-            display: flex;
-            align-items: stretch;
-            margin-bottom: 2px;
-            min-height: 70px;
-            border-bottom: 1px solid ${colors.textMuted}22;
-            min-width: fit-content;
-            overflow: visible;
-            position: relative;
-            z-index: 2;
-            white-space: nowrap;
-            background: ${colors.textMuted}08;
-        }
-
-        .tl-arc-swimlane::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--arc-color, ${colors.textSecondary});
-            opacity: 0.08;
-            z-index: -1;
-        }
-
-        .tl-arc-swimlane:hover::before {
-            opacity: 0.15;
-        }
-
-        .tl-subarc-swimlane {
-            margin-left: 0;
-            min-height: 60px;
-            background: ${colors.textMuted}08;
-            min-width: fit-content;
-            padding-left: 20px;
-        }
-
-        .tl-subarc-swimlane::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--arc-color, ${colors.textSecondary});
-            opacity: 0.05;
-            z-index: -1;
-        }
-
-        .tl-subarc-swimlane:hover::before {
-            opacity: 0.12;
-        }
-
-        /* Arc Labels */
-        .tl-arc-label {
-            width: 250px;
-            min-width: 250px;
-            max-width: 250px;
-            padding: 15px;
-            background: var(--arc-color, ${colors.textSecondary})22;
-            border-left: 4px solid var(--arc-color, ${colors.textSecondary});
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 8px;
-            flex-shrink: 0;
-            box-sizing: border-box;
-        }
-
-        .tl-subarc-label {
-            background: var(--arc-color, ${colors.textSecondary})15;
-            border-left: 3px solid var(--arc-color, ${colors.textSecondary});
-            width: 230px;
-            min-width: 230px;
-            max-width: 230px;
-            padding: 15px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .tl-subarc-swimlane .tl-arc-timeline {
-            min-width: fit-content;
-            flex-shrink: 0;
-        }
-
-        .tl-arc-title {
-            font-weight: 600;
-            color: ${colors.textPrimary};
-            font-family: ${fonts.ui};
-            font-size: 0.9em;
-            line-height: 1.3;
-        }
-
-        .tl-subarc-title {
-            font-size: 0.8em;
-            color: ${colors.textSecondary};
-            position: relative;
-        }
-
-        .tl-arc-type-tag {
-            background: var(--arc-color, ${colors.textSecondary});
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.7em;
-            font-family: ${fonts.ui};
-            width: fit-content;
-        }
-
-        /* Arc Timeline Events Area */
-        .tl-arc-timeline {
-            display: flex;
-            align-items: stretch;
-            min-width: fit-content;
-            overflow: visible;
-            flex-shrink: 0;
-            margin-left: 0;
-        }
-
-        .tl-arc-timeline .tl-arc-year-column {
-            background: transparent;
-            border-left: 1px solid ${colors.textMuted}22;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            min-width: 100px;
-            width: 100px;
-            max-width: 175px;
-            flex-shrink: 0;
-            flex-grow: 0;
-            overflow: visible;
-            box-sizing: border-box;
-        }
-
-        .tl-arc-year-column:last-child {
-            border-radius: 0 6px 6px 0;
-        }
-
-        /* Node Container */
-        .tl-arc-nodes-container {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-height: 40px;
-            width: 100%;
-            padding: 5px;
-            overflow: visible;
-            position: relative;
-            z-index: 3;
-        }
-
-        /* Node Lane */
-        .tl-arc-node-lane {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-height: 24px;
-            flex-wrap: nowrap;
-            width: max-content;
-            min-width: 100%;
-            overflow: visible;
-            position: relative;
-        }
-
-        /* Event Node */
-        .tl-arc-event-node {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            position: relative;
-            flex-shrink: 0;
-            border: 2px solid var(--arc-color, ${colors.textSecondary});
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            z-index: 4;
-        }
-
-        .tl-arc-event-node:hover {
-            transform: scale(1.1);
-            z-index: 500;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-
-        .tl-arc-event-node:focus {
-            outline: 2px solid ${colors.concepts};
-            outline-offset: 2px;
-        }
-
-        /* Notes indicator - cute little diamond */
-        .tl-node-notes-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 6px;
-            color: ${colors.containerBg};
-            opacity: 0.6;
-            text-shadow: 0 0 2px ${colors.textPrimary}30;
-            pointer-events: none;
-            z-index: 5;
-            transition: all 0.15s ease;
-        }
-
-        .tl-arc-event-node:hover .tl-node-notes-indicator {
-            opacity: 0.85;
-            font-size: 7px;
-            text-shadow: 0 0 3px ${colors.textPrimary}50;
-        }
-
-        /* Node Spacer */
-        .tl-arc-node-spacer {
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-        }
-
-        /* Timing Indicator */
-        .tl-node-timing-indicator {
-            position: absolute;
-            bottom: -14px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 8px;
-            color: ${colors.textMuted};
-            font-family: ${fonts.ui};
-            white-space: nowrap;
-            font-weight: 500;
-            text-shadow: 0 0 2px ${colors.containerBg};
-            pointer-events: none;
-        }
-
-        /* Node Tooltip */
-        .tl-node-tooltip {
-            position: absolute;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(33, 37, 41, 0.96);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 0.75em;
-            max-width: 320px;
-            min-width: 200px;
-            white-space: normal;
-            word-wrap: break-word;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s ease;
-            z-index: 1000;
-            pointer-events: none;
-            line-height: 1.3;
-            font-family: ${fonts.ui};
-            box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-            backdrop-filter: blur(2px);
-        }
-
-        .tl-arc-event-node:hover .tl-node-tooltip {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(-1px);
-        }
-
-        .tl-arc-year-column:last-child .tl-arc-event-node .tl-node-tooltip {
-            left: auto;
-            right: 0;
-            transform: translateX(0) translateY(-1px);
-        }
-
-        .tl-node-tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 4px solid transparent;
-            border-top-color: rgba(33, 37, 41, 0.96);
-            z-index: 1001;
-        }
-
-        /* Character Tags in Tooltip */
-        .tl-tooltip-characters {
-            margin-top: 3px;
-            padding-top: 3px;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        .tl-duration-badge {
+            display: inline-block;
+            margin-left: 4px;
             font-size: 0.85em;
-            line-height: 1.0;
+            color: var(--accent-color);
+            opacity: 0.8;
         }
 
-        .tl-tooltip-character-tag {
-            font-weight: 600;
-            margin-right: 3px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        .tl-tooltip-duration {
+            margin-top: 2px;
+            padding-top: 2px;
+            border-top: 1px solid var(--border-tertiary);
         }
 
-        .tl-empty-year {
-            min-height: 20px;
+        /* Yearly event styling */
+        .tl-yearly-event {
+            opacity: 0.75;
         }
 
-        /* Scrolling for Year Columns */
-        .tl-arc-year-column::-webkit-scrollbar {
-            height: 4px;
+        .tl-yearly-event .tl-event-card {
+            border-left: 2px dashed var(--border-color) !important;
+            background: var(--bg-secondary);
         }
 
-        .tl-arc-year-column::-webkit-scrollbar-track {
-            background: ${colors.textMuted}20;
-            border-radius: 2px;
+        .tl-yearly-event .tl-event-card,
+        .tl-yearly-event .tl-stacked-events {
+            background: var(--bg-secondary) !important;
         }
 
-        .tl-arc-year-column::-webkit-scrollbar-thumb {
-            background: ${colors.textMuted}60;
-            border-radius: 2px;
+        .tl-yearly-event.tl-right-side > .tl-event-card,
+        .tl-yearly-event.tl-right-side > .tl-stacked-events {
+            border-left: 2px dashed var(--border-color) !important;
         }
 
-        .tl-arc-year-column::-webkit-scrollbar-thumb:hover {
-            background: ${colors.textMuted}80;
+        .tl-yearly-event.tl-left-side > .tl-event-card,
+        .tl-yearly-event.tl-left-side > .tl-stacked-events {
+        border-right: 2px dashed var(--border-color) !important;
         }
 
-        /* Animation for node appearance */
-        @keyframes nodeAppear {
-            from {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .tl-arc-event-node {
-            animation: nodeAppear 0.3s ease-out;
-        }
-
-        /* Arc Timeline Expand Controls */
-        .tl-arc-header-controls {
-            position: relative;
-            display: flex;
-            justify-content: flex-end;
-            padding: 10px 15px 5px 15px;
-            z-index: 10;
-        }
-
-        .tl-arc-expand-btn {
-            background: ${colors.containerBg};
-            border: 1px solid ${colors.textMuted}44;
-            border-radius: 4px;
-            padding: 6px 8px;
-            cursor: pointer;
-            color: ${colors.textSecondary};
-            font-size: 14px;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .tl-arc-expand-btn:hover {
-            background: ${colors.textMuted}22;
-            color: ${colors.textPrimary};
-            border-color: ${colors.textMuted}66;
-        }
-
-        .tl-expand-icon {
-            transition: transform 0.2s ease;
-        }
-
-        /* Expanded Arc Timeline Styles */
-        .tl-arc-timeline-container.expanded {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: none !important;
-            z-index: 9999 !important;
-            background: ${colors.containerBg} !important;
-            overflow: auto !important;
-            cursor: grab;
-            margin: 0 !important;
-            padding: 20px !important;
-            box-sizing: border-box;
-        }
-
-        .tl-arc-timeline-container.expanded:active {
-            cursor: grabbing;
-        }
-
-        .tl-arc-timeline-container.expanded .tl-expand-icon {
-            transform: rotate(45deg);
-        }
-
-        /* Adjust header controls in expanded mode */
-        .tl-arc-timeline-container.expanded .tl-arc-header-controls {
-            position: sticky;
-            top: 0;
-            background: transparent !important;
-            padding: 15px;
-            border-bottom: 1px solid ${colors.textMuted}33;
-            margin: -20px -20px 20px -20px;
-            z-index: 100;
-        }
-
-        .tl-arc-timeline-container.expanded .tl-arc-expand-btn {
-            background: ${colors.textMuted}22;
-            border-color: ${colors.textMuted}66;
-        }
-
-        /* Ensure arc timeline content is wide enough in expanded mode */
-        .tl-arc-timeline-container.expanded .tl-arc-header,
-        .tl-arc-timeline-container.expanded .tl-arc-swimlane {
-            min-width: max-content;
-        }
-
-        /* Hide scrollbars but keep functionality in expanded mode */
-        .tl-arc-timeline-container.expanded::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        .tl-arc-timeline-container.expanded::-webkit-scrollbar-track {
-            background: ${colors.textMuted}20;
-            border-radius: 4px;
-        }
-
-        .tl-arc-timeline-container.expanded::-webkit-scrollbar-thumb {
-            background: ${colors.textMuted}60;
-            border-radius: 4px;
-        }
-
-        .tl-arc-timeline-container.expanded::-webkit-scrollbar-thumb:hover {
-            background: ${colors.textMuted}80;
+        .tl-yearly-event .tl-event-title {
+            font-size: 0.9em;
+            font-style: italic;
         }
     `;
 }

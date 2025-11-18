@@ -6,6 +6,12 @@ let currentEditingSubArcEvents = []; // NEW: Track events within the current sub
 // Global variables for subevent management
 let currentEditingSubevents = []; // Working copy of subevents during event editing
 let editingSubeventIndex = -1; // Track which subevent is being edited
+// Event date/time editing state
+let eventEditingDate = null;
+let eventEditingTime = null;
+let eventEditingEndDate = null; 
+let eventEditingEndTime = null; 
+let isSelectingEndDate = false;
 
 function migratePlanData() {
     // Ensure all existing plans have a tags field
@@ -15,8 +21,85 @@ function migratePlanData() {
                 plan.tags = []; // Initialize empty tags array
             }
         });
-        console.log('Migrated plans data to include tags field');
     }
+}
+
+function formatEventTiming(timing) {
+    // Handle legacy string format
+    if (typeof timing === 'string') {
+        return timing;
+    }
+    
+    // Handle new object format
+    if (timing && timing.date) {
+        const timeSystemId = timing.timeSystemId || 'default';
+        
+        const timeSystem = getTimeSystemById(timeSystemId);
+
+        if (!timeSystem) {
+            console.error('Time system not found:', timeSystemId);
+            return 'Time system not loaded';
+        }
+
+        // Validate the date
+        if (!validateEventDate(timing.date, timeSystem)) {
+            return 'Invalid date';
+        }
+
+        // Format the start date
+        let formatted = formatDateWithFormat(timing.date, timeSystem.settings.dateFormat, timeSystem);
+        
+        // Add start time if present
+        if (timing.time) {
+            const timeFormat = timeSystem.settings.timeFormat;
+            let timeStr = '';
+            
+            if (timeFormat === '12') {
+                timeStr = ` ${timing.time.hour}:${String(timing.time.minute).padStart(2, '0')} ${timing.time.period}`;
+            } else if (timeFormat === '24') {
+                timeStr = ` ${String(timing.time.hour).padStart(2, '0')}:${String(timing.time.minute).padStart(2, '0')}`;
+            } else if (timeFormat === 'custom') {
+                const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.time.division]
+                    ? timeSystem.timeDivisions.divisionNames[timing.time.division]
+                    : `Division ${timing.time.division + 1}`;
+                const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
+                timeStr = `, ${divName} ${timing.time.subdivision} ${subdivisionName}`;
+            }
+            
+            formatted += timeStr;
+        }
+
+        // Add end date if present
+        if (timing.endDate && validateEventDate(timing.endDate, timeSystem)) {
+            let endFormatted = formatDateWithFormat(timing.endDate, timeSystem.settings.dateFormat, timeSystem);
+            
+            // Add end time if present
+            if (timing.endTime) {
+                const timeFormat = timeSystem.settings.timeFormat;
+                let endTimeStr = '';
+                
+                if (timeFormat === '12') {
+                    endTimeStr = ` ${timing.endTime.hour}:${String(timing.endTime.minute).padStart(2, '0')} ${timing.endTime.period}`;
+                } else if (timeFormat === '24') {
+                    endTimeStr = ` ${String(timing.endTime.hour).padStart(2, '0')}:${String(timing.endTime.minute).padStart(2, '0')}`;
+                } else if (timeFormat === 'custom') {
+                    const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.endTime.division]
+                        ? timeSystem.timeDivisions.divisionNames[timing.endTime.division]
+                        : `Division ${timing.endTime.division + 1}`;
+                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
+                    endTimeStr = `, ${divName} ${timing.endTime.subdivision} ${subdivisionName}`;
+                }
+                
+                endFormatted += endTimeStr;
+            }
+            
+            formatted = `${formatted} → ${endFormatted}`;
+        }
+        
+        return formatted;
+    }
+    
+    return '';
 }
 
 //MOVED from form-handlers
@@ -30,7 +113,7 @@ function openPlanModal(planData = null) {
         currentEditingSubArcs = planData.subArcs ? JSON.parse(JSON.stringify(planData.subArcs)) : []; // NEW
         document.getElementById('plan-color').value = '#3498db';
         document.getElementById('plan-color-picker').value = '#3498db';
-        document.getElementById('plan-type').value = 'main-plot';
+        document.getElementById('plan-type').value = '';
         populatePlanModal(planData);
     } else {
         modalTitle.textContent = 'Add Story Arc';
@@ -52,7 +135,7 @@ function populatePlanModal(plan) {
     document.getElementById('plan-character-tags').value = (plan.characterTags || []).join(', ');
     document.getElementById('plan-filter-tags').value = (plan.tags || []).join(', '); // NEW
     document.getElementById('plan-color').value = plan.color || '#3498db';
-    document.getElementById('plan-type').value = plan.type || 'main-plot';
+    document.getElementById('plan-type').value = plan.type || '';
     
     const colorPicker = document.getElementById('plan-color-picker');
     if (colorPicker) {
@@ -93,7 +176,7 @@ function savePlan() {
         characterTags: allCharacterTags, // Keep existing character tags
         tags: filterTags, // NEW: Add filter tags field
         color: document.getElementById('plan-color').value.trim() || '#3498db',
-        type: document.getElementById('plan-type').value.trim() || 'main-plot',
+        type: document.getElementById('plan-type').value.trim() || '',
         events: [...currentEditingEvents],
         subArcs: [...currentEditingSubArcs]
     };
@@ -151,6 +234,35 @@ function setupSubArcColorInputs() {
         // Sync text input to picker
         colorPicker.addEventListener('input', () => {
             colorText.value = colorPicker.value;
+        });
+    }
+}
+
+// Handle yearly checkbox toggle to show/hide duration controls
+function setupYearlyControls() {
+    const yearlyCheckbox = document.getElementById('event-yearly');
+    const yearlyControls = document.getElementById('yearly-controls');
+    const durationInput = document.getElementById('event-yearly-duration');
+    const perennialCheckbox = document.getElementById('event-yearly-perennial');
+    
+    if (yearlyCheckbox) {
+        yearlyCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                yearlyControls.style.display = 'flex';
+            } else {
+                yearlyControls.style.display = 'none';
+                durationInput.value = '';
+                perennialCheckbox.checked = false;
+            }
+        });
+    }
+    
+    if (perennialCheckbox) {
+        perennialCheckbox.addEventListener('change', function() {
+            durationInput.disabled = this.checked;
+            if (this.checked) {
+                durationInput.value = '';
+            }
         });
     }
 }
@@ -250,7 +362,6 @@ function saveSubArc() {
     
     // Show a message if tags were auto-collected
     if (autoCollectedTags.length > 0) {
-        console.log(`Auto-collected character tags from sub-arc events: ${autoCollectedTags.join(', ')}`);
     }
 }
 
@@ -499,14 +610,41 @@ document.addEventListener('DOMContentLoaded', function() {
     if (saveSubeventBtn) {
         saveSubeventBtn.addEventListener('click', saveSubevent);
     }
+
+    setupYearlyControls();
 });
 
 // Update populateEventModal function to include subevents
 function populateEventModal(event) {
     document.getElementById('event-title').value = event.title || '';
-    document.getElementById('event-type').value = event.type || 'rising';
+    document.getElementById('event-type').value = event.type || 'none';
     document.getElementById('event-character-tags').value = (event.characterTags || []).join(', ');
-    document.getElementById('event-timing').value = event.timing || '';
+    // Handle timing (with backward compatibility)
+    if (event.timing) {
+        if (typeof event.timing === 'string') {
+            // Legacy string format
+            eventEditingDate = null;
+            eventEditingTime = null;
+            eventEditingEndDate = null;
+            eventEditingEndTime = null;
+            document.getElementById('selected-event-date-display').textContent = event.timing;
+            document.getElementById('selected-event-date-display').style.color = 'var(--warning)';
+        } else if (typeof event.timing === 'object' && event.timing.date) {
+            // New structured format
+            eventEditingDate = { ...event.timing.date };
+            eventEditingTime = event.timing.time ? { ...event.timing.time } : null;
+            eventEditingEndDate = event.timing.endDate ? { ...event.timing.endDate } : null;
+            eventEditingEndTime = event.timing.endTime ? { ...event.timing.endTime } : null; // ADD THIS
+            
+            updateEventDateDisplay();
+        }
+    } else {
+        eventEditingDate = null;
+        eventEditingTime = null;
+        eventEditingEndDate = null;
+        eventEditingEndTime = null; // ADD THIS
+        updateEventDateDisplay();
+    }
     document.getElementById('event-notes').value = event.notes || '';
     
     // Set selected storylines in custom dropdown
@@ -517,6 +655,16 @@ function populateEventModal(event) {
     
     document.getElementById('event-image').value = event.image || '';
     document.getElementById('event-visible').checked = event.visible !== false;
+    document.getElementById('event-yearly').checked = event.yearly === true;
+
+    if (event.yearly) {
+        document.getElementById('yearly-controls').style.display = 'flex';
+        document.getElementById('event-yearly-duration').value = event.yearlyDuration || '';
+        document.getElementById('event-yearly-perennial').checked = event.yearlyPerennial === true;
+        document.getElementById('event-yearly-duration').disabled = event.yearlyPerennial === true;
+    } else {
+        document.getElementById('yearly-controls').style.display = 'none';
+    }
     
     // IMPORTANT: Load subevents/character moments properly
     currentEditingSubevents = event.subevents ? JSON.parse(JSON.stringify(event.subevents)) : [];
@@ -551,17 +699,26 @@ function saveEvent() {
         title: document.getElementById('event-title').value.trim(),
         type: document.getElementById('event-type').value,
         characterTags: characterTags,
-        timing: document.getElementById('event-timing').value.trim(),
+        timing: eventEditingDate ? {
+            date: { ...eventEditingDate },
+            endDate: eventEditingEndDate ? { ...eventEditingEndDate } : null,
+            time: eventEditingTime ? { ...eventEditingTime } : null,
+            endTime: eventEditingEndTime ? { ...eventEditingEndTime } : null, // ADD THIS
+            timeSystemId: infoData.plansOptions?.selectedTimeSystemId || 'default'
+        } : null,
+        timingLegacy: null, // For backward compatibility migration
         notes: document.getElementById('event-notes').value.trim(),
         storylineLinks: selectedStorylines.slice(),
         image: document.getElementById('event-image').value.trim(),
         visible: document.getElementById('event-visible').checked,
-        subevents: currentEditingSubevents ? JSON.parse(JSON.stringify(currentEditingSubevents)) : []
+        subevents: currentEditingSubevents ? JSON.parse(JSON.stringify(currentEditingSubevents)) : [],
+        yearly: document.getElementById('event-yearly').checked,
+        yearlyDuration: document.getElementById('event-yearly').checked ? 
+            (parseInt(document.getElementById('event-yearly-duration').value) || null) : null,
+        yearlyPerennial: document.getElementById('event-yearly').checked ? 
+            document.getElementById('event-yearly-perennial').checked : false
     };
-    
-    console.log('Event data being saved:', eventData);
-    console.log('Subevents being saved:', eventData.subevents);
-    
+        
     // Validation
     if (!eventData.title) {
         alert('Event title is required!');
@@ -572,22 +729,16 @@ function saveEvent() {
     if (editingEventContext === 'main') {
         if (editingEventIndex >= 0) {
             currentEditingEvents[editingEventIndex] = eventData;
-            console.log('Updated main event at index:', editingEventIndex);
         } else {
             currentEditingEvents.push(eventData);
-            console.log('Added new main event');
         }
-        console.log('Current editing events after save:', currentEditingEvents);
         updateEventsListInModal(currentEditingEvents);
     } else if (editingEventContext === 'subarc') {
         if (editingEventIndex >= 0) {
             currentEditingSubArcEvents[editingEventIndex] = eventData;
-            console.log('Updated subarc event at index:', editingEventIndex);
         } else {
             currentEditingSubArcEvents.push(eventData);
-            console.log('Added new subarc event');
         }
-        console.log('Current editing subarc events after save:', currentEditingSubArcEvents);
         updateSubArcEventsListInModal(currentEditingSubArcEvents);
     }
     
@@ -767,6 +918,11 @@ function createEventElement(event, index, context = 'main') {
     let typeColor = colors.textSecondary || '#6c757d';
     
     switch (event.type) {
+        case 'none':
+            typeColor = colors.textMuted || '#696764';
+            break;
+        case 'exposition':
+            typeColor = colors.physical || '#4D96E4';
         case 'rising':
             typeColor = colors.statusCanon || '#28a745';
             break;
@@ -775,6 +931,8 @@ function createEventElement(event, index, context = 'main') {
             break;
         case 'climax':
             typeColor = colors.statusDraft || '#ffc107';
+        case 'resolution':
+            typeColor = colors.hobbies || '#075AFF';
             break;
     }
     
@@ -797,7 +955,7 @@ function createEventElement(event, index, context = 'main') {
             </div>
             ${characterTagsDisplay}
             <div class="event-bottom-info">
-                ${event.timing ? `<span class="event-timing-badge">${event.timing}</span>` : ''}
+                ${event.timing ? `<span class="event-timing-badge">${formatEventTiming(event.timing)}</span>` : ''}
                 ${event.notes ? `<div class="event-notes-preview">Has notes</div>` : ''}
             </div>
         </div>
@@ -816,9 +974,12 @@ function createEventElement(event, index, context = 'main') {
 
 function getEventTypeDisplay(type) {
     const typeMap = {
+        'none': 'None',
+        'exposition': 'Exposition',
         'rising': 'Rising',
         'setback': 'Setback',
-        'climax': 'Climax'
+        'climax': 'Climax',
+        'resolution': 'Resolution'
     };
     return typeMap[type] || 'Rising';
 }
@@ -859,12 +1020,21 @@ function openEventModal(eventData = null, eventIndex = -1, context = 'main') {
     } else {
         modalTitle.textContent = 'Add Event';
         clearModalFields('eventModal');
+        // Reset date/time
+        eventEditingDate = null;
+        eventEditingTime = null;
+        updateEventDateDisplay();
         // IMPORTANT: Reset character moments for new events
         currentEditingSubevents = [];
         editingSubeventIndex = -1;
         // Reset for new events
         selectedStorylines = [];
         updateStorylineDisplay();
+        
+        document.getElementById('event-yearly').checked = false;
+        document.getElementById('yearly-controls').style.display = 'none'; // ADD THIS
+        document.getElementById('event-yearly-duration').value = ''; // ADD THIS
+        document.getElementById('event-yearly-perennial').checked = false; // ADD THIS
         
         // Clear the subevents display
         if (typeof updateSubeventsDisplay === 'function') {
@@ -1080,6 +1250,21 @@ function generateCardsView(data) {
     return cardsHTML;
 }
 
+function getArcTypeDisplay(type) {
+    const typeMap = {
+        'main-plot': 'Main Plot',
+        'romance': 'Romance',
+        'side-quest': 'Side Quest',
+        'backstory': 'Backstory',
+        'worldbuilding': 'Worldbuilding',
+        'character-dev': 'Character Development',
+        'comedy': 'Comedy',
+        'conflict': 'Conflict',
+        'mystery': 'Mystery'
+    };
+    return typeMap[type] || type;
+}
+
 function generatePlanFilteringJavaScript() {
     return `
         // Plan filtering state
@@ -1229,7 +1414,6 @@ function generatePlanFilteringJavaScript() {
             const totalCards = document.querySelectorAll('.plan-card');
             
             // You can add a results counter display here if desired
-            console.log(\`Showing \${visibleCards.length} of \${totalCards.length} plans\`);
         }
 
         // Function to apply plan colors to cards
@@ -1342,6 +1526,419 @@ function generatePlansContentWithTimeline(data) {
     return plansHTML;
 }
 
+// ============================================================================
+// EVENT DATE/TIME PICKER
+// ============================================================================
+
+function openEventDatePicker(selectingEndDate = false) {
+    const selectedTimeSystemId = infoData.plansOptions?.selectedTimeSystemId || 'default';
+    const timeSystem = getTimeSystemById(selectedTimeSystemId);
+    
+    if (!timeSystem) {
+        alert('Please select a valid time system in Plans Options.');
+        return;
+    }
+    
+    // If selecting end date but no start date, don't allow
+    if (selectingEndDate && !eventEditingDate) {
+        alert('Please select a start date first.');
+        return;
+    }
+    
+    isSelectingEndDate = selectingEndDate;
+    
+    // Set up mini-calendar for event date selection
+    miniCalEditingEraIndex = 'event-date';
+    currentEditingCalendar = timeSystem;
+    
+    // Initialize with current date or default to first era start
+    const currentDate = selectingEndDate ? eventEditingEndDate : eventEditingDate;
+    
+    if (currentDate && validateEventDate(currentDate, timeSystem)) {
+        miniCalCurrentMonth = currentDate.month;
+        miniCalCurrentYear = currentDate.year;
+        miniCalSelectedDate = { ...currentDate };
+    } else {
+        // Default to first era start (or start date if selecting end date)
+        const defaultDate = selectingEndDate && eventEditingDate ? eventEditingDate : timeSystem.eras[0].startDate;
+        miniCalCurrentMonth = defaultDate.month;
+        miniCalCurrentYear = defaultDate.year;
+        miniCalSelectedDate = { ...defaultDate };
+    }
+    
+    // Update modal title
+    document.getElementById('mini-calendar-title').textContent = selectingEndDate ? 'Select End Date' : 'Select Start Date';
+    
+    // Populate month dropdown
+    const monthSelect = document.getElementById('mini-cal-month');
+    monthSelect.innerHTML = '';
+    timeSystem.months.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = month.name;
+        monthSelect.appendChild(option);
+    });
+    monthSelect.value = miniCalCurrentMonth;
+    
+    // Set year input
+    document.getElementById('mini-cal-year').value = miniCalCurrentYear;
+
+    // Set up era selector ONLY for event date picking (not for Time Systems Editor)
+    const eraSelector = document.getElementById('mini-cal-era-selector');
+    if (eraSelector) {
+        eraSelector.style.display = 'block';
+        const eraSelect = document.getElementById('mini-cal-era');
+        eraSelect.innerHTML = '';
+        
+        // Show ALL eras
+        timeSystem.eras.forEach((era, idx) => {
+            const option = document.createElement('option');
+            option.value = idx;
+            option.textContent = `${era.abbreviation} (${era.name})`;
+            eraSelect.appendChild(option);
+        });
+        
+        // Set to era containing current year
+        const currentEraIndex = findEraForYear(miniCalCurrentYear);
+        eraSelect.value = currentEraIndex;
+        
+        // When era changes, jump to that era's start year
+        eraSelect.onchange = () => {
+            const selectedEraIndex = parseInt(eraSelect.value);
+            const selectedEra = timeSystem.eras[selectedEraIndex];
+            miniCalCurrentYear = selectedEra.startDate.year;
+            miniCalCurrentMonth = selectedEra.startDate.month;
+            document.getElementById('mini-cal-year').value = miniCalCurrentYear;
+            document.getElementById('mini-cal-month').value = miniCalCurrentMonth;
+            renderMiniCalendar();
+        };
+    }
+
+    // Only set up time controls if NOT hidden
+    const timeSection = document.getElementById('mini-cal-time-section');
+    if (timeSection) {
+        // Always show time section for both start and end dates
+        timeSection.style.display = 'block';
+    }
+
+    const timeDivisionSelect = document.getElementById('mini-cal-time-division');
+    const subdivisionInput = document.getElementById('mini-cal-time-subdivision');
+    const subdivisionLabel = document.getElementById('mini-cal-subdivision-label');
+
+    // Clear and populate time division options
+    timeDivisionSelect.innerHTML = '<option value="">No specific time</option>';
+
+    const timeFormat = timeSystem.settings.timeFormat;
+
+    if (timeFormat === '12' || timeFormat === '24') {
+        // Standard hours
+        const hourCount = timeFormat === '12' ? 12 : 24;
+        for (let i = (timeFormat === '12' ? 1 : 0); i < (timeFormat === '12' ? 13 : 24); i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = timeFormat === '12' ? `${i} ${i < 12 ? 'AM' : 'PM'}` : `${String(i).padStart(2, '0')}:00`;
+            timeDivisionSelect.appendChild(option);
+        }
+        subdivisionInput.placeholder = 'Minutes';
+        subdivisionInput.max = 59;
+        subdivisionLabel.textContent = 'minutes';
+    } else if (timeFormat === 'custom') {
+        // Custom time divisions
+        const divisionCount = timeSystem.timeDivisions.divisionsPerDay;
+        for (let i = 0; i < divisionCount; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[i]
+                ? timeSystem.timeDivisions.divisionNames[i]
+                : `Division ${i + 1}`;
+            timeDivisionSelect.appendChild(option);
+        }
+        subdivisionInput.placeholder = timeSystem.timeDivisions.subdivisionName || 'Subdivision';
+        subdivisionInput.max = timeSystem.timeDivisions.subdivisionsPerDivision - 1;
+        subdivisionLabel.textContent = timeSystem.timeDivisions.subdivisionName || 'subdivisions';
+    }
+
+    // Enable subdivision input when a time division is selected
+    timeDivisionSelect.onchange = function() {
+        subdivisionInput.disabled = !this.value;
+        if (!this.value) {
+            subdivisionInput.value = '';
+        }
+    };
+
+    // Set current values based on which date we're selecting
+    const currentTime = selectingEndDate ? eventEditingEndTime : eventEditingTime;
+    if (currentTime) {
+        if (timeFormat === '12' || timeFormat === '24') {
+            timeDivisionSelect.value = currentTime.hour;
+            subdivisionInput.value = currentTime.minute || 0;
+            subdivisionInput.disabled = false;
+        } else if (timeFormat === 'custom') {
+            timeDivisionSelect.value = currentTime.division;
+            subdivisionInput.value = currentTime.subdivision || 0;
+            subdivisionInput.disabled = false;
+        }
+    } else {
+        subdivisionInput.disabled = true;
+    }
+
+    // Pre-populate if editing existing time
+    if (eventEditingTime) {
+        if (timeFormat === '12' || timeFormat === '24') {
+            timeDivisionSelect.value = eventEditingTime.hour;
+            subdivisionInput.value = eventEditingTime.minute;
+            subdivisionInput.disabled = false;
+        } else if (timeFormat === 'custom') {
+            timeDivisionSelect.value = eventEditingTime.division;
+            subdivisionInput.value = eventEditingTime.subdivision;
+            subdivisionInput.disabled = false;
+        }
+    } else {
+        subdivisionInput.disabled = true;
+    }
+
+    // Render calendar
+    renderMiniCalendar();
+
+// Set up event listeners
+    document.getElementById('mini-cal-prev-month').onclick = () => navigateMiniCalMonth(-1);
+    document.getElementById('mini-cal-next-month').onclick = () => navigateMiniCalMonth(1);
+    document.getElementById('mini-cal-month').onchange = (e) => {
+        miniCalCurrentMonth = parseInt(e.target.value);
+        renderMiniCalendar();
+    };
+    document.getElementById('mini-cal-year').onchange = (e) => {
+        miniCalCurrentYear = parseInt(e.target.value) || miniCalCurrentYear;
+        
+        // Update era dropdown to match the year (only for event picking)
+        const eraSelect = document.getElementById('mini-cal-era');
+        if (eraSelect && miniCalEditingEraIndex === 'event-date') {
+            const matchingEraIndex = findEraForYear(miniCalCurrentYear);
+            eraSelect.value = matchingEraIndex;
+        }
+        
+        renderMiniCalendar();
+    };
+    document.getElementById('mini-cal-confirm').onclick = confirmMiniCalSelection;
+    
+    openModal('miniCalendarModal');
+}
+
+function findEraForYear(year) {
+    const timeSystem = currentEditingCalendar;
+    if (!timeSystem || !timeSystem.eras) return 0;
+    
+    for (let i = timeSystem.eras.length - 1; i >= 0; i--) {
+        if (year >= timeSystem.eras[i].startDate.year) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+function validateEventDate(dateObj, timeSystem) {
+    if (!dateObj || !timeSystem) return false;
+    
+    // Check if month index is valid
+    if (dateObj.month < 0 || dateObj.month >= timeSystem.months.length) {
+        return false;
+    }
+    
+    // Check if day is valid for the month
+    const monthData = timeSystem.months[dateObj.month];
+    if (dateObj.day < 1 || dateObj.day > monthData.days) {
+        return false;
+    }
+    
+    // Check if year is within era bounds
+    const firstEra = timeSystem.eras[0];
+    const endDate = timeSystem.endDate || { year: 3000, month: 11, day: 31 };
+    
+    if (dateObj.year < firstEra.startDate.year || dateObj.year > endDate.year) {
+        return false;
+    }
+    
+    return true;
+}
+
+function confirmEventDateSelection() {
+    if (miniCalSelectedDate) {
+        const timeDivisionSelect = document.getElementById('mini-cal-time-division');
+        const subdivisionInput = document.getElementById('mini-cal-time-subdivision');
+        const selectedTimeSystemId = infoData.plansOptions?.selectedTimeSystemId || 'default';
+        const timeSystem = getTimeSystemById(selectedTimeSystemId);
+        
+        // Determine which time variable to update
+        let capturedTime = null;
+        
+        if (timeDivisionSelect.value) {
+            const timeFormat = timeSystem.settings.timeFormat;
+            
+            if (timeFormat === '12' || timeFormat === '24') {
+                capturedTime = {
+                    hour: parseInt(timeDivisionSelect.value),
+                    minute: parseInt(subdivisionInput.value) || 0,
+                    period: timeFormat === '12' ? (parseInt(timeDivisionSelect.value) < 12 ? 'AM' : 'PM') : undefined
+                };
+            } else if (timeFormat === 'custom') {
+                capturedTime = {
+                    division: parseInt(timeDivisionSelect.value),
+                    subdivision: parseInt(subdivisionInput.value) || 0
+                };
+            }
+        }
+        
+        if (isSelectingEndDate) {
+            // Validate end date is after start date
+            if (eventEditingDate && compareDates(miniCalSelectedDate, eventEditingDate, currentEditingCalendar) <= 0) {
+                alert('End date must be after start date.');
+                return;
+            }
+            eventEditingEndDate = { ...miniCalSelectedDate };
+            eventEditingEndTime = capturedTime;
+        } else {
+            eventEditingDate = { ...miniCalSelectedDate };
+            eventEditingTime = capturedTime;
+            // Clear end date if it's now before new start date
+            if (eventEditingEndDate && compareDates(eventEditingEndDate, eventEditingDate, currentEditingCalendar) <= 0) {
+                eventEditingEndDate = null;
+                eventEditingEndTime = null;
+            }
+        }
+        
+        updateEventDateDisplay();
+        closeModal('miniCalendarModal');
+    }
+}
+
+// ADD THIS NEW HELPER FUNCTION
+function compareDates(date1, date2, timeSystem) {
+    // Returns: negative if date1 < date2, 0 if equal, positive if date1 > date2
+    if (date1.year !== date2.year) return date1.year - date2.year;
+    if (date1.month !== date2.month) return date1.month - date2.month;
+    return date1.day - date2.day;
+}
+
+function updateEventDateDisplay() {
+    const display = document.getElementById('selected-event-date-display');
+    const selectedTimeSystemId = infoData.plansOptions?.selectedTimeSystemId || 'default';
+    const timeSystem = getTimeSystemById(selectedTimeSystemId);
+    
+    if (!timeSystem) {
+        display.textContent = 'Time system no longer exists';
+        display.style.color = 'var(--danger)';
+        return;
+    }
+    
+    if (eventEditingDate && validateEventDate(eventEditingDate, timeSystem)) {
+        let formatted = formatDateWithFormat(eventEditingDate, timeSystem.settings.dateFormat, timeSystem);
+        
+        // Add start time if present
+        if (eventEditingTime) {
+            const timeFormat = timeSystem.settings.timeFormat;
+            if (timeFormat === '12') {
+                formatted += ` ${eventEditingTime.hour}:${String(eventEditingTime.minute).padStart(2, '0')} ${eventEditingTime.period}`;
+            } else if (timeFormat === '24') {
+                formatted += ` ${String(eventEditingTime.hour).padStart(2, '0')}:${String(eventEditingTime.minute).padStart(2, '0')}`;
+            } else if (timeFormat === 'custom') {
+                const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[eventEditingTime.division]
+                    ? timeSystem.timeDivisions.divisionNames[eventEditingTime.division]
+                    : `Division ${eventEditingTime.division + 1}`;
+                formatted += `, ${divName} ${eventEditingTime.subdivision}`;
+            }
+        }
+        
+        // If there's an end date, show date range
+        if (eventEditingEndDate && validateEventDate(eventEditingEndDate, timeSystem)) {
+            let endFormatted = formatDateWithFormat(eventEditingEndDate, timeSystem.settings.dateFormat, timeSystem);
+            
+            // Add end time if present
+            if (eventEditingEndTime) {
+                const timeFormat = timeSystem.settings.timeFormat;
+                if (timeFormat === '12') {
+                    endFormatted += ` ${eventEditingEndTime.hour}:${String(eventEditingEndTime.minute).padStart(2, '0')} ${eventEditingEndTime.period}`;
+                } else if (timeFormat === '24') {
+                    endFormatted += ` ${String(eventEditingEndTime.hour).padStart(2, '0')}:${String(eventEditingEndTime.minute).padStart(2, '0')}`;
+                } else if (timeFormat === 'custom') {
+                    const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[eventEditingEndTime.division]
+                        ? timeSystem.timeDivisions.divisionNames[eventEditingEndTime.division]
+                        : `Division ${eventEditingEndTime.division + 1}`;
+                    endFormatted += `, ${divName} ${eventEditingEndTime.subdivision}`;
+                }
+            }
+            
+            display.innerHTML = `${formatted} <span style="color: var(--text-muted); margin: 0 4px;">→</span> ${endFormatted}`;
+        } else {
+            display.textContent = formatted;
+        }
+        display.style.color = 'var(--text-color)';
+        
+        // Enable/disable end date button
+        const endDateBtn = document.getElementById('select-event-end-date-btn');
+        if (endDateBtn) {
+            endDateBtn.disabled = false;
+            endDateBtn.style.opacity = '1';
+        }
+    } else if (eventEditingDate) {
+        display.textContent = 'Date invalid for current time system';
+        display.style.color = 'var(--danger)';
+        const endDateBtn = document.getElementById('select-event-end-date-btn');
+        if (endDateBtn) {
+            endDateBtn.disabled = true;
+            endDateBtn.style.opacity = '0.5';
+        }
+    } else {
+        display.textContent = 'No date selected';
+        display.style.color = 'var(--text-muted)';
+        const endDateBtn = document.getElementById('select-event-end-date-btn');
+        if (endDateBtn) {
+            endDateBtn.disabled = true;
+            endDateBtn.style.opacity = '0.5';
+        }
+    }
+}
+
+function clearEventDate() {
+    eventEditingDate = null;
+    eventEditingTime = null;
+    eventEditingEndDate = null;
+    eventEditingEndTime = null; // ADD THIS
+    updateEventDateDisplay();
+}
+
+function getTimeSystemById(id) {
+    if (id === 'default') {
+        return window.DEFAULT_CALENDAR; // Use window.
+    }
+    
+    if (id === 'preset-chinese') {
+        return window.PRESET_CHINESE_CALENDAR; // Use window.
+    }
+    
+    const systems = window.userTimeSystems || [];
+    return systems.find(ts => ts.id === id) || null;
+}
+
+function checkForLegacyEventTimings() {
+    // Check all plans for legacy string timings
+    let hasLegacy = false;
+    
+    infoData.plans.forEach(plan => {
+        if (plan.events) {
+            plan.events.forEach(event => {
+                if (event.timing && typeof event.timing === 'string') {
+                    hasLegacy = true;
+                }
+            });
+        }
+    });
+    
+    if (hasLegacy) {
+        console.warn('Legacy event timings detected. Consider updating to new format.');
+        // Optionally show a toast/notice to user
+    }
+}
+
 // Make plan functions globally available (similar to timeline-html.js pattern)
 if (typeof window !== 'undefined') {
     // Functions called from HTML onclick handlers need to be global
@@ -1385,3 +1982,6 @@ window.toggleStorylineOption = toggleStorylineOption;
 window.setupPlanColorInputs = setupPlanColorInputs;
 window.setupSubArcColorInputs = setupSubArcColorInputs;
 window.migratePlanData = migratePlanData;
+
+window.openEventDatePicker = openEventDatePicker;
+window.clearEventDate = clearEventDate;

@@ -416,7 +416,7 @@
     border-radius: var(--radius-lg);
     overflow: hidden;
     background-color: var(--bg-primary);
-    height: 400px;
+    height: 350px;
     position: relative;
     display: flex;
     align-items: center;

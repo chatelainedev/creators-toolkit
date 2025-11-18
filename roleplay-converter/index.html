@@ -456,27 +456,33 @@
                         <h3>Roleplay Text</h3>
                     </div>
                     <div class="section-content">
-                        <!-- Replace the existing textarea section with this: -->
                         <div class="textarea-container">
                             <textarea id="rp-text" rows="20" placeholder="Paste your roleplay text here...
-                        Format should be:
+                Format should be:
 
-                        Character Name: Text goes here...
+                Character Name: Text goes here...
 
-                        Another paragraph for the same character.
+                Another paragraph for the same character.
 
-                        Other Character: Response goes here..."></textarea>
+                Other Character: Response goes here..."></textarea>
                             <button type="button" id="expand-text-btn" class="expand-text-button" title="Expand editor">
                                 <i class="fas fa-expand"></i>
                             </button>
                         </div>
                         
-                        <div class="helper-text">
-                            <p>• Text should start with "Character Name:" to identify speakers (multi-word names are supported)</p>
-                            <p>• To mark a new part, add a line with just <strong>&&&PART&&&</strong> between sections</p>
-                            <p>• Add as many part titles on the left as you have &&&PART&&& markers in your text</p>
-                            <p>• If you don't want multiple parts, check the "Single story" box</p>
-                            <p>• You can use markdown formatting: **bold**, *italic*, ~~strikethrough~~</p>
+                        <!-- ADD THIS: Helper text with upload button -->
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-md);">
+                            <div class="helper-text" style="flex: 1;">
+                                <p>• Text should start with "Character Name:" to identify speakers (multi-word names are supported)</p>
+                                <p>• To mark a new part, add a line with just <strong>&&&PART&&&</strong> between sections</p>
+                                <p>• You can use markdown formatting: **bold**, *italic*, ~~strikethrough~~</p>
+                            </div>
+                            <div>
+                                <input type="file" id="chat-file-upload" accept=".txt,.jsonl" style="display: none;">
+                                <button type="button" id="chat-upload-btn" class="btn-secondary" title="Upload SillyTavern chat file">
+                                    <i class="fas fa-file-upload" style="margin-right: 5px;"></i> Import Chat
+                                </button>
+                            </div>
                         </div>
                         
                         <div class="word-count-info">
@@ -964,66 +970,81 @@
         
         // Function to export all text as a text file
         function exportText() {
-            // Collect all text from all parts
+            // Collect all text
             let allText = document.title + "\n\n";
-            
-            // Add story info
+
+            // Add story info (fixed to prevent duplicate description)
             const storyInfo = document.querySelector('.story-info');
             if (storyInfo) {
                 const infoParagraphs = storyInfo.querySelectorAll('p');
                 infoParagraphs.forEach(p => {
                     allText += p.textContent.trim() + "\n";
                 });
-                
-                // Add description if exists
-                const description = storyInfo.querySelector('.story-description p');
-                if (description) {
-                    allText += "\n" + description.textContent.trim() + "\n";
-                }
-                
                 allText += "\n----------------------------\n\n";
             }
-            
-            // Process each part
+
+            // Helper function to process RP entries into text format
+            const processEntries = (container) => {
+                let contentText = "";
+                const entries = container.querySelectorAll('.rp-entry');
+                entries.forEach(entry => {
+                    const charNameElement = entry.querySelector('.character-name');
+                    const paragraphs = Array.from(entry.querySelectorAll('p'));
+
+                    let currentEntryText = "";
+                    if (charNameElement) {
+                        currentEntryText += charNameElement.textContent + ": ";
+                    }
+
+                    if (paragraphs.length > 0) {
+                        // Append first paragraph to the same line as the character name
+                        currentEntryText += paragraphs[0].textContent.trim();
+                        
+                        // Append subsequent paragraphs, each separated by a blank line
+                        if (paragraphs.length > 1) {
+                            currentEntryText += '\n\n' + paragraphs.slice(1).map(p => p.textContent.trim()).join('\n\n');
+                        }
+                    }
+                    
+                    contentText += currentEntryText + "\n\n"; // Add two blank lines for spacing between entries
+                });
+                return contentText;
+            };
+
+            // Check if the story is structured with parts
             const parts = document.querySelectorAll('.part-header');
-            parts.forEach((partHeader, index) => {
-                // Get part title
-                const partTitle = partHeader.querySelector('h2').textContent;
-                allText += partTitle + "\n\n";
-                
-                // Get the part content container
-                const partId = partHeader.id.replace('header-', '');
-                const partContent = document.getElementById(partId + '-content');
-                
-                if (partContent) {
-                    // Get all entries in this part
-                    const entries = partContent.querySelectorAll('.rp-entry');
-                    entries.forEach(entry => {
-                        const charName = entry.querySelector('.character-name').textContent;
-                        allText += charName + "\n";
-                        
-                        // Get paragraphs
-                        const paragraphs = entry.querySelectorAll('p, .html-content');
-                        paragraphs.forEach(p => {
-                            // Use original markdown text if available
-                            const originalText = p.getAttribute('data-original') || p.textContent;
-                            allText += originalText + "\n\n";
-                        });
-                        
-                        allText += "\n";
-                    });
-                }
-                
-                // Add separator between parts
-                if (index < parts.length - 1) {
-                    allText += "----------------------------\n\n";
-                }
-            });
             
-            // Create and download text file
-            const filename = document.title.split(' - ')[0] + '.txt';
+            if (parts.length > 0) {
+                // Story has multiple parts, process each one
+                parts.forEach((partHeader, index) => {
+                    const partTitle = partHeader.querySelector('h2').textContent;
+                    allText += partTitle + "\n\n";
+                    
+                    const partId = partHeader.id.replace('header-', '');
+                    const partContent = document.getElementById(partId + '-content');
+                    
+                    if (partContent) {
+                        allText += processEntries(partContent);
+                    }
+                    
+                    // Add separator between parts, but not after the last one
+                    if (index < parts.length - 1) {
+                        allText += "----------------------------\n\n";
+                    }
+                });
+            } else {
+                // This is a single story (no parts), process the main content area
+                const mainContent = document.querySelector('main');
+                if (mainContent) {
+                    allText += processEntries(mainContent);
+                }
+            }
+
+            // Create and download the text file
+            const filename = (document.title.split(' - ')[0] || 'story') + '.txt';
             const element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(allText));
+            // Use trim() to remove any trailing whitespace before encoding
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(allText.trim()));
             element.setAttribute('download', filename);
             element.style.display = 'none';
             document.body.appendChild(element);

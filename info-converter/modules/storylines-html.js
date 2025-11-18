@@ -167,21 +167,46 @@ function generateStorylinesJavaScript() {
             
             // Update section visibility after filtering
             const sectionHeaders = viewContainer.querySelectorAll('.storyline-section-header');
-            sectionHeaders.forEach(header => {
-                // Find the next grid element (should be the storylines-grid right after this header)
+            const subsectionHeaders = viewContainer.querySelectorAll('.storyline-subsection-header');
+
+            // First, handle subsection headers
+            subsectionHeaders.forEach(header => {
                 const nextGrid = header.nextElementSibling;
                 if (nextGrid && nextGrid.classList.contains('storylines-grid')) {
                     const visibleCards = nextGrid.querySelectorAll('.storyline-card:not(.hidden)');
                     
                     if (visibleCards.length > 0) {
-                        // Show both header and grid
                         header.style.display = '';
                         nextGrid.style.display = '';
                     } else {
-                        // Hide both header and grid if no visible cards
                         header.style.display = 'none';
                         nextGrid.style.display = 'none';
                     }
+                }
+            });
+
+            // Then, handle section headers - hide only if ALL their content is hidden
+            sectionHeaders.forEach(header => {
+                let currentElement = header.nextElementSibling;
+                let hasAnyVisibleContent = false;
+                
+                // Check all grids (main section grid + subsection grids) until next section header
+                while (currentElement && !currentElement.classList.contains('storyline-section-header')) {
+                    if (currentElement.classList.contains('storylines-grid')) {
+                        const visibleCards = currentElement.querySelectorAll('.storyline-card:not(.hidden)');
+                        if (visibleCards.length > 0) {
+                            hasAnyVisibleContent = true;
+                            break;
+                        }
+                    }
+                    currentElement = currentElement.nextElementSibling;
+                }
+                
+                // Show section header if ANY of its grids have visible cards
+                if (hasAnyVisibleContent) {
+                    header.style.display = '';
+                } else {
+                    header.style.display = 'none';
                 }
             });
             

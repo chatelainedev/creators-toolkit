@@ -1699,7 +1699,7 @@ button:disabled {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     z-index: 1001;
-    min-width: 140px;
+    min-width: 100px;
     animation: contextMenuSlideIn 0.2s ease;
 }
 

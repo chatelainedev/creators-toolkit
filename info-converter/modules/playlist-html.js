@@ -277,9 +277,7 @@ function generatePlaylistJavaScript() {
                     card.style.display = 'none';
                     card.classList.add('hidden');
                 }
-            });
-            
-            console.log(\`Playlist filtering: \${visibleCount}/\${playlistCards.length} playlists visible\`);
+            });            
         }
 
         // Initialize playlist features

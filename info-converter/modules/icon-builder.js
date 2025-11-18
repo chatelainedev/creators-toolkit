@@ -666,12 +666,10 @@ async function findMatchingIconStyle(iconConfig) {
 // Icon type toggle handler (moved from form-handlers.js DOMContentLoaded)
 document.addEventListener('DOMContentLoaded', function() {
     const iconTypeRadios = document.querySelectorAll('input[name="icon-type"]');
-    console.log('Found radio buttons:', iconTypeRadios.length);
     iconTypeRadios.forEach(radio => {
         radio.addEventListener('change', function() {
             // Get the value from the checked radio button explicitly
             const selectedValue = document.querySelector('input[name="icon-type"]:checked').value;
-            console.log('Radio changed to:', selectedValue);
             
             const customIconSection = document.getElementById('custom-icon-image-section');
             const builderSection = document.getElementById('icon-builder-section');

@@ -510,8 +510,7 @@ body {
     min-height: 400px;
     position: relative;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
 }
 
 .preview-container::before {
@@ -530,7 +529,7 @@ body {
 
 #preview-frame {
     width: 100%;
-    height: 100%;
+    flex: 1;
     border: none;
     background-color: transparent;
     position: relative;
@@ -713,7 +712,7 @@ textarea::-webkit-scrollbar-thumb:hover {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     z-index: 1001;
-    min-width: 140px;
+    min-width: 100px;
     animation: contextMenuSlideIn 0.2s ease;
 }
 

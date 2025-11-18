@@ -1059,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             // User switched
                             console.log('🔄 User switched:', { from: previousUserId, to: currentUserId });
                             mainManager.onUserLoggedOut();
-                            setTimeout(() => mainManager.onUserLoggedIn(), 100);
+                            setTimeout(() => mainManager.onUserLoggedIn(), 250);
                         }
                         
                         lastKnownUserId = currentUserId;

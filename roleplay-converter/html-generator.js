@@ -567,15 +567,54 @@ if (commentsHTML) {
 }
 
 // Function to update the preview
-// Function to update the preview
-function updatePreview(html) {
+async function updatePreview(html) {
     const iframe = document.getElementById('preview-frame');
     const previewContainer = document.querySelector('.preview-container');
     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
     
-    iframeDoc.open();
-    iframeDoc.write(html);
-    iframeDoc.close();
+    // Get the selected CSS template
+    const cssTemplate = document.getElementById('css-template')?.value || 'generated.css';
+    
+    try {
+        // Fetch the CSS template content
+        const response = await fetch(`/api/templates/${cssTemplate}`);
+        const cssContent = await response.text();
+        
+        // Inject the CSS into the HTML
+        const htmlWithCSS = html.replace(
+            '</style>',
+            cssContent + '\n    </style>'
+        );
+        
+        iframeDoc.open();
+        iframeDoc.write(htmlWithCSS);
+        iframeDoc.close();
+        
+        // Disable all links in the preview
+        const style = iframeDoc.createElement('style');
+        style.textContent = `
+            a {
+                pointer-events: none;
+                cursor: default;
+            }
+        `;
+        iframeDoc.head.appendChild(style);
+        
+        // Also prevent navigation with JavaScript as a backup
+        iframeDoc.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A' || e.target.closest('a')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error loading CSS template for preview:', error);
+        // Fallback to original HTML if CSS fetch fails
+        iframeDoc.open();
+        iframeDoc.write(html);
+        iframeDoc.close();
+    }
     
     // Add 'has-content' class to hide the empty state placeholder
     if (previewContainer && html && html.trim()) {
@@ -784,7 +823,7 @@ function fallbackDownload(html, title) {
 }
 
 // Function to convert roleplay text to HTML
-function convertToHTML() {
+async function convertToHTML() {
     showToast('info', 'Generating HTML...');
     showStatusMessage('🔄 Generating HTML...', 'info');
     
@@ -823,7 +862,7 @@ function convertToHTML() {
     
     // If on preview tab, update preview
     if (document.querySelector('.tab[data-tab="preview"]').classList.contains('active')) {
-        updatePreview(html);
+        await updatePreview(html);
     }
     
     showStatusMessage('✅ HTML generated successfully!', 'success');

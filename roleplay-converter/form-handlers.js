@@ -482,3 +482,106 @@ function displayBannerImagePlaceholder(imagePath, exists) {
         container.innerHTML = '<div class="file-display-empty">No banner image selected</div>';
     }
 }
+
+// Function to handle SillyTavern chat file uploads
+// Function to handle SillyTavern chat file uploads
+function handleChatFileUpload(file) {
+    console.log('🎯 handleChatFileUpload called with file:', file.name, file.type);
+    
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        console.log('📖 File read complete, length:', e.target.result.length);
+        const content = e.target.result;
+        let formattedText = '';
+        
+        try {
+            console.log('🔍 File name check:', file.name, 'ends with .jsonl?', file.name.endsWith('.jsonl'));
+            
+            if (file.name.endsWith('.txt')) {
+                console.log('✅ TXT file detected');
+                // TXT files are already in correct format
+                formattedText = content.trim();
+                
+                // Clean up any extra whitespace before colons
+                formattedText = formattedText.replace(/(\S+)\s+:/g, '$1:');
+                
+            } else if (file.name.endsWith('.jsonl')) {
+                console.log('✅ JSONL file detected - starting parse');
+                // Parse JSONL - each line is a separate JSON object
+                const lines = content.split('\n');
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    const entry = JSON.parse(line);
+                    
+                    // Skip metadata/system entries
+                    if (entry.is_system || !entry.name || !entry.mes) {
+                        continue;
+                    }
+                    
+                    // Just get the name and message as-is
+                    const characterName = entry.name;
+                    // Preserve line breaks, but normalize other whitespace
+                    const message = entry.mes.trim().replace(/[ \t]+/g, ' ');
+                    
+                    // Format as "Name: message"
+                    formattedText += characterName + ': ' + message + '\n\n';
+                }
+                
+                // NOW clean up all the whitespace issues in one pass
+                formattedText = formattedText.replace(/(\S+)\s+:/g, '$1:');
+                
+                formattedText = formattedText.trim();
+            }
+            
+            if (!formattedText) {
+                alert('No valid content found in file');
+                return;
+            }
+            
+            // Set text in textarea
+            const rpTextArea = document.getElementById('rp-text');
+            rpTextArea.value = formattedText;
+            
+            // Update word count
+            if (typeof updateWordCount === 'function') {
+                updateWordCount();
+            }
+            
+            showStatus('Chat file imported successfully!', 'success');
+            
+        } catch (error) {
+            alert('Error importing file: ' + error.message);
+            console.error('Import error:', error);
+        }
+    };
+    
+    reader.onerror = function() {
+        alert('Error reading file');
+    };
+    
+    reader.readAsText(file);
+}
+
+// Helper function to show status messages (optional but nice to have)
+function showStatus(message, type = 'info') {
+    const statusContainer = document.getElementById('status-container');
+    if (!statusContainer) {
+        console.log(message);
+        return;
+    }
+    
+    const statusDiv = document.createElement('div');
+    statusDiv.className = `status-message status-${type}`;
+    statusDiv.textContent = message;
+    
+    statusContainer.appendChild(statusDiv);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        statusDiv.remove();
+    }, 3000);
+}

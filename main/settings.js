@@ -509,12 +509,8 @@ class SettingsManager {
             return;
         }
 
-        if (!email) {
-            this.showFormError('settings-email', 'Email is required');
-            return;
-        }
-
-        if (!this.isValidEmail(email)) {
+        // Only validate email format if email is provided
+        if (email && !this.isValidEmail(email)) {
             this.showFormError('settings-email', 'Please enter a valid email address');
             return;
         }

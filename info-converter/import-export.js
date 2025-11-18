@@ -169,6 +169,16 @@ function parseImportedHTML(htmlContent) {
                         console.log('⚠ No plans found in embedded data');
                         infoData.plans = [];
                     }
+                    if (fullData.plansOptions) {
+                        infoData.plansOptions = fullData.plansOptions;
+                        console.log('✓ Loaded plans options:', fullData.plansOptions);
+                    } else {
+                        console.log('⚠ No plans options found, using default');
+                        infoData.plansOptions = { selectedTimeSystemId: 'default' };
+                    }
+                    // DON'T import userTimeSystems from project - they should come from backend only!
+                    // Projects only need to remember WHICH calendar they use, not the definitions
+                    console.log('⚠ Skipping embedded userTimeSystems - calendars always load from backend');
                     if (fullData.playlists) {
                         infoData.playlists = fullData.playlists;
                     } else {
@@ -335,6 +345,20 @@ function parseImportedHTML(htmlContent) {
         if (!infoData.world) infoData.world = {};
         
         window.updateAllContentLists();
+
+        // Reload user's calendars from backend and refresh dropdown
+        if (typeof loadUserTimeSystems === 'function') {
+            loadUserTimeSystems().then(() => {
+                if (typeof populateTimeSystemsDropdown === 'function') {
+                    populateTimeSystemsDropdown();
+                    // Set the dropdown to show the imported selection
+                    const dropdown = document.getElementById('plans-time-system');
+                    if (dropdown && infoData.plansOptions?.selectedTimeSystemId) {
+                        dropdown.value = infoData.plansOptions.selectedTimeSystemId;
+                    }
+                }
+            });
+        }
         
         // Explicitly render custom pages list after loading
         if (typeof renderPagesList === 'function') {
@@ -1650,7 +1674,20 @@ function importData() {
                 }
                 
                 infoData = data;
+                // DON'T import userTimeSystems - they should always come from backend
+                // if (data.userTimeSystems) {
+                //     userTimeSystems = data.userTimeSystems;
+                // }
                 window.updateAllContentLists();
+
+                // Reload user calendars from backend and refresh dropdown
+                if (typeof loadUserTimeSystems === 'function') {
+                    loadUserTimeSystems().then(() => {
+                        if (typeof populateTimeSystemsDropdown === 'function') {
+                            populateTimeSystemsDropdown();
+                        }
+                    });
+                }
                 
                 if (typeof showStatus === 'function') {
                     showStatus('success', 'Data imported successfully!');

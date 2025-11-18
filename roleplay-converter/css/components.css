@@ -772,3 +772,7 @@ input[type="color"].copied {
         transform: translateX(0);
     }
 }
+
+#chat-upload-btn.btn-secondary {
+    width: 100px;
+}

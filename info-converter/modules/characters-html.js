@@ -236,14 +236,11 @@ function generateCharactersFilteringJavaScript() {
             const totalCards = document.querySelectorAll('.character-card');
             
             // You could add a results counter here if desired
-            console.log(\`Showing \${visibleCards.length} of \${totalCards.length} characters\`);
         }
 
         function toggleCharacterTag(tag) {
-            console.log('toggleCharacterTag called with:', tag);
             // Strip color syntax for comparison purposes
             const strippedTag = stripHiddenPrefix(tag);
-            console.log('After stripping:', strippedTag);
             
             if (selectedCharacterTags.has(strippedTag)) {
                 selectedCharacterTags.delete(strippedTag);

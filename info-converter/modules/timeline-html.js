@@ -1,5 +1,19 @@
 // Timeline HTML Generation Functions
-
+// Helper function to get time system by ID (needed for timeline)
+function getTimeSystemById(id) {
+    if (id === 'default') {
+        return window.DEFAULT_CALENDAR;
+    }
+    
+    // ADD THIS:
+    if (id === 'preset-chinese') {
+        return window.PRESET_CHINESE_CALENDAR;
+    }
+    
+    // Fallback to user-created time systems
+    const systems = window.userTimeSystems || [];
+    return systems.find(ts => ts.id === id) || null;
+}
 //GENERATING
 // Generate the new timeline view with NAMESPACED classes
 function generateTimelineView(data) {
@@ -22,18 +36,18 @@ function generateTimelineView(data) {
     // Add timeline navigation
     timelineHTML += generateTimelineNavigation(uniqueTags, yearRange);
     
-    // Add view switcher dropdown
-    timelineHTML += generateTimelineViewSwitcher();
-    
     // Generate both chronological and arc timeline views
     timelineHTML += generateChronologicalTimeline(allEvents);
-    timelineHTML += generateArcTimeline(data.plans, allEvents);
     
     return timelineHTML;
 }
 
-// Generate the chronological timeline (existing functionality)
+// Generate the chronological timeline with month grouping
 function generateChronologicalTimeline(allEvents) {
+    // Get the selected time system
+    const selectedTimeSystemId = infoData.plansOptions?.selectedTimeSystemId || 'default';
+    const timeSystem = getTimeSystemById(selectedTimeSystemId);
+    
     // Group events by year
     const eventsByYear = groupEventsByYear(allEvents);
     
@@ -41,292 +55,50 @@ function generateChronologicalTimeline(allEvents) {
     
     // Generate each year section
     Object.keys(eventsByYear).sort((a, b) => parseInt(a) - parseInt(b)).forEach(year => {
+        // Group events within this year by month
+        const eventsByMonth = {};
+        eventsByYear[year].forEach(event => {
+            const month = event.parsedTiming.month !== null ? event.parsedTiming.month : -1;
+            if (!eventsByMonth[month]) {
+                eventsByMonth[month] = [];
+            }
+            eventsByMonth[month].push(event);
+        });
+        
         chronoHTML += `
             <div class="tl-timeline-year" data-year="${year}">
                 <div class="tl-year-label">
                     <h3>Year ${year}</h3>
                 </div>
-                <div class="tl-timeline-events">
-                    ${generateYearEvents(eventsByYear[year])}
+                <div class="tl-timeline-events">`;
+        
+        // Track which side we're on (start with left)
+        let currentSide = 'left';
+        
+        // Sort months and generate events for each month
+        Object.keys(eventsByMonth).sort((a, b) => parseInt(a) - parseInt(b)).forEach(monthIndex => {
+            const monthNum = parseInt(monthIndex);
+            
+            // Add month label if we have a valid month and time system
+            if (monthNum >= 0 && timeSystem && timeSystem.months && timeSystem.months[monthNum]) {
+                chronoHTML += `<div class="tl-month-label">${timeSystem.months[monthNum].name}</div>`;
+            } else if (monthNum === -1) {
+                chronoHTML += `<div class="tl-month-label tl-no-month">Unspecified Month</div>`;
+            }
+            
+            // Generate events for this month, passing and receiving the current side
+            const result = generateYearEventsWithSide(eventsByMonth[monthNum], currentSide);
+            chronoHTML += result.html;
+            currentSide = result.endSide;
+        });
+        
+        chronoHTML += `
                 </div>
             </div>`;
     });
     
     chronoHTML += '</div>';
     return chronoHTML;
-}
-
-// Generate the arc timeline (new swimlane functionality)
-function generateArcTimeline(plans, allEvents) {
-    if (!plans || plans.length === 0) {
-        return `
-            <div class="tl-arc-timeline-container tl-arc-view" id="tl-arc-container" style="display: none;">
-                <div class="tl-timeline-empty">
-                    <h3>No Story Arcs</h3>
-                    <p>No story arcs found to display in timeline.</p>
-                </div>
-            </div>`;
-    }
-    
-    // Get all years with events for the timeline header
-    const years = getAllTimelineYears(allEvents);
-    
-    let arcHTML = '<div class="tl-arc-timeline-container tl-arc-view" id="tl-arc-container" style="display: none;">';
-    
-    // ADD THIS: Expand button header
-    arcHTML += `
-        <div class="tl-arc-header-controls">
-            <button class="tl-arc-expand-btn" onclick="toggleArcTimelineExpanded()" title="Expand to full screen">
-                <span class="tl-expand-icon">⛶</span>
-            </button>
-        </div>`;
-    
-    // Add year header
-    if (years.length > 0) {
-        arcHTML += generateArcTimelineHeader(years);
-    }
-    
-    // Generate swimlane for each plan
-    plans.forEach((plan, planIndex) => {
-        if (plan.visible !== false) {
-            arcHTML += generateArcSwimlane(plan, planIndex, allEvents, years);
-        }
-    });
-    
-    arcHTML += '</div>';
-    return arcHTML;
-}
-
-// Generate timeline view switcher dropdown
-function generateTimelineViewSwitcher() {
-    return `
-        <div class="tl-view-switcher">
-            <label for="timeline-view-select">View:</label>
-            <select id="timeline-view-select" class="timeline-view-select" onchange="switchTimelineView(this.value)">
-                <option value="chronological">Chronological</option>
-                <option value="arc">Arc Swimlanes</option>
-            </select>
-        </div>`;
-}
-
-// Get all years from events for arc timeline header
-function getAllTimelineYears(allEvents) {
-    const yearSet = new Set();
-    
-    allEvents.forEach(event => {
-        if (event.parsedTiming && event.parsedTiming.year !== null) {
-            yearSet.add(event.parsedTiming.year);
-        }
-    });
-    
-    // IMPORTANT: Return sorted array for consistent ordering
-    return Array.from(yearSet).sort((a, b) => a - b);
-}
-
-// Generate year header for arc timeline
-function generateArcTimelineHeader(years) {
-    let headerHTML = '<div class="tl-arc-header">';
-    headerHTML += '<div class="tl-arc-label-column">Arcs</div>';
-    headerHTML += '<div class="tl-arc-years-header">';
-    
-    // IMPORTANT: Generate years in SORTED order to match content
-    const sortedYears = [...years].sort((a, b) => a - b);
-    sortedYears.forEach(year => {
-        headerHTML += `<div class="tl-arc-year-column" data-year="${year}">Year ${year}</div>`;
-    });
-    
-    headerHTML += '</div></div>';
-    return headerHTML;
-}
-
-// Generate a single arc swimlane
-function generateArcSwimlane(plan, planIndex, allEvents, years) {
-    const arcColor = plan.color || '#6c757d';
-    const arcType = plan.type || '';
-    
-    let swimlaneHTML = `
-        <div class="tl-arc-swimlane" data-arc-index="${planIndex}" style="--arc-color: ${arcColor}">
-            <div class="tl-arc-label">
-                <div class="tl-arc-title">
-                    <span class="tl-arc-link" onclick="openPlanModal(${planIndex})">${plan.title || 'Untitled Arc'}</span>
-                </div>
-                ${arcType ? `<div class="tl-arc-type-tag">${arcType}</div>` : ''}
-            </div>
-            <div class="tl-arc-timeline">
-                ${generateArcEvents(plan, allEvents, years)}
-            </div>
-        </div>`;
-    
-    // Add sub-arcs if they exist (also without character tags)
-    if (plan.subArcs && plan.subArcs.length > 0) {
-        plan.subArcs.forEach((subArc, subArcIndex) => {
-            if (subArc.visible !== false) {
-                swimlaneHTML += generateSubArcSwimlane(subArc, planIndex, subArcIndex, allEvents, years, arcColor);
-            }
-        });
-    }
-    
-    return swimlaneHTML;
-}
-
-// Generate a sub-arc swimlane
-function generateSubArcSwimlane(subArc, planIndex, subArcIndex, allEvents, years, parentColor) {
-    const subArcColor = subArc.color || adjustColorBrightness(parentColor, 30);
-    const subArcType = subArc.type || '';
-    
-    return `
-        <div class="tl-arc-swimlane tl-subarc-swimlane" data-arc-index="${planIndex}" data-subarc-index="${subArcIndex}" style="--arc-color: ${subArcColor}">
-            <div class="tl-arc-label tl-subarc-label">
-                <div class="tl-arc-title tl-subarc-title">
-                    &#9500;&#9472; <span class="tl-arc-link" onclick="openPlanModal(${planIndex})">${subArc.title || 'Untitled Sub-Arc'}</span>
-                </div>
-                ${subArcType ? `<div class="tl-arc-type-tag">${subArcType}</div>` : ''}
-            </div>
-            <div class="tl-arc-timeline">
-                ${generateSubArcEvents(subArc, planIndex, subArcIndex, allEvents, years)}
-            </div>
-        </div>`;
-}
-
-// Generate events within a swimlane positioned as nodes
-function generateSwimlaneEvents(events, years) {
-    let eventsHTML = '';
-        
-    // IMPORTANT: Generate year columns for ALL years, not just years with events
-    years.forEach(year => {
-        
-        const yearEvents = events.filter(event => 
-            event.parsedTiming && event.parsedTiming.year === year
-        );
-                
-        // ALWAYS create year column, even if no events
-        eventsHTML += `<div class="tl-arc-year-column" data-year="${year}">`;
-        
-        if (yearEvents.length > 0) {
-            // Sort events within the year by timing
-            yearEvents.sort((a, b) => {
-                const aTime = a.parsedTiming;
-                const bTime = b.parsedTiming;
-                
-                // Sort by month, day, hour
-                if ((aTime.month || 0) !== (bTime.month || 0)) {
-                    return (aTime.month || 0) - (bTime.month || 0);
-                }
-                if ((aTime.day || 0) !== (bTime.day || 0)) {
-                    return (aTime.day || 0) - (bTime.day || 0);
-                }
-                if ((aTime.hour || 0) !== (bTime.hour || 0)) {
-                    return (aTime.hour || 0) - (bTime.hour || 0);
-                }
-                
-                return (a.title || '').localeCompare(b.title || '');
-            });
-            
-            // Group events by exact timing for lane assignment
-            const eventLanes = assignEventsToLanes(yearEvents);
-            
-            // Generate the node container with lanes
-            eventsHTML += '<div class="tl-arc-nodes-container">';
-            
-            // Create lanes
-            const maxLanes = Math.max(...eventLanes.map(lane => lane.length));
-            for (let laneIndex = 0; laneIndex < maxLanes; laneIndex++) {
-                eventsHTML += `<div class="tl-arc-node-lane" data-lane="${laneIndex}">`;
-                
-                eventLanes.forEach((lane, positionIndex) => {
-                    if (lane[laneIndex]) {
-                        eventsHTML += generateEventNode(lane[laneIndex], positionIndex, laneIndex);
-                    } else if (laneIndex === 0) {
-                        // Add spacer for position without any events
-                        eventsHTML += '<div class="tl-arc-node-spacer"></div>';
-                    }
-                });
-                
-                eventsHTML += '</div>';
-            }
-            
-            eventsHTML += '</div>';
-        } else {
-            // CRITICAL: Add empty space to maintain column width even with no events
-            eventsHTML += '<div class="tl-arc-nodes-container tl-empty-year"></div>';
-        }
-        
-        // ALWAYS close the year column
-        eventsHTML += '</div>';
-    });
-    
-    return eventsHTML;
-}
-
-// Assign events to lanes based on timing to prevent overlap
-function assignEventsToLanes(events) {
-    const lanes = [];
-    const positionMap = new Map();
-    
-    // Group events by their timing position
-    events.forEach((event, index) => {
-        const timingKey = `${event.parsedTiming.month || 0}-${event.parsedTiming.day || 0}-${event.parsedTiming.hour || 0}`;
-        
-        if (!positionMap.has(timingKey)) {
-            positionMap.set(timingKey, []);
-        }
-        positionMap.get(timingKey).push(event);
-    });
-    
-    // Convert to array of lanes where each position can have multiple events stacked vertically
-    const positions = Array.from(positionMap.values());
-    const maxEventsAtPosition = Math.max(...positions.map(pos => pos.length));
-    
-    // Create lane structure: array of positions, each position is an array of events (lanes)
-    positions.forEach(positionEvents => {
-        const positionLanes = [];
-        positionEvents.forEach((event, laneIndex) => {
-            positionLanes[laneIndex] = event;
-        });
-        lanes.push(positionLanes);
-    });
-    
-    return lanes;
-}
-
-// Generate a single event node
-function generateEventNode(event, positionIndex, laneIndex) {
-    const hasNotes = event.notes && event.notes.trim();
-    const eventId = `arc-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Generate a color variation for this specific event
-    // Generate color based on character tags
-    const nodeColor = generateCharacterBasedColor(event.characterTags, getCSSVariableValue('--arc-color') || '#6c757d');
-    
-    // Generate tooltip content with character tags
-    const tooltipContent = generateNodeTooltipContent(event);
-    
-    let nodeHTML = `
-        <div class="tl-arc-event-node" 
-            style="background-color: ${nodeColor}"
-            data-event-id="${eventId}"
-            data-position="${positionIndex}"
-            data-lane="${laneIndex}"
-            ${hasNotes ? `onclick="showEventNotesModal('${eventId}')"` : ''}>
-            ${hasNotes ? '<div class="tl-node-notes-indicator">♦</div>' : ''}
-            ${tooltipContent}
-        </div>`;
-    
-    // Store event data for modal if needed
-    if (hasNotes) {
-        nodeHTML += `<script>
-            window.eventData = window.eventData || {}; 
-            window.eventData['${eventId}'] = ${JSON.stringify({
-                title: event.title || 'Untitled Event',
-                arcTitle: event.arcTitle || 'Unknown Arc',
-                timing: event.parsedTiming.originalText,
-                notes: event.notes || '',
-                characterTags: event.characterTags || []
-            })};
-        </script>`;
-    }
-    
-    return nodeHTML;
 }
 
 // Generate node color based on character tags
@@ -351,249 +123,89 @@ function generateCharacterBasedColor(characterTags, fallbackColor) {
     return mixCharacterColors(characterColors);
 }
 
-// Mix multiple character colors
-function mixCharacterColors(colors) {
-    let totalH = 0, totalS = 0, totalL = 0;
-    let validColors = 0;
-    
-    colors.forEach(color => {
-        const hsl = hexToHsl(color);
-        totalH += hsl.h;
-        totalS += hsl.s;
-        totalL += hsl.l;
-        validColors++;
-    });
-    
-    const avgH = totalH / validColors;
-    const avgS = totalS / validColors;
-    const avgL = Math.max(30, Math.min(70, totalL / validColors)); // Keep it readable
-    
-    return `hsl(${Math.round(avgH)}, ${Math.round(avgS)}%, ${Math.round(avgL)}%)`;
-}
-
-// Generate color variation for event node
-function generateNodeColorVariation(baseColor, positionIndex, laneIndex) {
-    // Convert hex to HSL for easier manipulation
-    const hsl = hexToHsl(baseColor);
-    
-    // Create variations based on position and lane
-    const hueShift = (positionIndex * 15 + laneIndex * 8) % 30 - 15; // Â±15 degrees
-    const lightnessShift = (laneIndex * 10 + positionIndex * 5) % 20 - 10; // Â±10%
-    
-    const newHue = (hsl.h + hueShift + 360) % 360;
-    const newLightness = Math.max(20, Math.min(80, hsl.l + lightnessShift));
-    
-    return `hsl(${newHue}, ${hsl.s}%, ${newLightness}%)`;
-}
-
-// Generate tooltip content with character tags using character colors
-// Generate tooltip content with character tags using character colors
-function generateNodeTooltipContent(event) {
-    // Start with event title instead of notes
-    let content = event.title || 'Untitled Event';
-    
-    // Add timing information 
-    if (event.parsedTiming && event.parsedTiming.originalText) {
-        content += `<div class="tl-tooltip-timing">${event.parsedTiming.originalText}</div>`;
-    }
-    
-    // Add character tags with colors if they exist - only show visible tags
-    if (event.characterTags && event.characterTags.length > 0) {
-        const visibleCharacterTags = getVisibleTags(event.characterTags);
-        if (visibleCharacterTags.length > 0) {
-            const characterTagsHTML = visibleCharacterTags.map(tag => {
-                const characterColor = getCharacterColor(tag);
-                return `<span class="tl-tooltip-character-tag" style="color: ${characterColor}">${tag}</span>`;
-            }).join(' ');
-            
-            content += `<div class="tl-tooltip-characters">Characters: ${characterTagsHTML}</div>`;
-        }
-    }
-    
-    return `<div class="tl-node-tooltip">${content}</div>`;
-}
-
-// Get character color by name
-function getCharacterColor(characterName) {
-    if (typeof infoData !== 'undefined' && infoData.characters) {
-        const character = infoData.characters.find(char => 
-            char.name && char.name.toLowerCase() === characterName.toLowerCase()
-        );
-        if (character && character.color) {
-            return character.color;
-        }
-    }
-    
-    // Fallback to a default color
-    return '#6c757d';
-}
-
 // Helper function to get CSS variable value
 function getCSSVariableValue(variableName) {
     const computedStyle = getComputedStyle(document.documentElement);
     return computedStyle.getPropertyValue(variableName).trim();
 }
-
-// Helper function to convert hex to HSL
-function hexToHsl(hex) {
-    // Remove # if present
-    hex = hex.replace('#', '');
+// Helper to expand yearly events into multiple instances
+function expandYearlyEvents(events, yearsWithEvents) {
+    const expandedEvents = [];
     
-    // Parse RGB
-    const r = parseInt(hex.substr(0, 2), 16) / 255;
-    const g = parseInt(hex.substr(2, 2), 16) / 255;
-    const b = parseInt(hex.substr(4, 2), 16) / 255;
-    
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-    
-    if (max === min) {
-        h = s = 0; // achromatic
-    } else {
-        const d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
+    events.forEach(event => {
+        if (!event.yearly || !event.parsedTiming || event.parsedTiming.year === null) {
+            expandedEvents.push(event);
+            return;
         }
-        h /= 6;
-    }
-    
-    return {
-        h: Math.round(h * 360),
-        s: Math.round(s * 100),
-        l: Math.round(l * 100)
-    };
-}
-
-// Calculate the maximum number of events per year across all arcs
-function calculateMaxEventsPerYear(plans, allEvents) {
-    const maxEventsPerYear = {};
-    
-    // Get all years
-    const years = getAllTimelineYears(allEvents);
-    
-    // Initialize all years
-    years.forEach(year => {
-        maxEventsPerYear[year] = 0;
+        
+        const startYear = event.parsedTiming.year;
+        const endYear = event.yearlyPerennial ? 
+            Math.max(...yearsWithEvents) : 
+            startYear + (event.yearlyDuration || 1) - 1;
+        
+        // Only create instances for years that have other (non-yearly) events
+        yearsWithEvents.forEach(targetYear => {
+            if (targetYear >= startYear && targetYear <= endYear) {
+                const instance = { 
+                    ...event, 
+                    parsedTiming: { 
+                        ...event.parsedTiming, 
+                        year: targetYear 
+                    },
+                    isYearlyInstance: true,
+                    originalYear: startYear
+                };
+                expandedEvents.push(instance);
+            }
+        });
     });
     
-    // Check each plan/arc
-    plans.forEach(plan => {
-        if (plan.visible !== false) {
-            years.forEach(year => {
-                // Main arc events for this year
-                const mainEvents = allEvents.filter(event => 
-                    event.arcTitle === plan.title && 
-                    !event.isSubArc && 
-                    event.parsedTiming.year === year
-                );
-                
-                maxEventsPerYear[year] = Math.max(maxEventsPerYear[year], mainEvents.length);
-                
-                // Sub-arc events for this year
-                if (plan.subArcs) {
-                    plan.subArcs.forEach(subArc => {
-                        if (subArc.visible !== false) {
-                            const subEvents = allEvents.filter(event => 
-                                event.arcTitle.includes(subArc.title) && 
-                                event.isSubArc && 
-                                event.parsedTiming.year === year
-                            );
-                            
-                            maxEventsPerYear[year] = Math.max(maxEventsPerYear[year], subEvents.length);
-                        }
-                    });
-                }
-            });
-        }
-    });
-    
-    return maxEventsPerYear;
+    return expandedEvents;
 }
 
-// Generate events for an arc swimlane (calls generateSwimlaneEvents)
-function generateArcEvents(plan, allEvents, years) {
-    
-    const planEvents = allEvents.filter(event => 
-        event.arcTitle === plan.title && !event.isSubArc
-    );
-        
-    return generateSwimlaneEvents(planEvents, years);
-}
-
-// UPDATED: Generate events for a sub-arc swimlane ensuring ALL years are included  
-function generateSubArcEvents(subArc, planIndex, subArcIndex, allEvents, years) {    
-    const subArcEvents = allEvents.filter(event => 
-        event.arcTitle && event.arcTitle.includes(subArc.title) && event.isSubArc
-    );
-        
-    return generateSwimlaneEvents(subArcEvents, years);
-}
-
-// Utility function to adjust color brightness (needed for sub-arc colors)
-function adjustColorBrightness(hex, percent) {
-    // Remove # if present
-    hex = hex.replace('#', '');
-    
-    // Parse RGB
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-    
-    // Adjust brightness
-    const newR = Math.min(255, Math.max(0, r + (255 - r) * percent / 100));
-    const newG = Math.min(255, Math.max(0, g + (255 - g) * percent / 100));
-    const newB = Math.min(255, Math.max(0, b + (255 - b) * percent / 100));
-    
-    // Convert back to hex
-    return `#${Math.round(newR).toString(16).padStart(2, '0')}${Math.round(newG).toString(16).padStart(2, '0')}${Math.round(newB).toString(16).padStart(2, '0')}`;
-}
-
-
-
-// UPDATE the collectAllEventsWithTiming function to include character moments:
 function collectAllEventsWithTiming(plans) {
     const allEvents = [];
+    const regularEvents = []; // Non-yearly events
+    const yearlyEvents = []; // Yearly events to expand
     
     plans.forEach(plan => {
-        // Main events
-        if (plan.events) {
+        // Collect main arc events
+        if (plan.events && Array.isArray(plan.events)) {
             plan.events.forEach(event => {
-                if (event.visible !== false && event.timing && event.timing.trim()) {
-                    const parsedTiming = parseTiming(event.timing);
-                    if (parsedTiming) {
-                        allEvents.push({
-                            ...event,
-                            arcTitle: plan.title,
-                            isSubArc: false,
-                            parsedTiming: parsedTiming,
-                            characterTags: event.characterTags || [],
-                            subevents: event.subevents || event.characterMoments || [] // Include character moments
-                        });
+                const parsed = parseTiming(event.timing);
+                if (parsed) {
+                    // --- FIX 1 START ---
+                    // Create a single 'arcTitle' property instead of 'planTitle'
+                    const eventWithParsing = { ...event, parsedTiming: parsed, arcTitle: plan.title };
+                    // --- FIX 1 END ---
+                    if (event.yearly) {
+                        yearlyEvents.push(eventWithParsing);
+                    } else {
+                        regularEvents.push(eventWithParsing);
                     }
                 }
             });
         }
         
-        // Sub-arc events
-        if (plan.subArcs) {
+        // Collect sub-arc events
+        if (plan.subArcs && Array.isArray(plan.subArcs)) {
             plan.subArcs.forEach(subArc => {
-                if (subArc.visible !== false && subArc.events) {
+                if (subArc.events && Array.isArray(subArc.events)) {
                     subArc.events.forEach(event => {
-                        if (event.visible !== false && event.timing && event.timing.trim()) {
-                            const parsedTiming = parseTiming(event.timing);
-                            if (parsedTiming) {
-                                allEvents.push({
-                                    ...event,
-                                    arcTitle: `${plan.title} &rarr; ${subArc.title}`,
-                                    isSubArc: true,
-                                    parsedTiming: parsedTiming,
-                                    characterTags: event.characterTags || [],
-                                    subevents: event.subevents || event.characterMoments || [] // Include character moments
-                                });
+                        const parsed = parseTiming(event.timing);
+                        if (parsed) {
+                            // --- FIX 2 START ---
+                            // Create a combined 'arcTitle' property with the correct arrow separator
+                            const eventWithParsing = { 
+                                ...event, 
+                                parsedTiming: parsed, 
+                                arcTitle: `${plan.title} → ${subArc.title}` // Use the actual arrow character with spaces
+                            };
+                            // --- FIX 2 END ---
+                            if (event.yearly) {
+                                yearlyEvents.push(eventWithParsing);
+                            } else {
+                                regularEvents.push(eventWithParsing);
                             }
                         }
                     });
@@ -602,7 +214,13 @@ function collectAllEventsWithTiming(plans) {
         }
     });
     
-    return allEvents;
+    // Get years that have regular events
+    const yearsWithEvents = [...new Set(regularEvents.map(e => e.parsedTiming.year))];
+    
+    // Expand yearly events only for those years
+    const expandedYearlyEvents = expandYearlyEvents(yearlyEvents, yearsWithEvents);
+    
+    return [...regularEvents, ...expandedYearlyEvents];
 }
 
 // FIXED: collectTimelineFilterData function in timeline-html.js
@@ -701,36 +319,148 @@ function generateTimelineNavigation(uniqueTags, yearRange) {
 }
 
 // Parse timing string (Hour X, Day Y, Month Z, Year W)
-function parseTiming(timingStr) {
-    const timing = {
-        hour: null,
-        day: null,
-        month: null,
-        year: null,
-        originalText: timingStr.trim()
-    };
+// Parse timing - handles both NEW object format and LEGACY string format
+function parseTiming(timing) {
+    // NEW FORMAT: Object with date/time/timeSystemId
+    if (timing && typeof timing === 'object' && timing.date) {
+        const timeSystem = getTimeSystemById(timing.timeSystemId || 'default');
+        
+        const result = {
+            hour: null,
+            day: timing.date.day || null,
+            month: timing.date.month || null,
+            year: timing.date.year || null,
+            endYear: null,
+            endMonth: null,
+            endDay: null,
+            endHour: null,
+            originalText: '',
+            hasEndDate: false
+        };
+        
+        // Add time if present
+        if (timing.time) {
+            if (timing.time.hour !== undefined) {
+                result.hour = timing.time.hour;
+            } else if (timing.time.division !== undefined) {
+                result.hour = timing.time.division;
+            }
+        }
+        
+        // Add end date if present
+        if (timing.endDate) {
+            result.hasEndDate = true;
+            result.endYear = timing.endDate.year || null;
+            result.endMonth = timing.endDate.month || null;
+            result.endDay = timing.endDate.day || null;
+            
+            if (timing.endTime) {
+                if (timing.endTime.hour !== undefined) {
+                    result.endHour = timing.endTime.hour;
+                } else if (timing.endTime.division !== undefined) {
+                    result.endHour = timing.endTime.division;
+                }
+            }
+        }
+        
+        // Format display text using the time system
+        if (timeSystem) {
+            result.originalText = formatDateWithFormat(timing.date, timeSystem.settings.dateFormat, timeSystem);
+            
+            // Add start time if present
+            if (timing.time) {
+                const timeFormat = timeSystem.settings.timeFormat;
+                let timeStr = '';
+                
+                if (timeFormat === '12') {
+                    timeStr = ` ${timing.time.hour}:${String(timing.time.minute).padStart(2, '0')} ${timing.time.period}`;
+                } else if (timeFormat === '24') {
+                    timeStr = ` ${String(timing.time.hour).padStart(2, '0')}:${String(timing.time.minute).padStart(2, '0')}`;
+                } else if (timeFormat === 'custom') {
+                    const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.time.division]
+                        ? timeSystem.timeDivisions.divisionNames[timing.time.division]
+                        : `Division ${timing.time.division}`;
+                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
+                    timeStr = ` ${divName}, ${timing.time.subdivision} ${subdivisionName}`;
+                }
+                
+                result.originalText += timeStr;
+            }
+            
+            // Add end date if present
+            if (timing.endDate) {
+                let endText = formatDateWithFormat(timing.endDate, timeSystem.settings.dateFormat, timeSystem);
+                
+                // Add end time if present
+                if (timing.endTime) {
+                    const timeFormat = timeSystem.settings.timeFormat;
+                    let endTimeStr = '';
+                    
+                    if (timeFormat === '12') {
+                        endTimeStr = ` ${timing.endTime.hour}:${String(timing.endTime.minute).padStart(2, '0')} ${timing.endTime.period}`;
+                    } else if (timeFormat === '24') {
+                        endTimeStr = ` ${String(timing.endTime.hour).padStart(2, '0')}:${String(timing.endTime.minute).padStart(2, '0')}`;
+                    } else if (timeFormat === 'custom') {
+                        const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.endTime.division]
+                            ? timeSystem.timeDivisions.divisionNames[timing.endTime.division]
+                            : `Division ${timing.endTime.division}`;
+                        const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
+                        endTimeStr = ` ${divName}, ${timing.endTime.subdivision} ${subdivisionName}`;
+                    }
+                    
+                    endText += endTimeStr;
+                }
+                
+                result.originalText += ` → ${endText}`;
+            }
+        } else {
+            // Fallback if time system not found
+            result.originalText = `Month ${result.month + 1}, Day ${result.day}, Year ${result.year}`;
+            if (result.hasEndDate) {
+                result.originalText += ` → Month ${result.endMonth + 1}, Day ${result.endDay}, Year ${result.endYear}`;
+            }
+        }
+        
+        return result;
+    }
     
-    // Match patterns like "Year 300", "Month 5, Year 300", etc.
-    const patterns = [
-        /Hour\s+(\d+)/i,
-        /Day\s+(\d+)/i,
-        /Month\s+(\d+)/i,
-        /Year\s+(\d+)/i
-    ];
-    
-    const hourMatch = timingStr.match(patterns[0]);
-    const dayMatch = timingStr.match(patterns[1]);
-    const monthMatch = timingStr.match(patterns[2]);
-    const yearMatch = timingStr.match(patterns[3]);
-    
-    if (hourMatch) timing.hour = parseInt(hourMatch[1]);
-    if (dayMatch) timing.day = parseInt(dayMatch[1]);
-    if (monthMatch) timing.month = parseInt(monthMatch[1]);
-    if (yearMatch) timing.year = parseInt(yearMatch[1]);
-    
-    // Must have at least one timing component
-    if (timing.hour !== null || timing.day !== null || timing.month !== null || timing.year !== null) {
-        return timing;
+    // LEGACY FORMAT: String like "Hour 12, Day 5, Month 3, Year 1"
+    if (timing && typeof timing === 'string' && typeof timing.trim === 'function') {
+        const timingStr = timing;
+        const result = {
+            hour: null,
+            day: null,
+            month: null,
+            year: null,
+            endYear: null,
+            endMonth: null,
+            endDay: null,
+            endHour: null,
+            hasEndDate: false,
+            originalText: timingStr
+        };
+        
+        const patterns = [
+            /Hour\s+(\d+)/i,
+            /Day\s+(\d+)/i,
+            /Month\s+(\d+)/i,
+            /Year\s+(\d+)/i
+        ];
+        
+        const hourMatch = timingStr.match(patterns[0]);
+        const dayMatch = timingStr.match(patterns[1]);
+        const monthMatch = timingStr.match(patterns[2]);
+        const yearMatch = timingStr.match(patterns[3]);
+        
+        if (hourMatch) result.hour = parseInt(hourMatch[1]);
+        if (dayMatch) result.day = parseInt(dayMatch[1]);
+        if (monthMatch) result.month = parseInt(monthMatch[1]) - 1;
+        if (yearMatch) result.year = parseInt(yearMatch[1]);
+        
+        // Must have at least one timing component
+        if (result.hour !== null || result.day !== null || result.month !== null || result.year !== null) {
+            return result;
+        }
     }
     
     return null;
@@ -802,38 +532,241 @@ function generateYearEvents(events) {
     return eventsHTML;
 }
 
-// SINGLE TIMELINE EVENT with debug logging
-function generateSingleTimelineEvent(event, index) {
-    const markerClass = `tl-timeline-marker ${event.type || 'rising'}`;
-    const tooltipText = (event.notes || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+// Generate events for a specific year WITH side tracking
+function generateYearEventsWithSide(events, startSide) {
+    let eventsHTML = '';
+    let currentSide = startSide;
+    
+    // Group events with identical timing for stacking
+    const stackedEvents = {};
+    events.forEach((event, index) => {
+        const timingKey = `${event.parsedTiming.month || 0}-${event.parsedTiming.day || 0}-${event.parsedTiming.hour || 0}`;
+        if (!stackedEvents[timingKey]) {
+            stackedEvents[timingKey] = [];
+        }
+        stackedEvents[timingKey].push(event);
+    });
+    
+    let eventIndex = 0;
+    Object.values(stackedEvents).forEach(eventGroup => {
+        if (eventGroup.length === 1) {
+            // Single event
+            eventsHTML += generateSingleTimelineEventWithSide(eventGroup[0], eventIndex, currentSide);
+        } else {
+            // Multiple events with same timing
+            eventsHTML += generateStackedTimelineEventsWithSide(eventGroup, eventIndex, currentSide);
+        }
+        // Toggle side for next event
+        currentSide = currentSide === 'left' ? 'right' : 'left';
+        eventIndex++;
+    });
+    
+    return { html: eventsHTML, endSide: currentSide };
+}
+
+// =============================================================================
+// HELPER FUNCTIONS FOR COLORS AND TOOLTIPS - KEEP ALL OF THESE
+// =============================================================================
+
+// Get arc/subarc color from arcTitle
+function getArcColorFromTitle(arcTitle) {
+    if (!arcTitle || typeof infoData === 'undefined' || !infoData.plans) {
+        return '#6c757d'; // Default gray
+    }
+    
+    // Check if it's a sub-arc (contains →)
+    if (arcTitle.includes('→')) {
+        const [mainArcTitle, subArcTitle] = arcTitle.split('→').map(s => s.trim());
+        
+        // Find the main arc
+        const mainArc = infoData.plans.find(p => p.title === mainArcTitle);
+        if (!mainArc) return '#6c757d';
+        
+        // Find the sub-arc
+        if (mainArc.subArcs) {
+            const subArc = mainArc.subArcs.find(sa => sa.title === subArcTitle);
+            if (subArc && subArc.color) {
+                return subArc.color;
+            }
+            // If sub-arc doesn't have its own color, use adjusted main arc color
+            if (mainArc.color) {
+                return adjustColorBrightness(mainArc.color, 30);
+            }
+        }
+    } else {
+        // It's a main arc
+        const arc = infoData.plans.find(p => p.title === arcTitle);
+        if (arc && arc.color) {
+            return arc.color;
+        }
+    }
+    
+    return '#6c757d';
+}
+
+// Utility function to adjust color brightness
+function adjustColorBrightness(hex, percent) {
+    // Remove # if present
+    hex = hex.replace('#', '');
+    
+    // Parse RGB
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Adjust brightness
+    const newR = Math.min(255, Math.max(0, r + (255 - r) * percent / 100));
+    const newG = Math.min(255, Math.max(0, g + (255 - g) * percent / 100));
+    const newB = Math.min(255, Math.max(0, b + (255 - b) * percent / 100));
+    
+    // Convert back to hex
+    return `#${Math.round(newR).toString(16).padStart(2, '0')}${Math.round(newG).toString(16).padStart(2, '0')}${Math.round(newB).toString(16).padStart(2, '0')}`;
+}
+
+// Get character color by name
+function getCharacterColor(characterName) {
+    if (typeof infoData !== 'undefined' && infoData.characters) {
+        const character = infoData.characters.find(char => 
+            char.name && char.name.toLowerCase() === characterName.toLowerCase()
+        );
+        if (character && character.color) {
+            return character.color;
+        }
+    }
+    
+    // Fallback to a default color
+    return '#6c757d';
+}
+
+// Helper function to convert hex to HSL
+function hexToHsl(hex) {
+    // Remove # if present
+    hex = hex.replace('#', '');
+    
+    // Parse RGB
+    const r = parseInt(hex.substr(0, 2), 16) / 255;
+    const g = parseInt(hex.substr(2, 2), 16) / 255;
+    const b = parseInt(hex.substr(4, 2), 16) / 255;
+    
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    
+    if (max === min) {
+        h = s = 0; // achromatic
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+    
+    return {
+        h: h * 360,
+        s: s * 100,
+        l: l * 100
+    };
+}
+
+// Mix multiple character colors
+function mixCharacterColors(colors) {
+    let totalH = 0, totalS = 0, totalL = 0;
+    let validColors = 0;
+    
+    colors.forEach(color => {
+        const hsl = hexToHsl(color);
+        totalH += hsl.h;
+        totalS += hsl.s;
+        totalL += hsl.l;
+        validColors++;
+    });
+    
+    const avgH = totalH / validColors;
+    const avgS = totalS / validColors;
+    const avgL = Math.max(30, Math.min(70, totalL / validColors)); // Keep it readable
+    
+    return `hsl(${Math.round(avgH)}, ${Math.round(avgS)}%, ${Math.round(avgL)}%)`;
+}
+
+// Generate rich tooltip content with character tags using their colors
+function generateRichTooltip(event) {
+    let content = event.title || 'Untitled Event';
+    
+    // Add timing information with full date range
+    if (event.parsedTiming && event.parsedTiming.originalText) {
+        content += `<div class="tl-tooltip-timing">${event.parsedTiming.originalText}</div>`;
+    }
+    
+    // Add duration indicator if it's a date range
+    if (event.parsedTiming && event.parsedTiming.hasEndDate) {
+        content += `<div class="tl-tooltip-duration" style="font-style: italic; color: var(--text-muted); font-size: 0.85em;">Duration event</div>`;
+    }
+    
+    // Add character tags with colors if they exist - only show visible tags
+    if (event.characterTags && event.characterTags.length > 0) {
+        const visibleCharacterTags = getVisibleTags(event.characterTags);
+        if (visibleCharacterTags.length > 0) {
+            const characterTagsHTML = visibleCharacterTags.map(tag => {
+                const characterColor = getCharacterColor(tag);
+                return `<span class="tl-tooltip-character-tag" style="color: ${characterColor}">${tag}</span>`;
+            }).join(' ');
+            
+            content += `<div class="tl-tooltip-characters">Characters: ${characterTagsHTML}</div>`;
+        }
+    }
+    
+    // Add notes preview if available
+    if (event.notes && event.notes.trim()) {
+        const notesPreview = event.notes.length > 100 
+            ? event.notes.substring(0, 100) + '...' 
+            : event.notes;
+        content += `<div class="tl-tooltip-notes">${notesPreview}</div>`;
+    }
+    
+    return `<div class="tl-node-tooltip">${content}</div>`;
+}
+
+// =============================================================================
+// UPDATED CHRONOLOGICAL TIMELINE EVENT GENERATION
+// =============================================================================
+
+// UPDATED: Single timeline event - now uses arc color for marker and rich tooltips
+// UPDATED: Single timeline event with explicit side
+function generateSingleTimelineEventWithSide(event, index, side) {
+    const isYearly = event.isYearlyInstance === true;
+    const yearlyClass = isYearly ? ' tl-yearly-event' : '';
     const hasNotes = event.notes && event.notes.trim();
     const hasImage = event.image && event.image.trim();
+    const hasDuration = event.parsedTiming && event.parsedTiming.hasEndDate;
     
-    // Get border color for image
-    const borderColor = hasImage ? getEventTypeColor(event.type || 'rising') : '';
-    
-    // Use ALL character tags (stripped of "!") for filtering data attributes
+    const arcColor = getArcColorFromTitle(event.arcTitle);
+    const borderColor = hasImage ? arcColor : '';
     const allCharacterTagsStripped = event.characterTags ? event.characterTags.map(stripHiddenPrefix).join(',').toLowerCase() : '';
-    
     const eventId = `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Generate seasonal background
     const seasonalBg = setSeasonalBackground(event);
+    const richTooltip = generateRichTooltip(event);
 
     return `
-        <div class="tl-timeline-event" 
+            <div class="tl-timeline-event tl-${side}-side ${hasImage ? 'has-image' : ''}${yearlyClass}"
             data-character-tags="${allCharacterTagsStripped}"
             data-event-type="${event.type || 'rising'}"
             data-year="${event.parsedTiming.year || 0}">
             <div class="tl-event-card" ${seasonalBg} ${hasNotes ? `onclick="showEventNotesModal('${eventId}')" data-event-id="${eventId}"` : ''}>
                 <div class="tl-event-arc-title"><span class="tl-arc-link" data-arc-title="${(event.arcTitle || 'Unknown Arc').replace(/"/g, '&quot;')}" onclick="event.stopPropagation(); openPlanModalFromTimeline(this.dataset.arcTitle)">${event.arcTitle || 'Unknown Arc'}</span></div>
-                <div class="tl-event-title">${event.title || 'Untitled Event'}</div>
+                <div class="tl-event-title">
+                    ${event.title || 'Untitled Event'}
+                    ${hasDuration ? '<span class="tl-duration-badge" title="Duration event">⏱</span>' : ''}
+                </div>
                 <div class="tl-event-timing">${event.parsedTiming.originalText}</div>
                 ${hasImage ? `<div class="tl-event-image" style="border-color: ${borderColor};"><img src="${event.image}" alt="${event.title}" /></div>` : ''}
                 ${hasNotes ? '<div class="tl-chrono-notes-indicator">♦</div>' : ''}
-                ${tooltipText ? `<div class="tooltip">${tooltipText}</div>` : ''}
+                ${richTooltip}
             </div>
-            <div class="${markerClass}"></div>
+            <div class="tl-timeline-marker" style="background-color: ${arcColor};"></div>
             ${hasNotes ? `<script>window.eventData = window.eventData || {}; window.eventData['${eventId}'] = ${JSON.stringify({
                 title: event.title || 'Untitled Event',
                 arcTitle: event.arcTitle || 'Unknown Arc',
@@ -844,9 +777,11 @@ function generateSingleTimelineEvent(event, index) {
         </div>`;
 }
 
-// Updated generateStackedTimelineEvents function - show only visible character tags
-function generateStackedTimelineEvents(events, index) {
-    // Collect ALL character tags from stacked events for filtering (stripped of "!")
+// UPDATED: Stacked timeline events - now uses arc color for marker and rich tooltips
+// UPDATED: Stacked timeline events with explicit side
+function generateStackedTimelineEventsWithSide(events, index, side) {
+    const isYearly = events.isYearlyInstance === true;
+    const yearlyClass = isYearly ? ' tl-yearly-event' : '';
     const allCharacterTags = new Set();
     events.forEach(event => {
         if (event.characterTags && Array.isArray(event.characterTags)) {
@@ -854,36 +789,39 @@ function generateStackedTimelineEvents(events, index) {
         }
     });
     const combinedTagsForFiltering = Array.from(allCharacterTags).join(',').toLowerCase();
-    
-    // Generate seasonal background for container
     const containerSeasonalBg = setSeasonalBackground(events[0]);
+    const arcColor = getArcColorFromTitle(events[0].arcTitle);
+
+// Check if any event in the stack has an image
+    const stackHasImage = events.some(e => e.image && e.image.trim());
 
     let stackedHTML = `
-        <div class="tl-timeline-event"
+        <div class="tl-timeline-event tl-${side}-side ${stackHasImage ? 'has-image' : ''}${yearlyClass}"
             data-character-tags="${combinedTagsForFiltering}"
             data-event-type="${events[0].type || 'rising'}"
             data-year="${events[0].parsedTiming.year || 0}">
             <div class="tl-stacked-events" ${containerSeasonalBg}>`;
     
     events.forEach((event, eventIndex) => {
-        const tooltipText = (event.notes || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         const hasNotes = event.notes && event.notes.trim();
         const hasImage = event.image && event.image.trim();
-        
-        // Get border color for image
-        const borderColor = hasImage ? getEventTypeColor(event.type || 'rising') : '';
-        
+        const hasDuration = event.parsedTiming && event.parsedTiming.hasEndDate;
+        const eventArcColor = getArcColorFromTitle(event.arcTitle);
+        const borderColor = hasImage ? eventArcColor : '';
         const eventId = `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const richTooltip = generateRichTooltip(event);
         
-        // Individual cards within stacked events are transparent (no seasonal background)
         stackedHTML += `
             <div class="tl-event-card" ${hasNotes ? `onclick="showEventNotesModal('${eventId}')" data-event-id="${eventId}"` : ''}>
                 <div class="tl-event-arc-title"><span class="tl-arc-link" data-arc-title="${(event.arcTitle || 'Unknown Arc').replace(/"/g, '&quot;')}" onclick="event.stopPropagation(); openPlanModalFromTimeline(this.dataset.arcTitle)">${event.arcTitle || 'Unknown Arc'}</span></div>
-                <div class="tl-event-title">${event.title || 'Untitled Event'}</div>
+                <div class="tl-event-title">
+                    ${event.title || 'Untitled Event'}
+                    ${hasDuration ? '<span class="tl-duration-badge" title="Duration event">⏱</span>' : ''}
+                </div>
                 <div class="tl-event-timing">${event.parsedTiming.originalText}</div>
                 ${hasImage ? `<div class="tl-event-image" style="border-color: ${borderColor};"><img src="${event.image}" alt="${event.title}" /></div>` : ''}
                 ${hasNotes ? '<div class="tl-chrono-notes-indicator">♦</div>' : ''}
-                ${tooltipText ? `<div class="tooltip">${tooltipText}</div>` : ''}
+                ${richTooltip}
             </div>
             ${hasNotes ? `<script>window.eventData = window.eventData || {}; window.eventData['${eventId}'] = ${JSON.stringify({
                 title: event.title || 'Untitled Event',
@@ -894,12 +832,9 @@ function generateStackedTimelineEvents(events, index) {
             })};</script>` : ''}`;
     });
     
-    // Use regular diamond marker for stacked events
-    const markerClass = `tl-timeline-marker ${events[0].type || 'rising'}`;
-    
     stackedHTML += `
             </div>
-            <div class="${markerClass}"></div>
+            <div class="tl-timeline-marker" style="background-color: ${arcColor};"></div>
         </div>`;
     
     return stackedHTML;
@@ -907,32 +842,107 @@ function generateStackedTimelineEvents(events, index) {
 
 // SEASONAL BACKGROUND FUNCTION with debug logging
 function setSeasonalBackground(event) {
+    // Extract timing info from event
+    let month = null;
+    let day = null;
+    // Use the project's selected time system instead of always defaulting to Gregorian
+    let timeSystemId = (typeof infoData !== 'undefined' && infoData.plansOptions?.selectedTimeSystemId) 
+        ? infoData.plansOptions.selectedTimeSystemId 
+        : 'default';
     
-    const month = event.parsedTiming?.month;
-    
-    // Use same defensive pattern as getEventTypeColor
-    const colors = (typeof getColorScheme === 'function') ? getColorScheme() : {
-        containerBg: '#ffffff',
-        headerBg: '#f8f9fa',
-        seasonal: {
-            winter: '#e3f2fd',
-            spring: '#e8f5e8', 
-            summer: '#fff3e0',
-            autumn: '#fce4ec'
-        }
-    };
-    
-    if (month && month >= 1 && month <= 12) {
-        
-        const seasonalColor = (typeof getSeasonalColor === 'function') ? 
-            getSeasonalColor(month, colors) : colors.containerBg;
-        
-        const result = `style="--seasonal-bg: ${seasonalColor}"`;
-        return result;
-    } else {
-        const result = `style="--seasonal-bg: ${colors.headerBg}"`;
-        return result;
+    // Check if event has parsedTiming (from timeline)
+    if (event.parsedTiming?.month !== undefined && event.parsedTiming?.month !== null) {
+        month = event.parsedTiming.month;
+        day = event.parsedTiming.day || 1;
+    } 
+    // Check if event has new structured timing format
+    else if (event.timing && typeof event.timing === 'object' && event.timing.date) {
+        month = event.timing.date.month;
+        day = event.timing.date.day || 1;
+        timeSystemId = event.timing.timeSystemId || 'default';
     }
+    // Check if event has legacy string timing
+    else if (event.timing && typeof event.timing === 'string') {
+        const timing = event.timing;
+        
+        // Try to match number patterns like "Month 3" or "Day 15 Month 3"
+        const monthMatch = timing.match(/month\s+(\d+)|(\d+)\s*(?:st|nd|rd|th)?\s*month/i);
+        if (monthMatch) {
+            month = parseInt(monthMatch[1] || monthMatch[2]) - 1; // Convert to 0-indexed
+        }
+        
+        const dayMatch = timing.match(/day\s+(\d+)|(\d+)\s*(?:st|nd|rd|th)?\s*day/i);
+        if (dayMatch) {
+            day = parseInt(dayMatch[1] || dayMatch[2]);
+        }
+    }
+    
+    // If we have a month, find which season it belongs to
+    if (month !== null) {
+        const timeSystem = getTimeSystemById(timeSystemId);
+        
+        if (timeSystem && timeSystem.seasons && timeSystem.seasons.length > 0) {
+            const seasonColor = getSeasonColorForDate(month, day || 1, timeSystem);
+            if (seasonColor) {
+                return `style="--seasonal-bg: ${seasonColor}"`;
+            }
+        }
+    }
+    
+    // Fallback to default container background
+    const colors = (typeof getColorScheme === 'function') ? getColorScheme() : {
+        containerBg: '#ffffff'
+    };
+    return `style="--seasonal-bg: ${colors.containerBg}"`;
+}
+
+// Helper function to determine which season a date falls into
+function getSeasonColorForDate(month, day, timeSystem) {
+    if (!timeSystem.seasons || timeSystem.seasons.length === 0) {
+        return null;
+    }
+    
+    // Sort seasons by start date
+    const sortedSeasons = [...timeSystem.seasons].sort((a, b) => {
+        if (a.startDate.month !== b.startDate.month) {
+            return a.startDate.month - b.startDate.month;
+        }
+        return a.startDate.day - b.startDate.day;
+    });
+    
+    // Find which season the date falls into
+    let currentSeason = sortedSeasons[sortedSeasons.length - 1]; // Default to last season
+    
+    for (let i = 0; i < sortedSeasons.length; i++) {
+        const season = sortedSeasons[i];
+        const nextSeason = sortedSeasons[(i + 1) % sortedSeasons.length];
+        
+        // Check if date is after this season's start
+        const isAfterStart = (month > season.startDate.month) || 
+                            (month === season.startDate.month && day >= season.startDate.day);
+        
+        // Check if date is before next season's start
+        const isBeforeNext = (month < nextSeason.startDate.month) || 
+                             (month === nextSeason.startDate.month && day < nextSeason.startDate.day);
+        
+        // Handle year wrap-around (e.g., Season 1 from Month 10 to Month 3)
+        if (nextSeason.startDate.month < season.startDate.month) {
+            // Next season wraps to next year
+            if (isAfterStart || (month < nextSeason.startDate.month) || 
+                (month === nextSeason.startDate.month && day < nextSeason.startDate.day)) {
+                currentSeason = season;
+                break;
+            }
+        } else {
+            // Normal case: seasons don't wrap
+            if (isAfterStart && isBeforeNext) {
+                currentSeason = season;
+                break;
+            }
+        }
+    }
+    
+    return currentSeason.color || null;
 }
 
 function getEventTypeColor(type) {
@@ -940,14 +950,20 @@ function getEventTypeColor(type) {
     const colors = (typeof getColorScheme === 'function') ? getColorScheme() : {};
     
     switch (type) {
+        case 'none':
+            return colors.textMuted || '#696764';
+        case 'exposition':
+            return colors.physical || '#4D96E4';
         case 'rising':
             return colors.statusCanon || '#28a745';
         case 'setback':
             return colors.statusIdea || '#dc3545';
         case 'climax':
             return colors.statusDraft || '#ffc107';
+        case 'resolution':
+            return colors.hobbies || '#075AFF';
         default:
-            return colors.statusCanon || '#28a745';
+            return colors.statusCanon || '#696764';
     }
 }
 
@@ -978,41 +994,184 @@ function generateTimelineJavaScript() {
             let currentTimelineSearch = '';
             let timelineYearFrom = null;
             let timelineYearTo = null;
+
+            // Helper function to get time system by ID
+            window.getTimeSystemById = function(id) {
+                if (id === 'default') {
+                    return window.DEFAULT_CALENDAR;
+                }
+                // ADD THIS:
+                if (id === 'preset-chinese') {
+                    return window.PRESET_CHINESE_CALENDAR;
+                }
+                const systems = window.userTimeSystems || [];
+                return systems.find(ts => ts.id === id) || null;
+            };
+
+            // Helper function to format dates
+            window.formatDateWithFormat = function(dateObj, format, calendar) {
+                const monthName = calendar.months[dateObj.month]?.name || 'Unknown';
+                const monthNum = String(dateObj.month + 1).padStart(2, '0');
+                const day = String(dateObj.day).padStart(2, '0');
+                const dayNum = dateObj.day;
+                const year = Math.abs(dateObj.year);
+                
+                let result = format;
+                result = result.replace('MMMM', monthName);
+                result = result.replace('MM', monthNum);
+                result = result.replace('DD', day);
+                result = result.replace('D', String(dayNum));
+                result = result.replace('YYYY', String(year));
+                
+                return result;
+            };
             
             // Parse timing function - needed for timeline filtering
-            window.parseTiming = function(timingStr) {
-                const timing = {
-                    hour: null,
-                    day: null,
-                    month: null,
-                    year: null,
-                    originalText: timingStr.trim()
-                };
+            window.parseTiming = function(timing) {
+                // NEW FORMAT: Object with date/time/timeSystemId
+                if (timing && typeof timing === 'object' && timing.date) {
+                    const timeSystem = getTimeSystemById(timing.timeSystemId || 'default');
+                    
+                    const result = {
+                        hour: null,
+                        day: timing.date.day || null,
+                        month: timing.date.month || null,
+                        year: timing.date.year || null,
+                        endYear: null,
+                        endMonth: null,
+                        endDay: null,
+                        endHour: null,
+                        originalText: '',
+                        hasEndDate: false
+                    };
+                    
+                    // Add time if present
+                    if (timing.time) {
+                        if (timing.time.hour !== undefined) {
+                            result.hour = timing.time.hour;
+                        } else if (timing.time.division !== undefined) {
+                            result.hour = timing.time.division;
+                        }
+                    }
+                    
+                    // Add end date if present
+                    if (timing.endDate) {
+                        result.hasEndDate = true;
+                        result.endYear = timing.endDate.year || null;
+                        result.endMonth = timing.endDate.month || null;
+                        result.endDay = timing.endDate.day || null;
+                        
+                        if (timing.endTime) {
+                            if (timing.endTime.hour !== undefined) {
+                                result.endHour = timing.endTime.hour;
+                            } else if (timing.endTime.division !== undefined) {
+                                result.endHour = timing.endTime.division;
+                            }
+                        }
+                    }
+                    
+                    // Format display text using the time system
+                    if (timeSystem) {
+                        result.originalText = formatDateWithFormat(timing.date, timeSystem.settings.dateFormat, timeSystem);
+                        
+                        // Add start time if present
+                        if (timing.time) {
+                            const timeFormat = timeSystem.settings.timeFormat;
+                            let timeStr = '';
+                            
+                            if (timeFormat === '12') {
+                                timeStr = \` \${timing.time.hour}:\${String(timing.time.minute).padStart(2, '0')} \${timing.time.period}\`;
+                            } else if (timeFormat === '24') {
+                                timeStr = \` \${String(timing.time.hour).padStart(2, '0')}:\${String(timing.time.minute).padStart(2, '0')}\`;
+                            } else if (timeFormat === 'custom') {
+                                const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.time.division]
+                                    ? timeSystem.timeDivisions.divisionNames[timing.time.division]
+                                    : \`Division \${timing.time.division}\`;
+                                const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
+                                timeStr = \` \${divName}, \${timing.time.subdivision} \${subdivisionName}\`;
+                            }
+                            
+                            result.originalText += timeStr;
+                        }
+                        
+                        // Add end date if present
+                        if (timing.endDate) {
+                            let endText = formatDateWithFormat(timing.endDate, timeSystem.settings.dateFormat, timeSystem);
+                            
+                            // Add end time if present
+                            if (timing.endTime) {
+                                const timeFormat = timeSystem.settings.timeFormat;
+                                let endTimeStr = '';
+                                
+                                if (timeFormat === '12') {
+                                    endTimeStr = \` \${timing.endTime.hour}:\${String(timing.endTime.minute).padStart(2, '0')} \${timing.endTime.period}\`;
+                                } else if (timeFormat === '24') {
+                                    endTimeStr = \` \${String(timing.endTime.hour).padStart(2, '0')}:\${String(timing.endTime.minute).padStart(2, '0')}\`;
+                                } else if (timeFormat === 'custom') {
+                                    const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.endTime.division]
+                                        ? timeSystem.timeDivisions.divisionNames[timing.endTime.division]
+                                        : \`Division \${timing.endTime.division}\`;
+                                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
+                                    endTimeStr = \` \${divName}, \${timing.endTime.subdivision} \${subdivisionName}\`;
+                                }
+                                
+                                endText += endTimeStr;
+                            }
+                            
+                            result.originalText += \` → \${endText}\`;
+                        }
+                    } else {
+                        // Fallback if time system not found
+                        result.originalText = \`Month \${result.month + 1}, Day \${result.day}, Year \${result.year}\`;
+                        if (result.hasEndDate) {
+                            result.originalText += \` → Month \${result.endMonth + 1}, Day \${result.endDay}, Year \${result.endYear}\`;
+                        }
+                    }
+                    
+                    return result;
+                }
                 
-                const patterns = [
-                    /Hour\\s+(\\d+)/i,
-                    /Day\\s+(\\d+)/i,
-                    /Month\\s+(\\d+)/i,
-                    /Year\\s+(\\d+)/i
-                ];
-                
-                const hourMatch = timingStr.match(patterns[0]);
-                const dayMatch = timingStr.match(patterns[1]);
-                const monthMatch = timingStr.match(patterns[2]);
-                const yearMatch = timingStr.match(patterns[3]);
-                
-                if (hourMatch) timing.hour = parseInt(hourMatch[1]);
-                if (dayMatch) timing.day = parseInt(dayMatch[1]);
-                if (monthMatch) timing.month = parseInt(monthMatch[1]);
-                if (yearMatch) timing.year = parseInt(yearMatch[1]);
-                
-                if (timing.hour !== null || timing.day !== null || timing.month !== null || timing.year !== null) {
-                    return timing;
+                // LEGACY FORMAT: String like "Hour 12, Day 5, Month 3, Year 1"
+                if (timing && typeof timing === 'string' && typeof timing.trim === 'function') {
+                    const timingStr = timing;
+                    const result = {
+                        hour: null,
+                        day: null,
+                        month: null,
+                        year: null,
+                        endYear: null,
+                        endMonth: null,
+                        endDay: null,
+                        endHour: null,
+                        hasEndDate: false,
+                        originalText: timingStr
+                    };
+                    
+                    const patterns = [
+                        /Hour\s+(\d+)/i,
+                        /Day\s+(\d+)/i,
+                        /Month\s+(\d+)/i,
+                        /Year\s+(\d+)/i
+                    ];
+                    
+                    const hourMatch = timingStr.match(patterns[0]);
+                    const dayMatch = timingStr.match(patterns[1]);
+                    const monthMatch = timingStr.match(patterns[2]);
+                    const yearMatch = timingStr.match(patterns[3]);
+                    
+                    if (hourMatch) result.hour = parseInt(hourMatch[1]);
+                    if (dayMatch) result.day = parseInt(dayMatch[1]);
+                    if (monthMatch) result.month = parseInt(monthMatch[1]) - 1;
+                    if (yearMatch) result.year = parseInt(yearMatch[1]);
+                    
+                    // Must have at least one timing component
+                    if (result.hour !== null || result.day !== null || result.month !== null || result.year !== null) {
+                        return result;
+                    }
                 }
                 
                 return null;
-            };
-
+            }
             function toggleEventSubevents(uniqueId) {
                 const content = document.getElementById('subevents-content-' + uniqueId);
                 const toggle = document.getElementById('subevents-toggle-' + uniqueId);
@@ -1030,7 +1189,6 @@ function generateTimelineJavaScript() {
 
             // Plans view switching
             function switchPlansView(view) {
-                console.log('🔄 switchPlansView called with:', view);
                 
                 // Update tab states
                 const cardTab = document.getElementById('cards-tab');
@@ -1209,7 +1367,7 @@ function generateTimelineJavaScript() {
                     // Main events
                     if (plan.events) {
                         plan.events.forEach(event => {
-                            if (event.visible !== false && event.timing && event.timing.trim()) {
+                            if (event.visible !== false && event.timing && (typeof event.timing === 'string' ? event.timing.trim() : true)) {
                                 const parsedTiming = window.parseTiming(event.timing);
                                 if (parsedTiming) {
                                     timelineEvents.push({
@@ -1230,7 +1388,7 @@ function generateTimelineJavaScript() {
                         plan.subArcs.forEach(subArc => {
                             if (subArc.visible !== false && subArc.events) {
                                 subArc.events.forEach(event => {
-                                    if (event.visible !== false && event.timing && event.timing.trim()) {
+                                    if (event.visible !== false && event.timing && (typeof event.timing === 'string' ? event.timing.trim() : true)) {
                                         const parsedTiming = window.parseTiming(event.timing);
                                         if (parsedTiming) {
                                             timelineEvents.push({
@@ -1252,70 +1410,6 @@ function generateTimelineJavaScript() {
                 window.timelineAllEvents = timelineEvents;
             }
 
-            // Arc timeline expand/collapse functionality
-            function toggleArcTimelineExpanded() {
-                const container = document.getElementById('tl-arc-container');
-                const isExpanded = container.classList.contains('expanded');
-                
-                if (isExpanded) {
-                    container.classList.remove('expanded');
-                    document.body.style.overflow = ''; // Restore body scroll
-                } else {
-                    container.classList.add('expanded');
-                    document.body.style.overflow = 'hidden'; // Prevent body scroll
-                }
-            }
-
-            // Mouse drag scrolling for expanded arc timeline
-            function initializeArcTimelineDragScroll() {
-                const container = document.getElementById('tl-arc-container');
-                if (!container) return;
-
-                let isDown = false;
-                let startX, startY, scrollLeft, scrollTop;
-
-                container.addEventListener('mousedown', (e) => {
-                    if (!container.classList.contains('expanded')) return;
-                    
-                    isDown = true;
-                    startX = e.pageX - container.offsetLeft;
-                    startY = e.pageY - container.offsetTop;
-                    scrollLeft = container.scrollLeft;
-                    scrollTop = container.scrollTop;
-                    e.preventDefault();
-                });
-
-                container.addEventListener('mouseleave', () => {
-                    isDown = false;
-                });
-
-                container.addEventListener('mouseup', () => {
-                    isDown = false;
-                });
-
-                container.addEventListener('mousemove', (e) => {
-                    if (!isDown || !container.classList.contains('expanded')) return;
-                    
-                    e.preventDefault();
-                    const x = e.pageX - container.offsetLeft;
-                    const y = e.pageY - container.offsetTop;
-                    const walkX = (x - startX) * 2;
-                    const walkY = (y - startY) * 2;
-                    container.scrollLeft = scrollLeft - walkX;
-                    container.scrollTop = scrollTop - walkY;
-                });
-            }
-
-            // Make functions globally available
-            window.toggleArcTimelineExpanded = toggleArcTimelineExpanded;
-
-            // Initialize drag scrolling when page loads
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(() => {
-                    initializeArcTimelineDragScroll();
-                }, 100);
-            });
-
             // Close modal on Escape key
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {
@@ -1332,7 +1426,6 @@ function generateTimelineJavaScript() {
             window.initializeTimelineFiltering = initializeTimelineFiltering;
 
             window.openPlanModalFromTimeline = openPlanModalFromTimeline;
-            window.toggleArcTimelineExpanded = toggleArcTimelineExpanded;
 
     `;
 }
@@ -1422,24 +1515,9 @@ function generateTimelineFilteringJavaScript() {
         // FIXED: Main filtering function that detects current view and applies appropriate filters
         function applyTimelineFilters() {
             const chronoContainer = document.getElementById('tl-chronological-container');
-            const arcContainer = document.getElementById('tl-arc-container');
             
-            // Determine which view is currently active
-            const chronoActive = chronoContainer && chronoContainer.style.display !== 'none';
-            const arcActive = arcContainer && arcContainer.style.display !== 'none';
-                        
-            if (chronoActive && chronoContainer) {
+            if (chronoContainer) {
                 applyChronologicalFilters(chronoContainer);
-            }
-            
-            if (arcActive && arcContainer) {
-                applyArcSwimlaneFilters(arcContainer);
-            }
-            
-            if (!chronoActive && !arcActive) {
-                // Default case - try both
-                if (chronoContainer) applyChronologicalFilters(chronoContainer);
-                if (arcContainer) applyArcSwimlaneFilters(arcContainer);
             }
         }
 
@@ -1546,147 +1624,6 @@ function generateTimelineFilteringJavaScript() {
             });
         }
 
-        // FIXED: Arc Swimlanes filtering with proper year range and search support
-        function applyArcSwimlaneFilters(arcContainer) {
-            
-            const swimlanes = arcContainer.querySelectorAll('.tl-arc-swimlane');
-            
-            swimlanes.forEach((swimlane, swimlaneIndex) => {                
-                const arcIndex = parseInt(swimlane.getAttribute('data-arc-index'));
-                const subArcIndex = swimlane.getAttribute('data-subarc-index');
-                let swimlaneHasVisibleEvents = false;
-                                
-                // Get the plan/arc for this swimlane
-                let plan = null;
-                let subArc = null;
-                let swimlaneTitle = '';
-                
-                if (typeof fullInfoData !== 'undefined' && fullInfoData.plans && arcIndex >= 0) {
-                    plan = fullInfoData.plans[arcIndex];
-                    if (plan) {
-                        if (subArcIndex !== null && plan.subArcs && plan.subArcs[parseInt(subArcIndex)]) {
-                            // This is a sub-arc
-                            subArc = plan.subArcs[parseInt(subArcIndex)];
-                            swimlaneTitle = \`\${plan.title} &rarr; \${subArc.title}\`;
-                        } else {
-                            // This is a main arc
-                            swimlaneTitle = plan.title;
-                        }
-                    }
-                }
-                                
-                // Check if this swimlane should be visible based on plan tags
-                let swimlaneMatchesTags = true;
-                if (selectedTimelineTags.size > 0 && plan) {
-                    if (plan.tags && Array.isArray(plan.tags)) {
-                        const planFilterTags = plan.tags;                        
-                        if (timelineFilterMode === 'all') {
-                            // Plan must have ALL selected tags
-                            swimlaneMatchesTags = Array.from(selectedTimelineTags).every(selectedTag => 
-                                planFilterTags.some(planTag => 
-                                    planTag.toLowerCase().includes(selectedTag.toLowerCase())
-                                )
-                            );
-                        } else {
-                            // Plan must have ANY selected tag
-                            swimlaneMatchesTags = Array.from(selectedTimelineTags).some(selectedTag => 
-                                planFilterTags.some(planTag => 
-                                    planTag.toLowerCase().includes(selectedTag.toLowerCase())
-                                )
-                            );
-                        }
-                    } else {
-                        // No tags on plan means it doesn't match when tags are selected
-                        swimlaneMatchesTags = false;
-                    }
-                }
-                                
-                // Search filter for the swimlane title
-                if (swimlaneMatchesTags && currentTimelineSearch) {
-                    const searchableText = swimlaneTitle.toLowerCase();
-                    swimlaneMatchesTags = searchableText.includes(currentTimelineSearch);
-                }
-                
-                // If the swimlane doesn't match tags/search, hide the entire thing
-                if (!swimlaneMatchesTags) {
-                    swimlane.style.display = 'none';
-                    return;
-                }
-                
-                // Filter individual event nodes within the swimlane by year range
-                const yearColumns = swimlane.querySelectorAll('.tl-arc-year-column');
-                
-                yearColumns.forEach(yearColumn => {
-                    const year = parseInt(yearColumn.getAttribute('data-year'));
-                    
-                    // Check year range filter
-                    const yearInRange = (!timelineYearFrom || year >= timelineYearFrom) && 
-                                        (!timelineYearTo || year <= timelineYearTo);
-                    
-                    
-                    if (!yearInRange) {
-                        // Hide this entire year column
-                        yearColumn.style.display = 'none';
-                        return;
-                    } else {
-                        yearColumn.style.display = '';
-                    }
-                    
-                    // Check if this year column has any visible event nodes
-                    const eventNodes = yearColumn.querySelectorAll('.tl-arc-event-node');
-                    
-                    if (eventNodes.length > 0) {
-                        swimlaneHasVisibleEvents = true;
-                    }
-                    
-                    // Additional search filtering on individual nodes (if needed)
-                    if (currentTimelineSearch) {
-                        eventNodes.forEach(eventNode => {
-                            const nodeTooltip = eventNode.querySelector('.tl-node-tooltip');
-                            if (nodeTooltip) {
-                                const searchableText = nodeTooltip.textContent.toLowerCase();
-                                const nodeMatches = searchableText.includes(currentTimelineSearch);
-                                
-                                if (nodeMatches) {
-                                    eventNode.style.display = '';
-                                } else {
-                                    eventNode.style.display = 'none';
-                                }
-                            } else {
-                                // If no tooltip, check event data
-                                const eventId = eventNode.getAttribute('data-event-id');
-                                if (eventId && window.eventData && window.eventData[eventId]) {
-                                    const eventData = window.eventData[eventId];
-                                    const searchableText = [
-                                        eventData.title || '',
-                                        eventData.notes || ''
-                                    ].join(' ').toLowerCase();
-                                    
-                                    if (searchableText.includes(currentTimelineSearch)) {
-                                        eventNode.style.display = '';
-                                    } else {
-                                        eventNode.style.display = 'none';
-                                    }
-                                }
-                            }
-                        });
-                    } else {
-                        // No search filter, show all nodes in this year
-                        eventNodes.forEach(eventNode => {
-                            eventNode.style.display = '';
-                        });
-                    }
-                });
-                
-                // Show/hide entire swimlane based on whether it has any visible events/years
-                if (swimlaneHasVisibleEvents) {
-                    swimlane.style.display = '';
-                } else {
-                    swimlane.style.display = 'none';
-                }
-            });
-        }
-
                     // Helper function to check if an event matches the selected tags
         function checkEventMatchesTags(arcTitle) {
             if (!arcTitle || selectedTimelineTags.size === 0) {
@@ -1724,8 +1661,6 @@ function generateTimelineFilteringJavaScript() {
         }
 
 
-
-
         // Make timeline filtering functions globally available
         window.toggleTimelineTag = toggleTimelineTag;
         window.updateTimelineTagStates = updateTimelineTagStates;
@@ -1735,7 +1670,6 @@ function generateTimelineFilteringJavaScript() {
         window.toggleTimelineNavigation = toggleTimelineNavigation;
         window.applyTimelineFilters = applyTimelineFilters;
         window.applyChronologicalFilters = applyChronologicalFilters;
-        window.applyArcSwimlaneFilters = applyArcSwimlaneFilters;
         window.checkEventMatchesTags = checkEventMatchesTags;
 
         //these may not exist anymore, not sure
