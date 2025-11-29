@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.1.1 - hotfix
+Noticed a major bug in Lore Codex Storylines, fixed it.
+
 ## v3.1.0 - 11-29-2025
 
 **Important:** You need [Node.js](https://nodejs.org/) installed to run this app. Check the [README](https://github.com/chatelainedev/creators-toolkit?tab=readme-ov-file#creators-toolkit-v310) for full setup details.
