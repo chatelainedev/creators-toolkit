@@ -1116,13 +1116,6 @@ function populateStorylineModal(storyline) {
         storyEditingEndTime = null;
         updateStoryDateDisplay();
     }
-
-    document.getElementById('story-yearly').checked = storyline.yearly === true;
-    if (storyline.yearly) {
-        document.getElementById('story-yearly-controls').style.display = 'flex';
-        document.getElementById('story-yearly-duration').value = storyline.yearlyDuration || '';
-        document.getElementById('story-yearly-perennial').checked = storyline.yearlyPerennial === true;
-    }
     
     // Handle project link checkbox and link processing
     const isProjectLink = storyline.isProjectLink || false;
@@ -1194,11 +1187,6 @@ function saveStoryline() {
             endTime: storyEditingEndTime ? { ...storyEditingEndTime } : null,
             timeSystemId: infoData.plansOptions?.selectedTimeSystemId || 'default'
         } : null,
-        yearly: document.getElementById('story-yearly').checked,
-        yearlyDuration: document.getElementById('story-yearly').checked ? 
-            (parseInt(document.getElementById('story-yearly-duration').value) || null) : null,
-        yearlyPerennial: document.getElementById('story-yearly').checked ? 
-            document.getElementById('story-yearly-perennial').checked : false
     };
 
     // Validation
