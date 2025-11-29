@@ -90,7 +90,7 @@
                     <div class="header-overlay"></div>
                 </div>
                 <div class="header-content">
-                    <h1 class="header-title">Creator's Toolkit</h1>
+                    <h1 class="header-title metal-text bronze">Creator's Toolkit</h1>
                 </div>
             </div>
 
@@ -103,9 +103,9 @@
                     </div>
                     <div class="card-content">
                         <div class="card-icon">
-                            <img src="images/lore-codex-icon.png" alt="Lore Codex Icon" class="card-icon-image">
+                            <div class="card-icon-mask" style="mask-image: url('images/lore-codex-icon.svg'); -webkit-mask-image: url('images/lore-codex-icon.svg');"></div>
                         </div>
-                        <h2 class="card-title metal-text bronze">Lore Codex</h2>
+                        <h2 class="card-title">Lore Codex</h2>
                         <div class="card-footer">
                             <p class="card-description">Create beautiful info pages for your writing projects and worlds</p>
                             <button class="card-launch-btn" data-url="http://localhost:9000">
@@ -123,9 +123,9 @@
                     </div>
                     <div class="card-content">
                         <div class="card-icon">
-                            <img src="images/rp-archiver-icon.png" alt="RP Archiver Icon" class="card-icon-image">
+                            <div class="card-icon-mask" style="mask-image: url('images/rp-archiver-icon.svg'); -webkit-mask-image: url('images/rp-archiver-icon.svg');"></div>
                         </div>
-                        <h2 class="card-title metal-text bronze">RP Archiver</h2>
+                        <h2 class="card-title">RP Archiver</h2>
                         <div class="card-footer">
                             <p class="card-description">Transform roleplay text into styled HTML documents</p>
                             <button class="card-launch-btn" data-url="http://localhost:9000/roleplay-converter">
@@ -759,12 +759,18 @@
                         </div>
                         <div class="form-group">
                             <label for="model-select">Model:</label>
-                            <select id="model-select">
-                                <option value="">Loading models...</option>
-                            </select>
-                            <button type="button" class="btn-secondary refresh-btn" id="refresh-models-btn" title="Refresh Models">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
+                            <div class="model-controls-row">
+                                <select id="model-select">
+                                    <option value="">Loading models...</option>
+                                </select>
+                                <button type="button" class="btn-secondary refresh-btn" id="refresh-models-btn" title="Refresh Models">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <label class="free-models-toggle" id="free-models-toggle-container" style="display: none;">
+                                    <input type="checkbox" id="free-models-only">
+                                    <span>Free only</span>
+                                </label>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="api-key-input">API Key:</label>
@@ -1172,9 +1178,25 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Markdown Theme Settings -->
+                    <div class="form-group">
+                        <label for="markdown-theme-select">Markdown Style:</label>
+                        <select id="markdown-theme-select">
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                        <div class="helper-text">
+                            Controls how markdown appears in Notebook preview and CoWriter messages
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="markdown-font-size">Markdown Font Size: <span id="markdown-font-size-display">14px</span></label>
+                        <input type="range" id="markdown-font-size" min="10" max="24" value="14">
+                    </div>
                 </div>
 
-                <!-- AI Tools Section - ADD THIS ENTIRE SECTION -->
+                <!-- AI Tools Section -->
                 <div class="settings-section">
                     <h3>AI Features</h3>
                     <div class="form-group">
@@ -1185,6 +1207,53 @@
                         <div class="helper-text">
                             Shows optional AI-related features (CoWriter tab, Character Manager, Lorebook Manager). Core tools work without AI.
                         </div>
+                    </div>
+                </div>
+
+                <!-- AI Config: -->
+                <div class="settings-section">
+                    <h3>AI Configuration</h3>
+                    <div class="form-group">
+                        <label for="main-provider-select">Provider:</label>
+                        <select id="main-provider-select">
+                            <option value="google">Google Gemini</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="main-model-select">Model:</label>
+                        <div class="model-controls-row">
+                            <select id="main-model-select">
+                                <option value="">Loading models...</option>
+                            </select>
+                            <button type="button" class="btn-secondary refresh-btn" id="main-refresh-models-btn" title="Refresh Models">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <label class="free-models-toggle" id="main-free-models-toggle-container" style="display: none;">
+                                <input type="checkbox" id="main-free-models-only">
+                                <span>Free only</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="main-api-key-input">API Key:</label>
+                        <div class="api-key-wrapper">
+                            <input type="password" id="main-api-key-input" placeholder="Enter your API key...">
+                            <button type="button" class="toggle-visibility-btn" id="main-toggle-api-key-btn" title="Show/Hide Key">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="helper-text">
+                            Your API key is stored securely and only used for making requests to the LLM provider.
+                        </div>
+                    </div>
+                    <div class="api-status" id="main-api-status">
+                        <span class="status-indicator" id="main-status-indicator"></span>
+                        <span class="status-text" id="main-status-text">Not configured</span>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="main-test-connection-btn">
+                            <i class="fas fa-plug"></i> Test Connection
+                        </button>
                     </div>
                 </div>
 

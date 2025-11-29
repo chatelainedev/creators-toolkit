@@ -3,8 +3,8 @@
     "name": "Google Gemini",
     "description": "Google's Gemini AI models for creative writing and brainstorming",
     "baseUrl": "https://generativelanguage.googleapis.com",
-    "modelsEndpoint": "/v1/models",
-    "chatEndpoint": "/v1/models/{model}:generateContent",
+    "modelsEndpoint": "/v1beta/models",
+    "chatEndpoint": "/v1beta/models/{model}:generateContent",
     "keyRequired": true,
     "keyPlaceholder": "Enter your Google AI API key...",
     "keyHelpUrl": "https://aistudio.google.com/app/apikey",
@@ -147,6 +147,70 @@
     "apiLimits": {
       "maxChatHistoryMessages": 15,
       "maxChatHistoryTokens": 150000,
+      "estimatedTokensPerChar": 0.3
+    }
+  },
+
+  "openrouter": {
+    "name": "OpenRouter",
+    "description": "Access to multiple AI models through OpenRouter",
+    "baseUrl": "https://openrouter.ai/api",
+    "modelsEndpoint": "/v1/models",
+    "chatEndpoint": "/v1/chat/completions",
+    "keyRequired": true,
+    "keyPlaceholder": "Enter your OpenRouter API key...",
+    "keyHelpUrl": "https://openrouter.ai/keys",
+    "keyHelpText": "Get your API key from OpenRouter",
+    "enabled": true,
+    
+    "fallbackModels": [
+      {
+        "value": "deepseek/deepseek-r1-0528:free",
+        "label": "DeepSeek R1 (Free)",
+        "description": "Reasoning model, good for complex tasks",
+        "recommended": true
+      },
+      {
+        "value": "x-ai/grok-4.1-fast:free",
+        "label": "Grok 4.1 Fast (Free)",
+        "description": "Fast and capable, good for creative writing",
+        "recommended": true
+      },
+      {
+        "value": "meta-llama/llama-3.3-70b-instruct:free",
+        "label": "Llama 3.3 70B (Free)",
+        "description": "Large, capable model for creative tasks"
+      },
+      {
+        "value": "qwen/qwen-2.5-72b-instruct:free",
+        "label": "Qwen 2.5 72B (Free)",
+        "description": "Strong multilingual capabilities"
+      },
+      {
+        "value": "deepseek/deepseek-chat-v3-0324:free",
+        "label": "DeepSeek Chat V3 (Free)",
+        "description": "Balanced chat model"
+      },
+      {
+        "value": "google/gemini-2.0-flash-exp:free",
+        "label": "Gemini 2.0 Flash (Free)",
+        "description": "Fast Google model (may be rate-limited)"
+      },
+      {
+        "value": "tngtech/deepseek-r1t-chimera:free",
+        "label": "DeepSeek R1T Chimera (Free)",
+        "description": "Experimental reasoning model"
+      },
+      {
+        "value": "arliai/qwq-32b-arliai-rpr-v1:free",
+        "label": "QwQ 32B RPR (Free)",
+        "description": "Role-play focused model"
+      }
+    ],
+
+    "apiLimits": {
+      "maxChatHistoryMessages": 20,
+      "maxChatHistoryTokens": 20000,
       "estimatedTokensPerChar": 0.3
     }
   },

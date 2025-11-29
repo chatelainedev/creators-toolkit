@@ -2511,6 +2511,17 @@ function updateMiniCalDisplay() {
                 }
             }
             formatted = `${monthName} ${day}, ${year} ${eraAbbr}`;
+        } else if (miniCalEditingEraIndex === 'storyline-date') {
+            // Storyline date: show with era abbreviation (same as event-date)
+            let eraAbbr = '';
+            for (let i = currentEditingCalendar.eras.length - 1; i >= 0; i--) {
+                const era = currentEditingCalendar.eras[i];
+                if (miniCalSelectedDate.year >= era.startDate.year) {
+                    eraAbbr = era.abbreviation;
+                    break;
+                }
+            }
+            formatted = `${monthName} ${day}, ${year} ${eraAbbr}`;
         } else if (typeof miniCalEditingEraIndex === 'string' && miniCalEditingEraIndex.startsWith('season-')) {
             // Season date: no year needed, just month and day
             formatted = `${monthName} ${day}`;

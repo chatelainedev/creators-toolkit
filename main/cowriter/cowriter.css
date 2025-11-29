@@ -1679,3 +1679,35 @@ select optgroup {
 .show-more-messages-btn i {
     margin-right: var(--space-sm);
 }
+
+/* Model controls row */
+.model-controls-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.model-controls-row select {
+    flex: 1;
+}
+
+.free-models-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.free-models-toggle input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+}
+
+.free-models-toggle:hover {
+    color: var(--text-primary);
+}

@@ -20,11 +20,14 @@ function generateTimelineView(data) {
     // Collect all events from all plans with timing data
     const allEvents = collectAllEventsWithTiming(data.plans);
     
-    if (allEvents.length === 0) {
+    // NEW: Collect all storylines with timing data
+    const allStorylines = collectStorylinesWithTiming(data.storylines || []);
+    
+    if (allEvents.length === 0 && allStorylines.length === 0) {
         return `
             <div class="tl-timeline-empty">
-                <h3>No Timed Events</h3>
-                <p>No events with timing information found. Add timing details (like "Month 3, Year 300") to your events to see them in the timeline.</p>
+                <h3>No Timed Events or Storylines</h3>
+                <p>No events or storylines with timing information found. Add timing details to see them in the timeline.</p>
             </div>`;
     }
     
@@ -36,14 +39,14 @@ function generateTimelineView(data) {
     // Add timeline navigation
     timelineHTML += generateTimelineNavigation(uniqueTags, yearRange);
     
-    // Generate both chronological and arc timeline views
-    timelineHTML += generateChronologicalTimeline(allEvents);
+    // Generate chronological timeline with both events and storylines
+    timelineHTML += generateChronologicalTimeline(allEvents, allStorylines);
     
     return timelineHTML;
 }
 
 // Generate the chronological timeline with month grouping
-function generateChronologicalTimeline(allEvents) {
+function generateChronologicalTimeline(allEvents, allStorylines = []) {
     // Get the selected time system
     const selectedTimeSystemId = infoData.plansOptions?.selectedTimeSystemId || 'default';
     const timeSystem = getTimeSystemById(selectedTimeSystemId);
@@ -51,18 +54,50 @@ function generateChronologicalTimeline(allEvents) {
     // Group events by year
     const eventsByYear = groupEventsByYear(allEvents);
     
+    // NEW: Group storylines by their start year
+    const storylinesByYear = {};
+    allStorylines.forEach(storyline => {
+        const year = storyline.parsedTiming.year;
+        if (year !== null) {
+            if (!storylinesByYear[year]) {
+                storylinesByYear[year] = [];
+            }
+            storylinesByYear[year].push(storyline);
+        }
+    });
+    
+    // Get all unique years from both events and storylines
+    const allYears = new Set([
+        ...Object.keys(eventsByYear),
+        ...Object.keys(storylinesByYear)
+    ]);
+    
     let chronoHTML = '<div class="tl-timeline-container tl-chronological-view" id="tl-chronological-container">';
     
     // Generate each year section
-    Object.keys(eventsByYear).sort((a, b) => parseInt(a) - parseInt(b)).forEach(year => {
+    Array.from(allYears).sort((a, b) => parseInt(a) - parseInt(b)).forEach(year => {
+        const yearInt = parseInt(year);
+        const eventsInYear = eventsByYear[year] || [];
+        const storylinesInYear = storylinesByYear[year] || [];
+        
         // Group events within this year by month
         const eventsByMonth = {};
-        eventsByYear[year].forEach(event => {
+        eventsInYear.forEach(event => {
             const month = event.parsedTiming.month !== null ? event.parsedTiming.month : -1;
             if (!eventsByMonth[month]) {
                 eventsByMonth[month] = [];
             }
             eventsByMonth[month].push(event);
+        });
+        
+        // NEW: Group storylines within this year by month
+        const storylinesByMonth = {};
+        storylinesInYear.forEach(storyline => {
+            const month = storyline.parsedTiming.month !== null ? storyline.parsedTiming.month : -1;
+            if (!storylinesByMonth[month]) {
+                storylinesByMonth[month] = [];
+            }
+            storylinesByMonth[month].push(storyline);
         });
         
         chronoHTML += `
@@ -75,8 +110,14 @@ function generateChronologicalTimeline(allEvents) {
         // Track which side we're on (start with left)
         let currentSide = 'left';
         
-        // Sort months and generate events for each month
-        Object.keys(eventsByMonth).sort((a, b) => parseInt(a) - parseInt(b)).forEach(monthIndex => {
+        // Get all months that have either events or storylines
+        const allMonths = new Set([
+            ...Object.keys(eventsByMonth),
+            ...Object.keys(storylinesByMonth)
+        ]);
+        
+        // Sort months and generate content for each month
+        Array.from(allMonths).sort((a, b) => parseInt(a) - parseInt(b)).forEach(monthIndex => {
             const monthNum = parseInt(monthIndex);
             
             // Add month label if we have a valid month and time system
@@ -86,10 +127,72 @@ function generateChronologicalTimeline(allEvents) {
                 chronoHTML += `<div class="tl-month-label tl-no-month">Unspecified Month</div>`;
             }
             
-            // Generate events for this month, passing and receiving the current side
-            const result = generateYearEventsWithSide(eventsByMonth[monthNum], currentSide);
-            chronoHTML += result.html;
-            currentSide = result.endSide;
+            // NEW: Combine events and storylines for this month
+            const monthItems = [];
+            
+            // Add event groups (with stacking for identical timing)
+            if (eventsByMonth[monthNum]) {
+                // Group events with identical timing for stacking
+                const stackedEvents = {};
+                eventsByMonth[monthNum].forEach(event => {
+                    const timingKey = `${event.parsedTiming.month || 0}-${event.parsedTiming.day || 0}-${event.parsedTiming.hour || 0}`;
+                    if (!stackedEvents[timingKey]) {
+                        stackedEvents[timingKey] = [];
+                    }
+                    stackedEvents[timingKey].push(event);
+                });
+                
+                // Add each event group as a single item
+                Object.values(stackedEvents).forEach(eventGroup => {
+                    const firstEvent = eventGroup[0];
+                    monthItems.push({
+                        type: 'eventGroup',
+                        data: eventGroup,
+                        day: firstEvent.parsedTiming.day || 0,
+                        hour: firstEvent.parsedTiming.hour || 0
+                    });
+                });
+            }
+            
+            // Add storylines
+            if (storylinesByMonth[monthNum]) {
+                storylinesByMonth[monthNum].forEach(storyline => {
+                    monthItems.push({
+                        type: 'storyline',
+                        data: storyline,
+                        day: storyline.parsedTiming.day || 0,
+                        hour: storyline.parsedTiming.hour || 0
+                    });
+                });
+            }
+            
+            // Sort by day, then by hour, then by type (storylines before events on same day/hour)
+            monthItems.sort((a, b) => {
+                if (a.day !== b.day) return a.day - b.day;
+                if (a.hour !== b.hour) return a.hour - b.hour;
+                // If same timing, put storylines first
+                if (a.type !== b.type) return a.type === 'storyline' ? -1 : 1;
+                return 0;
+            });
+            
+            // Render items in sorted order
+            monthItems.forEach(item => {
+                if (item.type === 'storyline') {
+                    chronoHTML += generateStorylineSpan(item.data, timeSystem);
+                } else {
+                    // Render event group (either single or stacked)
+                    const eventGroup = item.data;
+                    if (eventGroup.length === 1) {
+                        // Single event
+                        chronoHTML += generateSingleTimelineEventWithSide(eventGroup[0], 0, currentSide);
+                    } else {
+                        // Multiple events with same timing - use stacked rendering
+                        chronoHTML += generateStackedTimelineEventsWithSide(eventGroup, 0, currentSide);
+                    }
+                    // Toggle side for next event
+                    currentSide = currentSide === 'left' ? 'right' : 'left';
+                }
+            });
         });
         
         chronoHTML += `
@@ -99,6 +202,41 @@ function generateChronologicalTimeline(allEvents) {
     
     chronoHTML += '</div>';
     return chronoHTML;
+}
+
+// NEW: Generate storyline span HTML (add after generateChronologicalTimeline)
+function generateStorylineSpan(storyline, timeSystem) {
+    const hasDuration = storyline.parsedTiming.hasEndDate;
+    
+    // Format timing display
+    let timingDisplay = storyline.parsedTiming.originalText;
+    
+    // Create a subtle unique ID for the storyline
+    const storylineId = `storyline-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Generate clickable title if link exists (same logic as plan cards)
+    let titleHTML;
+    if (storyline.link) {
+        let finalLink = '';
+        if (storyline.isProjectLink) {
+            finalLink = `roleplays/${storyline.link}`;
+        } else {
+            finalLink = storyline.link;
+        }
+        titleHTML = `<div class="tl-storyline-title tl-storyline-title-clickable" onclick="window.location.href='${finalLink}'" title="Open storyline">${storyline.title || 'Untitled Storyline'}</div>`;
+    } else {
+        titleHTML = `<div class="tl-storyline-title">${storyline.title || 'Untitled Storyline'}</div>`;
+    }
+    
+    return `
+        <div class="tl-storyline-span ${hasDuration ? 'has-duration' : ''}" data-storyline-id="${storylineId}">
+            <div class="tl-storyline-content">
+                ${titleHTML}
+                <div class="tl-storyline-timing">${timingDisplay}</div>
+            </div>
+            ${hasDuration ? '<div class="tl-storyline-duration-bar"></div>' : ''}
+        </div>
+    `;
 }
 
 // Generate node color based on character tags
@@ -223,6 +361,31 @@ function collectAllEventsWithTiming(plans) {
     return [...regularEvents, ...expandedYearlyEvents];
 }
 
+// NEW: Collect storylines with timing information (add after collectAllEventsWithTiming)
+function collectStorylinesWithTiming(storylines) {
+    const timedStorylines = [];
+    
+    if (!storylines || !Array.isArray(storylines)) {
+        return timedStorylines;
+    }
+    
+    storylines.forEach(storyline => {
+        // Only include visible storylines with timing
+        if (storyline.visible !== false && storyline.timing) {
+            const parsed = parseTiming(storyline.timing);
+            if (parsed) {
+                timedStorylines.push({
+                    ...storyline,
+                    parsedTiming: parsed,
+                    isStoryline: true // Flag to identify storylines
+                });
+            }
+        }
+    });
+    
+    return timedStorylines;
+}
+
 // FIXED: collectTimelineFilterData function in timeline-html.js
 // Change this function to collect from plan.tags instead of plan.characterTags
 function collectTimelineFilterData(allEvents, plans) {
@@ -244,13 +407,26 @@ function collectTimelineFilterData(allEvents, plans) {
         });
     }
     
-    // Still collect year range from events
-    allEvents.forEach(event => {
-        if (event.parsedTiming.year !== null) {
-            minYear = Math.min(minYear, event.parsedTiming.year);
-            maxYear = Math.max(maxYear, event.parsedTiming.year);
-        }
-    });
+    // NEW: Also collect character tags from events
+    if (allEvents && Array.isArray(allEvents)) {
+        allEvents.forEach(event => {
+            // Collect character tags
+            if (event.characterTags && Array.isArray(event.characterTags)) {
+                const visibleCharacterTags = getVisibleTags(event.characterTags);
+                visibleCharacterTags.forEach(tag => {
+                    if (tag && tag.trim()) {
+                        uniqueTags.add(tag.trim());
+                    }
+                });
+            }
+            
+            // Collect year range
+            if (event.parsedTiming && event.parsedTiming.year !== null) {
+                minYear = Math.min(minYear, event.parsedTiming.year);
+                maxYear = Math.max(maxYear, event.parsedTiming.year);
+            }
+        });
+    }
     
     // Handle case where no years are found
     if (minYear === Infinity) {
@@ -367,52 +543,75 @@ function parseTiming(timing) {
         if (timeSystem) {
             result.originalText = formatDateWithFormat(timing.date, timeSystem.settings.dateFormat, timeSystem);
             
-            // Add start time if present
-            if (timing.time) {
-                const timeFormat = timeSystem.settings.timeFormat;
-                let timeStr = '';
-                
-                if (timeFormat === '12') {
-                    timeStr = ` ${timing.time.hour}:${String(timing.time.minute).padStart(2, '0')} ${timing.time.period}`;
-                } else if (timeFormat === '24') {
-                    timeStr = ` ${String(timing.time.hour).padStart(2, '0')}:${String(timing.time.minute).padStart(2, '0')}`;
-                } else if (timeFormat === 'custom') {
-                    const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.time.division]
-                        ? timeSystem.timeDivisions.divisionNames[timing.time.division]
-                        : `Division ${timing.time.division}`;
-                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
-                    timeStr = ` ${divName}, ${timing.time.subdivision} ${subdivisionName}`;
+        // Add start time if present
+        if (timing.time) {
+            const timeFormat = timeSystem.settings.timeFormat;
+            let timeStr = '';
+            
+            if (timeFormat === '12') {
+                timeStr = ` ${timing.time.hour}`;
+                if (timing.time.minute !== undefined && timing.time.minute !== null) {
+                    timeStr += `:${String(timing.time.minute).padStart(2, '0')}`;
                 }
-                
-                result.originalText += timeStr;
+                timeStr += ` ${timing.time.period}`;
+            } else if (timeFormat === '24') {
+                timeStr = ` ${String(timing.time.hour).padStart(2, '0')}`;
+                if (timing.time.minute !== undefined && timing.time.minute !== null) {
+                    timeStr += `:${String(timing.time.minute).padStart(2, '0')}`;
+                }
+            } else if (timeFormat === 'custom') {
+                const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.time.division]
+                    ? timeSystem.timeDivisions.divisionNames[timing.time.division]
+                    : `Division ${timing.time.division}`;
+                const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
+                timeStr = ` ${divName}`;
+                if (timing.time.subdivision !== undefined && timing.time.subdivision !== null) {
+                    timeStr += `, ${timing.time.subdivision} ${subdivisionName}`;
+                }
             }
             
-            // Add end date if present
-            if (timing.endDate) {
-                let endText = formatDateWithFormat(timing.endDate, timeSystem.settings.dateFormat, timeSystem);
+            result.originalText += timeStr;
+        }
+                    
+        // Add end date if present
+        if (timing.endDate) {
+            let endText = formatDateWithFormat(timing.endDate, timeSystem.settings.dateFormat, timeSystem);
+            
+            // Add end time if present
+            if (timing.endTime) {
+                const timeFormat = timeSystem.settings.timeFormat;
+                let endTimeStr = '';
                 
-                // Add end time if present
-                if (timing.endTime) {
-                    const timeFormat = timeSystem.settings.timeFormat;
-                    let endTimeStr = '';
-                    
-                    if (timeFormat === '12') {
-                        endTimeStr = ` ${timing.endTime.hour}:${String(timing.endTime.minute).padStart(2, '0')} ${timing.endTime.period}`;
-                    } else if (timeFormat === '24') {
-                        endTimeStr = ` ${String(timing.endTime.hour).padStart(2, '0')}:${String(timing.endTime.minute).padStart(2, '0')}`;
-                    } else if (timeFormat === 'custom') {
-                        const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.endTime.division]
-                            ? timeSystem.timeDivisions.divisionNames[timing.endTime.division]
-                            : `Division ${timing.endTime.division}`;
-                        const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
-                        endTimeStr = ` ${divName}, ${timing.endTime.subdivision} ${subdivisionName}`;
+                if (timeFormat === '12') {
+                    endTimeStr = ` ${timing.endTime.hour}`;
+                    // Only add minutes if explicitly set
+                    if (timing.endTime.minute !== undefined && timing.endTime.minute !== null) {
+                        endTimeStr += `:${String(timing.endTime.minute).padStart(2, '0')}`;
                     }
-                    
-                    endText += endTimeStr;
+                    endTimeStr += ` ${timing.endTime.period}`;
+                } else if (timeFormat === '24') {
+                    endTimeStr = ` ${String(timing.endTime.hour).padStart(2, '0')}`;
+                    // Only add minutes if explicitly set
+                    if (timing.endTime.minute !== undefined && timing.endTime.minute !== null) {
+                        endTimeStr += `:${String(timing.endTime.minute).padStart(2, '0')}`;
+                    }
+                } else if (timeFormat === 'custom') {
+                    const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.endTime.division]
+                        ? timeSystem.timeDivisions.divisionNames[timing.endTime.division]
+                        : `Division ${timing.endTime.division}`;
+                    endTimeStr = `, ${divName}`;
+                    // Only add subdivision if explicitly set
+                    if (timing.endTime.subdivision !== undefined && timing.endTime.subdivision !== null) {
+                        const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
+                        endTimeStr += ` ${timing.endTime.subdivision} ${subdivisionName}`;
+                    }
                 }
                 
-                result.originalText += ` → ${endText}`;
+                endText += endTimeStr;
             }
+            
+            result.originalText += ` → ${endText}`;
+        }
         } else {
             // Fallback if time system not found
             result.originalText = `Month ${result.month + 1}, Day ${result.day}, Year ${result.year}`;
@@ -811,8 +1010,14 @@ function generateStackedTimelineEventsWithSide(events, index, side) {
         const eventId = `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const richTooltip = generateRichTooltip(event);
         
+        // Get this specific event's character tags
+        const eventCharTags = event.characterTags ? 
+            event.characterTags.map(tag => stripHiddenPrefix(tag)).join(',').toLowerCase() : '';
+
         stackedHTML += `
-            <div class="tl-event-card" ${hasNotes ? `onclick="showEventNotesModal('${eventId}')" data-event-id="${eventId}"` : ''}>
+            <div class="tl-event-card" 
+                data-character-tags="${eventCharTags}"
+                ${hasNotes ? `onclick="showEventNotesModal('${eventId}')" data-event-id="${eventId}"` : ''}>
                 <div class="tl-event-arc-title"><span class="tl-arc-link" data-arc-title="${(event.arcTitle || 'Unknown Arc').replace(/"/g, '&quot;')}" onclick="event.stopPropagation(); openPlanModalFromTimeline(this.dataset.arcTitle)">${event.arcTitle || 'Unknown Arc'}</span></div>
                 <div class="tl-event-title">
                     ${event.title || 'Untitled Event'}
@@ -840,12 +1045,17 @@ function generateStackedTimelineEventsWithSide(events, index, side) {
     return stackedHTML;
 }
 
-// SEASONAL BACKGROUND FUNCTION with debug logging
+// UPDATED: SEASONAL BACKGROUND FUNCTION with background image support
 function setSeasonalBackground(event) {
-    // Extract timing info from event
+    // CHECK FOR BACKGROUND IMAGE FIRST
+    if (event.background && event.background.trim()) {
+        // Set as CSS custom property so pseudo-element can use it
+        return `style="--event-bg-image: url('${event.background}');"`;
+    }
+    
+    // FALLBACK TO SEASONAL COLOR (existing logic)
     let month = null;
     let day = null;
-    // Use the project's selected time system instead of always defaulting to Gregorian
     let timeSystemId = (typeof infoData !== 'undefined' && infoData.plansOptions?.selectedTimeSystemId) 
         ? infoData.plansOptions.selectedTimeSystemId 
         : 'default';
@@ -865,10 +1075,9 @@ function setSeasonalBackground(event) {
     else if (event.timing && typeof event.timing === 'string') {
         const timing = event.timing;
         
-        // Try to match number patterns like "Month 3" or "Day 15 Month 3"
         const monthMatch = timing.match(/month\s+(\d+)|(\d+)\s*(?:st|nd|rd|th)?\s*month/i);
         if (monthMatch) {
-            month = parseInt(monthMatch[1] || monthMatch[2]) - 1; // Convert to 0-indexed
+            month = parseInt(monthMatch[1] || monthMatch[2]) - 1;
         }
         
         const dayMatch = timing.match(/day\s+(\d+)|(\d+)\s*(?:st|nd|rd|th)?\s*day/i);
@@ -1045,7 +1254,7 @@ function generateTimelineJavaScript() {
                         hasEndDate: false
                     };
                     
-                    // Add time if present
+// Add time if present
                     if (timing.time) {
                         if (timing.time.hour !== undefined) {
                             result.hour = timing.time.hour;
@@ -1080,15 +1289,28 @@ function generateTimelineJavaScript() {
                             let timeStr = '';
                             
                             if (timeFormat === '12') {
-                                timeStr = \` \${timing.time.hour}:\${String(timing.time.minute).padStart(2, '0')} \${timing.time.period}\`;
+                                timeStr = \` \${timing.time.hour}\`;
+                                // Only add minutes if explicitly set
+                                if (timing.time.minute !== undefined && timing.time.minute !== null) {
+                                    timeStr += \`:\${String(timing.time.minute).padStart(2, '0')}\`;
+                                }
+                                timeStr += \` \${timing.time.period}\`;
                             } else if (timeFormat === '24') {
-                                timeStr = \` \${String(timing.time.hour).padStart(2, '0')}:\${String(timing.time.minute).padStart(2, '0')}\`;
+                                timeStr = \` \${String(timing.time.hour).padStart(2, '0')}\`;
+                                // Only add minutes if explicitly set
+                                if (timing.time.minute !== undefined && timing.time.minute !== null) {
+                                    timeStr += \`:\${String(timing.time.minute).padStart(2, '0')}\`;
+                                }
                             } else if (timeFormat === 'custom') {
                                 const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.time.division]
                                     ? timeSystem.timeDivisions.divisionNames[timing.time.division]
                                     : \`Division \${timing.time.division}\`;
-                                const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
-                                timeStr = \` \${divName}, \${timing.time.subdivision} \${subdivisionName}\`;
+                                timeStr = \` \${divName}\`;
+                                // Only add subdivision if explicitly set
+                                if (timing.time.subdivision !== undefined && timing.time.subdivision !== null) {
+                                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
+                                    timeStr += \`, \${timing.time.subdivision} \${subdivisionName}\`;
+                                }
                             }
                             
                             result.originalText += timeStr;
@@ -1104,15 +1326,28 @@ function generateTimelineJavaScript() {
                                 let endTimeStr = '';
                                 
                                 if (timeFormat === '12') {
-                                    endTimeStr = \` \${timing.endTime.hour}:\${String(timing.endTime.minute).padStart(2, '0')} \${timing.endTime.period}\`;
+                                    endTimeStr = \` \${timing.endTime.hour}\`;
+                                    // Only add minutes if explicitly set
+                                    if (timing.endTime.minute !== undefined && timing.endTime.minute !== null) {
+                                        endTimeStr += \`:\${String(timing.endTime.minute).padStart(2, '0')}\`;
+                                    }
+                                    endTimeStr += \` \${timing.endTime.period}\`;
                                 } else if (timeFormat === '24') {
-                                    endTimeStr = \` \${String(timing.endTime.hour).padStart(2, '0')}:\${String(timing.endTime.minute).padStart(2, '0')}\`;
+                                    endTimeStr = \` \${String(timing.endTime.hour).padStart(2, '0')}\`;
+                                    // Only add minutes if explicitly set
+                                    if (timing.endTime.minute !== undefined && timing.endTime.minute !== null) {
+                                        endTimeStr += \`:\${String(timing.endTime.minute).padStart(2, '0')}\`;
+                                    }
                                 } else if (timeFormat === 'custom') {
                                     const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.endTime.division]
                                         ? timeSystem.timeDivisions.divisionNames[timing.endTime.division]
                                         : \`Division \${timing.endTime.division}\`;
-                                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
-                                    endTimeStr = \` \${divName}, \${timing.endTime.subdivision} \${subdivisionName}\`;
+                                    endTimeStr = \`, \${divName}\`;
+                                    // Only add subdivision if explicitly set
+                                    if (timing.endTime.subdivision !== undefined && timing.endTime.subdivision !== null) {
+                                        const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'minutes';
+                                        endTimeStr += \` \${timing.endTime.subdivision} \${subdivisionName}\`;
+                                    }
                                 }
                                 
                                 endText += endTimeStr;
@@ -1525,6 +1760,17 @@ function generateTimelineFilteringJavaScript() {
         function applyChronologicalFilters(timelineContainer) {
             const yearSections = timelineContainer.querySelectorAll('.tl-timeline-year');
             
+            // NEW: Hide all storyline spans when any filter is active
+            const storylineSpans = timelineContainer.querySelectorAll('.tl-storyline-span');
+            const hasActiveFilters = selectedTimelineTags.size > 0 || 
+                                    currentTimelineSearch || 
+                                    timelineYearFrom || 
+                                    timelineYearTo;
+            
+            storylineSpans.forEach(span => {
+                span.style.display = hasActiveFilters ? 'none' : '';
+            });
+            
             yearSections.forEach(yearSection => {
                 const year = parseInt(yearSection.getAttribute('data-year'));
                 let yearHasVisibleEvents = false;
@@ -1539,6 +1785,10 @@ function generateTimelineFilteringJavaScript() {
                 }
                 
                 const timelineEvents = yearSection.querySelectorAll('.tl-timeline-event');
+                const monthLabels = yearSection.querySelectorAll('.tl-month-label');
+                
+                // NEW: Track which months have visible events
+                const visibleMonths = new Set();
                 
                 timelineEvents.forEach(timelineEvent => {
                     const isStackedEvent = timelineEvent.querySelector('.tl-stacked-events');
@@ -1557,9 +1807,12 @@ function generateTimelineFilteringJavaScript() {
                             const arc = arcElement?.textContent || '';
                             const timing = card.querySelector('.tl-event-timing')?.textContent || '';
                             
+                            // FIXED: Get character tags from THIS card, not the parent
+                            const characterTags = card.getAttribute('data-character-tags') || '';
+                            
                             // Tag filtering for this individual card
                             if (selectedTimelineTags.size > 0) {
-                                cardMatches = checkEventMatchesTags(arc);
+                                cardMatches = checkEventMatchesTags(arc, characterTags);
                             }
                             
                             // Search filter for this individual card
@@ -1582,6 +1835,12 @@ function generateTimelineFilteringJavaScript() {
                             timelineEvent.style.display = '';
                             timelineEvent.classList.remove('hidden');
                             yearHasVisibleEvents = true;
+                            
+                            // NEW: Track this month as having visible events
+                            const monthLabel = findPrecedingMonthLabel(timelineEvent);
+                            if (monthLabel) {
+                                visibleMonths.add(monthLabel);
+                            }
                         } else {
                             timelineEvent.style.display = 'none';
                             timelineEvent.classList.add('hidden');
@@ -1596,9 +1855,12 @@ function generateTimelineFilteringJavaScript() {
                         const arc = arcElement?.textContent || '';
                         const timing = timelineEvent.querySelector('.tl-event-timing')?.textContent || '';
                         
+                        // UPDATED: Get character tags from the event element
+                        const characterTags = timelineEvent.getAttribute('data-character-tags') || '';
+                        
                         // Tag filtering
                         if (selectedTimelineTags.size > 0) {
-                            matches = checkEventMatchesTags(arc);
+                            matches = checkEventMatchesTags(arc, characterTags);
                         }
                         
                         // Search filter
@@ -1612,10 +1874,25 @@ function generateTimelineFilteringJavaScript() {
                             timelineEvent.style.display = '';
                             timelineEvent.classList.remove('hidden');
                             yearHasVisibleEvents = true;
+                            
+                            // NEW: Track this month as having visible events
+                            const monthLabel = findPrecedingMonthLabel(timelineEvent);
+                            if (monthLabel) {
+                                visibleMonths.add(monthLabel);
+                            }
                         } else {
                             timelineEvent.style.display = 'none';
                             timelineEvent.classList.add('hidden');
                         }
+                    }
+                });
+                
+                // NEW: Show/hide month labels based on whether they have visible events
+                monthLabels.forEach(label => {
+                    if (visibleMonths.has(label)) {
+                        label.style.display = '';
+                    } else {
+                        label.style.display = 'none';
                     }
                 });
                 
@@ -1624,41 +1901,63 @@ function generateTimelineFilteringJavaScript() {
             });
         }
 
-                    // Helper function to check if an event matches the selected tags
-        function checkEventMatchesTags(arcTitle) {
-            if (!arcTitle || selectedTimelineTags.size === 0) {
-                return true; // No tags selected means show all
+        // NEW: Helper function to find the month label preceding an event
+        function findPrecedingMonthLabel(eventElement) {
+            let currentElement = eventElement.previousElementSibling;
+            
+            // Walk backwards until we find a month label or reach the beginning
+            while (currentElement) {
+                if (currentElement.classList.contains('tl-month-label')) {
+                    return currentElement;
+                }
+                currentElement = currentElement.previousElementSibling;
             }
             
-            if (typeof fullInfoData === 'undefined' || !fullInfoData.plans) {
-                return false;
-            }
-            
-            const mainArcTitle = arcTitle.split(' &rarr; ')[0].trim();
-            const plan = fullInfoData.plans.find(p => p.title === mainArcTitle);
-            
-            if (!plan || !plan.tags) {
-                return false; // No plan or no tags means doesn't match
-            }
-            
-            const planFilterTags = plan.tags;
-            
-            if (timelineFilterMode === 'all') {
-                // Plan must have ALL selected tags
-                return Array.from(selectedTimelineTags).every(selectedTag => 
-                    planFilterTags.some(planTag => 
-                        planTag.toLowerCase().includes(selectedTag.toLowerCase())
-                    )
-                );
-            } else {
-                // Plan must have ANY selected tag
-                return Array.from(selectedTimelineTags).some(selectedTag => 
-                    planFilterTags.some(planTag => 
-                        planTag.toLowerCase().includes(selectedTag.toLowerCase())
-                    )
-                );
-            }
+            return null;
         }
+
+                    // Helper function to check if an event matches the selected tags
+                    function checkEventMatchesTags(arcTitle, characterTags) {
+                        if (!arcTitle || selectedTimelineTags.size === 0) {
+                            return true; // No tags selected means show all
+                        }
+                        
+                        if (typeof fullInfoData === 'undefined' || !fullInfoData.plans) {
+                            return false;
+                        }
+                        
+                        // Get arc-level filter tags
+                        const mainArcTitle = arcTitle.split(' → ')[0].trim();
+                        const plan = fullInfoData.plans.find(p => p.title === mainArcTitle);
+                        const planFilterTags = plan?.tags || [];
+                        
+                        // Get event-level character tags
+                        const eventCharacterTags = characterTags ? 
+                            characterTags.split(',').filter(t => t.trim()) : [];
+                        
+                        // Combine both arc filter tags and event character tags for matching
+                        const allMatchableTags = [...planFilterTags, ...eventCharacterTags];
+                        
+                        if (allMatchableTags.length === 0) {
+                            return false; // No tags to match against
+                        }
+                        
+                        if (timelineFilterMode === 'all') {
+                            // Event must match ALL selected tags (checking across both arc and character tags)
+                            return Array.from(selectedTimelineTags).every(selectedTag => 
+                                allMatchableTags.some(tag => 
+                                    tag.toLowerCase().includes(selectedTag.toLowerCase())
+                                )
+                            );
+                        } else {
+                            // Event must match ANY selected tag (from either arc tags or character tags)
+                            return Array.from(selectedTimelineTags).some(selectedTag => 
+                                allMatchableTags.some(tag => 
+                                    tag.toLowerCase().includes(selectedTag.toLowerCase())
+                                )
+                            );
+                        }
+                    }
 
 
         // Make timeline filtering functions globally available

@@ -55,45 +55,64 @@ function formatEventTiming(timing) {
             let timeStr = '';
             
             if (timeFormat === '12') {
-                timeStr = ` ${timing.time.hour}:${String(timing.time.minute).padStart(2, '0')} ${timing.time.period}`;
+                timeStr = ` ${timing.time.hour}`;
+                // Only add minutes if explicitly set
+                if (timing.time.minute !== undefined && timing.time.minute !== null) {
+                    timeStr += `:${String(timing.time.minute).padStart(2, '0')}`;
+                }
+                timeStr += ` ${timing.time.period}`;
             } else if (timeFormat === '24') {
-                timeStr = ` ${String(timing.time.hour).padStart(2, '0')}:${String(timing.time.minute).padStart(2, '0')}`;
+                timeStr = ` ${String(timing.time.hour).padStart(2, '0')}`;
+                // Only add minutes if explicitly set
+                if (timing.time.minute !== undefined && timing.time.minute !== null) {
+                    timeStr += `:${String(timing.time.minute).padStart(2, '0')}`;
+                }
             } else if (timeFormat === 'custom') {
                 const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.time.division]
                     ? timeSystem.timeDivisions.divisionNames[timing.time.division]
                     : `Division ${timing.time.division + 1}`;
-                const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
-                timeStr = `, ${divName} ${timing.time.subdivision} ${subdivisionName}`;
+                timeStr = `, ${divName}`;
+                // Only add subdivision if explicitly set
+                if (timing.time.subdivision !== undefined && timing.time.subdivision !== null) {
+                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
+                    timeStr += ` ${timing.time.subdivision} ${subdivisionName}`;
+                }
             }
             
             formatted += timeStr;
         }
 
-        // Add end date if present
-        if (timing.endDate && validateEventDate(timing.endDate, timeSystem)) {
-            let endFormatted = formatDateWithFormat(timing.endDate, timeSystem.settings.dateFormat, timeSystem);
+        // Add end time if present
+        if (timing.endTime) {
+            const timeFormat = timeSystem.settings.timeFormat;
+            let endTimeStr = '';
             
-            // Add end time if present
-            if (timing.endTime) {
-                const timeFormat = timeSystem.settings.timeFormat;
-                let endTimeStr = '';
-                
-                if (timeFormat === '12') {
-                    endTimeStr = ` ${timing.endTime.hour}:${String(timing.endTime.minute).padStart(2, '0')} ${timing.endTime.period}`;
-                } else if (timeFormat === '24') {
-                    endTimeStr = ` ${String(timing.endTime.hour).padStart(2, '0')}:${String(timing.endTime.minute).padStart(2, '0')}`;
-                } else if (timeFormat === 'custom') {
-                    const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.endTime.division]
-                        ? timeSystem.timeDivisions.divisionNames[timing.endTime.division]
-                        : `Division ${timing.endTime.division + 1}`;
-                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
-                    endTimeStr = `, ${divName} ${timing.endTime.subdivision} ${subdivisionName}`;
+            if (timeFormat === '12') {
+                endTimeStr = ` ${timing.endTime.hour}`;
+                // Only add minutes if explicitly set
+                if (timing.endTime.minute !== undefined && timing.endTime.minute !== null) {
+                    endTimeStr += `:${String(timing.endTime.minute).padStart(2, '0')}`;
                 }
-                
-                endFormatted += endTimeStr;
+                endTimeStr += ` ${timing.endTime.period}`;
+            } else if (timeFormat === '24') {
+                endTimeStr = ` ${String(timing.endTime.hour).padStart(2, '0')}`;
+                // Only add minutes if explicitly set
+                if (timing.endTime.minute !== undefined && timing.endTime.minute !== null) {
+                    endTimeStr += `:${String(timing.endTime.minute).padStart(2, '0')}`;
+                }
+            } else if (timeFormat === 'custom') {
+                const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[timing.endTime.division]
+                    ? timeSystem.timeDivisions.divisionNames[timing.endTime.division]
+                    : `Division ${timing.endTime.division + 1}`;
+                endTimeStr = `, ${divName}`;
+                // Only add subdivision if explicitly set
+                if (timing.endTime.subdivision !== undefined && timing.endTime.subdivision !== null) {
+                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
+                    endTimeStr += ` ${timing.endTime.subdivision} ${subdivisionName}`;
+                }
             }
             
-            formatted = `${formatted} → ${endFormatted}`;
+            endFormatted += endTimeStr;
         }
         
         return formatted;
@@ -654,6 +673,7 @@ function populateEventModal(event) {
     updateStorylineOptions();
     
     document.getElementById('event-image').value = event.image || '';
+    document.getElementById('event-background').value = event.background || ''; 
     document.getElementById('event-visible').checked = event.visible !== false;
     document.getElementById('event-yearly').checked = event.yearly === true;
 
@@ -710,6 +730,7 @@ function saveEvent() {
         notes: document.getElementById('event-notes').value.trim(),
         storylineLinks: selectedStorylines.slice(),
         image: document.getElementById('event-image').value.trim(),
+        background: document.getElementById('event-background').value.trim(),
         visible: document.getElementById('event-visible').checked,
         subevents: currentEditingSubevents ? JSON.parse(JSON.stringify(currentEditingSubevents)) : [],
         yearly: document.getElementById('event-yearly').checked,
@@ -1777,14 +1798,20 @@ function confirmEventDateSelection() {
             if (timeFormat === '12' || timeFormat === '24') {
                 capturedTime = {
                     hour: parseInt(timeDivisionSelect.value),
-                    minute: parseInt(subdivisionInput.value) || 0,
                     period: timeFormat === '12' ? (parseInt(timeDivisionSelect.value) < 12 ? 'AM' : 'PM') : undefined
                 };
+                // Only add minute if user actually entered a value
+                if (subdivisionInput.value !== '' && subdivisionInput.value !== null) {
+                    capturedTime.minute = parseInt(subdivisionInput.value);
+                }
             } else if (timeFormat === 'custom') {
                 capturedTime = {
-                    division: parseInt(timeDivisionSelect.value),
-                    subdivision: parseInt(subdivisionInput.value) || 0
+                    division: parseInt(timeDivisionSelect.value)
                 };
+                // Only add subdivision if user actually entered a value
+                if (subdivisionInput.value !== '' && subdivisionInput.value !== null) {
+                    capturedTime.subdivision = parseInt(subdivisionInput.value);
+                }
             }
         }
         
@@ -1837,14 +1864,27 @@ function updateEventDateDisplay() {
         if (eventEditingTime) {
             const timeFormat = timeSystem.settings.timeFormat;
             if (timeFormat === '12') {
-                formatted += ` ${eventEditingTime.hour}:${String(eventEditingTime.minute).padStart(2, '0')} ${eventEditingTime.period}`;
+                let timeStr = ` ${eventEditingTime.hour}`;
+                if (eventEditingTime.minute !== undefined && eventEditingTime.minute !== null) {
+                    timeStr += `:${String(eventEditingTime.minute).padStart(2, '0')}`;
+                }
+                timeStr += ` ${eventEditingTime.period}`;
+                formatted += timeStr;
             } else if (timeFormat === '24') {
-                formatted += ` ${String(eventEditingTime.hour).padStart(2, '0')}:${String(eventEditingTime.minute).padStart(2, '0')}`;
+                let timeStr = ` ${String(eventEditingTime.hour).padStart(2, '0')}`;
+                if (eventEditingTime.minute !== undefined && eventEditingTime.minute !== null) {
+                    timeStr += `:${String(eventEditingTime.minute).padStart(2, '0')}`;
+                }
+                formatted += timeStr;
             } else if (timeFormat === 'custom') {
                 const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[eventEditingTime.division]
                     ? timeSystem.timeDivisions.divisionNames[eventEditingTime.division]
                     : `Division ${eventEditingTime.division + 1}`;
-                formatted += `, ${divName} ${eventEditingTime.subdivision}`;
+                formatted += `, ${divName}`;
+                if (eventEditingTime.subdivision !== undefined && eventEditingTime.subdivision !== null) {
+                    const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
+                    formatted += ` ${eventEditingTime.subdivision} ${subdivisionName}`;
+                }
             }
         }
         
@@ -1856,14 +1896,27 @@ function updateEventDateDisplay() {
             if (eventEditingEndTime) {
                 const timeFormat = timeSystem.settings.timeFormat;
                 if (timeFormat === '12') {
-                    endFormatted += ` ${eventEditingEndTime.hour}:${String(eventEditingEndTime.minute).padStart(2, '0')} ${eventEditingEndTime.period}`;
+                    let endTimeStr = ` ${eventEditingEndTime.hour}`;
+                    if (eventEditingEndTime.minute !== undefined && eventEditingEndTime.minute !== null) {
+                        endTimeStr += `:${String(eventEditingEndTime.minute).padStart(2, '0')}`;
+                    }
+                    endTimeStr += ` ${eventEditingEndTime.period}`;
+                    endFormatted += endTimeStr;
                 } else if (timeFormat === '24') {
-                    endFormatted += ` ${String(eventEditingEndTime.hour).padStart(2, '0')}:${String(eventEditingEndTime.minute).padStart(2, '0')}`;
+                    let endTimeStr = ` ${String(eventEditingEndTime.hour).padStart(2, '0')}`;
+                    if (eventEditingEndTime.minute !== undefined && eventEditingEndTime.minute !== null) {
+                        endTimeStr += `:${String(eventEditingEndTime.minute).padStart(2, '0')}`;
+                    }
+                    endFormatted += endTimeStr;
                 } else if (timeFormat === 'custom') {
                     const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[eventEditingEndTime.division]
                         ? timeSystem.timeDivisions.divisionNames[eventEditingEndTime.division]
                         : `Division ${eventEditingEndTime.division + 1}`;
-                    endFormatted += `, ${divName} ${eventEditingEndTime.subdivision}`;
+                    endFormatted += `, ${divName}`;
+                    if (eventEditingEndTime.subdivision !== undefined && eventEditingEndTime.subdivision !== null) {
+                        const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
+                        endFormatted += ` ${eventEditingEndTime.subdivision} ${subdivisionName}`;
+                    }
                 }
             }
             

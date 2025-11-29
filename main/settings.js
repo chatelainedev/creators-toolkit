@@ -10,12 +10,44 @@ class SettingsManager {
         this.themes = {};
         this.currentTheme = 'default';
         
+        // ADD THESE:
+        this.markdownThemes = [
+            { id: 'nord', name: 'Nord', description: 'Clean arctic blues and grays' },
+            { id: 'catppuccin', name: 'Catppuccin', description: 'Warm pastels on dark' },
+            { id: 'tokyo-night', name: 'Tokyo Night', description: 'Cyberpunk neon vibes' },
+            { id: 'its', name: 'ITS (RPG)', description: 'Dark charcoal with red headers' },
+            { id: 'ember', name: 'Ember', description: 'Ornate fantasy theme' },
+            { id: 'border', name: 'Border', description: 'Clean lines and structure' },
+            { id: 'gruvbox', name: 'Gruvbox', description: 'Retro warm terminal colors' },
+            { id: 'obsidian', name: 'Obsidian', description: 'Classic Obsidian feel' }
+        ];
+        
         // Initialize themes asynchronously
         this.initializeThemes();
     }
 
     async initializeThemes() {
         await this.loadThemes();
+        this.populateMarkdownThemeDropdown(); // ADD THIS LINE
+    }
+
+    // Populate markdown theme dropdown
+    populateMarkdownThemeDropdown() {
+        const select = document.getElementById('markdown-theme-select');
+        if (!select) return;
+        
+        // Clear existing options
+        select.innerHTML = '';
+        
+        // Populate options
+        this.markdownThemes.forEach(theme => {
+            const option = document.createElement('option');
+            option.value = theme.id;
+            option.textContent = `${theme.name} - ${theme.description}`;
+            select.appendChild(option);
+        });
+        
+        console.log('📝 Populated markdown theme dropdown');
     }
 
     // Load available themes
@@ -172,6 +204,84 @@ class SettingsManager {
         }
     }
 
+    // Load markdown theme settings
+    async loadMarkdownThemeSettings() {
+        try {
+            if (this.authManager && this.authManager.getCurrentUser() && !this.authManager.getCurrentUser().isGuest) {
+                const preferences = await this.authManager.loadUserPreferences();
+                
+                const themeSelect = document.getElementById('markdown-theme-select');
+                const fontSizeSlider = document.getElementById('markdown-font-size');
+                const fontSizeDisplay = document.getElementById('markdown-font-size-display');
+                
+                if (themeSelect) {
+                    themeSelect.value = preferences.markdownTheme || 'nord';
+                }
+                
+                if (fontSizeSlider) {
+                    const fontSize = preferences.markdownFontSize || 14;
+                    fontSizeSlider.value = fontSize;
+                    if (fontSizeDisplay) {
+                        fontSizeDisplay.textContent = `${fontSize}px`;
+                    }
+                }               
+            }
+        } catch (error) {
+            console.error('Error loading markdown theme settings:', error);
+        }
+    }
+
+    // Save markdown theme settings
+    async saveMarkdownThemeSettings() {
+        try {
+            const themeSelect = document.getElementById('markdown-theme-select');
+            const fontSizeSlider = document.getElementById('markdown-font-size');
+            
+            if (!themeSelect || !fontSizeSlider) return;
+            
+            const markdownTheme = themeSelect.value;
+            const markdownFontSize = parseInt(fontSizeSlider.value);
+                    
+            // Load existing preferences first
+            const existingPreferences = await this.authManager.loadUserPreferences();
+            
+            // Update only the markdown theme properties
+            const preferences = {
+                ...existingPreferences,
+                markdownTheme,
+                markdownFontSize
+            };
+                    
+            // Save merged preferences
+            await this.authManager.saveUserPreferences(preferences);
+                    
+            // Apply to notebook theme manager if available
+            if (window.notebookThemeManager) {
+                // Force reload from server to ensure sync
+                await window.notebookThemeManager.loadSettings();
+                window.notebookThemeManager.applyTheme();
+                window.notebookThemeManager.triggerPreviewUpdate();
+            }
+            
+        } catch (error) {
+            console.error('Error saving markdown theme settings:', error);
+        }
+    }
+
+    // Update preview (applies theme immediately)
+    updateMarkdownThemePreview() {
+        if (window.notebookThemeManager) {
+            const themeSelect = document.getElementById('markdown-theme-select');
+            const fontSizeSlider = document.getElementById('markdown-font-size');
+            
+            if (themeSelect && fontSizeSlider) {
+                window.notebookThemeManager.currentTheme = themeSelect.value;
+                window.notebookThemeManager.currentFontSize = parseInt(fontSizeSlider.value);
+                window.notebookThemeManager.applyTheme();
+            }
+        }
+    }
+
     // Load saved theme
     async loadSavedTheme() {
         let savedTheme = 'default';
@@ -213,16 +323,13 @@ class SettingsManager {
         // Existing functionality - refresh settings modal if open
         const settingsModal = document.getElementById('settings-modal');
         if (settingsModal && settingsModal.style.display === 'flex') {
-            console.log('🔧 Refreshing settings after login');
             this.populateSettings();
         }
         
         // NEW: Load user theme preferences
-        console.log('🎨 Loading user theme preferences...');
         try {
             const serverPreferences = await this.authManager.loadUserPreferences();
             if (serverPreferences.theme && serverPreferences.theme !== this.currentTheme) {
-                console.log(`Switching to user's saved theme: ${serverPreferences.theme}`);
                 
                 // Update dropdown
                 const selectedText = document.querySelector('#theme-selected .selected-text');
@@ -251,12 +358,10 @@ class SettingsManager {
         // Existing functionality - close settings modal if open
         const settingsModal = document.getElementById('settings-modal');
         if (settingsModal && settingsModal.style.display === 'flex') {
-            console.log('🔧 Closing settings after logout');
             this.closeSettings();
         }
         
         // NEW: Reset theme to default
-        console.log('🎨 User logged out, resetting to default theme');
         const defaultTheme = 'default';
         
         // Update dropdown
@@ -278,6 +383,237 @@ class SettingsManager {
         
         // Clear localStorage
         localStorage.removeItem(SHARED_THEME_KEY);
+    }
+
+    // AI Configuration Methods
+    async loadAIConfiguration() {
+        try {
+            // Load configuration from CoWriter settings
+            const response = await fetch('/api/cowriter/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userContext: this.authManager.getUserContext()
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && result.settings) {
+                    this.populateAIConfiguration(result.settings);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading AI configuration:', error);
+        }
+    }
+
+    // Load available providers from server and populate dropdown
+    async loadProviders() {
+        try {
+            const response = await fetch('/api/llm/providers');
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    const providerSelect = document.getElementById('main-provider-select');
+                    if (providerSelect) {
+                        // Clear existing options
+                        providerSelect.innerHTML = '';
+                        
+                        // Add provider options
+                        result.providers.forEach(provider => {
+                            const option = document.createElement('option');
+                            option.value = provider.id;
+                            option.textContent = provider.name;
+                            providerSelect.appendChild(option);
+                        });
+                        
+                        return result.providers;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error loading providers:', error);
+            // Fallback to hardcoded providers if API fails
+            this.populateHardcodedProviders();
+        }
+    }
+
+    // Fallback method for hardcoded providers
+    populateHardcodedProviders() {
+        const providerSelect = document.getElementById('main-provider-select');
+        if (providerSelect) {
+            providerSelect.innerHTML = `
+                <option value="google">Google Gemini</option>
+                <option value="anthropic">Anthropic Claude</option>
+                <option value="openai">OpenAI GPT</option>
+                <option value="openrouter">OpenRouter</option>
+            `;
+        }
+    }
+
+    populateAIConfiguration(settings) {
+        // Provider
+        const providerSelect = document.getElementById('main-provider-select');
+        if (providerSelect) {
+            providerSelect.value = settings.provider || 'google';
+        }
+
+        // Model
+        this.loadModelsForMainSettings(settings.provider || 'google', settings.model);
+
+        // API Key
+        const apiKeyInput = document.getElementById('main-api-key-input');
+        if (apiKeyInput && settings.hasApiKey) {
+            apiKeyInput.value = '••••••••••••••••';
+            apiKeyInput.placeholder = 'API key configured (enter new key to change)';
+        }
+
+        // Free models toggle
+        const freeModelsToggle = document.getElementById('main-free-models-toggle-container');
+        if (freeModelsToggle) {
+            freeModelsToggle.style.display = settings.provider === 'openrouter' ? 'flex' : 'none';
+            const checkbox = document.getElementById('main-free-models-only');
+            if (checkbox) {
+                checkbox.checked = settings.openRouterFreeOnly || false;
+            }
+        }
+
+        this.updateMainApiStatus(settings.hasApiKey);
+    }
+
+    async loadModelsForMainSettings(provider, currentModel) {
+        const modelSelect = document.getElementById('main-model-select');
+        if (!modelSelect) return;
+
+        modelSelect.innerHTML = '<option value="">Loading models...</option>';
+
+        try {
+            const userContext = encodeURIComponent(JSON.stringify(this.authManager.getUserContext()));
+            const response = await fetch(`/api/llm/models/${provider}?userContext=${userContext}`);
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    modelSelect.innerHTML = '';
+                    result.models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.value;
+                        option.textContent = model.label;
+                        modelSelect.appendChild(option);
+                    });
+
+                    if (currentModel && result.models.some(m => m.value === currentModel)) {
+                        modelSelect.value = currentModel;
+                    } else if (result.models.length > 0) {
+                        modelSelect.value = result.models[0].value;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error loading models:', error);
+        }
+    }
+
+    updateMainApiStatus(hasApiKey) {
+        const indicator = document.getElementById('main-status-indicator');
+        const text = document.getElementById('main-status-text');
+
+        if (!hasApiKey) {
+            indicator.className = 'status-indicator';
+            text.textContent = 'No API key configured';
+        } else {
+            indicator.className = 'status-indicator';
+            text.textContent = 'API key configured (click Test to verify)';
+        }
+    }
+
+    async saveAIConfiguration() {
+        const provider = document.getElementById('main-provider-select').value;
+        const model = document.getElementById('main-model-select').value;
+        const apiKeyInput = document.getElementById('main-api-key-input');
+        const apiKey = apiKeyInput.value;
+        const freeModelsOnly = document.getElementById('main-free-models-only')?.checked || false;
+
+        // Determine if API key changed
+        const hasNewApiKey = apiKey && apiKey !== '••••••••••••••••';
+
+        try {
+            const response = await fetch('/api/cowriter/settings', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userContext: this.authManager.getUserContext(),
+                    settings: {
+                        provider,
+                        model,
+                        ...(hasNewApiKey && { apiKey }),
+                        openRouterFreeOnly: freeModelsOnly
+                    }
+                })
+            });
+
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || 'Failed to save configuration');
+            }
+
+            // Notify CoWriter to reload settings
+            if (window.coWriterManager) {
+                await window.coWriterManager.loadUserSettings();
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error saving AI configuration:', error);
+            throw error;
+        }
+    }
+
+    async testMainConnection() {
+        const provider = document.getElementById('main-provider-select').value;
+        const model = document.getElementById('main-model-select').value;
+        const testBtn = document.getElementById('main-test-connection-btn');
+        const originalText = testBtn.innerHTML;
+
+        testBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+        testBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/llm/test-connection', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userContext: this.authManager.getUserContext(),
+                    provider,
+                    model
+                })
+            });
+
+            const result = await response.json();
+            const indicator = document.getElementById('main-status-indicator');
+            const text = document.getElementById('main-status-text');
+
+            if (response.ok && result.success) {
+                indicator.className = 'status-indicator connected';
+                text.textContent = 'Connection successful';
+                this.showToast('Connection test successful!', 'success');
+            } else {
+                indicator.className = 'status-indicator error';
+                text.textContent = result.error || 'Connection failed';
+                this.showToast(result.error || 'Connection test failed', 'error');
+            }
+        } catch (error) {
+            console.error('Connection test error:', error);
+            const indicator = document.getElementById('main-status-indicator');
+            const text = document.getElementById('main-status-text');
+            indicator.className = 'status-indicator error';
+            text.textContent = 'Connection failed';
+            this.showToast('Connection test failed', 'error');
+        } finally {
+            testBtn.innerHTML = originalText;
+            testBtn.disabled = false;
+        }
     }
 
     // Initialize settings system
@@ -348,7 +684,6 @@ class SettingsManager {
         });
 
         // ESC key to close modal
-        // ESC key to close modal
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 const modal = document.getElementById('settings-modal');
@@ -357,12 +692,71 @@ class SettingsManager {
                 }
             }
         });
+
+        // AI Configuration listeners
+        document.getElementById('main-provider-select')?.addEventListener('change', (e) => {
+            const freeModelsToggle = document.getElementById('main-free-models-toggle-container');
+            if (freeModelsToggle) {
+                freeModelsToggle.style.display = e.target.value === 'openrouter' ? 'flex' : 'none';
+            }
+            this.loadModelsForMainSettings(e.target.value);
+        });
+
+        document.getElementById('main-refresh-models-btn')?.addEventListener('click', () => {
+            const provider = document.getElementById('main-provider-select').value;
+            this.loadModelsForMainSettings(provider);
+        });
+
+        document.getElementById('main-toggle-api-key-btn')?.addEventListener('click', () => {
+            const input = document.getElementById('main-api-key-input');
+            const icon = document.querySelector('#main-toggle-api-key-btn i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+
+        document.getElementById('main-test-connection-btn')?.addEventListener('click', () => {
+            this.testMainConnection();
+        });
+
+        // Handle API key input
+        const mainApiKeyInput = document.getElementById('main-api-key-input');
+        if (mainApiKeyInput) {
+            mainApiKeyInput.addEventListener('focus', (e) => {
+                if (e.target.value === '••••••••••••••••') {
+                    e.target.value = '';
+                    e.target.placeholder = 'Enter your API key...';
+                }
+            });
+        }
+
+        // Markdown theme listeners 
+        const markdownThemeSelect = document.getElementById('markdown-theme-select');
+        if (markdownThemeSelect) {
+            markdownThemeSelect.addEventListener('change', () => {
+                this.updateMarkdownThemePreview();
+            });
+        }
+
+        const markdownFontSize = document.getElementById('markdown-font-size');
+        if (markdownFontSize) {
+            markdownFontSize.addEventListener('input', (e) => {
+                const display = document.getElementById('markdown-font-size-display');
+                if (display) {
+                    display.textContent = `${e.target.value}px`;
+                }
+                this.updateMarkdownThemePreview();
+            });
+        }
     }
 
     // Open settings modal
-    openSettings() {
-        console.log('🔧 Settings opening...');
-        
+    openSettings() {        
         if (!this.authManager || !this.authManager.getCurrentUser()) {
             return;
         }
@@ -373,13 +767,18 @@ class SettingsManager {
         
         // Check if this somehow affects the about modal
         const aboutModal = document.getElementById('about-modal');
-        console.log('🔧 About modal display after settings opens:', aboutModal.style.display);
     }
 
     // Close settings modal
     closeSettings() {
         document.getElementById('settings-modal').style.display = 'none';
         this.clearFormStates();
+        
+        // Sync with notebook theme manager
+        if (window.notebookThemeManager) {
+            // Force reload to ensure changes are reflected
+            window.notebookThemeManager.checkForUpdates();
+        }
     }
 
     // Populate settings with current user data
@@ -406,6 +805,11 @@ class SettingsManager {
         }
         
         this.loadSavedTheme();
+        await this.loadMarkdownThemeSettings();
+
+        // Load providers first, then AI configuration:
+        await this.loadProviders();
+        await this.loadAIConfiguration();
 
         // Load AI tools setting - ensure it exists with default
         try {
@@ -419,8 +823,7 @@ class SettingsManager {
             
             const aiToolsCheckbox = document.getElementById('ai-tools-enabled');
             if (aiToolsCheckbox) {
-                aiToolsCheckbox.checked = preferences.aiToolsEnabled || false; // Add || false for safety
-                console.log('📋 Loaded AI tools setting:', preferences.aiToolsEnabled);
+                aiToolsCheckbox.checked = preferences.aiToolsEnabled || false;
             }
         } catch (error) {
             console.error('Error loading AI tools setting:', error);
@@ -531,9 +934,27 @@ class SettingsManager {
         const newAIToolsValue = aiToolsCheckbox ? aiToolsCheckbox.checked : false;
         const aiToolsChanged = newAIToolsValue !== currentAIToolsValue;
 
-        if (!hasAccountChanges && !aiToolsChanged) {
-            this.showToast('No changes to save', 'info');
-            return;
+        // Check if markdown theme changed
+        const markdownThemeSelect = document.getElementById('markdown-theme-select');
+        const markdownFontSize = document.getElementById('markdown-font-size');
+        const currentMarkdownTheme = preferences.markdownTheme || 'nord';
+        const currentMarkdownFontSize = preferences.markdownFontSize || 14;
+        const newMarkdownTheme = markdownThemeSelect ? markdownThemeSelect.value : currentMarkdownTheme;
+        const newMarkdownFontSize = markdownFontSize ? parseInt(markdownFontSize.value) : currentMarkdownFontSize;
+        const markdownThemeChanged = newMarkdownTheme !== currentMarkdownTheme || newMarkdownFontSize !== currentMarkdownFontSize;
+
+        // Check if nothing changed at all
+        if (!hasAccountChanges && !aiToolsChanged && !markdownThemeChanged) {
+            // Try to save AI configuration in case those changed
+            try {
+                await this.saveAIConfiguration();
+                this.showToast('Settings updated successfully!', 'success');
+                return;
+            } catch (error) {
+                // If AI config didn't change either, show no changes message
+                this.showToast('No changes to save', 'info');
+                return;
+            }
         }
 
         // Show password confirmation popup only if account details changed
@@ -574,6 +995,23 @@ class SettingsManager {
                 await this.authManager.saveUserPreferences(preferences);
             }
 
+            // Save AI configuration (provider, model, API key)
+            try {
+                await this.saveAIConfiguration();
+            } catch (error) {
+                console.error('Failed to save AI configuration:', error);
+                // Don't fail the whole update if just AI config fails
+            }
+
+            // Save markdown theme settings if changed
+            if (markdownThemeChanged) {
+                try {
+                    await this.saveMarkdownThemeSettings();
+                } catch (error) {
+                    console.error('Failed to save markdown theme settings:', error);
+                }
+            }
+
             // Show success message
             let message = 'Settings updated successfully!';
             if (hasAccountChanges && username !== user.username) {
@@ -582,6 +1020,8 @@ class SettingsManager {
                 message = 'Account updated successfully!';
             } else if (aiToolsChanged) {
                 message = 'AI tools setting updated!';
+            } else if (markdownThemeChanged) {
+                message = 'Markdown theme updated!';
             }
 
             this.showToast(message, 'success');
@@ -679,8 +1119,6 @@ class SettingsManager {
             // FIXED: Send userContext as URL parameter instead of form data
             const uploadUrl = `${this.apiBase}/api/user/avatar?userContext=${userContextParam}`;
 
-            console.log('🔄 Uploading avatar with URL:', uploadUrl);
-
             // Upload to server with userContext in URL
             const response = await fetch(uploadUrl, {
                 method: 'POST',
@@ -697,9 +1135,7 @@ class SettingsManager {
                 // Create new URL with timestamp for cache busting
                 const baseAvatarUrl = result.avatarUrl.split('&t=')[0]; // Remove any existing timestamp
                 const avatarUrl = baseAvatarUrl + '&t=' + Date.now();
-                
-                console.log('🖼️ Updating avatar URLs to:', avatarUrl);
-                
+                                
                 // Update both preview and main avatar with cache busting
                 avatarPreview.src = avatarUrl;
                 if (userAvatar) {

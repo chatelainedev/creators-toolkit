@@ -145,14 +145,14 @@ function generateNavigationStyles(navigationStyle, colors, fonts) {
         case 'journal':
             return `
                 /* Navigation - Notebook style tabs attached to the container */
-                .container {
+                .nav-container {
                     position: relative;
                 }
 
                 .nav-tabs {
                     position: absolute;
                     left: -25px;
-                    top: 280px;
+                    top: 0;
                     display: flex;
                     flex-direction: column;
                     background: transparent;
@@ -299,14 +299,14 @@ function generateNavigationStyles(navigationStyle, colors, fonts) {
         case 'circular':
             return `
                 /* Navigation - Circular: Round tabs on the left */
-                .container {
+                .nav-container {
                     position: relative;
                 }
 
                 .nav-tabs {
                     position: absolute;
                     left: -50px;
-                    top: 50; /* Aligned with banner bottom */
+                    top: 0;
                     display: flex;
                     flex-direction: column;
                     background: transparent;
@@ -381,14 +381,14 @@ function generateNavigationStyles(navigationStyle, colors, fonts) {
         case 'squares':
             return `
                 /* Navigation - Squares: Square tabs on the left */
-                .container {
+                .nav-container {
                     position: relative;
                 }
 
                 .nav-tabs {
                     position: absolute;
                     left: -50px;
-                    top: 50; /* Aligned with banner bottom */
+                    top: 0;
                     display: flex;
                     flex-direction: column;
                     background: transparent;
@@ -722,14 +722,14 @@ function generateNavigationStyles(navigationStyle, colors, fonts) {
         case 'candy':
             return `
                 /* Navigation - Candy: Sweet candy-themed tabs */
-                .container {
+                .nav-container {
                     position: relative;
                 }
 
                 .nav-tabs {
                     position: absolute;
                     left: -40px;
-                    top: 250px;
+                    top: 0;
                     display: flex;
                     flex-direction: column;
                     background: transparent;
@@ -965,14 +965,14 @@ function generateNavigationStyles(navigationStyle, colors, fonts) {
         case 'wuxia':
             return `
                 /* Navigation - Wuxia: Elegant Hanging Scrolls */
-                .container {
+                .nav-container {
                     position: relative;
                 }
 
                 .nav-tabs {
                     position: absolute;
                     left: -30px;
-                    top: 260px;
+                    top: 0;
                     display: flex;
                     flex-direction: column;
                     background: transparent;
@@ -1513,14 +1513,14 @@ case 'playersHandbook':
         case 'steppingStones':
             return `
                 /* Navigation - Whispering Stones */
-                .container {
+                .nav-container {
                     position: relative;
                 }
 
                 .nav-tabs {
                     position: absolute;
                     left: -40px;
-                    top: 280px;
+                    top: 0;
                     display: flex;
                     flex-direction: column;
                     background: transparent;
@@ -2523,14 +2523,14 @@ case 'playersHandbook':
         case 'matrix':
             return `
                 /* Navigation - Matrix: Digital rain terminal interface */
-                .container {
+                .nav-container {
                     position: relative;
                 }
 
                 .nav-tabs {
                     position: absolute;
                     left: -60px;
-                    top: 200px;
+                    top: 0;
                     display: flex;
                     flex-direction: column;
                     background: ${colors.navBg}ee;

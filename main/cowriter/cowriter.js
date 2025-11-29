@@ -12,15 +12,16 @@ class CoWriterManager {
         this.currentEditingId = null;
         this.isProcessing = false;
         this.settings = {
-            tone: '',           // NEW: default to None
-            style: '',          // UPDATED: default to None
+            tone: '',
+            style: '',
             templateId: '', 
             worldContext: '',
             worldContextId: '',
             provider: 'google',
             model: 'gemini-2.0-flash-exp',
             apiKey: '',
-            hasApiKey: false
+            hasApiKey: false,
+            openRouterFreeOnly: false
         };
         this.savedWorldContexts = [];
         this.savedChats = [];
@@ -209,6 +210,13 @@ class CoWriterManager {
         // Provider controls
         document.getElementById('provider-select')?.addEventListener('change', (e) => {
             this.settings.provider = e.target.value;
+            
+            // Show/hide free models toggle
+            const freeModelsToggle = document.getElementById('free-models-toggle-container');
+            if (freeModelsToggle) {
+                freeModelsToggle.style.display = e.target.value === 'openrouter' ? 'flex' : 'none';
+            }
+            
             this.loadModelsForProvider(e.target.value);
         });
 
@@ -219,6 +227,12 @@ class CoWriterManager {
 
         document.getElementById('refresh-models-btn')?.addEventListener('click', () => {
             this.refreshModels();
+        });
+
+        // Free models toggle
+        document.getElementById('free-models-only')?.addEventListener('change', (e) => {
+            this.settings.openRouterFreeOnly = e.target.checked;
+            this.loadModelsForProvider(this.settings.provider);
         });
 
         // API key handling
@@ -1285,6 +1299,17 @@ class CoWriterManager {
         if (providerSelect) {
             providerSelect.value = this.settings.provider;
         }
+
+        // Show/hide free models toggle based on provider
+        const freeModelsToggle = document.getElementById('free-models-toggle-container');
+        if (freeModelsToggle) {
+            freeModelsToggle.style.display = this.settings.provider === 'openrouter' ? 'flex' : 'none';
+            
+            const checkbox = document.getElementById('free-models-only');
+            if (checkbox) {
+                checkbox.checked = this.settings.openRouterFreeOnly || false;
+            }
+        }
         
         // Set loading state for models dropdown
         const modelSelect = document.getElementById('model-select');
@@ -1721,7 +1746,7 @@ class CoWriterManager {
             // Show confirmation dialog and return early
             const chatData = {
                 ...existingChat,
-                messages: this.messages.filter(m => !m.isWelcome),
+                messages: this.allMessages.filter(m => !m.isWelcome), // FIX: use allMessages
                 lastModified: Date.now(),
                 settings: { ...this.settings }
                 // Keep original created date, id, and folder
@@ -1771,13 +1796,14 @@ class CoWriterManager {
         }
     }
 
-    // Create new chat data object
     createNewChatData(name, folder = 'Uncategorized') {
+        const messages = this.allMessages.filter(m => !m.isWelcome);
         return {
             id: this.generateChatId(),
             name: name,
-            folder: folder,  // ADD THIS LINE
-            messages: this.messages.filter(m => !m.isWelcome),
+            folder: folder,
+            messages: messages,
+            messageCount: messages.length,  // ADD THIS LINE
             created: Date.now(),
             lastModified: Date.now(),
             settings: { ...this.settings }
@@ -1903,7 +1929,68 @@ class CoWriterManager {
             toggleIcon.classList.toggle('fa-chevron-right');
         });
         
+        // ADD: Folder rename functionality
+        const renameBtn = folderDiv.querySelector('.rename-folder');
+        if (renameBtn) {
+            renameBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.renameFolder(folderName);
+            });
+        }
+        
         return folderDiv;
+    }
+
+    // Rename folder
+    async renameFolder(oldFolderName) {
+        const newFolderName = prompt(`Rename folder "${oldFolderName}" to:`, oldFolderName);
+        
+        if (!newFolderName || newFolderName.trim() === '' || newFolderName.trim() === oldFolderName) {
+            return; // Cancelled or no change
+        }
+        
+        const trimmedName = newFolderName.trim();
+        
+        // Find all chats in this folder and update them
+        const chatsToUpdate = this.savedChats.filter(chat => chat.folder === oldFolderName);
+        
+        if (chatsToUpdate.length === 0) {
+            this.showToast('No chats found in this folder', 'warning');
+            return;
+        }
+        
+        try {
+            // Update each chat's folder
+            for (const chat of chatsToUpdate) {
+                chat.folder = trimmedName;
+                
+                // Load full chat data, update folder, and save
+                const userContext = encodeURIComponent(JSON.stringify(this.getUserContext()));
+                const response = await fetch(`/api/cowriter/chats/${chat.id}?userContext=${userContext}`);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success && result.chat) {
+                        const fullChatData = {
+                            ...result.chat,
+                            folder: trimmedName,
+                            lastModified: Date.now()
+                        };
+                        
+                        await this.saveChatToServer(fullChatData, true);
+                    }
+                }
+            }
+            
+            this.showToast(`Renamed folder to "${trimmedName}"`, 'success');
+            
+            // Refresh the chat list
+            await this.loadSavedChats();
+            
+        } catch (error) {
+            console.error('Error renaming folder:', error);
+            this.showToast('Failed to rename folder', 'error');
+        }
     }
 
     // Create chat list item
@@ -1913,7 +2000,7 @@ class CoWriterManager {
         chatDiv.dataset.chatId = chat.id;
         
         const lastModified = new Date(chat.lastModified).toLocaleDateString();
-        const messageCount = chat.messages?.length || 0;
+        const messageCount = chat.messageCount || chat.messages?.length || 0;
         
         chatDiv.innerHTML = `
             <div class="chat-item-info">
@@ -1981,11 +2068,14 @@ class CoWriterManager {
 
             const chat = result.chat;
 
-            // Load chat messages
-            this.messages = [
-                ...this.messages.filter(m => m.isWelcome), // Keep welcome message
+            // FIX: Update allMessages, not just messages
+            this.allMessages = [
+                ...this.allMessages.filter(m => m.isWelcome), // Keep welcome message
                 ...chat.messages
             ];
+            
+            // Update visible messages from allMessages
+            this.updateVisibleMessages();
 
             // Load chat settings if available
             if (chat.settings) {
@@ -2043,7 +2133,15 @@ class CoWriterManager {
             const models = await this.fetchModelsFromProvider(provider);
             
             modelSelect.innerHTML = '';
-            models.forEach(model => {
+
+            // Filter models if OpenRouter and free-only is enabled
+            let filteredModels = models;
+            if (this.settings.provider === 'openrouter' && this.settings.openRouterFreeOnly) {
+                filteredModels = models.filter(model => model.value.includes(':free'));
+                console.log(`🎯 Filtered to ${filteredModels.length} free OpenRouter models`);
+            }
+
+            filteredModels.forEach(model => {
                 const option = document.createElement('option');
                 option.value = model.value;
                 option.textContent = model.label;
@@ -2144,18 +2242,28 @@ class CoWriterManager {
         const fallbackModels = {
             'google': [
                 { value: 'gemini-2.0-flash-exp', label: 'Gemini 2.0 Flash (Experimental)' },
-                { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
-                { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' }
+                { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
+                { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' }
             ],
             'anthropic': [
                 { value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
                 { value: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku' }
             ],
-            'openai': [  // <-- Add this
+            'openai': [
                 { value: 'gpt-4o', label: 'GPT-4o' },
                 { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
                 { value: 'gpt-4', label: 'GPT-4' },
                 { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' }
+            ],
+            'openrouter': [
+                { value: 'deepseek/deepseek-r1-0528:free', label: 'DeepSeek R1 (Free)' },
+                { value: 'x-ai/grok-4.1-fast:free', label: 'Grok 4.1 Fast (Free)' },
+                { value: 'meta-llama/llama-3.3-70b-instruct:free', label: 'Llama 3.3 70B (Free)' },
+                { value: 'qwen/qwen-2.5-72b-instruct:free', label: 'Qwen 2.5 72B (Free)' },
+                { value: 'deepseek/deepseek-chat-v3-0324:free', label: 'DeepSeek Chat V3 (Free)' },
+                { value: 'google/gemini-2.0-flash-exp:free', label: 'Gemini 2.0 Flash (Free)' },
+                { value: 'tngtech/deepseek-r1t-chimera:free', label: 'DeepSeek R1T Chimera (Free)' },
+                { value: 'arliai/qwq-32b-arliai-rpr-v1:free', label: 'QwQ 32B RPR (Free)' }
             ]
         };
         
@@ -2323,6 +2431,19 @@ class CoWriterManager {
             console.error('Error loading CoWriter settings:', error);
             // Continue with defaults on error
         }
+    }
+
+    // Reload settings when they're changed externally (from main Settings modal)
+    async reloadSettings() {
+        await this.loadUserSettings();
+        
+        // Update CoWriter settings UI if modal is open
+        const settingsModal = document.getElementById('cowriter-settings-modal');
+        if (settingsModal && settingsModal.style.display === 'flex') {
+            this.populateSettings();
+        }
+        
+        console.log('🔄 CoWriter settings reloaded from external change');
     }
 
     // Auto-save settings with debouncing to avoid too many requests

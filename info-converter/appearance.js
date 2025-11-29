@@ -677,6 +677,7 @@ function updateAppearanceDescriptions() {
             small: 'Small', 
             medium: 'Medium', 
             large: 'Large',
+            separate: 'Separate (Full Width)',
             hidden: 'Hidden'
         };
         bannerDesc.textContent = `Controls the height of the banner image area (current: ${sizeNames[size]})`;

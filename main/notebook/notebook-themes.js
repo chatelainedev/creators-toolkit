@@ -77,6 +77,58 @@ class NotebookThemeManager {
             console.error('Error loading theme settings:', error);
         }
     }
+
+    // Check for updates from external sources (like main Settings modal)
+    async checkForUpdates() {
+        if (window.authManager?.getCurrentUser()) {
+            await this.loadSettings();
+            this.applyTheme();
+            this.triggerPreviewUpdate();
+            
+            // Also update any open settings modal
+            this.updateModalUI();
+        }
+    }
+
+    // NEW METHOD: Update the modal UI with current values
+    updateModalUI() {
+        // Update main settings modal if it exists
+        const mainMarkdownThemeSelect = document.getElementById('markdown-theme-select');
+        const mainMarkdownFontSize = document.getElementById('markdown-font-size');
+        const mainMarkdownFontSizeDisplay = document.getElementById('markdown-font-size-display');
+        
+        if (mainMarkdownThemeSelect) {
+            mainMarkdownThemeSelect.value = this.currentTheme;
+        }
+        
+        if (mainMarkdownFontSize) {
+            mainMarkdownFontSize.value = this.currentFontSize;
+        }
+        
+        if (mainMarkdownFontSizeDisplay) {
+            mainMarkdownFontSizeDisplay.textContent = `${this.currentFontSize}px`;
+        }
+        
+        // Update notebook theme modal if it's open
+        const notebookModal = document.querySelector('.modal-overlay');
+        if (notebookModal) {
+            const themeSelector = notebookModal.querySelector('.theme-selector');
+            const fontSizeSlider = notebookModal.querySelector('.font-size-slider');
+            const fontSizeDisplay = notebookModal.querySelector('.font-size-display');
+            
+            if (themeSelector) {
+                themeSelector.value = this.currentTheme;
+            }
+            
+            if (fontSizeSlider) {
+                fontSizeSlider.value = this.currentFontSize;
+            }
+            
+            if (fontSizeDisplay) {
+                fontSizeDisplay.textContent = `${this.currentFontSize}px`;
+            }
+        }
+    }
     
     /**
      * Save theme settings to user preferences

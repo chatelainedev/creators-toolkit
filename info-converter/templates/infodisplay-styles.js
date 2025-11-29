@@ -41,7 +41,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             border: 1px solid ${colors.textMuted}33;
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            height: 320px;
+            height: 360px;
             overflow: hidden;
         }
 
@@ -58,6 +58,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             text-transform: uppercase;
             letter-spacing: 0.5px;
             flex-shrink: 0;
+            margin-bottom: 10px;
         }
 
         /* Two-column grid layout */
@@ -512,7 +513,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             border: 1px solid ${colors.textMuted}22;
             border-radius: 4px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-            height: 320px;
+            height: 360px;
             overflow: hidden;
         }
 
@@ -528,6 +529,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             text-transform: none;
             letter-spacing: 0;
             flex-shrink: 0;
+            margin-bottom: 15px;
         }
 
         .info-display-content-grid {
@@ -543,7 +545,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
         .info-display-left {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
         }
 
         .info-display-right {
@@ -552,7 +554,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
             box-shadow: none;
             height: fit-content;
         }
@@ -675,7 +677,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
         }
 
         .info-display-row.info-display-items .icons-carousel-nav.next {
-            right: 20px;
+            right: 2px;
         }
 
         .info-display-row.info-display-items {
@@ -819,7 +821,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             border: 2px solid ${colors.linkColor}44;
             border-radius: 0;
             box-shadow: 0 0 20px ${colors.linkColor}22, inset 0 0 20px ${colors.linkColor}11;
-            height: 320px;
+            height: 360px;
             overflow: hidden;
             position: relative;
         }
@@ -853,6 +855,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             letter-spacing: 2px;
             flex-shrink: 0;
             text-shadow: 0 0 10px ${colors.linkColor}66;
+            margin-bottom: 10px;
         }
 
         .info-display-content-grid {
@@ -1200,7 +1203,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             border: 1px solid ${colors.textMuted}33;
             border-radius: 6px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            height: 320px;
+            height: 360px;
             overflow: hidden;
         }
 
@@ -1216,6 +1219,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             text-transform: uppercase;
             letter-spacing: 0.3px;
             flex-shrink: 0;
+            margin-bottom: 12px;
         }
 
         .info-display-content-grid {
@@ -1259,7 +1263,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             width: 100px;
             flex-shrink: 0;
             font-family: ${fonts.ui};
-            font-size: 0.7em;
+            font-size: 0.6em;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
@@ -1364,7 +1368,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
         }
 
         .info-display-row.info-display-items .icons-carousel-nav.next {
-            right: 40px;
+            right: 20px;
         }
 
         .info-display-row.info-display-items {
@@ -1537,7 +1541,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             border: 3px double ${colors.textMuted}66;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.12), inset 0 0 20px ${colors.headerBg}44;
-            height: 320px;
+            height: 360px;
             overflow: hidden;
             position: relative;
         }
@@ -1574,6 +1578,7 @@ function generateInfodisplayStyles(infodisplayStyle, colors, fonts) {
             flex-shrink: 0;
             position: relative;
             z-index: 2;
+            margin-bottom: 10px;
         }
 
         .info-display-header::before,

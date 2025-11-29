@@ -11,7 +11,7 @@
     width: 100%;
     overflow: hidden;
     margin-bottom: var(--space-md);
-    height: 120px;
+    height: 80px;
 }
 
 .info-banner.short-banner {
@@ -31,6 +31,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0.3;
 }
 
 .banner-overlay {
@@ -39,7 +40,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -50,6 +51,7 @@
     font-weight: 600;
     margin: 0;
     letter-spacing: 0.5px;
+    font-family: var(--font-header);
 }
 
 .info-banner.short-banner .banner-overlay h1 {
@@ -57,21 +59,28 @@
 }
 
 /* Metal text styling */
+.metal-text {
+    /* This is the magic! */
+    background-clip: text;
+    -webkit-background-clip: text; /* For Safari/Chrome */
+    color: transparent;
+    
+    /* A subtle text-shadow to give it an embossed look */
+    text-shadow: 
+        1px 1px 1px rgba(0, 0, 0, 0.1),
+        -1px -1px 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Specific style for BRONZE */
 .metal-text.bronze {
     background-image: linear-gradient(
         145deg,
-        #D4AF7A 0%,
-        #B8956B 25%,
-        #A0673B 50%,
-        #8B5A2B 75%,
-        #704214 100%
+        var(--accent-primary) 0%,
+        var(--accent-primary) 25%,
+        var(--accent-primary) 50%,
+        var(--accent-secondary) 75%,
+        var(--accent-secondary) 100%
     );
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    text-shadow: 
-        0 1px 2px rgba(0, 0, 0, 0.3),
-        0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* ============================================

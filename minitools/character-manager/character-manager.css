@@ -1,5 +1,11 @@
 /* Character Manager CSS - Elegant Character Management Tool */
-
+@font-face {
+    font-family: 'CustomFont'; /* Choose a descriptive name for your font */
+    src: url('../../fonts/EagleLake-Regular.ttf') format('truetype'); /* Specify the path to your .ttf file */
+    font-weight: normal;
+    font-style: normal;
+    /* Optional: Add other font properties like font-weight, font-style if needed */
+}
 /* Google Fonts Import */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -58,6 +64,7 @@
     --font-size-base: 14px;
     --font-size-lg: 16px;
     --font-size-xl: 18px;
+    --font-header: "CustomFont", serif;
     
     /* Transitions */
     --transition-fast: 0.15s ease;
@@ -129,6 +136,32 @@ body {
     font-weight: 600;
     color: var(--text-secondary);
     flex-shrink: 0;
+    font-family: var(--font-header);
+}
+
+/* Metal text styling */
+.metal-text {
+    /* This is the magic! */
+    background-clip: text;
+    -webkit-background-clip: text; /* For Safari/Chrome */
+    color: transparent;
+    
+    /* A subtle text-shadow to give it an embossed look */
+    text-shadow: 
+        1px 1px 1px rgba(0, 0, 0, 0.1),
+        -1px -1px 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Specific style for BRONZE */
+.metal-text.bronze {
+    background-image: linear-gradient(
+        145deg,
+        var(--accent-primary) 0%,
+        var(--accent-primary) 25%,
+        var(--accent-primary) 50%,
+        var(--accent-secondary) 75%,
+        var(--accent-secondary) 100%
+    );
 }
 
 .nav-controls {

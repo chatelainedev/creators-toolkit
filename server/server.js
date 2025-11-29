@@ -136,6 +136,7 @@ app.get('/projects/:userContext/:projectName/*', (req, res) => {
 app.use('/info-converter', express.static(path.join(__dirname, '..', 'info-converter')));
 app.use('/roleplay-converter', express.static(path.join(__dirname, '..', 'roleplay-converter')));
 app.use('/cowriter', express.static(path.join(__dirname, '..', 'cowriter'))); // NEW: CoWriter static files
+app.use('/fonts', express.static(path.join(__dirname, '..', 'fonts')));
 app.use('/extractor', express.static(path.join(__dirname, '..', 'minitools', 'extractor')));
 app.use('/character-manager', express.static(path.join(__dirname, '..', 'minitools', 'character-manager'))); 
 app.use('/', express.static(path.join(__dirname, '..', 'main')));

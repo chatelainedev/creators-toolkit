@@ -1,205 +1,285 @@
 # Changelog
 
-## Creator's Toolkit 3.0.0 - 11/18/2025
+## v3.1.0 - 11-29-2025
 
-This is a major update focused on building richer worlds and improving content integration. The headline feature is the brand-new **Time Systems Editor** in the *Lore Codex*, which allows for the creation of completely custom calendars for your projects.
+**Important:** You need [Node.js](https://nodejs.org/) installed to run this app. Check the [README](https://github.com/chatelainedev/creators-toolkit?tab=readme-ov-file#creators-toolkit-v310) for full setup details.
 
-**Important:** You must have [Node.js](https://nodejs.org/) installed to run this application. Please see the [README](https://github.com/chatelainedev/creators-toolkit?tab=readme-ov-file#creators-toolkit-v300) for full installation and usage details.
+### What Got Fixed
 
----
+**Lore Codex**
+- The "Hidden" banner size actually hides the container now like it's supposed to
+- Events filter correctly based on both their Character Tags and Arc Filter Tags
+- Navigation styles with transparent backgrounds are actually transparent now
+- Tweaked the Character profile Info Display dimensions to look better
 
-### Added
+**Notebook**
+- Collections collapse correctly and expand more smoothly
+- It's clearer when your Note has been saved
 
-*   **[Lore Codex] New Major Feature: The Time Systems Editor!**
-    *   Create unique, custom time systems for your projects.
-    *   Build solar or lunar-based calendars with custom eras.
-    *   Define the number and names of weekdays and months.
-    *   Create custom seasons with unique names and color schemes.
-    *   Assign a time system to your project and select dates for events directly from your custom calendar.
-    *   Designate events as "yearly" to have them automatically repeat on the timeline.
-*   **[RP Archiver] Chat Import for Roleplay Text:** You can now directly import your roleplay chats from SillyTavern, `.txt`, or `.jsonl` files.
-*   **[Lore Codex] Arc & Sub-Arc Badges:** When viewing Plans in the generated HTML, items will now display colored badges corresponding to their assigned types for better visual organization.
+**CoWriter**
+- You can name folders properly now
+- The Load modal shows accurate message counts
+- Fixed an error that prevented regenerating messages in saved chats
+- Gemini model list pulls the latest text completion models (I can't test OpenAI much since I don't have a subscription, but it should work)
 
-### Changed
+### What's New
 
-*   **[Lore Codex] Chronological Timeline Enhanced:** The timeline has been upgraded to be more dynamic and informative.
-    *   Event markers are now colored according to their assigned Arc.
-    *   Event backgrounds reflect the custom season and color you've defined in the Time Systems Editor.
-    *   Tooltips have been improved for clarity.
-*   **[Lore Codex] Smarter Storyline Imports:** Importing a storyline now automatically populates relevant fields from *RP Archiver* files, streamlining your workflow.
+**General App Updates**
+- AI Configuration settings accessible in main app Settings
+- Markdown Theme settings accessible in main app Settings  
+- New SVG icons for Tools, better theme color integration throughout, general styling improvements
 
-### Removed
+**Lore Codex**
+- New "Separate" banner size - puts the banner at the top of the screen with a gap between it and the main container. Looks really clean with the transparent banner styles
+- Storylines can have Timing assigned so they show as spans on the Plans page Timeline
+- Events can be marked as "Yearly" to repeat every year (great for birthdays or annual festivals)
+- You can add background images to events that appear on event cards in the Timeline
 
-*   **[Lore Codex] Arc Swimlane Timeline:** This timeline view has been removed. It was not performing as intended, and development efforts will be focused on enhancing the more robust chronological timeline.
-
-### Fixed
-
-*   **General**
-    *   User settings for AI Tools and custom themes are now correctly saved to the `accounts.json` file.
-    *   Resolved a bug that incorrectly required the email field to be filled out when toggling AI Tools. The only required fields for login are username and password.
-    *   Minor stability tweaks to the account and login system.
-*   **Lore Codex**
-    *   Corrected an issue where Playlists were not saving properly and fixed unresponsive behavior with the "Save" button.
-    *   Ensured subsection headers are now consistently visible in Storylines.
-    *   The "Back to Top" button on the Timeline now correctly matches the style of other buttons.
-    *   The Preview window now expands to its full size as expected.
-*   **RP Archiver**
-    *   The Preview window now correctly applies the user's assigned custom CSS.
-    *   Fixed a bug where exporting a single, non-part story as a text file would fail.
+**CoWriter**
+- Added OpenRouter as a provider option, including a setting to only show free models
 
 ### Known Issues
 
-*   Logging out from any page other than the main application dashboard will incorrectly redirect back to the main app instead of the login screen.
-*   The background flickering in the *Lore Codex* Overview is believed to be resolved, but please [open an issue](https://github.com/chatelainedev/creators-toolkit/issues) if you still encounter it.
+- Logging out from anywhere except the main app will redirect you back to the app instead of the login screen
+- The flickering Overview backgrounds in Lore Codex seem to be fixed, but let me know if you're still seeing it
+- RP Archiver: importing jsonl files sometimes adds extra whitespace after character names in the first message
+- Tags and favorites occasionally disappear in My Sites - they're not lost (check preferences.backup in your userID folder), but this bug keeps popping up
+
+### How to Update
+1. **IMPORTANT**: Copy your `users/` folder before updating (this has all your data - if you have this, you can't lose anything) 
+2. Two options:
+    a. Manual: 
+    - Download v3.0.0 and unzip it wherever you want
+    - Paste your `users/` folder into the new `creators-toolkit-3.1.0` folder
+    b. update.bat: 
+    - Run the update.bat file in your `creators-toolkit-3.0.0` folder
+    - Your version will download from Github and update automatically
+3. Run `start-server.bat` or `start-server.sh`
+4. All your data will be there
+
+As always: Your data stays on your computer. No internet needed after setup. Report bugs on GitHub Issues.
+
+---
+
+## Creator's Toolkit 3.0.0 - 11/18/2025
+
+The big feature this time is the **Time Systems Editor** in Lore Codex, which lets you build completely custom calendars for your projects.
+
+**Important:** You need [Node.js](https://nodejs.org/) installed to run this app. Check the [README](https://github.com/chatelainedev/creators-toolkit?tab=readme-ov-file#creators-toolkit-v300) for full setup details.
+
+### What's New
+
+**Time Systems Editor (Lore Codex)**
+- Create unique time systems for your projects
+- Build solar or lunar-based calendars with custom eras
+- Define how many weekdays and months you want, name them whatever you like
+- Make custom seasons with their own names and colors
+- Assign a time system to your project and pick dates for events from your custom calendar
+- Mark events as "yearly" to make them repeat automatically on the timeline
+
+**RP Archiver**
+- You can import roleplay chats directly from SillyTavern, `.txt`, or `.jsonl` files now
+
+**Lore Codex**
+- Arc and Sub-Arc badges show up on Plans in the generated HTML for better visual organization
+
+### What Changed
+
+**Lore Codex Timeline Improvements**
+- Event markers are colored based on their Arc
+- Event backgrounds reflect the season and color you set in Time Systems Editor
+- Better tooltips
+- Importing storylines auto-fills relevant fields from RP Archiver files
+
+### What Got Removed
+
+**Arc Swimlane Timeline (Lore Codex)** - This view wasn't working well, so I'm focusing on making the chronological timeline better instead.
+
+### What Got Fixed
+
+**General**
+- User settings for AI Tools and custom themes save correctly to `accounts.json` now
+- Fixed a bug that made the email field required when toggling AI Tools (only username and password are actually required)
+- Minor stability improvements to account and login system
+
+**Lore Codex**
+- Playlists save properly now and the Save button actually responds
+- Subsection headers show consistently in Storylines
+- "Back to Top" button on Timeline matches the style of other buttons
+- Preview window expands to full size like it should
+
+**RP Archiver**
+- Preview window applies your custom CSS correctly
+- Fixed export failing when trying to export a single, non-part story as a text file
+
+### Known Issues
+
+- Logging out from anywhere except the main dashboard redirects to the app instead of login screen
+- Overview background flickering in Lore Codex should be fixed, but [let me know](https://github.com/chatelainedev/creators-toolkit/issues) if you still see it
+
+### How to Update
+1. **IMPORTANT**: Copy your `users/` folder before updating (this has all your data - if you have this, you can't lose anything) 
+2. Two options:
+    a. Manual: 
+    - Download v3.0.0 and unzip it wherever you want
+    - Paste your `users/` folder into the new `creators-toolkit-3.0.0` folder
+    b. update.bat: 
+    - Run the update.bat file in your `creators-toolkit-2.1.0` folder
+    - Your version will download from Github and update automatically
+3. Run `start-server.bat` or `start-server.sh`
+4. All your data will be there
+
+As always: Your data stays on your computer. No internet needed after setup. Report bugs on GitHub Issues.
+
+---
 
 ## v2.1.0 - 11/13/2025
 
 ### What's New
 
-#### App-Wide Changes
-- **Terminology Update** - "Generate" buttons renamed to "Create" throughout the app for clarity
-- **New UI Images** - Refreshed some visual assets across the interface
-- **AI Tools Toggle** - CoWriter and Character/Lorebook Managers are now disabled by default; enable them in User Settings to access AI-powered features
+**App-Wide Changes**
+- Renamed "Generate" buttons to "Create" throughout the app
+- Refreshed some UI images
+- CoWriter and Character/Lorebook Managers are disabled by default now - turn them on in User Settings if you want to use the AI features
 
-#### Lore Codex Enhancements
+**Lore Codex**
 
-**New Features:**
-- **Character Info Display** - RPG-style stat display for character profiles. Enable globally in Characters category settings, then toggle per character. Displays curated information in a styled section with alternate styles available in Appearance tab
-- **World Entry Icons** - Create and assign custom icons to Magic, Cultivation, and Items entries; icons display in Character Info Display
-- **Section Renaming** - Rename World categories (Culture, Magic, Cultivation, Events) to match your project's terminology
-- **Faction Organization** - Control the display order of Factions on the Characters page in generated HTML
+New stuff:
+- **Character Info Display** - RPG-style stat display for character profiles. Turn it on globally in Characters category settings, then toggle per character. Shows curated info in a styled section with alternate styles in the Appearance tab
+- **World Entry Icons** - Make custom icons for Magic, Cultivation, and Items entries. They show up in Character Info Display
+- **Section Renaming** - Rename World categories (Culture, Magic, Cultivation, Events) to fit your project
+- **Faction Organization** - Control how Factions display on the Characters page in generated HTML
 
-**Fixes & Improvements:**
-- Fixed Custom Pages including unnecessary CSS for horizontal link containers
-- Refined Character Subcontainer styles in Appearance tab - reduced excess margins, enhanced Minimal Style, fixed Tab style layout
+Fixes:
+- Custom Pages don't include unnecessary CSS for horizontal link containers anymore
+- Cleaned up Character Subcontainer styles in Appearance tab - reduced margins, improved Minimal Style, fixed Tab style layout
 
-#### Lorebook Manager Improvements
+**Lorebook Manager**
 
-**New Features:**
-- **Find/Replace** - Search and replace text across lorebook entries
-- **Advanced Options** - Additional configuration options for individual entries
-- **Add Category Button** - Create categories via button in addition to Enter key
+New stuff:
+- **Find/Replace** - Search and replace across lorebook entries
+- **Advanced Options** - More settings for individual entries
+- **Add Category Button** - Create categories with a button instead of just the Enter key
 - **Copy Context Menu** - Right-click entries to quickly copy content
 
-**Fixes & Improvements:**
-- Resolved bugs affecting category functionality
-- Improved exported plaintext format with standard markdown dividers
+Fixes:
+- Fixed bugs affecting categories
+- Better exported plaintext format with standard markdown dividers
 
 ### Known Issues
-- Overview backgrounds in Lore Codex may cause flickering
-- HTML Preview functionality needs refinement for Lore Codex and RP Archiver
-- Image hover alignment for World items requires adjustment
-- Subheaders in Storylines page incorrectly showing with filters applied
+- Overview backgrounds in Lore Codex might flicker
+- HTML Preview needs work for Lore Codex and RP Archiver
+- Image hover alignment for World items needs fixing
+- Subheaders in Storylines show up incorrectly with filters applied
 - Save button styling in playlist modal needs correction
+- The update.bat doesn't work - you'll need to update manually if you use this version
 
-### Planned Features
-- Bulk Edit functionality coming to Character Manager
-- Additional category customization in Lore Codex
+### Coming Soon
+- Bulk Edit for Character Manager
+- More category customization in Lore Codex
 - File upload for roleplays in RP Archiver
 
-### Upgrade Instructions
-1. **VERY IMPORTANT**: Make a COPY of your `users/` folder before updating (all of your user data is in this folder, as long as you have this, your user data cannot be lost)
-2. Download the v2.1.0 release and unzip, placing the new `creators-toolkit-2.1.0` folder wherever you'd like on your system
-> **Note**: update.bat for previous versions (v1.0.0, v2.0.0) isn't working, you'll need to manually update!
-3. Paste your `users/` folder in the new `creators-toolkit-2.1.0` folder
-3. Run `start-server.bat` or `start-server.sh` 
-4. All user data and projects will be preserved
-5. If using AI features, remember to enable them in User Settings
+### How to Update
+1. **IMPORTANT**: Copy your `users/` folder before updating (this has all your data - if you have this, you can't lose anything)
+2. Download v2.1.0 and unzip it wherever you want
+   - Note: update.bat from older versions (v1.0.0, v2.0.0) isn't working, you'll need to update manually
+3. Paste your `users/` folder into the new `creators-toolkit-2.1.0` folder
+4. Run `start-server.bat` or `start-server.sh`
+5. All your data will be there
+6. If you're using AI features, remember to enable them in User Settings
 
-> When toggling AI Tools in User Settings, it may say email is required. You can put whatever you like in the email field (eg email@email.com)--it's not actually used for anything, it isn't saved anywhere aside from your own system. I'll fix this in the next update, not sure why it's prompting for it -_-
+Note: When toggling AI Tools in User Settings, it might say email is required. Just put anything (like email@email.com) - it's not actually used or saved anywhere except your own computer. I'll fix this next update.
+
+As always: Your data stays on your computer. No internet needed after setup. Report bugs on GitHub Issues.
 
 ---
-
-**As always:** All your data stays on your computer. No internet required after initial setup. Report bugs via GitHub Issues.
 
 ## v2.0 - 10/2025
 
 ### What's New
 
-#### Lore Codex Enhancements
+**Lore Codex**
 
-**New Features:**
+New stuff:
 - **Magic Category** - Added to World items for organizing magical systems and supernatural elements
-- **Storyline Organization** - Section headers and subheaders now supported with dedicated Options menu to toggle visibility
-- **Faction Assignment** - Characters can be assigned to Factions (from World items) and automatically organized by Faction in generated HTML; toggle via new Character Options menu
-- **Lorebook Integration** - Export button appears next to World header in generated HTML when a lorebook is linked to your project
-- **Character Cards** - Attach character cards to Characters; right-click character images in generated HTML to download
-- **Enhanced Tag System** - New tag syntax `tagname(#color1 #color2 #color3)` for custom tag colors, text colors, and hover effects
+- **Storyline Organization** - Section headers and subheaders supported now, with an Options menu to toggle visibility
+- **Faction Assignment** - Assign Characters to Factions (from World items) and they'll organize by Faction in generated HTML automatically. Toggle this in the new Character Options menu
+- **Lorebook Integration** - Export button shows up next to World header in generated HTML when you link a lorebook to your project
+- **Character Cards** - Attach character cards to Characters. Right-click character images in generated HTML to download
+- **Better Tag System** - New syntax `tagname(#color1 #color2 #color3)` for custom tag colors, text colors, and hover effects
 
-#### New Managers
+**New Tools**
 
-**Character Manager:**
-- Import or create character cards for popular AI roleplay platforms
+Character Manager:
+- Import or create character cards for AI roleplay platforms
 - Add alternate fields and avatars to cards
-- Organize cards into folders for better management
-- Export in a variety of formats
+- Organize cards into folders
+- Export in various formats
 
-**Lorebook Manager:**
+Lorebook Manager:
 - Import or create lorebooks for AI roleplay platforms
-- Edit existing entries or create new ones
+- Edit existing entries or make new ones
 - Organize entries into collapsible categories
-- Hide categories and export only visible entries
-- Bulk edit multiple entries at once
+- Hide categories and export only what's visible
+- Bulk edit multiple entries
 - AI Helper for generating entry suggestions
 
-#### App-Wide Improvements
+**General Improvements**
+- User selection dropdown on login screen
+- "Login as Guest" option to explore without making an account
+- More color themes
+- Your User ID shows in Settings now
+- New Managers dropdown in main navigation for quick access to Character and Lorebook Managers
 
-- **User Management** - User selection dropdown added to login screen
-- **Guest Access** - "Login as Guest" option for quick exploration without account creation
-- **Enhanced Themes** - Additional color themes available
-- **User ID Display** - Your User ID now visible in Settings for reference
-- **Managers Access** - New Managers dropdown in main navigation for quick access to Character and Lorebook Managers
+### Other Improvements
 
-### Quality of Life Improvements
-
-- **Project Renaming** - Projects and HTML files can now be renamed via right-click on project dropdown
-- **CSS Refinements** - General styling improvements across all tools
-- **Lorebook Isolation** - Fixed bug where lorebooks would incorrectly carry over between projects
-- **Storyline Navigation** - Subarc event links now properly functional in generated HTML
+- Projects and HTML files can be renamed by right-clicking the project dropdown
+- General styling improvements across all tools
+- Fixed bug where lorebooks would carry over between projects incorrectly
+- Subarc event links work properly in generated HTML now
 
 ### Notes
 
-- Old project folders are not automatically deleted when renaming - manually delete or keep as backups
-- For existing projects, you may need to re-link lorebooks after updating
+- Old project folders don't delete automatically when you rename - delete them manually or keep them as backups
+- For existing projects, you might need to re-link lorebooks after updating
 
-### Known Issues
+### How to Update
+(If you're coming from v1.0.0)
 
-- None reported at this time
+1. **IMPORTANT**: Copy your `users/` folder before updating (this has all your data - if you have this, you can't lose anything)
+2. Download v2.0.0 and unzip it wherever you want
+   - Note: update.bat from older versions (v1.0.0) isn't working, you'll need to update manually
+3. Paste your `users/` folder into the new `creators-toolkit-2.0.0` folder
+4. Run `start-server.bat` or `start-server.sh`
+5. All your data will be there
 
-### Upgrade Instructions
-(If you're upgrading from v1.0.0)
-1. Backup your `users/` folder before updating
-2. Two options for upgrading:
-- Option 1: Manually update by downloading the newest release and pasting your `users/` folder in the new folder
-- Option 2: (Windows only) Only download the `update.bat`, replace v1.0.0 update.bat with the new version, and run it
-3. Run `start-server.bat` or `start-server.sh` as usual (or your Creator's Toolkit.lnk)
-4. Your user data and projects will be preserved
+**IMPORTANT**: If this is your first install, install [Node](https://nodejs.org/en) first.
 
-**IMPORTANT**: If this is your first install, make sure to first install [Node](https://nodejs.org/en)
+As always: Your data stays on your computer. No internet needed after setup. Report bugs on GitHub Issues.
 
 ---
-
-**As always:** All your data stays on your computer. No internet required after initial setup. Report bugs via GitHub Issues.
 
 ## v1.0 - Initial Release - 9/20/2025
 
 ### Quick Start
 
-1. **Install Node.js** from https://nodejs.org/
-2. **Extract** the project folder
-3. **Run** `start-server.bat` (Windows) or `start-server.sh` (Mac/Linux)
-4. **Wait** for setup (1-2 minutes first time)
-5. **Open** http://localhost:3000 in your browser
+1. Install Node.js from https://nodejs.org/
+2. Extract the project folder
+3. Run `start-server.bat` (Windows) or `start-server.sh` (Mac/Linux)
+4. Wait for setup (1-2 minutes first time)
+5. Open http://localhost:3000 in your browser
 
-See README.md for detailed instructions.
+Check README.md for detailed instructions.
+
+### What You Get
 
 - File-based user accounts with password security
-- Three integrated writing tools in one package
-- Offline functionality - no internet required after setup
-- Cross-platform support (Windows, Mac, Linux)
-- Export to HTML and ZIP formats
+- Three writing tools in one package
+- Works offline after initial setup
+- Cross-platform (Windows, Mac, Linux)
+- Export to HTML and ZIP
 
 ### Known Issues
 
-- Card transparency in Lore Codex Solos view - will adjust
-- The update.bat doesn't work correctly - if you use this version, you must manually update.
+- Card transparency in Lore Codex Solos view needs adjustment
+- The update.bat doesn't work - you'll need to update manually if you use this version

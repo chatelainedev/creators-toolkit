@@ -10,15 +10,28 @@
     position: relative;
     width: 100%;
     overflow: hidden;
-    margin-bottom: var(--space-xs);
+    margin-bottom: var(--space-sm);
     height: 80px;
+}
+
+.info-banner.short-banner {
+    height: 80px;
+    margin-bottom: var(--space-sm);
+}
+
+/* Content page banner - ensure it extends full width */
+#content-content .info-banner {
+    width: calc(100% + var(--space-md) + var(--space-md));
+    margin-left: calc(var(--space-md) * -1);
+    margin-right: calc(var(--space-md) * -1);
+    margin-top: calc(var(--space-md) * -1);
 }
 
 .banner-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: brightness(0.7);
+    opacity: 0.3;
 }
 
 .banner-overlay {
@@ -27,39 +40,46 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.banner-title {
-    font-size: 36px;
-    font-weight: 700;
-    font-family: var(--font-secondary);
+.banner-overlay h1 {
+    font-size: 28px;
+    font-weight: 600;
     margin: 0;
-    text-transform: uppercase;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.5px;
+    font-family: var(--font-header);
+}
+
+.info-banner.short-banner .banner-overlay h1 {
+    font-size: 24px;
 }
 
 /* Metal text styling */
 .metal-text {
+    /* This is the magic! */
     background-clip: text;
-    -webkit-background-clip: text;
+    -webkit-background-clip: text; /* For Safari/Chrome */
     color: transparent;
+    
+    /* A subtle text-shadow to give it an embossed look */
     text-shadow: 
         1px 1px 1px rgba(0, 0, 0, 0.1),
         -1px -1px 1px rgba(255, 255, 255, 0.1);
 }
 
+/* Specific style for BRONZE */
 .metal-text.bronze {
     background-image: linear-gradient(
         145deg,
-        #D4AF7A 0%,
-        #B8956B 25%,
-        #A0673B 50%,
-        #8B5A2B 75%,
-        #704214 100%
+        var(--accent-primary) 0%,
+        var(--accent-primary) 25%,
+        var(--accent-primary) 50%,
+        var(--accent-secondary) 75%,
+        var(--accent-secondary) 100%
     );
 }
 

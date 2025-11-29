@@ -6,7 +6,7 @@ const coffeeScheme = {
         bodyBg: '#F5F1EB',      // Cream base
         containerBg: '#F8F4EC', 
         headerBg: '#E8DDD0',    
-        bannerBorder: 'rgba(175, 127, 93, 0.9)', 
+        bannerBorder: '#AF7F5D', 
         
         // Navigation  
         navBg: '#6F4E37',       
@@ -18,7 +18,7 @@ const coffeeScheme = {
         // Content colors
         textPrimary: '#2B1E15', 
         textSecondary: '#4D3626', 
-        textMuted: '#916648',   
+        textMuted: '#48403B',   
         textTitle: '#2B1E15',   // Dark coffee for titles
         textContent: '#4D3626', // Medium coffee for content
         
@@ -26,7 +26,7 @@ const coffeeScheme = {
         general: '#AF7F5D', 
         locations: '#AF7F5D',    
         factions: '#6F4E37',      
-        concepts: '#916648',      // Light coffee
+        concepts: '#8E7563',      // Light coffee
         events: '#8B7865',        // Muted coffee
         creatures: '#A67C52',     // Medium coffee
         plants: '#9A6B47',        // Rich coffee
@@ -53,7 +53,7 @@ const coffeeScheme = {
         linkHoverSecondary: '#B08968',
         
         // Status badge colors (coffee themed)
-        statusIdea: '#916648',    // Light coffee
+        statusIdea: '#B69278',    // Light coffee
         statusDraft: '#AF7F5D',   // Medium coffee
         statusCanon: '#6F4E37',   // Dark coffee
         statusArchived: '#8B7865', // Muted coffee
@@ -76,7 +76,7 @@ const coffeeScheme = {
 
         wuxiaAccent: '#9A6B47',        // Rich coffee-jade blend
         wuxiaAccentLight: '#B8956A',   // Light coffee-jade
-        wuxiaGlow: 'rgba(154,107,71,0.5)', // Warm coffee-jade glow
+        wuxiaGlow: '#9A6B47', // Warm coffee-jade glow
 
         journalAccent: '#956B50'
     }

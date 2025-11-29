@@ -39,7 +39,6 @@ class MainPageManager {
                 if (managersDropdown) {
                     managersDropdown.style.display = 'none';
                 }
-                console.log('🚫 AI features hidden (user preference)');
             } else {
                 // Actively SHOW features (in case they were hidden by previous user)
                 if (cowriterTab) {
@@ -48,7 +47,6 @@ class MainPageManager {
                 if (managersDropdown) {
                     managersDropdown.style.display = '';
                 }
-                console.log('✅ AI features shown (user preference)');
             }
         } catch (error) {
             console.error('Error checking AI tools setting:', error);
@@ -67,9 +65,7 @@ class MainPageManager {
         const managersDropdown = document.querySelector('.nav-dropdown');
         if (managersDropdown) {
             managersDropdown.style.display = '';
-        }
-        
-        console.log('✅ AI features shown');
+        }        
     }
 
     // Initialize tab system
@@ -255,7 +251,6 @@ class MainPageManager {
 
         // IMMEDIATELY set navigation flag to prevent beforeunload interference
         this.isNavigating = true;
-        console.log('🚀 Starting tool launch, isNavigating set to true');
 
         // Special handling for info-converter (bat file)
         if (toolType === 'info-converter') {
@@ -270,13 +265,9 @@ class MainPageManager {
     // Handle info converter launch (bat file + server check)
     async handleInfoConverterLaunch(card, url) {
         const toolType = 'info-converter';
-        
-        console.log('🚀 Starting Lore Codex launch...');
-        console.log(`🏁 isNavigating flag: ${this.isNavigating}`);
-        
+                
         // Show global navigation loading FIRST and wait for it to appear
         if (window.authManager) {
-            console.log('📱 Showing navigation loading for Lore Codex...');
             window.authManager.showNavigationLoading(toolType);
             
             // Wait a moment for the loading overlay to actually appear
@@ -292,10 +283,7 @@ class MainPageManager {
             const isServerRunning = await this.checkServerStatus(infoConverterUrl);
             
             if (isServerRunning) {
-                // Server is running, but wait a bit more for better UX
-                console.log('✅ Server is running, waiting 2 seconds then navigating...');
-                console.log(`🏁 isNavigating flag before navigation: ${this.isNavigating}`);
-                
+                // Server is running, but wait a bit more for better UX                
                 // Wait additional time so user can see the loading
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 
@@ -415,7 +403,6 @@ class MainPageManager {
             if (isRunning) {
                 // Success! Set navigation flag and show loading
                 this.isNavigating = true;
-                console.log('🚀 Server found, setting navigation flag and showing loading...');
                 
                 if (window.authManager) {
                     window.authManager.showNavigationLoading('info-converter');
@@ -426,7 +413,6 @@ class MainPageManager {
                 
                 // Wait a bit for the loading to show, then navigate
                 await new Promise(resolve => setTimeout(resolve, 1000));
-                console.log('🔗 Navigating to Lore Codex server...');
                 window.location.href = 'http://localhost:9000';
             } else {
                 // Still not running
@@ -443,15 +429,10 @@ class MainPageManager {
 
     // Handle regular tool launch with enhanced loading
     async handleRegularToolLaunch(card, url, toolType) {
-        console.log(`🚀 Launching ${toolType} - showing navigation loading`);
-        console.log(`🔗 Target URL: ${url}`);
-        console.log(`🏁 isNavigating flag: ${this.isNavigating}`);
         
         // Show global navigation loading IMMEDIATELY and wait for it to appear
         if (window.authManager) {
-            console.log('📱 About to show navigation loading...');
             window.authManager.showNavigationLoading(toolType);
-            console.log('✅ Navigation loading called');
             
             // Wait for loading overlay to appear
             await new Promise(resolve => setTimeout(resolve, 100));
@@ -460,7 +441,6 @@ class MainPageManager {
             setTimeout(() => {
                 const loadingOverlay = document.getElementById('global-loading');
                 if (loadingOverlay) {
-                    console.log('✅ Loading overlay confirmed present:', loadingOverlay.style.display);
                 } else {
                     console.error('❌ Loading overlay not found!');
                 }
@@ -473,12 +453,8 @@ class MainPageManager {
         card.classList.add('loading');
         
         // Wait additional time for better UX (so user can see the loading)
-        console.log('⏱️ Starting 2.5-second delay before navigation...');
         await new Promise(resolve => setTimeout(resolve, 500));
-        
-        console.log(`🔗 Now navigating to: ${url}`);
-        console.log(`🏁 isNavigating flag at navigation time: ${this.isNavigating}`);
-        
+                
         try {
             // Navigate in same tab
             window.location.href = url;
@@ -887,11 +863,9 @@ window.addEventListener('offline', () => {
 // Handle page unload and back navigation properly
 window.addEventListener('beforeunload', (e) => {
     const isNavigating = window.mainManager?.isNavigating || false;
-    console.log('🔄 beforeunload fired, isNavigating:', isNavigating);
     
     // Only hide loading if we're NOT intentionally navigating
     if (!isNavigating) {
-        console.log('⏹️ Hiding loading overlay due to unintentional navigation/refresh');
         if (window.authManager) {
             window.authManager.hideGlobalLoading();
         }
@@ -902,11 +876,9 @@ window.addEventListener('beforeunload', (e) => {
 
 // Handle when user navigates back to main page
 window.addEventListener('pageshow', (e) => {
-    console.log('📄 pageshow event fired, persisted:', e.persisted);
     
     // If this is a back/forward navigation (persisted = true), reset state
     if (e.persisted) {
-        console.log('⬅️ User navigated back to main page');
         
         // Reset navigation state
         if (window.mainManager) {
@@ -921,9 +893,7 @@ window.addEventListener('pageshow', (e) => {
         // Simple, reliable back navigation message
         const backMessage = 'Back to Main';
         const loadingDuration = 1200; // Slightly longer duration (1.2 seconds)
-        
-        console.log('⬅️ Showing generic back navigation loading');
-        
+                
         // Show main page loading style briefly for smooth transition
         window.showTransitionLoading(backMessage, loadingDuration);
     }

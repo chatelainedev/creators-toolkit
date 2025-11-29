@@ -100,6 +100,7 @@ window.generateCSS = function() {
         small: '120px',
         medium: '160px', 
         large: '200px',
+        separate: '200px',
         hidden: '50px'
     };
     const bannerHeight = bannerHeights[bannerSize];
@@ -282,6 +283,18 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             /* transition: min-height 0.2s ease; */
         }
 
+        /* Header container - same width as main container */
+        .header-container {
+            max-width: ${containerWidth};
+            margin: 0 auto;
+        }
+
+        /* Navigation container - same width as main container */
+        .nav-container {
+            max-width: ${containerWidth};
+            margin: 0 auto;
+        }
+
         /* Section Titles (Characters, World, Storylines, Plans, etc.) */
         ${generatePageHeaderStyles(appearance.pageHeader || 'standard', colors, fonts)}
 
@@ -426,16 +439,50 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         .banner-image { 
             display: none; 
         }
-        
+
         .banner-placeholder { 
             display: none; 
         }
-        
+
         .header { 
-            background: transparent !important; 
-            border: none !important; 
-            box-shadow: none !important; 
-        }` : ''}
+            display: none !important;
+        }
+
+        .standalone-title {
+            padding: 20px 30px;
+            background: transparent;
+        }
+        ` : ''}
+
+        /* Separate Banner Mode */
+        ${bannerSize === 'separate' ? `
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-separate {
+            width: 100%;
+            max-width: 100%;
+            height: 250px;
+            position: relative;
+            left: 0;
+            right: 0;
+            margin-left: 0;
+            margin-right: 0;
+            margin-bottom: 0;
+            box-sizing: border-box;
+        }
+
+        .header-gap {
+            height: 40px;
+            background: transparent;
+        }
+
+        .container {
+            margin-top: 0;
+        }
+        ` : ''}
 
         /* Banner Style Effects */
         ${generateBannerStyleCSS(appearance.bannerStyle || 'none')}
@@ -472,7 +519,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
 
         /* Vertical Position Classes */
         .title-position-top {
-            top: 30px;
+            top: 15px;
         }
 
         .title-position-center {
@@ -871,7 +918,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             max-height: 4.5em; /* 3 lines × 1.5 line-height */
         }
 
-        .storyline-meta {
+        .storyline-card .storyline-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -887,7 +934,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             font-weight: 500;
         }
 
-        /* Wordcount inside section title 
+        /* Wordcount inside section title */
         .section-title .wordcount-display {
             float: right;
             background: ${colors.headerBg};
@@ -910,15 +957,27 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         .section-title .wordcount-display:hover {
             background: ${colors.containerBg};
             border-color: ${colors.textMuted}66;
-        } */
+        } 
 
-        /* Individual storyline wordcount */
-        .storyline-wordcount {
+        .storyline-card .storyline-wordcount {
             font-size: 0.8em;
             color: ${colors.textMuted};
             font-weight: 500;
             margin-bottom: 8px;
             font-style: italic;
+        }
+
+        .storyline-timing-badge {
+            font-size: 0.8em;
+            color: ${colors.textSecondary};
+            background: ${colors.containerBg};
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+            font-family: ${fonts.ui};
+            margin: 4px 0 8px 0;
+            opacity: 0.7;
+            font-weight: 400;
         }
 
         /* ALL MODALS - Proper centering and background */
@@ -1022,16 +1081,10 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             margin-bottom: 25px;
         }
 
-        .character-header-section {
-            display: flex;
-            gap: 25px;
-            align-items: flex-start;
-        }
-
-        /* Character Modal - Main profile image */
+        /* Character Modal - Main profile image - UPDATED HEIGHT */
         .modal .character-main-image {
             width: 240px !important;
-            height: 320px !important;
+            height: 360px !important;
             background: ${colors.headerBg};
             border-radius: 8px;
             display: flex !important;
@@ -1054,6 +1107,13 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
             position: absolute !important;
             top: 0;
             left: 0;
+        }
+
+        .character-header-section {
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+            min-height: 380px;
         }
 
 /* =============================================
@@ -1151,7 +1211,7 @@ function calculateMinimumContainerHeight(appearance, basic, data) {
         }
 
         .character-basic-info .info-section {
-            height: 285px !important;
+            height: 325px !important;
             margin-top: -2px !important;
             display: flex;
             flex-direction: column;

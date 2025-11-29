@@ -760,8 +760,20 @@ class NotebookManager {
             });
 
             collections.forEach(collection => {
-                // Skip rendering if parent is collapsed
-                if (collection.parent && this.collectionsManager.collapsedCollections.has(collection.parent)) {
+                // Skip rendering if ANY ancestor is collapsed (not just immediate parent)
+                let ancestor = collection.parent;
+                let shouldSkip = false;
+                while (ancestor) {
+                    if (this.collectionsManager.collapsedCollections.has(ancestor)) {
+                        shouldSkip = true;
+                        break;
+                    }
+                    // Get parent's parent
+                    const ancestorCollection = this.collectionsManager.getCollection(ancestor);
+                    ancestor = ancestorCollection?.parent;
+                }
+                
+                if (shouldSkip) {
                     return; // Don't render this collection at all
                 }
                 
@@ -1337,8 +1349,8 @@ class NotebookManager {
         }
     }
 
-    // Save current note
     async saveCurrentNote() {
+        const saveBtn = document.getElementById('save-note-btn');
         const titleInput = document.getElementById('note-title-input');
         const name = (titleInput?.value || this.currentNote.name || 'Untitled Note').trim();
         
@@ -1353,11 +1365,17 @@ class NotebookManager {
             return;
         }
 
+        // Add visual feedback - button becomes active
+        if (saveBtn) {
+            saveBtn.classList.add('active');
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        }
+
         const noteData = {
             id: this.currentNote.id || this.generateNoteId(),
             name: name,
             content: this.currentNote.content,
-            collection: this.currentNote.collection || 'default',
+            collection: this.currentNote.collection || '',
             created: this.currentNote.created || Date.now(),
             lastModified: Date.now()
         };
@@ -1377,8 +1395,21 @@ class NotebookManager {
             this.isDirty = false;
             this.updateStatus();
             this.renderCollectionsTree();
+            
+            // Show success feedback
+            this.showToast('Note saved successfully!', 'success');
+            
         } catch (error) {
             this.showToast('Failed to save note', 'error');
+            console.error('Error saving note:', error);
+        } finally {
+            // Remove active state after a brief moment
+            if (saveBtn) {
+                setTimeout(() => {
+                    saveBtn.classList.remove('active');
+                    saveBtn.innerHTML = '<i class="fas fa-save"></i>';
+                }, 600);
+            }
         }
     }
 
@@ -2164,7 +2195,29 @@ class NotebookManager {
         if (window.authManager && window.authManager.showToast) {
             window.authManager.showToast(message, type);
         } else {
+            // Fallback: create a simple toast if authManager isn't available
             console.log(`Toast (${type}): ${message}`);
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 4px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-family: var(--font-family);
+                animation: slideIn 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
     }
 

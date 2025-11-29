@@ -15,7 +15,7 @@ function generateTimelineCSS(colors, fonts) {
 
         .plan-stats {
             font-size: 0.75em;
-            color: #999;
+            color: ${colors.textMuted};
             text-align: center;
             margin-top: auto;
             padding-top: 8px;
@@ -188,7 +188,52 @@ function generateTimelineCSS(colors, fonts) {
             position: relative;
             cursor: pointer;
             margin: 0;
-            overflow: visible;
+            overflow: visible; /* CHANGED BACK: keep visible by default so event images show */
+        }
+
+        .tl-event-card:hover {
+            border: 1px solid ${colors.textMuted}55;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* NEW: Only hide overflow on cards WITH background images (to keep bg contained) */
+        .tl-event-card[style*="--event-bg-image"] {
+            overflow: hidden;
+        }
+
+        /* NEW: Background image with opacity using pseudo-element */
+        .tl-event-card[style*="--event-bg-image"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: var(--event-bg-image);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.5; /* ADJUST THIS: 0.1 = very faint, 0.8 = very visible */
+            z-index: 0;
+            border-radius: 8px; /* Match card corners */
+        }
+
+        /* NEW: Ensure ONLY text content appears above background - not absolutely positioned elements */
+        .tl-event-card[style*="--event-bg-image"] .tl-event-arc-title,
+        .tl-event-card[style*="--event-bg-image"] .tl-event-title,
+        .tl-event-card[style*="--event-bg-image"] .tl-event-timing,
+        .tl-event-card[style*="--event-bg-image"] .tl-arc-link {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* NEW: Enhanced text contrast for cards with background images */
+        .tl-event-card[style*="--event-bg-image"] .tl-event-title,
+        .tl-event-card[style*="--event-bg-image"] .tl-event-arc-title,
+        .tl-event-card[style*="--event-bg-image"] .tl-event-timing,
+        .tl-event-card[style*="--event-bg-image"] .tl-arc-link {
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7);
+            color: #ffffff;
         }
 
         /* Stacked events containers */
@@ -213,12 +258,12 @@ function generateTimelineCSS(colors, fonts) {
             height: 60px;
             position: absolute;
             top: 0px;
-            right: 500px;
+            right: calc(50% + 270px);  /* Default (for right-side events): image on LEFT of timeline */
             border-radius: 50%;
             overflow: hidden;
             border: 2px solid;
             background: ${colors.containerBg};
-            z-index: 3;
+            z-index: 3; /* High z-index ensures it appears above everything */
         }
 
         .tl-event-image img {
@@ -228,8 +273,10 @@ function generateTimelineCSS(colors, fonts) {
             display: block;
         }
 
+        /* Stacked events: same as default, image on left side of timeline */
         .tl-stacked-events .tl-event-image {
-            right: -9px;
+            right: calc(50% + 270px);
+            top: -225px;
         }
 
         /* MIRROR EFFECT: Right-align content in left-side events */
@@ -244,38 +291,38 @@ function generateTimelineCSS(colors, fonts) {
             text-align: right;
         }
 
-        /* MIRROR EFFECT: Move images to left side for left-side events */
+        /* LEFT-side events: Move images to RIGHT side of timeline */
         .tl-timeline-event.tl-left-side .tl-event-image {
             right: auto;
-            left: 500px;
-            top: 0px;
+            left: calc(50% + 270px);  /* Image on RIGHT of timeline */
         }
 
+        /* Stacked events on left side: image on right */
         .tl-timeline-event.tl-left-side .tl-stacked-events .tl-event-image {
             right: auto;
-            left: 500px;
-            top: 0px;
+            left: calc(50% + 270px);
+            top: -225px;
         }
 
-        /* Connecting line for left-side images - on parent to avoid clipping */
+        /* Connecting line for LEFT-side events (card on left, image on right) */
         .tl-timeline-event.tl-left-side.has-image::after {
             content: '';
             position: absolute;
-            left: 430px;
+            left: calc(50% + 10px);  /* Start after the timeline center, go toward image on right */
             top: 30px;
-            width: 75px;
+            width: calc(10% - 5px);
             height: 3px;
             background: ${colors.textMuted}60;
             z-index: 1;
         }
 
-        /* Connecting line for right-side images - only show when image exists */
+        /* Connecting line for RIGHT-side events (image on left, card on right) */
         .tl-timeline-event.tl-right-side.has-image::after {
             content: '';
             position: absolute;
-            right: 430px;
+            right: calc(50% + 10px);  /* Start after the timeline center, go toward image on left */
             top: 30px;
-            width: 75px;
+            width: calc(10% - 5px);
             height: 3px;
             background: ${colors.textMuted}60;
             z-index: 1;
@@ -297,7 +344,7 @@ function generateTimelineCSS(colors, fonts) {
         /* Chronological timeline notes indicator */
         .tl-chrono-notes-indicator {
             position: absolute;
-            bottom: 8px;
+            bottom: 4px;
             font-size: 18px;
             color: ${colors.containerBg};
             opacity: 0.8;
@@ -309,12 +356,12 @@ function generateTimelineCSS(colors, fonts) {
 
         /* Left side events - diamond in bottom-left */
         .tl-timeline-event.tl-left-side .tl-chrono-notes-indicator {
-            left: 8px;
+            left: -4px;
         }
 
         /* Right side events - diamond in bottom-right */
         .tl-timeline-event.tl-right-side .tl-chrono-notes-indicator {
-            right: 8px;
+            right: -4px;
         }
 
         .tl-event-card:hover .tl-chrono-notes-indicator {
@@ -648,6 +695,71 @@ function generateTimelineCSS(colors, fonts) {
         .tl-yearly-event .tl-event-title {
             font-size: 0.9em;
             font-style: italic;
+        }
+
+        /* STORYLINE SPANS */
+        .tl-storyline-span {
+            position: relative;
+            width: 100%;
+            background: ${colors.textMuted}15;
+            border-left: 3px solid ${colors.textSecondary}40;
+            border-radius: 4px;
+            padding: 12px 15px;
+            margin-bottom: 25px;
+            z-index: 0;
+            transition: all 0.3s ease;
+        }
+
+        .tl-storyline-span.has-duration {
+            background: linear-gradient(to right, ${colors.textMuted}20, ${colors.textMuted}08);
+        }
+
+        .tl-storyline-content {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tl-storyline-title {
+            font-size: 0.9em;
+            font-weight: 500;
+            color: ${colors.textSecondary};
+            font-family: ${fonts.ui};
+            font-style: italic;
+            opacity: 0.85;
+        }
+
+        .tl-storyline-timing {
+            font-size: 0.75em;
+            color: ${colors.textMuted};
+            font-family: ${fonts.ui};
+            opacity: 0.7;
+        }
+
+        .tl-storyline-duration-bar {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 2px;
+            width: 100%;
+            background: ${colors.textSecondary}30;
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* Ensure events appear above storyline spans */
+        .tl-timeline-event {
+            z-index: 2;
+        }
+
+        .tl-storyline-title-clickable {
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .tl-storyline-title-clickable:hover {
+            color: ${colors.linkHover};
+            opacity: 1;
         }
     `;
 }

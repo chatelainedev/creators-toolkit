@@ -221,7 +221,9 @@ const html = `<!DOCTYPE html>
 <body>
     ${generateHeader(data)}
     ${generateNavigation(data)}
-    ${generateContent(data)}
+    <div class="container">
+        ${generateContent(data)}
+    </div>
     ${generateSiteNavigation(data)}
     ${generateModals(data)}
     ${generateJavaScript()}
@@ -280,6 +282,7 @@ window.markDataAsModified = function() {
 // Find the generateHeader function and update it:
 function generateHeader(data) {
     const titleSettings = data.basic.titleSettings || { show: true, alignment: 'left', position: 'bottom' };
+    const bannerSize = data.appearance?.bannerSize || 'large';
     
     // Generate banner content
     const bannerContent = data.basic.banner 
@@ -302,25 +305,55 @@ function generateHeader(data) {
             </div>`;
     }
 
-    // ADD: Generate banner navigation if location is 'banner'
+    // Generate banner navigation if location is 'banner'
     let bannerNavigationHTML = '';
     if (data.basic.customNavSettings && data.basic.customNavSettings.location === 'banner') {
         bannerNavigationHTML = generateCustomNavigationHTML(data);
     }
 
+// HIDDEN MODE: No header at all, but show title if enabled
+    if (bannerSize === 'hidden') {
+        if (titleSettings.show) {
+            const subtitleHTML = data.basic.subtitle 
+                ? `<div class="main-subtitle">${data.basic.subtitle}</div>` 
+                : '';
+            return `
+    <div class="standalone-title title-alignment-${titleSettings.alignment || 'left'}">
+        <h1 class="main-title">${data.basic.title || 'World Information'}</h1>
+        ${subtitleHTML}
+    </div>`;
+        } else {
+            return ``;
+        }
+    }
+
+    // SEPARATE MODE: Header outside container, then gap
+    if (bannerSize === 'separate') {
+        return `
+    <header class="header header-separate">
+        ${bannerContent}
+        ${titleOverlayContent}
+        ${bannerNavigationHTML}
+    </header>
+    <div class="header-gap"></div>`;
+    }
+
+    // NORMAL MODE: Header in its own container wrapper
     return `
-    <div class="container">
+    <div class="header-container">
         <header class="header">
             ${bannerContent}
             ${titleOverlayContent}
             ${bannerNavigationHTML}
-        </header>`;
+        </header>
+    </div>`;
 }
 
 function generateNavigation(data) {
     const includedPages = data.basic.includedPages || {};
     
     let navHTML = `
+    <div class="nav-container">
         <nav class="nav-tabs">
             <button class="nav-tab active" id="overview-tab" data-page="overview" onclick="showTab('overview')">Overview</button>`;
     
@@ -340,7 +373,9 @@ function generateNavigation(data) {
         navHTML += `<button class="nav-tab" id="playlists-tab" data-page="playlists" onclick="showTab('playlists')">Playlists</button>`;
     }
     
-    navHTML += `</nav>`;
+    navHTML += `
+        </nav>
+    </div>`;
     return navHTML;
 }
 

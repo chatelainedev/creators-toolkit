@@ -255,7 +255,6 @@ router.get('/llm/models/:provider', async (req, res) => {
         let models = [];
         try {
             models = await fetchModelsFromAPI(provider, providerConfig, parsedUserContext);
-            console.log(`✅ Fetched ${models.length} models from ${provider} API`);
         } catch (apiError) {
             console.warn(`API fetch failed for ${provider}, using fallback:`, apiError.message);
             models = providerConfig.fallbackModels || [];
@@ -283,13 +282,17 @@ async function fetchModelsFromAPI(provider, providerConfig, userContext) {
     if (provider === 'anthropic') {
         return await fetchAnthropicModels(providerConfig, userContext);
     }
-    if (provider === 'openai') {  // <-- Add this
+    if (provider === 'openai') {
         return await fetchOpenAIModels(providerConfig, userContext);
+    }
+    if (provider === 'openrouter') {  // <-- ADD THIS
+        return await fetchOpenRouterModels(providerConfig, userContext);
     }
     
     throw new Error(`Model fetching not implemented for provider: ${provider}`);
 }
 
+// Fetch Google Gemini models
 // Fetch Google Gemini models
 async function fetchGoogleModels(providerConfig, userContext) {
     const apiKey = await loadApiKey(userContext, 'google');
@@ -298,7 +301,9 @@ async function fetchGoogleModels(providerConfig, userContext) {
         throw new Error('No API key configured for Google');
     }
 
-    const response = await fetch(`${providerConfig.baseUrl}${providerConfig.modelsEndpoint}?key=${apiKey}`, {
+    const url = `${providerConfig.baseUrl}${providerConfig.modelsEndpoint}?key=${apiKey}`;
+
+    const response = await fetch(url, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -306,16 +311,52 @@ async function fetchGoogleModels(providerConfig, userContext) {
     });
 
     if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Google API error response: ${errorText}`);
         throw new Error(`Google API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
     
-    // Parse Google's model response
+    // Parse Google's model response - STRICT TEXT GENERATION ONLY
     const models = data.models
-        ?.filter(model => model.name.includes('gemini') && model.supportedGenerationMethods?.includes('generateContent'))
+        ?.filter(model => {
+            const name = model.name.toLowerCase();
+            const methods = model.supportedGenerationMethods || [];
+            
+            // Must be a Gemini model
+            if (!name.includes('gemini')) return false;
+            
+            // Must support generateContent (text generation)
+            if (!methods.includes('generateContent')) return false;
+            
+            // Exclude all special-purpose models
+            const excludeKeywords = [
+                'vision',
+                'embedding', 
+                'imagen',
+                'aqa',
+                'image-generation', // Image gen
+                'image-preview',    // Image gen preview
+                '-image',           // Any image variant
+                '-tts',             // Text-to-speech
+                'thinking',         // Thinking models
+                'robotics',         // Robotics models
+                'computer-use',     // Computer use models
+                '-latest',          // Aliased versions
+                'exp-1206',         // Date-stamped experiments
+                'exp-1219'          // Date-stamped experiments
+            ];
+            
+            // Check if name contains any excluded keywords
+            if (excludeKeywords.some(keyword => name.includes(keyword))) {
+                return false;
+            }
+            
+            return true;
+        })
         ?.map(model => ({
-            value: model.name.split('/').pop(), // Extract model name from full path
+            value: model.name.split('/').pop(),
             label: formatGoogleModelName(model.name, model.displayName)
         })) || [];
 
@@ -430,6 +471,56 @@ async function fetchOpenAIModels(providerConfig, userContext) {
     }
 }
 
+// Fetch OpenRouter models
+async function fetchOpenRouterModels(providerConfig, userContext) {
+    const apiKey = await loadApiKey(userContext, 'openrouter');
+    
+    if (!apiKey) {
+        throw new Error('No API key configured for OpenRouter');
+    }
+
+    try {
+        const response = await fetch(`${providerConfig.baseUrl}${providerConfig.modelsEndpoint}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`OpenRouter API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // Parse OpenRouter's model response
+        const models = data.data
+            ?.filter(model => model.id && !model.id.includes('moderation'))
+            ?.map(model => ({
+                value: model.id,
+                label: formatOpenRouterModelName(model.id, model.name)
+            })) || [];
+
+        return models;
+
+    } catch (error) {
+        console.warn('OpenRouter API fetch failed, using fallback models:', error.message);
+        return providerConfig.fallbackModels || [];
+    }
+}
+
+function formatOpenRouterModelName(modelId, name) {
+    if (name) return name;
+    
+    // Format model ID into readable name
+    const parts = modelId.split('/');
+    const modelName = parts[parts.length - 1];
+    return modelName
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+}
+
 function formatOpenAIModelName(modelId) {
     return modelId
         .replace('gpt-', 'GPT-')
@@ -504,8 +595,11 @@ async function sendToLLM(provider, model, prompt, apiKey) {
     if (provider === 'anthropic') {
         return await sendToAnthropic(model, prompt, apiKey);
     }
-    if (provider === 'openai') {  // <-- Add this
+    if (provider === 'openai') {
         return await sendToOpenAI(model, prompt, apiKey);
+    }
+    if (provider === 'openrouter') {  // <-- ADD THIS
+        return await sendToOpenRouter(model, prompt, apiKey);
     }
     
     throw new Error(`LLM provider not implemented: ${provider}`);
@@ -652,6 +746,55 @@ async function sendToOpenAI(model, prompt, apiKey) {
     
     if (!responseText) {
         throw new Error('No response text received from OpenAI API');
+    }
+
+    return responseText;
+}
+
+// Send to OpenRouter
+async function sendToOpenRouter(model, prompt, apiKey) {
+    const providers = await loadProviders();
+    const openrouterConfig = providers.openrouter;
+    
+    const url = `${openrouterConfig.baseUrl}${openrouterConfig.chatEndpoint}`;
+    
+    const requestBody = {
+        model: model,
+        messages: [
+            {
+                role: 'user',
+                content: prompt
+            }
+        ],
+        max_tokens: 2048,
+        temperature: 0.7
+    };
+
+    console.log(`🤖 Sending request to OpenRouter (${model})`);
+    
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+            'HTTP-Referer': 'https://your-app-url.com', // Optional: your site URL
+            'X-Title': 'CoWriter' // Optional: your app name
+        },
+        body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+        const errorData = await response.text();
+        console.error('OpenRouter API Error:', response.status, errorData);
+        throw new Error(`OpenRouter API error: ${response.status} - ${errorData}`);
+    }
+
+    const data = await response.json();
+    
+    const responseText = data.choices?.[0]?.message?.content;
+    
+    if (!responseText) {
+        throw new Error('No response text received from OpenRouter API');
     }
 
     return responseText;

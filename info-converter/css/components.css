@@ -182,11 +182,11 @@ input[type="file"] {
 
 .expand-text-btn {
     position: absolute;
-    top: 0px;
-    right: 0px;
+    top: 5px;
+    right: 5px;
     padding: var(--space-xs);
-    width: 20px;
-    height: 20px;
+    width: 10px;
+    height: 10px;
     background-color: transparent;
     border: 1px solid var(--border-primary);
     border-radius: var(--radius-sm);

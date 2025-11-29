@@ -18,6 +18,10 @@ const buttonStyles = {
         name: 'Subtle',
         description: 'Buttons with minimal rounded corners'
     },
+    'text-only': {
+        name: 'Text Only',
+        description: 'Minimal text-only buttons with subtle underline on hover'
+    },
     'neon': {
         name: 'Neon',
         description: 'Cyberpunk glowing neon buttons with electric effects'
@@ -95,6 +99,54 @@ const buttonStyles = {
 function generateSharedButtonStyles(buttonStyle, className, colors, fonts, shouldFillSpace = false) {
     // Generate button styles based on theme
     switch (buttonStyle) {
+        case 'text-only':
+            return `
+                .${className} {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 6px 12px;
+                    background: transparent !important;
+                    color: ${colors.textPrimary};
+                    text-decoration: none;
+                    border-radius: 0 !important;
+                    border: none !important;
+                    font-family: ${fonts.ui};
+                    font-size: 18px;
+                    font-weight: 500;
+                    transition: all 0.2s ease;
+                    white-space: nowrap;
+                    position: relative;
+                    ${shouldFillSpace ? 'flex: 1;' : ''}
+                }
+                
+                .${className}::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 2px;
+                    left: 50%;
+                    width: 0;
+                    height: 2px;
+                    background: currentColor;
+                    transition: all 0.3s ease;
+                    transform: translateX(-50%);
+                }
+                
+                .${className}:hover {
+                    color: ${colors.textSecondary};
+                    transform: none;
+                    box-shadow: none;
+                    background: transparent !important;
+                }
+                
+                .${className}:hover::after {
+                    width: 100%;
+                }
+                
+                .${className}[style*="color"]:hover {
+                    filter: brightness(1.2);
+                }
+            `;
         case 'neon':
             return `
                 .${className} {

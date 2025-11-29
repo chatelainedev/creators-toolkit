@@ -6,7 +6,7 @@ This is a personal project that was created for my own use. It's far from perfec
 
 [Creator's Toolkit Wiki](https://github.com/chatelainedev/creators-toolkit/wiki)
 
-[![ct-main.png](https://i.postimg.cc/vmZdmvfd/ct-main.png)](https://postimg.cc/tswcSWBr)
+[![ct-main.png](https://i.postimg.cc/28QvtSkF/ct-main.png)](https://postimg.cc/56t6Y1F6)
 
 ## Quick Start
 
@@ -39,6 +39,17 @@ This is a personal project that was created for my own use. It's far from perfec
 4. **Future Launches**
    - Use the `Creator's Toolkit` shortcut created in the main folder
    - Or run `start-server.bat`/`start-server.sh` again
+
+5. **Updating**
+   - **VERY IMPORTANT**: Make a COPY of your `users/` folder before updating (all of your user data is in this folder, as long as you have this, your user data cannot be lost)
+   - **Updating with update.bat**: Available for v2.1.0 onward. After making a backup copy of your `users/` folder, double-click update.bat in your Creator's Toolkit root directory.
+   - **Manual update**: 
+      > update.bat for previous versions (v1.0.0, v2.0.0) isn't working, you'll need to manually update!
+      1. After making a backup of your `users/` folder, download the latest release and unzip, placing the new `creators-toolkit` folder wherever you'd like on your system
+      2. Paste your `users/` folder in the new `creators-toolkit-2.1.0` folder
+      3. Run `start-server.bat` or `start-server.sh` 
+      4. All user data and projects will be preserved
+      5. If using AI features, remember to enable them in User Settings
 
 ## What's Included
 

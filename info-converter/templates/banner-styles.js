@@ -37,6 +37,10 @@ const bannerStyles = {
     monochrome: {
         name: 'Monochrome',
         description: 'Black and white with selective color accent'
+    },
+    'fade-bottom': {
+        name: 'Fade to Transparent',
+        description: 'Gentle gradient fade to transparent at the bottom'
     }
 };
 
@@ -273,6 +277,32 @@ function generateBannerStyleCSS(bannerStyle) {
                     pointer-events: none;
                 }
             `;
+
+case 'fade-bottom':
+    return `
+        .header {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        .banner-image {
+            mask-image: linear-gradient(to bottom, 
+                rgba(0, 0, 0, 1) 0%,
+                rgba(0, 0, 0, 1) 40%,
+                rgba(0, 0, 0, 0.7) 70%,
+                rgba(0, 0, 0, 0.3) 85%,
+                rgba(0, 0, 0, 0) 100%
+            );
+            -webkit-mask-image: linear-gradient(to bottom, 
+                rgba(0, 0, 0, 1) 0%,
+                rgba(0, 0, 0, 1) 40%,
+                rgba(0, 0, 0, 0.7) 70%,
+                rgba(0, 0, 0, 0.3) 85%,
+                rgba(0, 0, 0, 0) 100%
+            );
+        }
+    `;
 
         default:
             return '';

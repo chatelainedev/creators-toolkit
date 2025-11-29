@@ -641,10 +641,10 @@ class CollectionsManager {
         const isCurrentlyCollapsed = this.collapsedCollections.has(collectionKey);
         
         if (isCurrentlyCollapsed) {
-            // Expanding - remove from collapsed set
+            // Expanding - remove ONLY the parent from collapsed set
             this.collapsedCollections.delete(collectionKey);
         } else {
-            // Collapsing - add to collapsed set AND collapse all children
+            // Collapsing - add parent AND all descendants to collapsed set
             this.collapsedCollections.add(collectionKey);
             
             // Also collapse all descendants
@@ -652,6 +652,9 @@ class CollectionsManager {
                 this.collapsedCollections.add(childKey);
             });
         }
+        
+        // Force rebuild to update the UI
+        this.notebook._forceRebuild = true;
         
         // Re-render the entire tree to update all states
         this.notebook.renderCollectionsTree();

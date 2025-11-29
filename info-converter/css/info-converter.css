@@ -2,7 +2,13 @@
    LORE CODEX - MAIN STYLESHEET
    Core Variables, Base Styles, Navigation
    ============================================ */
-
+@font-face {
+    font-family: 'CustomFont'; /* Choose a descriptive name for your font */
+    src: url('../../fonts/EagleLake-Regular.ttf') format('truetype'); /* Specify the path to your .ttf file */
+    font-weight: normal;
+    font-style: normal;
+    /* Optional: Add other font properties like font-weight, font-style if needed */
+}
 /* ============================================
    GOOGLE FONTS
    ============================================ */
@@ -71,6 +77,7 @@
     --font-secondary: "Lora", serif;
     --font-nav: "Montserrat", sans-serif;
     --font-btn: "Roboto Slab", serif;
+    --font-header: "CustomFont", serif;
     
     --font-size-xs: 11px;
     --font-size-sm: 13px;

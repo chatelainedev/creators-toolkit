@@ -1,5 +1,82 @@
 // Add this function to the END of your storylines-filtering.js file
 
+function formatStorylineTiming(storyline) {
+    if (!storyline.timing || !storyline.timing.date) return null;
+    
+    const timeSystemId = storyline.timing.timeSystemId || 'default';
+    const timeSystem = getTimeSystemById(timeSystemId);
+    
+    if (!timeSystem) return null;
+    
+    // Format start date
+    let formatted = formatDateWithFormat(storyline.timing.date, timeSystem.settings.dateFormat, timeSystem);
+    
+    // Add start time if present
+    if (storyline.timing.time) {
+        const timeFormat = timeSystem.settings.timeFormat;
+        let timeStr = '';
+        
+        if (timeFormat === '12') {
+            timeStr = ` ${storyline.timing.time.hour}`;
+            if (storyline.timing.time.minute !== undefined && storyline.timing.time.minute !== null) {
+                timeStr += `:${String(storyline.timing.time.minute).padStart(2, '0')}`;
+            }
+            timeStr += ` ${storyline.timing.time.period}`;
+        } else if (timeFormat === '24') {
+            timeStr = ` ${String(storyline.timing.time.hour).padStart(2, '0')}`;
+            if (storyline.timing.time.minute !== undefined && storyline.timing.time.minute !== null) {
+                timeStr += `:${String(storyline.timing.time.minute).padStart(2, '0')}`;
+            }
+        } else if (timeFormat === 'custom') {
+            const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[storyline.timing.time.division]
+                ? timeSystem.timeDivisions.divisionNames[storyline.timing.time.division]
+                : `Division ${storyline.timing.time.division + 1}`;
+            const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
+            timeStr = `, ${divName}`;
+            if (storyline.timing.time.subdivision !== undefined && storyline.timing.time.subdivision !== null) {
+                timeStr += ` ${storyline.timing.time.subdivision} ${subdivisionName}`;
+            }
+        }
+        
+        formatted += timeStr;
+    }
+        
+    // Add end time if present
+    if (storyline.timing.endTime) {
+        const timeFormat = timeSystem.settings.timeFormat;
+        let endTimeStr = '';
+        
+        if (timeFormat === '12') {
+            endTimeStr = ` ${storyline.timing.endTime.hour}`;
+            // Only add minutes if explicitly set
+            if (storyline.timing.endTime.minute !== undefined && storyline.timing.endTime.minute !== null) {
+                endTimeStr += `:${String(storyline.timing.endTime.minute).padStart(2, '0')}`;
+            }
+            endTimeStr += ` ${storyline.timing.endTime.period}`;
+        } else if (timeFormat === '24') {
+            endTimeStr = ` ${String(storyline.timing.endTime.hour).padStart(2, '0')}`;
+            // Only add minutes if explicitly set
+            if (storyline.timing.endTime.minute !== undefined && storyline.timing.endTime.minute !== null) {
+                endTimeStr += `:${String(storyline.timing.endTime.minute).padStart(2, '0')}`;
+            }
+        } else if (timeFormat === 'custom') {
+            const divName = timeSystem.timeDivisions.useDivisionNames && timeSystem.timeDivisions.divisionNames?.[storyline.timing.endTime.division]
+                ? timeSystem.timeDivisions.divisionNames[storyline.timing.endTime.division]
+                : `Division ${storyline.timing.endTime.division + 1}`;
+            endTimeStr = `, ${divName}`;
+            // Only add subdivision if explicitly set
+            if (storyline.timing.endTime.subdivision !== undefined && storyline.timing.endTime.subdivision !== null) {
+                const subdivisionName = timeSystem.timeDivisions.subdivisionName || 'subdivision';
+                endTimeStr += ` ${storyline.timing.endTime.subdivision} ${subdivisionName}`;
+            }
+        }
+        
+        endFormatted += endTimeStr;
+    }
+    
+    return formatted;
+}
+
 function generateStorylinesJavaScript() {
     return `
         // Global state for storylines filtering
@@ -517,6 +594,11 @@ function generateStorylineCard(storyline, index) {
     const wordcountDisplay = storyline.wordcount 
         ? `<div class="storyline-wordcount">${storyline.wordcount.toLocaleString()} words</div>`
         : '';
+
+    const timingDisplay = formatStorylineTiming(storyline);
+    const timingBadge = timingDisplay 
+        ? `<div class="storyline-timing-badge">${timingDisplay}</div>`
+        : '';
     
     // Make card clickable if there's a link, otherwise make it non-clickable
     // NEW: Process link based on isProjectLink flag
@@ -547,6 +629,7 @@ function generateStorylineCard(storyline, index) {
     return `
         <div class="${cardClass}" data-type="${storyline.type || 'roleplay'}" data-tags="${allTagsStripped}" ${cardOnClick}>
             <div class="storyline-title" title="${titleText}">${titleText}</div>
+            ${timingBadge} 
             <div class="storyline-pairing">${storyline.pairing || 'No pairing specified'}</div>
             ${wordcountDisplay}
             <div class="storyline-description" title="${cleanDescription}">${parseMarkdown(descriptionText)}</div>

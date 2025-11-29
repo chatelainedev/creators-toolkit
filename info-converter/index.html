@@ -89,10 +89,10 @@
         <!-- Tab 1: Project Management & Basic Information -->
         <div id="project-content" class="main-tab-content active">
             <!-- Banner at the top -->
-            <div class="info-banner short-banner">
-                <img src="images/banner.jpg" alt="Info Banner" class="banner-image">
-                <div class="banner-overlay metal-text bronze">
-                    <h1>Project & Info</h1>
+            <div class="info-banner">
+                <img src="images/banner.png" alt="Info Banner" class="banner-image">
+                <div class="banner-overlay">
+                    <h1 class="banner-overlay metal-text bronze">Project & Info</h1>
                 </div>
             </div>
 
@@ -389,10 +389,10 @@
         <!-- Tab 2: Characters, Storylines, World Information, Plans - UPDATED STRUCTURE -->
         <div id="content-content" class="main-tab-content">
         <!-- NEW: Short banner for content page -->
-            <div class="info-banner short-banner">
-                <img src="images/banner.jpg" alt="Content Banner" class="banner-image">
-                <div class="banner-overlay metal-text bronze">
-                    <h1>Content</h1>
+            <div class="info-banner">
+                <img src="images/banner.png" alt="Content Banner" class="banner-image">
+                <div class="banner-overlay">
+                    <h1 class="banner-overlay metal-text bronze">Content</h1>
                 </div>
             </div>
 
@@ -733,10 +733,10 @@
         <!-- Tab 3: Appearance Customization - REDESIGNED with subsections -->
         <div id="appearance-content" class="main-tab-content">
             <!-- Short banner for appearance page -->
-            <div class="info-banner short-banner">
-                <img src="images/banner.jpg" alt="Appearance Banner" class="banner-image">
-                <div class="banner-overlay metal-text bronze">
-                    <h1>Appearance</h1>
+            <div class="info-banner">
+                <img src="images/banner.png" alt="Appearance Banner" class="banner-image">
+                <div class="banner-overlay">
+                    <h1 class="banner-overlay metal-text bronze">Appearance</h1>
                 </div>
             </div>
             
@@ -770,6 +770,7 @@
                                 <option value="small">Small</option>
                                 <option value="medium">Medium</option>
                                 <option value="large">Large</option>
+                                <option value="separate">Separate</option>
                                 <option value="hidden">Hidden</option>
                             </select>
                             <div class="helper-text" id="banner-size-description">
@@ -1019,10 +1020,10 @@ Color picker syncs with text input.</div>
 
         <!-- Tab 4: Custom Pages -->
         <div id="pages-content" class="main-tab-content">
-            <div class="info-banner short-banner">
-                <img src="images/banner.jpg" alt="Custom Pages Banner" class="banner-image">
-                <div class="banner-overlay metal-text bronze">
-                    <h1>Custom Pages</h1>
+            <div class="info-banner">
+                <img src="images/banner.png" alt="Custom Pages Banner" class="banner-image">
+                <div class="banner-overlay">
+                    <h1 class="banner-overlay metal-text bronze">Custom Pages</h1>
                 </div>
             </div>
             
@@ -1503,6 +1504,26 @@ assets/characters/charactername/action.jpg"></textarea>
                 
                 <label for="story-description">Description:</label>
                 <textarea id="story-description" rows="4" placeholder="Brief description or summary of the storyline..."></textarea>
+
+                <label>Timing:</label>
+                <div class="event-timing-picker">
+                    <div style="display: flex; gap: var(--space-xs); align-items: baseline; margin-bottom: 15px;">
+                        <button type="button" id="select-story-date-btn" class="btn-icon" onclick="openStoryDatePicker(false)" title="Start date" style="padding: 8px 12px; flex-shrink: 0; color: var(--primary-color);">
+                            <i class="fas fa-calendar"></i>
+                        </button>
+                        <button type="button" id="select-story-end-date-btn" class="btn-icon" onclick="openStoryDatePicker(true)" title="End date" style="padding: 8px 12px; flex-shrink: 0; color: var(--accent-color); opacity: 0.5;" disabled>
+                            <i class="fas fa-calendar-check"></i>
+                        </button>
+                        
+                        <div id="selected-story-date-display" class="selected-date-display" style="padding: var(--space-sm); background: var(--bg-tertiary); border-radius: 4px; flex-grow: 1; min-height: 38px; display: flex; align-items: baseline; font-size: 0.95em;">
+                            No date selected
+                        </div>
+                        <button type="button" id="clear-story-date-btn" class="btn-icon" onclick="clearStoryDate()" title="Clear dates" style="padding: 8px 12px; flex-shrink: 0; color: var(--danger-color);">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="helper-text">When this storyline occurs in your timeline (optional). Add an end date to show storyline duration.</div>
                 
                 <div class="modal-actions">
                     <button id="save-storyline" class="btn-main-action">Save Storyline</button>
@@ -1993,17 +2014,37 @@ assets/characters/charactername/action.jpg"></textarea>
                 <label for="event-title">Event Title/Description:</label>
                 <textarea id="event-title" rows="2" placeholder="Brief description of what happens in this event"></textarea>
                 
-                <label for="event-image">Event Image Path:</label>
-                <div style="display: flex; gap: var(--space-xs); align-items: center;">
-                    <input type="text" id="event-image" placeholder="assets/events/event-name.jpg" style="flex: 1;">
-                    <button class="nav-load-btn image-import-trigger" 
-                            title="Import image from computer" 
-                            data-target-field="event-image" 
-                            data-context="event">
-                        <i class="fas fa-upload"></i>
-                    </button>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-sm);">
+                    <!-- Event Image (Icon) -->
+                    <div>
+                        <label for="event-image">Event Image:</label>
+                        <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                            <input type="text" id="event-image" placeholder="assets/events/event-icon.jpg" style="flex: 1;">
+                            <button class="nav-load-btn image-import-trigger" 
+                                    title="Import image from computer" 
+                                    data-target-field="event-image" 
+                                    data-context="event">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </div>
+                        <div class="helper-text">Optional image for this event marker</div>
+                    </div>
+                    
+                    <!-- NEW: Event Background -->
+                    <div>
+                        <label for="event-background">Event Background:</label>
+                        <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                            <input type="text" id="event-background" placeholder="assets/events/event-bg.jpg" style="flex: 1;">
+                            <button class="nav-load-btn image-import-trigger" 
+                                    title="Import image from computer" 
+                                    data-target-field="event-background" 
+                                    data-context="event">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </div>
+                        <div class="helper-text">Optional background image for this event</div>
+                    </div>
                 </div>
-                <div class="helper-text">Optional image for this event marker</div>
 
                 <label for="event-type">Event Type:</label>
                 <select id="event-type">
